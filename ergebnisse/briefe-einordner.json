@@ -1,0 +1,167 @@
+{
+ "ordner": "pruefstapel-unabhaengig",
+ "belege": 150,
+ "einordner": [
+  {
+   "name": "Erster (Stapel-Autor)",
+   "modell": null,
+   "fehlt": 0
+  },
+  {
+   "name": "ZWEITER",
+   "modell": "Claude-Agent B, eigenes Urteil",
+   "fehlt": 0
+  },
+  {
+   "name": "DRITTER-CLAUDE",
+   "modell": "Claude-Agent C, eigenes Urteil",
+   "fehlt": 0
+  }
+ ],
+ "felder": {
+  "bereich": {
+   "paare": [
+    {
+     "a": "Erster (Stapel-Autor)",
+     "b": "ZWEITER",
+     "gleich": 112
+    },
+    {
+     "a": "Erster (Stapel-Autor)",
+     "b": "DRITTER-CLAUDE",
+     "gleich": 114
+    },
+    {
+     "a": "ZWEITER",
+     "b": "DRITTER-CLAUDE",
+     "gleich": 141
+    }
+   ],
+   "fleissKappa": 0.8011309181521942,
+   "einstimmig": 110,
+   "strittig": [
+    {
+     "datei": "Rentenbezugsmitteilung.txt",
+     "stimmen": [
+      "Rente",
+      "Rente, Arbeit & Sozialversicherung",
+      "Steuern & Behörden"
+     ]
+    },
+    {
+     "datei": "KV Beitrag freiwillig.txt",
+     "stimmen": [
+      "Arbeit & Sozialversicherung",
+      "Rente, Arbeit & Sozialversicherung",
+      "Gesundheit & Pflege"
+     ]
+    },
+    {
+     "datei": "Fernseher Rechnung.txt",
+     "stimmen": [
+      "Rechnungen & Garantien",
+      "Technik, Geräte & Reparaturen",
+      "Einkäufe, Rechnungen & Garantien"
+     ]
+    }
+   ]
+  },
+  "schriftstueck": {
+   "paare": [
+    {
+     "a": "Erster (Stapel-Autor)",
+     "b": "ZWEITER",
+     "gleich": 146
+    },
+    {
+     "a": "Erster (Stapel-Autor)",
+     "b": "DRITTER-CLAUDE",
+     "gleich": 145
+    },
+    {
+     "a": "ZWEITER",
+     "b": "DRITTER-CLAUDE",
+     "gleich": 149
+    }
+   ],
+   "fleissKappa": 0.9754573120848195,
+   "einstimmig": 145,
+   "strittig": []
+  },
+  "absender": {
+   "paare": [
+    {
+     "a": "Erster (Stapel-Autor)",
+     "b": "ZWEITER",
+     "gleich": 142
+    },
+    {
+     "a": "Erster (Stapel-Autor)",
+     "b": "DRITTER-CLAUDE",
+     "gleich": 141
+    },
+    {
+     "a": "ZWEITER",
+     "b": "DRITTER-CLAUDE",
+     "gleich": 149
+    }
+   ],
+   "fleissKappa": 0.9594489056210828,
+   "einstimmig": 141,
+   "strittig": []
+  },
+  "person": {
+   "paare": [
+    {
+     "a": "Erster (Stapel-Autor)",
+     "b": "ZWEITER",
+     "gleich": 134
+    },
+    {
+     "a": "Erster (Stapel-Autor)",
+     "b": "DRITTER-CLAUDE",
+     "gleich": 131
+    },
+    {
+     "a": "ZWEITER",
+     "b": "DRITTER-CLAUDE",
+     "gleich": 146
+    }
+   ],
+   "fleissKappa": 0.9060230899393835,
+   "einstimmig": 131,
+   "strittig": [
+    {
+     "datei": "Buchungsbestätigung Flug.txt",
+     "stimmen": [
+      "familie ba türk",
+      null,
+      "deniz ba türk"
+     ]
+    }
+   ]
+  },
+  "frist": {
+   "paare": [
+    {
+     "a": "Erster (Stapel-Autor)",
+     "b": "ZWEITER",
+     "gleich": 139
+    },
+    {
+     "a": "Erster (Stapel-Autor)",
+     "b": "DRITTER-CLAUDE",
+     "gleich": 139
+    },
+    {
+     "a": "ZWEITER",
+     "b": "DRITTER-CLAUDE",
+     "gleich": 150
+    }
+   ],
+   "fleissKappa": 0.9131243637895327,
+   "einstimmig": 139,
+   "strittig": []
+  }
+ }
+}
