@@ -84,3 +84,9 @@ Was eine Runde ändert, steht vorab fest; gelernt wird erst nach der Messung.
 
 Reihenfolge: zuerst der laufende zweite Blindtest Briefe, dann A und B (billig, nur neue Stapel), dann D, C, E; G sobald Klaus es will.
 Berichtet wird je Runde und als Verlauf über alle Runden – auch, wenn eine Runde schlechter ausfällt als die davor.
+
+**Runden A und B vergeben (13.11.2026):** je 150 Schriftstücke, sieben Haushalte, Auftrag wie beim zweiten Blindtest Briefe
+(`docs/PRUEFSTAPEL-BRIEFE-2-REGELN.md`, Regeln 4–9 gelten entsprechend), Kern eingefroren bei `7ac9d4f`, alter Kern `fe55b5f`.
+A: ländliche Haushalte in Bayern, Sachsen und im Saarland mit dortigen Behörden- und Kassenbezeichnungen. B: Lebenslagen
+Zuwanderung, Pflegeheim, Scheidung, Privatinsolvenz, Todesfall mit Nachlass, Hausbau, Beamtenhaushalt. Ordner
+`pruefstapel-briefe-a/`, `pruefstapel-briefe-b/`. Gemessen wird erst nach dem zweiten Blindtest, je einmal.
