@@ -24,3 +24,22 @@ Kassenbons, Bestellungen, Rücksendungen ohne Gerät.
 
 Herkunft: Vier unabhängige Einordner (drei Claude-Agenten, Codex) an 150 erfundenen Briefen, 24 nicht einstimmig, immer an diesen
 Stellen; die Regel folgt bis auf Punkt 2 (dort uneinig) der Mehrheit. Das Zweitfach hat Codex vorgeschlagen.
+
+## Die Fachregel ist die Vorgabe ab Werk, nicht Zwang (Klaus 13.11.2026)
+
+Klaus: Wer anders ablegen will – zum Beispiel die Kfz-Versicherung unter „Versicherungen“ statt beim Auto –, muss das können:
+eigene Regeln festlegen oder ändern, von Hand zuordnen, und der Kern in der App lernt daraus beim jeweiligen Nutzer von selbst.
+
+Folgen für den Bau:
+
+1. **Regel als Daten, nicht als Code.** Die Punkte 1–7 liegen als Tabelle im Kern (Fall → Fach, Zweitfach). Je Punkt kann der
+   Nutzer Fach und Zweitfach tauschen oder ein anderes Fach wählen; die Wahl liegt bei seinen Einstellungen, nie im Repo.
+2. **Von Hand zuordnen geht immer** und gewinnt gegen jede Regel. Ein bestätigtes oder geändertes Feld fasst der Kern nie wieder an
+   (gilt schon: `bestaetigt` in `lib/siebe.ts`).
+3. **Der Kern lernt beim Nutzer** aus Korrekturen (`lib/lernen.ts`): Wer zweimal dieselbe Art Schriftstück umlegt, bekommt den
+   Vorschlag, daraus eine eigene Regel zu machen; sie gilt nur auf seinem Gerät und lässt sich ansehen, ändern und löschen.
+4. **Zweitfach bleibt.** Wer umstellt, findet das Schriftstück weiter in beiden Fächern und über die Suche.
+5. **Messung:** Blindtests messen die Vorgabe ab Werk. Dass eine eigene Regel wirkt und nichts anderes verstellt, wird eigens
+   geprüft (Probe: Regel umstellen → betroffene Fälle wechseln das Fach, alle anderen bleiben).
+
+Sichtbare Bedienung dafür erst als Vorschau, Klaus sagt Ja je Punkt.
