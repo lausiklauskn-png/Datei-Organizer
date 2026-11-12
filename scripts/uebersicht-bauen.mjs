@@ -52,6 +52,13 @@ const lernZeilen = lernen.map((l) => {
   return `<tr><td>${m?.[3] === "chaotisch" ? "neben der Spur" : "sorgfältig"}</td><td>${esc(m?.[1] || "")}</td><td>${esc(m?.[2] || "")}</td><td class="z">${zahl(l.nutzer?.antworten || 0)}</td><td class="z">${zahl(l.nutzer?.falscheAntworten || 0)}</td><td class="z">${fmt(pz(ohne?.organizer.kategorie || { n: 0 }))}</td><td class="z ${ton(pz(l.organizer.kategorie))}">${fmt(pz(l.organizer.kategorie))}</td></tr>`;
 }).join("");
 
+let unabhaengig = "";
+if (existsSync("ergebnisse/unabhaengig.json")) {
+  const u = JSON.parse(readFileSync("ergebnisse/unabhaengig.json", "utf8"));
+  unabhaengig = `<section class="karte"><h2>Unabhängiger Prüfstapel (${zahl(u.dateien)} Briefe, von einem anderen Agenten geschrieben)</h2>
+<p class="leise">Ein Hilfs-Agent ohne Einblick in den Kern und in die eigenen Vorlagen hat eigene erfundene Briefe mit eigenen Soll-Werten geschrieben. Einmal gemessen, ohne Anpassung vorher. Das ist der ehrlichere Wert für „ungesehene Post“.</p>
+<div class="tab"><table><thead><tr><th>Feld</th><th>Datei-Organizer-Kern</th><th>sicher, aber falsch</th><th>Familienakte heute</th></tr></thead><tbody>${FELDER.slice(0, 5).map(([f, n]) => { const v = pz(u.organizer[f]); const fa = f === "kategorie" ? pz(u.familienakte.kat) : f === "absender" ? pz(u.familienakte.abs) : null; return `<tr><th scope="row">${n}</th><td class="z ${ton(v)}">${fmt(v)}</td><td class="z">${zahl(u.organizer[f].falschSicher)}</td><td class="z">${fa != null ? fmt(fa) : "–"}</td></tr>`; }).join("")}</tbody></table></div></section>`;
+}
 const html = `<title>Datei-Organizer Testlauf</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
@@ -127,6 +134,18 @@ ul{margin:0;padding-left:20px;display:grid;gap:4px}
 <li>Leere Dateien aus abgebrochener OneDrive-Synchronisierung gemeldet: <b>${fmt(pz(leer))}</b>.</li>
 <li>E-Mail-Anhänge ausgepackt und einzeln einsortiert: <b>${fmt(pz(anh))}</b>.</li>
 <li>BookLedgerPro an Kassenbons: Betrag <b>${fmt(pz(blpB))}</b>, Datum <b>${fmt(pz(blpD))}</b>. Buchungskonto (SKR03) an Geschäftsbelegen der Boutique: <b>${fmt(pz(blpK))}</b> – die Kontenregeln kennen Wareneingang aus dem Ausland, Kartengebühren und Werbung noch nicht.</li>
+</ul>
+</section>
+${unabhaengig}
+<section class="karte">
+<h2>Wo das Ergebnis zu gut aussehen kann</h2>
+<ul>
+<li><b>Generator und Kern stammen von derselben Hand.</b> „Ungesehen“ heißt hier: neue Startwerte, aber dieselben Briefvorlagen und Formulierungen, an denen der Kern trainiert wurde. Die Zahlen oben zeigen, wie gut er diese Vorlagen wiedererkennt – nicht echte Post.</li>
+<li><b>Wortschatz aus den eigenen Vorlagen:</b> beim Training kamen Wörter dazu, die genau so in den Testbriefen stehen (z. B. „eur/l“, „hafenfest“, „verlagsvertrag“, „tierarzt“ bei Freizeit). Das ist Überanpassung.</li>
+<li><b>Drei Erwartungen wurden während des Trainings geändert, alle zugunsten des Kerns:</b> Rundfunkbeitrag von „Verträge“ zu „Steuern &amp; Behörden“, Fahrkarte von „Rechnung“ zu „Brief“, bei Kassenbons und Fotos wird die Person nicht mehr gemessen (wer fotografiert hat, steht nicht auf dem Bon).</li>
+<li><b>Die Familienakte wurde mit leerer Akte nachgestellt</b> (keine Personen, keine Vorgänge). Ihr Zuordnungsvorschlag kann so nie „eindeutig“ werden; darum landet bei ihr fast alles bei „bitte prüfen“. Mit gefüllter Akte wäre dieser Wert niedriger. Ihr Bereich und Absender sind fair gemessen (gleicher Text, gleicher Briefkopf-Leser wie in der App).</li>
+<li><b>BookLedgerPro</b> wurde an Geschäfts- und Haushaltsbelegen gemessen, für die seine Kontenregeln nicht gebaut sind; der Wert ist eine Lückenliste, kein Urteil.</li>
+<li><b>Der Nutzer „neben der Spur“</b> ist eine Annahme (die Hälfte „Stimmt“, ein Fünftel irgendetwas), keine Beobachtung.</li>
 </ul>
 </section>
 <section class="karte">
