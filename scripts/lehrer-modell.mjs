@@ -23,7 +23,7 @@ export function merkmale(text, eigenerName = "", paare = true) {
  * minGruppen: ein Merkmal zählt nur, wenn es in so vielen verschiedenen Gruppen (Gewerben) vorkommt – hält Firmennamen und Orte heraus.
  * proKlasse: je Konto bleiben nur die aussagekräftigsten Merkmale (kleines Modell).
  */
-export function trainiere(belege, { minGruppen = 2, proKlasse = 400, glatt = 0.5 } = {}) {
+export function trainiere(belege, { minGruppen = 2, proKlasse = 400, glatt = 0.5, schnitt = 0.5 } = {}) {
   const konten = [...new Set(belege.map((b) => b.konto))].sort();
   const gruppenJe = new Map(), zahlJe = new Map(), klassenZahl = Object.fromEntries(konten.map((k) => [k, 0]));
   for (const b of belege) {
@@ -43,17 +43,24 @@ export function trainiere(belege, { minGruppen = 2, proKlasse = 400, glatt = 0.5
   for (const k of konten) {
     kandidaten.map((f) => [f, logit(f, k) * Math.log(1 + (zahlJe.get(f)[k] || 0))]).filter(([, s]) => s > 0).sort((a, b) => b[1] - a[1]).slice(0, proKlasse).forEach(([f]) => behalten.add(f));
   }
+  // Sparsam ablegen: je Merkmal zählt nur der Abstand zum mittleren Wert über alle Konten (das ändert weder die Reihenfolge
+  // noch den Abstand der Konten); kleine Abstände fallen weg. So bleiben je Merkmal wenige Zahlen statt einer je Konto.
   const gewichte = {};
-  for (const f of behalten) gewichte[f] = konten.map((k) => Math.round(logit(f, k) * 100) / 100);
-  return { fassung: 1, konten, vorab: konten.map((k) => Math.round(Math.log((klassenZahl[k] + 1) / (N + konten.length)) * 100) / 100), gewichte, belege: N };
+  for (const f of behalten) {
+    const w = konten.map((k) => logit(f, k)), mitte = [...w].sort((x, y) => x - y)[Math.floor(w.length / 2)];
+    const duenn = []; w.forEach((v, i) => { const d = Math.round((v - mitte) * 10) / 10; if (Math.abs(d) >= schnitt) duenn.push(i, d); });
+    if (duenn.length) gewichte[f] = duenn;
+  }
+  return { fassung: 2, konten, vorab: konten.map((k) => Math.round(Math.log((klassenZahl[k] + 1) / (N + konten.length)) * 100) / 100), gewichte, belege: N };
 }
 
 /** Vorhersage: bestes Konto, Abstand zum zweitbesten (Maß für Sicherheit) und die drei stärksten Merkmale als Begründung. */
 export function vorhersage(modell, merkmaleDesBelegs) {
   const s = modell.vorab.slice(), treffer = [];
-  for (const f of merkmaleDesBelegs) { const g = modell.gewichte[f]; if (!g) continue; treffer.push(f); for (let i = 0; i < s.length; i++) s[i] += g[i]; }
+  for (const f of merkmaleDesBelegs) { const g = modell.gewichte[f]; if (!g) continue; treffer.push(f); for (let i = 0; i < g.length; i += 2) s[g[i]] += g[i + 1]; }
   let a = 0; for (let i = 1; i < s.length; i++) if (s[i] > s[a]) a = i;
   let b = -1; for (let i = 0; i < s.length; i++) if (i !== a && (b < 0 || s[i] > s[b])) b = i;
-  const grund = treffer.map((f) => [f, modell.gewichte[f][a]]).sort((x, y) => y[1] - x[1]).slice(0, 3).map(([f]) => f);
+  const wert = (f) => { const g = modell.gewichte[f]; for (let i = 0; i < g.length; i += 2) if (g[i] === a) return g[i + 1]; return 0; };
+  const grund = treffer.map((f) => [f, wert(f)]).sort((x, y) => y[1] - x[1]).slice(0, 3).map(([f]) => f);
   return { konto: modell.konten[a], zweites: modell.konten[b], abstand: treffer.length ? s[a] - s[b] : 0, merkmale: treffer.length, grund };
 }

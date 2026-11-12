@@ -90,3 +90,9 @@ Festgelegt und eingecheckt, bevor der Stapel geschrieben und bevor gemessen wird
     der Klassifikator nichts bringt oder schadet; dann wird er nicht eingebaut.
 28. **Bekannte Schwäche, vorab benannt:** Lehrdaten und Prüfstapel stammen beide von Claude-Agenten. Ein Gewinn am vierten Stapel
     zeigt, dass der Klassifikator auf **fremde Gewerbe derselben Machart** überträgt, nicht auf echte Belege. Das steht im Bericht.
+29. **Abstimmung abgeschlossen (12.11., vor dem vierten Stapel):** Modell aus allen acht Gewerben (1600 Belege), Merkmale nur wenn in
+    mindestens 2 Gewerben, je Konto höchstens 400, sparsam abgelegt (294 KB). Zusammenspiel (`scripts/lehrer-kombination.mjs`):
+    Briefkopf entscheidet die Richtung, wenn ein Firmenname hinterlegt ist; sonst gilt das Modell ab Abstand 2, darunter die Regeln,
+    außer sie kennen nur das Sammelkonto. Abstimmwerte an den verbrauchten Stapeln 2 und 3 (239 Belege): Regeln 139 ohne / 166 mit
+    Firmennamen, Modell allein 184, Zusammenspiel 187 ohne / 199 mit. Stapel 1: Regeln 94/111, Zusammenspiel 89/104 von 120 – dort
+    schlechter als die Regeln, an denen sie ausgerichtet wurden. Diese Einstellungen werden nicht mehr geändert.
