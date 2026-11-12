@@ -45,6 +45,18 @@ try {
   await page.keyboard.press("Escape");
   soll("Esc schließt den Hinweis", await page.locator("[data-info-fenster]").count() === 0);
 
+  console.log("Installierbar (PWA)");
+  const man = await (await fetch(basis + "manifest.webmanifest")).json();
+  soll("Manifest mit Symbolen 192 und 512", ["192x192", "512x512"].every((g) => man.icons?.some((i) => i.sizes === g && i.type === "image/png")) && man.display === "standalone");
+  const sw = await page.evaluate(() => navigator.serviceWorker.ready.then((r) => !!r.active).catch(() => false));
+  soll("Offline-Vorrat (Service Worker) aktiv", sw);
+  await page.reload(); await page.waitForTimeout(500);
+  await ctx.setOffline(true);
+  await page.reload();
+  soll("Startet ohne Netz", await page.locator(".site-header .main-navigation").isVisible().catch(() => false));
+  await ctx.setOffline(false);
+  await page.reload();
+
   console.log("Testordner einlesen");
   await page.locator("[data-testordner]").click();
   await page.waitForFunction(() => /Dateien im Eingang/.test(document.querySelector("[data-meldung]")?.textContent || ""), null, { timeout: 120000 });
