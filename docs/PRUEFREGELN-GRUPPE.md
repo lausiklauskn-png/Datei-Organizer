@@ -96,3 +96,9 @@ sieben Haushalte, in denen ein Mitglied schwerbehindert oder chronisch krank ist
 Gutschriften und Rechnungen von Krankenhäusern, Erstattungen privater und gesetzlicher Kassen, Beihilfe, Schwerbehindertenausweis
 und Merkzeichen, Erwerbsminderungsrente, Pflegegrad, Eingliederungshilfe, Nachteilsausgleiche (Kfz-Steuer, Wertmarke, Pauschbetrag).
 Bedingungen wie bei A und B; Kern `7ac9d4f` gegen `fe55b5f`, einmal gemessen nach dem zweiten Blindtest.
+
+**Zu Runde C (Klaus 13.11.2026):** Familien verändern sich über die Zeit – eine drei- oder fünfköpfige Familie, zwei Kinder werden
+erwachsen und fallen aus dem Kindergeld, ziehen aus, beginnen Ausbildung oder Studium, bekommen eigene Verträge und eigene
+Steuernummern. Der Stapel für Runde C umfasst deshalb mehrere Jahre derselben Familien; geprüft wird auch, ob die Person stimmt,
+wenn sich die Rolle ändert (Kind → eigener Vertragspartner), und ob ein Schriftstück dem richtigen Haushalt zugeordnet bleibt.
+Noch nicht vergeben.
