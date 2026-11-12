@@ -72,3 +72,21 @@ Festgelegt und eingecheckt, bevor der Stapel geschrieben und bevor gemessen wird
     wird das benannt und mit zwei Einordnern berichtet (dann zählt nur, wo beide gleich sind).
 22. **Je einmal messen** (alt, neu), Wilson-Spanne, McNemar je Feld. Der Betrag darf durch das Training nicht schlechter werden;
     wird er es, steht das im Bericht. Der Stapel wird vor der Messung nicht gelesen.
+
+## Vierter Blindtest: Kontovorschlag mit Lehrer (festgelegt 12.11.2026, vor Lehrdaten, Bau und Stapel; Klaus: „Schritt 3“)
+
+23. **Ziel:** Der Kontovorschlag ohne KI in BookLedgerPro (`src/ai/categorize.js`, Stand main `1887e25`: 55,8–73,1 % je nach Stapel
+    und Firmennamen) soll durch einen kleinen, auf dem Gerät rechnenden Klassifikator besser werden, der aus **Lehrdaten** lernt.
+    Lehrer ist Claude: Hilfs-Agenten schreiben erfundene Belege samt Konto. In der App läuft danach **kein** Sprachmodell und es
+    verlässt kein Beleg das Gerät (BookLedgerPro Regel 8 bleibt: KI nur Mistral EU, opt-in).
+24. **Lehrdaten:** acht Hilfs-Agenten, je ein anderes Gewerbe, je rund 200 Belege mit Konto, Richtung, Betrieb; Ordner `lehrdaten-blp/`.
+    Kein Agent sieht die Prüfstapel, BookLedgerPro oder die anderen Lehrdaten.
+25. **Abstimmen (Validierung):** Wie Klassifikator und Regeln zusammenwirken, wird nur an den drei verbrauchten Stapeln
+    (`pruefstapel-blp`, `-2`, `-3`, je Mehrheits- bzw. Autor-Soll) entschieden. Diese Zahlen sind Abstimmwerte, kein Nachweis.
+26. **Neuer Stapel `pruefstapel-blp-4/`:** 120 Belege eines Gewerbes, das weder in den Lehrdaten noch in den Stapeln 1–3 vorkommt,
+    geschrieben von einem Agenten ohne Einblick, erst **nach** dem Einfrieren des neuen Stands. Drei Einordner (Autor, zweiter
+    Claude-Agent, Codex über den Briefkasten); Soll = Mehrheit; strittige Belege getrennt.
+27. **Je einmal messen:** alt (`1887e25`) gegen neu, je ohne und mit Firmennamen; Wilson, McNemar (5 %). Berichtet wird auch, wenn
+    der Klassifikator nichts bringt oder schadet; dann wird er nicht eingebaut.
+28. **Bekannte Schwäche, vorab benannt:** Lehrdaten und Prüfstapel stammen beide von Claude-Agenten. Ein Gewinn am vierten Stapel
+    zeigt, dass der Klassifikator auf **fremde Gewerbe derselben Machart** überträgt, nicht auf echte Belege. Das steht im Bericht.
