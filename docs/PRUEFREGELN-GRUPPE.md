@@ -1,8 +1,10 @@
 # Prüfregeln für die Gruppe der Pro-Apps
 
-Klaus 12.11.2026: „Die Prüfung soll für die ganze Gruppe gelten.“ Gruppe im Sinn des Mycels: **Familienakte**, **BookLedgerPro**
-(mit BookLedger Basic), **Private Brain Pro** und der **Datei-Organizer** als Prüf- und Sortierwerkzeug. Ob Workflow PDF Pro dazugehört,
-ist noch nicht entschieden. Dieses Dokument ist die gemeinsame Prüfquelle: Wer eine Erkennung, Zuordnung oder ein gelerntes Modell
+Klaus 12.11.2026: „Die Prüfung soll für die ganze Gruppe gelten.“ Gruppe im Sinn des Mycels: **Familienakte**, **BookLedgerPro**,
+**Private Brain Pro** und der **Datei-Organizer** als Prüf- und Sortierwerkzeug. Klaus 12.11. (Nachtrag): Die **Basic-Fassungen gehören
+dazu** – Familienakte Basic (die Web-App aus demselben Repo), BookLedger Basic (eigenes Repo, byte-gleich aus Pro nachgezogen) und
+Private Brain Basic. Ein Nachweis gilt für eine Basic-Fassung nur, wenn dort derselbe Code läuft (byte-gleich nachgezogen oder
+derselbe Bau); weicht sie ab, wird sie eigens gemessen. Ob Workflow PDF Pro dazugehört, ist noch nicht entschieden. Dieses Dokument ist die gemeinsame Prüfquelle: Wer eine Erkennung, Zuordnung oder ein gelerntes Modell
 in einer dieser Apps verbessert, weist es nach diesen Regeln nach. Die Einzelheiten je Test stehen in
 `docs/PRUEFSTAPEL-REGELN.md` (Briefe) und `docs/PRUEFSTAPEL-BLP-REGELN.md` (Belege).
 
@@ -49,8 +51,8 @@ mit einem anderen Maß:
 
 | Knoten | Was nach diesen Regeln nachgewiesen ist | Offen |
 | --- | --- | --- |
-| BookLedgerPro (und Basic) | Kontoregeln (Stapel 2, drei Einordner), Datum und Steuersatz (Stapel 3, drei Einordner) | Wortmodell (Stapel 4 läuft), Kreuztest mit Lehrdaten eines anderen Systems, echte Stichprobe |
-| Datei-Organizer | erster Blindtest Briefe mit **einem** Einordner (Bereich 51–65 %, Absender 54 %) | zweiter und dritter Einordner, Verbesserung des Kerns mit neuem Stapel |
-| Familienakte | Vergleich am selben Briefstapel mit einem Einordner (Bereich 28–36 %, Absender 36 %) | Übernahme des Kerns erst nach Nachweis; Messung mit gefüllter Akte |
-| Private Brain Pro | nichts gemessen | Dokumentart-Vorschlag gegen denselben Briefstapel |
+| BookLedgerPro und BookLedger Basic (byte-gleich nachgezogen, Stand Pro `2a3d653`) | Kontoregeln (Stapel 2), Datum und Steuersatz (Stapel 3), Wortmodell (Stapel 4) – je drei Einordner | Kreuztest mit Lehrdaten eines anderen Systems (Auftrag 002), echte Stichprobe; native Pro-Apps erst mit neuer Fassung |
+| Datei-Organizer | erster Blindtest Briefe mit **einem** Einordner (Bereich 51–65 %, Absender 54 %); Soll seither von vier Einordnern geprüft: Schriftstück, Absender, Person, Frist tragen (Kappa 0,91–0,98), **Bereich nicht** (Kappa 0,80, Stapel-Autor gegen die anderen 68–76 %) | feste Regel für überschneidende Fächer, dann neuer Stapel und Verbesserung des Kerns |
+| Familienakte Pro und Basic (ein Repo, derselbe Kern) | Vergleich am selben Briefstapel mit einem Einordner (Bereich 28–36 %, Absender 36 %) | Übernahme des Kerns erst nach Nachweis; Messung mit gefüllter Akte |
+| Private Brain Pro und Basic | nichts gemessen; ob Basic denselben Code trägt, ist nicht nachgesehen | Dokumentart-Vorschlag gegen denselben Briefstapel |
 | Suche über die Knoten | nichts gemessen (Proben bisher nur mit gestellter Hülle und gestelltem Modell) | Suchprüfstapel nach Regel 11–14, intern und extern |
