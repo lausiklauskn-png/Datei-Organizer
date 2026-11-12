@@ -21,3 +21,7 @@ Eingecheckt, bevor der Kern geändert wird und bevor es Lehrdaten oder einen neu
    so im Bericht, und er wandert nicht.
 9. **Grenze:** Lehrdaten und Prüfstapel stammen von KI-Agenten; die Zahl gilt für erfundene Schriftstücke dieser Machart, als Text
    (keine Fotos, keine Texterkennung).
+
+**Eingefroren (13.11.2026):** neuer Kern = Commit `7ac9d4f`, alter Kern = `fe55b5f`. Erst danach wurde der Auftrag für den neuen
+Stapel vergeben. Der Stapel-Autor bekommt nur Fachregel, Fächerliste, Liste der Arten und den Auftrag („Mischung wie im echten
+Papierkram eines Jahres“, sieben Haushalte); keine Lehrdaten, keinen Kern, keine früheren Stapel.
