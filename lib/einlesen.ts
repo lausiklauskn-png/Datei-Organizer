@@ -48,9 +48,9 @@ export async function einlesen(e: Eingabe, pdfLesen: PdfLeser, tiefe = 0): Promi
 /** Doppelte am Fingerabdruck markieren: die erste (nach Pfad) bleibt, alle weiteren zeigen auf sie. */
 export function doppelteMarkieren(dateien: Datei[]): Datei[] {
   const erste = new Map<string, string>();
-  // Original = die ältere Datei; bei Gleichstand die ohne „Kopie“ im Namen
+  // Original = die ohne „Kopie“/„(2)“ im Namen; sonst die ältere (Änderungszeiten sind nach Kopieren oder Auschecken unzuverlässig)
   const kopie = (d: Datei) => /kopie|copy|\(\d+\)/i.test(d.name) ? 1 : 0;
-  for (const d of [...dateien].sort((a, b) => a.geaendert - b.geaendert || kopie(a) - kopie(b) || a.pfad.localeCompare(b.pfad, "de"))) if (d.sha256 && !erste.has(d.sha256)) erste.set(d.sha256, d.pfad);
+  for (const d of [...dateien].sort((a, b) => kopie(a) - kopie(b) || a.geaendert - b.geaendert || a.pfad.localeCompare(b.pfad, "de"))) if (d.sha256 && !erste.has(d.sha256)) erste.set(d.sha256, d.pfad);
   return dateien.map((d) => {
     const e = d.sha256 ? erste.get(d.sha256) : undefined;
     return e && e !== d.pfad ? { ...d, doppeltVon: e } : { ...d, doppeltVon: undefined };
