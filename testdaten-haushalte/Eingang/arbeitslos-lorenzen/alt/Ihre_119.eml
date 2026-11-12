@@ -1,0 +1,16 @@
+From: Versandhandel Beispiel GmbH <service@versandhandelbei.beispiel.invalid>
+To: dirk.lorenzen@beispiel.invalid
+Subject: Ihre Bestellung wurde versandt
+Date: Sun, 31 May 2026 10:00:00 GMT
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+
+Hallo Dirk Lorenzen,
+
+Ihre Bestellung ist unterwegs.
+Bestellnummer: B-79853086
+Rechnungsbetrag: 20,60 €
+
+Viele Grüße
+Versandhandel Beispiel GmbH
