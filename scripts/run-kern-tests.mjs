@@ -7,7 +7,8 @@ import { erkenneArt } from "../lib/dateiart.ts";
 import { exifStueck, leseExif, verbinde } from "../lib/exif.ts";
 import { leseEml, kopfDekodieren } from "../lib/eml.ts";
 import { officeText } from "../lib/zip.ts";
-import { erkenneSchriftstueck, erkenneNummern, erkenneFrist, erkenneBetrag, erkenneBetrifft, erkenneAbsender, erkenneKategorie, dringlichkeit, kennzeichenImText, erkenneDatum } from "../lib/erkennen.ts";
+import { erkenneSchriftstueck, erkenneNummern, erkenneFrist, erkenneBetrag, erkenneBetrifft, erkenneAbsender, absenderAusGruss, erkenneKategorie, dringlichkeit, kennzeichenImText, erkenneDatum } from "../lib/erkennen.ts";
+import { personZuordnen } from "../lib/personen.ts";
 import { siebe, istUnsicher } from "../lib/siebe.ts";
 import { einlesen, doppelteMarkieren } from "../lib/einlesen.ts";
 import { pdfTextLesen } from "../lib/pdf-text.ts";
@@ -66,12 +67,37 @@ soll("IBAN gekürzt", nr.some((n) => n.art === "IBAN" && n.wert.includes("…"))
 soll("Kennzeichen", nr.some((n) => n.art === "Kennzeichen" && n.wert === "BSP-FA 12"));
 soll("kein Kennzeichen aus „DE00 0000“", !kennzeichenImText("IBAN DE00 0000 0000").length);
 soll("Frist „bis spätestens“", erkenneFrist("Bitte zahlen Sie bis spätestens 19.11.2026.")?.wert === "2026-11-19");
-soll("Frist „innerhalb eines Monats“ gerechnet, unsicher", (() => { const f = erkenneFrist("innerhalb eines Monats Einspruch", "2026-10-08"); return f?.wert === "2026-11-08" && !f.sicher; })());
+// Geändert 13.11.2026: eine bloße Einspruchs- oder Widerspruchsfrist ist nach der Fachregel keine Frist des Haushalts (vorher: gerechnet, unsicher).
+soll("bloße Einspruchsfrist ist keine Frist", erkenneFrist("Gegen diesen Bescheid können Sie innerhalb eines Monats Einspruch einlegen.", "2026-10-08") === undefined);
+soll("Zahlungsfrist in Tagen gerechnet, unsicher", (() => { const f = erkenneFrist("Der Betrag ist zahlbar innerhalb von 14 Tagen ohne Abzug.", "2026-10-08"); return f?.wert === "2026-10-22" && !f.sicher; })());
+soll("Frist mit Wochentag und Monatsnamen", erkenneFrist("Bitte senden Sie uns den Fragebogen bis spätestens Freitag, 5. Februar 2027 zurück.")?.wert === "2027-02-05");
+soll("Frist: die neue Zahlungsfrist, nicht die alte Fälligkeit", erkenneFrist("Die Rechnung war am 02.03.2027 fällig. Bitte überweisen Sie den offenen Betrag bis 20.03.2027.", "2027-03-10")?.wert === "2027-03-20");
+soll("Frist ohne Jahr aus dem Briefdatum", erkenneFrist("Fälligkeiten: 15.02. 80,00 EUR · 15.05. 80,00 EUR", "2027-01-11")?.wert === "2027-02-15");
+soll("Termin mit Wochentag und Uhrzeit", (() => { const f = erkenneFrist("Ihr Termin: Dienstag, 09.03.2027, 10:40 Uhr in unserer Praxis."); return f?.wert === "2027-03-09" && f.sicher; })());
+soll("keine Frist: Abbuchung per Lastschrift", erkenneFrist("Der Beitrag von 84,00 EUR ist fällig am 01.04.2027 und wird per Lastschrift von Ihrem Konto abgebucht.", "2027-03-01") === undefined);
+soll("keine Frist: Garantie und Gültigkeit", erkenneFrist("Garantie bis 14.06.2029. Der Ausweis ist gültig bis 31.12.2030.", "2027-06-14") === undefined);
+soll("keine Frist: Briefdatum und Vertragsbeginn", erkenneFrist("Beispielstadt, 03.05.2027\nVersicherungsbeginn: 01.06.2027, 0 Uhr\nIhr Vertrag vom 12.04.2027", "2027-05-03") === undefined);
+soll("keine Frist: Kündigungsrecht", erkenneFrist("Sie können den Vertrag bis zum 30.09.2027 kündigen.", "2027-08-01") === undefined);
 soll("Betrag genannt", erkenneBetrag("Rechnungsbetrag: 1.240,00 €")?.wert === "1.240,00 €");
 soll("Tausenderpunkt bleibt im Betrag", erkenneBetrag("Summe 12.345,67 EUR")?.wert === "12.345,67 €");
 soll("betrifft aus Anrede", erkenneBetrifft("Sehr geehrte Frau Beispiel,")?.wert === "Frau Beispiel");
 soll("betrifft Familie aus Anschrift", erkenneBetrifft("Familie Beispiel\nMusterweg 1")?.wert === "Familie Beispiel");
 soll("Absender aus Absenderzeile", erkenneAbsender("Stadtwerke Beispielstadt GmbH\nStadtwerke Beispielstadt GmbH · Werkstraße 5 · 00001 Beispielstadt")?.wert === "Stadtwerke Beispielstadt GmbH");
+soll("Absender: Aktenzeichen in der zweiten Spalte fällt weg", erkenneAbsender("Wasserverband Musterau            Az. WV-27-0042\nUferweg 3, 00002 Musterau\n\nHerrn Max Beispiel")?.wert === "Wasserverband Musterau");
+soll("Absender: Abteilung und Werbespruch fallen weg", erkenneAbsender("Beispielbank eG – Ihre Bank vor Ort\nHerrn Max Beispiel\nMusterweg 1")?.wert === "Beispielbank eG" && erkenneAbsender("Muster Versicherung AG · Schadenservice\nFrau Erika Beispiel")?.wert === "Muster Versicherung AG");
+soll("Absender: Behörde behält die Stelle", erkenneAbsender("Stadt Beispielstadt – Ordnungsamt\nRathausplatz 1, 00001 Beispielstadt")?.wert === "Stadt Beispielstadt – Ordnungsamt");
+soll("Absender: erste Zeile vor der Abteilungszeile", erkenneAbsender("Musterwerke Energie GmbH\nKundenservice · Werkstraße 5 · 00001 Beispielstadt\n\nHerrn Max Beispiel")?.wert === "Musterwerke Energie GmbH");
+soll("Absender: Überschrift ist kein Absender", erkenneAbsender("KAUFVERTRAG über ein gebrauchtes Fahrrad\nVerkäufer:  Paul Probe, Testgasse 4, 00003 Probstadt\nKäufer:     Max Beispiel")?.wert === "Paul Probe");
+soll("Absender: Inh. und Anschrift fallen weg", erkenneAbsender("Radladen Speiche · Inh. P. Probe · Testgasse 4 · 00003 Probstadt\nRechnung Nr. 12")?.wert === "Radladen Speiche");
+soll("Absender: privater Brief, Unterschrift unter dem Gruß, unsicher", (() => { const t = "                         Musterau, 3. März 2027\n\nLiebe Erika,\n\nvielen Dank für die Karte.\n\nHerzliche Grüße\nTante Berta"; const a = erkenneAbsender(t) || absenderAusGruss(t); return a?.wert === "Tante Berta" && !a.sicher; })());
+soll("Absender: gespeicherte Mail, Fußzeile passt zur Adresse", (() => { const t = "Von: service@musterversand.example\nAn: max.beispiel@post.example\nBetreff: Ihre Bestellung\nDatum: 04.03.2027 09:00\n\nHallo Herr Beispiel,\nIhr Paket ist unterwegs.\n\nIhr Serviceteam\nMusterversand Handels GmbH · Lagerweg 2 · 00004 Lagerstadt"; return erkenneAbsender(t) === undefined && absenderAusGruss(t)?.wert === "Musterversand Handels GmbH"; })());
+soll("Absender: gespeicherte Mail, Anzeigename", absenderAusGruss("Von: Paul Probe <paul.probe@post.example>\nBetreff: Samstag\n\nHallo Max,\nklappt es?\nGruß\nPaul")?.wert === "Paul Probe");
+const hh = { name: "Familie Beispiel", personen: [{ vorname: "Max", name: "Beispiel", anrede: "Herr" }, { vorname: "Erika", name: "Beispiel", anrede: "Frau" }, { vorname: "Lina", name: "Beispiel", anrede: "Kind" }, { vorname: "Tom", name: "Beispiel", anrede: "Kind" }], fahrzeuge: ["Kombi BSP-MB 12"] };
+soll("Person: einziges genanntes Kind, auch wenn der Brief an die Mutter geht", personZuordnen("Frau\nErika Beispiel\nMusterweg 1\n\nSehr geehrte Frau Beispiel,\nIhre Tochter Lina hat den Schwimmkurs bestanden.", "Frau Beispiel", hh)?.wert === "Lina Beispiel");
+soll("Person: Rollenwort mit „Name, Vorname“", (() => { const p = personZuordnen("Pat.: Beispiel, Tom, geb. 01.02.2018\nBefund unauffällig.", undefined, hh); return p?.wert === "Tom Beispiel" && p.sicher; })());
+soll("Person: Eheleute gemeinsam → keine Person", personZuordnen("Herrn und Frau\nMax und Erika Beispiel\nMusterweg 1\n\nSehr geehrte Frau Beispiel, sehr geehrter Herr Beispiel,\nIhr Steuerbescheid.", "Frau Beispiel", hh) === undefined);
+soll("Person: „V. Name“ im Text", personZuordnen("Rechnung für Herrn M. Beispiel, Musterweg 1", undefined, hh)?.wert === "Max Beispiel");
+soll("Person: Haushalt mit einer Person, ohne Namen nie sicher", (() => { const p = personZuordnen("Kassenbon 12,40 EUR", undefined, { name: "Probe", personen: [{ vorname: "Paul", name: "Probe", anrede: "Herr" }] }); return p?.wert === "Paul Probe" && !p.sicher; })());
 soll("Kategorie über Absender", erkenneKategorie("Rechnung", "Stadtwerke Beispielstadt").wert === "Energie & Versorgung");
 soll("Briefdatum", erkenneDatum("Beispielstadt, 02.10.2026\nRechnung")?.wert === "2026-10-02");
 soll("Dringlichkeit", dringlichkeit("2026-11-10", "2026-11-12") === "Frist überschritten" && dringlichkeit("2026-11-15", "2026-11-12") === "diese Woche" && dringlichkeit(undefined, "2026-11-12") === "keine Frist");
@@ -186,6 +212,26 @@ if (existsSync(fa)) {
   const { FAMILY_CATEGORIES } = await import(fa);
   soll("Kategorien gleich der Familienakte", JSON.stringify([...FAMILY_CATEGORIES]) === JSON.stringify([...KATEGORIEN]));
 } else console.log("  (Familienakte nicht daneben – Kategorien-Vergleich übersprungen)");
+
+// Wortmodell (lib/wortmodell.ts): Zusammenspiel mit den Regeln – ausgedachte Beispiele
+{
+  const { mitModell, vorhersage, merkmale, wortmodellSchalter, bereichMitModell, MODELL_VOR_REGEL } = await import("../lib/wortmodell.ts");
+  const { WORTMODELL_BEREICH, WORTMODELL_ART } = await import("../lib/wortmodell-daten.ts");
+  const klein = { fassung: 2, konten: ["A", "B", "Archiv"], vorab: [0, 0, 0], gewichte: { apfel: [0, 6], birne: [0, 5], kirsche: [1, 9], pflaume: [1, 9], karton: [2, 9], ablage: [2, 9] }, belege: 9 };
+  const sichereRegel = { wert: "B", sicher: true, grund: "Regel", quelle: "regel" }, offeneRegel = { wert: "B", sicher: false, grund: "Regel", quelle: "regel" };
+  soll("Wortmodell: klares Modell überstimmt die sichere Regel", mitModell(sichereRegel, klein, "Apfel und Birne")?.wert === "A");
+  soll("Wortmodell: knappes Modell lässt die sichere Regel stehen", mitModell(sichereRegel, { ...klein, gewichte: { apfel: [0, 2], birne: [0, 2] } }, "Apfel und Birne")?.wert === "B");
+  soll("Wortmodell: unsichere Regel weicht dem Modell, bleibt aber unsicher bei kleinem Abstand", (() => { const w = mitModell(offeneRegel, { ...klein, gewichte: { apfel: [0, 2], birne: [0, 2] } }, "Apfel und Birne"); return w?.wert === "A" && w.sicher === false; })());
+  soll("Wortmodell: ein einzelnes Wort reicht nicht", mitModell(sichereRegel, klein, "nur ein Apfel hier")?.wert === "B" && mitModell(undefined, klein, "nur ein Apfel hier") === undefined);
+  soll("Wortmodell: schlägt nie „Archiv“ vor", mitModell(offeneRegel, klein, "Karton in der Ablage")?.wert === "B");
+  soll("Wortmodell: Grund nennt die gelernten Wörter", /apfel|birne/.test(mitModell(offeneRegel, klein, "Apfel und Birne")?.grund || ""));
+  soll("Wortmodell: abgeschaltet gilt die Regel", (() => { wortmodellSchalter.an = false; const w = mitModell(sichereRegel, klein, "Apfel und Birne"); wortmodellSchalter.an = true; return w === sichereRegel; })());
+  soll("Wortmodell: Schwelle wie abgestimmt", MODELL_VOR_REGEL === 8);
+  soll("Wortmodell-Daten: 18 Bereiche ohne Fotos/Unklar, 14 Arten", WORTMODELL_BEREICH.konten.length === 18 && WORTMODELL_ART.konten.length === 14 && !WORTMODELL_BEREICH.konten.includes("Unklar"));
+  const hund = "Tierarztpraxis am Mühlbach\nRechnung für die Impfung und Wurmkur Ihres Hundes Bello, Behandlung vom 3. Mai. Bitte überweisen Sie den Betrag.";
+  soll("Wortmodell: echter Bereich kommt aus der Liste", KATEGORIEN.includes(bereichMitModell(undefined, hund)?.wert ?? "Korrespondenz"));
+  soll("Wortmodell: Vorhersage nennt Abstand und Zweites", (() => { const v = vorhersage(WORTMODELL_ART, merkmale("Letzte Mahnung: Trotz unserer Zahlungserinnerung ist der offene Betrag nicht eingegangen. Mahngebühr und Verzugszinsen kommen hinzu.")); return v?.wert === "Mahnung" && v.abstand > 0 && !!v.zweites; })());
+}
 
 console.log(`Kern: ${gruen} grün · ${rot} ROT`);
 process.exit(rot ? 1 : 0);
