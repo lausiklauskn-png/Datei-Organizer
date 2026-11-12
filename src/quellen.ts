@@ -140,12 +140,19 @@ export function ausAuswahl(liste: FileList | File[], name: string): Quelle {
 }
 
 // ---------- 4 Testordner ----------
-export function testOrdner(basis = new URL("../testdaten/", document.baseURI).href): Quelle {
+export function testOrdner(vorgabe?: string): Quelle {
+  // Im Repo liegt der Testordner neben app/ (../testdaten/), in einer Vorschau neben der Seite (./testdaten/).
+  let basis = vorgabe || "";
   return {
     art: "test", name: "Testordner (erfunden)",
     async dateien() {
-      const r = await fetch(new URL("dateien.json", basis));
-      if (!r.ok) throw new Error("Testordner nicht gefunden.");
+      let r: Response | null = null;
+      for (const b of vorgabe ? [vorgabe] : ["../testdaten/", "./testdaten/"]) {
+        basis = new URL(b, document.baseURI).href;
+        r = await fetch(new URL("dateien.json", basis)).catch(() => null);
+        if (r?.ok && (r.headers.get("content-type") || "").includes("json")) break;
+      }
+      if (!r?.ok) throw new Error("Testordner nicht gefunden.");
       const liste: string[] = await r.json();
       return liste.map((pfad) => ({ pfad, name: pfad.split("/").pop()!, geaendert: datumAusName(pfad), lesen: async () => { const a = await fetch(new URL(pfad.split("/").map(encodeURIComponent).join("/"), basis)); if (!a.ok) throw new Error(`${pfad} fehlt`); return new Uint8Array(await a.arrayBuffer()); } }));
     },
