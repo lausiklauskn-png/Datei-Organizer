@@ -30,7 +30,7 @@ for (const proKlasse of [400]) for (const minGruppen of [2]) {
         const r = categorize(b.text, eigen ? { eigenerName: eigen } : {});
         const m = vorhersage(modell, merkmale(b.text, eigen));   // ohne hinterlegten Namen kennt auch das Modell ihn nicht
         const fall = { regeln: r.konto, modell: m.konto };
-        for (const t of [0, 1, 2, 3, 5]) fall["kombi" + t] = kombiniere(r, m, { schwelle: t, eigen: mitName && istEigenerBeleg(b.text, eigen), nameBekannt: mitName }).konto;
+        for (const t of [0, 0.5, 1, 1.5, 2]) fall["kombi2/" + t] = kombiniere(r, m, { schwelle: 2, schwelleOhneHinweis: t, eigen: mitName && istEigenerBeleg(b.text, eigen), nameBekannt: mitName }).konto;
         for (const [k, v] of Object.entries(fall)) { const key = (mitName ? "mit " : "ohne ") + k; z[key] = (z[key] || 0) + (v === soll.get(b.datei) ? 1 : 0); }
       }
     }

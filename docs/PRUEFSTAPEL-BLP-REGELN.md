@@ -96,3 +96,8 @@ Festgelegt und eingecheckt, bevor der Stapel geschrieben und bevor gemessen wird
     außer sie kennen nur das Sammelkonto. Abstimmwerte an den verbrauchten Stapeln 2 und 3 (239 Belege): Regeln 139 ohne / 166 mit
     Firmennamen, Modell allein 184, Zusammenspiel 187 ohne / 199 mit. Stapel 1: Regeln 94/111, Zusammenspiel 89/104 von 120 – dort
     schlechter als die Regeln, an denen sie ausgerichtet wurden. Diese Einstellungen werden nicht mehr geändert.
+29a. **Nachtrag vor dem vierten Stapel (12.11.):** Eine Probe in BookLedgerPro zeigte, dass das Modell bei „Regeln kennen nur das
+    Sammelkonto“ schon aus einem einzigen schwachen Wort einen Vorschlag machte („Zettel ohne Inhalt“ → Erlöse, wegen „ohne“).
+    Darum gilt in diesem Fall jetzt ein Mindestabstand von 1 (statt 0). Abstimmwerte Stapel 2+3 damit: 186 ohne / 198 mit
+    Firmennamen (vorher 187 / 199) – ein Beleg weniger richtig, dafür kein Vorschlag aus einem Zufallswort. Der vierte Stapel war
+    zu diesem Zeitpunkt noch nicht geschrieben.
