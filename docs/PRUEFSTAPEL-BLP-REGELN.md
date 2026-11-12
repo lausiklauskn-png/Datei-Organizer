@@ -55,3 +55,20 @@ Festgelegt und eingecheckt, bevor der Stapel geschrieben und bevor gemessen wird
     An BookLedgerPro wird zwischen beiden Auswertungen nichts geändert (Stand `a443d87`).
 17. Alternativ oder zusätzlich darf die andere KI einen **Bauplan für einen Einordner** liefern (Vorgehen, Reihenfolge der Prüfungen,
     Zweifelsregeln), den ein Claude-Agent ausführt. Das zählt als anderes Verfahren, nicht als anderes Modell, und wird so benannt.
+
+## Dritter Blindtest: Datum und Steuersatz (festgelegt 12.11.2026, vor Stapel und Training; Klaus: „dann Datum und Steuersatz trainieren“)
+
+18. **Gegenstand:** `src/ai/extract.js` (`extractFromText`: `datum`, `ustSatz`, dazu `betragBrutto`). Alt = BookLedgerPro main
+    `942e781` (nach #465, `extract.js` unverändert seit `a705ed5`), neu = Zweig mit dem trainierten Belegleser.
+19. **Training** nutzt nur die beiden verbrauchten Stapel (`pruefstapel-blp/`, `pruefstapel-blp-2/`).
+20. **Neuer Stapel `pruefstapel-blp-3/`:** 120 Belege eines dritten, anderen Betriebs, von einem Hilfs-Agenten ohne Einblick. Soll-Felder
+    wie bisher. Festlegungen für die Soll-Werte (dem Agenten vorgegeben, damit sie nicht nachträglich gedeutet werden):
+    `datum` = Belegdatum (Rechnungs-/Bon-/Abrechnungsdatum), nicht Liefer-, Leistungs- oder Fälligkeitsdatum;
+    `ust` = 19 oder 7 (bei gemischten Belegen der Satz mit dem größeren Betrag), 0 wenn der Beleg ausdrücklich steuerfrei/nicht
+    steuerbar ist oder keine Umsatzsteuer ausweist, null wo ein Steuersatz keinen Sinn hat (Lohnabrechnung, Privatentnahme/-einlage,
+    Eigenbeleg ohne Rechnung); `betrag` = zu zahlender Bruttobetrag des Belegs.
+21. **Drei Einordner:** der Stapel-Autor, ein zweiter Claude-Agent und die fremde KI (Codex) bestimmen Datum, Steuersatz und Betrag
+    unabhängig nach derselben Festlegung. Soll = Mehrheit; Belege ohne Mehrheit „strittig“, getrennt ausgewiesen. Fehlt die fremde KI,
+    wird das benannt und mit zwei Einordnern berichtet (dann zählt nur, wo beide gleich sind).
+22. **Je einmal messen** (alt, neu), Wilson-Spanne, McNemar je Feld. Der Betrag darf durch das Training nicht schlechter werden;
+    wird er es, steht das im Bericht. Der Stapel wird vor der Messung nicht gelesen.
