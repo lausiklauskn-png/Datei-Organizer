@@ -1,6 +1,6 @@
 // Blindtest BookLedgerPro (Regeln: docs/PRUEFSTAPEL-BLP-REGELN.md). Misst extractFromText und categorize an einem Stapel
 // mit ERWARTUNG.json; jede Zahl mit 95-%-Fehlerspanne (Wilson). Optional: zweiter Einordner (ZWEITER.json) → Übereinstimmung, Kappa.
-// Aufruf: node scripts/messen-blp.mjs <ordner> [--blp ../lausiklauskn-png/bookledgerpro] [--json datei]
+// Aufruf: node scripts/messen-blp.mjs <ordner> [--blp ../lausiklauskn-png/bookledgerpro] [--json datei] [--eigen "Betriebsname"]
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -9,6 +9,7 @@ const WURZEL = fileURLToPath(new URL("..", import.meta.url));
 const arg = (n, v) => { const i = process.argv.indexOf(n); return i > 0 ? process.argv[i + 1] : v; };
 const ORDNER = resolve(WURZEL, process.argv[2]);
 const BLP = resolve(WURZEL, arg("--blp", "../lausiklauskn-png/bookledgerpro"));
+const EIGEN = arg("--eigen", "");
 const { extractFromText } = await import(join(BLP, "src/ai/extract.js"));
 const { categorize } = await import(join(BLP, "src/ai/categorize.js"));
 const K = await import("../lib/erkennen.ts");
@@ -43,7 +44,7 @@ const vgl = Object.fromEntries(VF.map(([f]) => [f, { n: 0, blp: 0, kern: 0, nurB
 const norm = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9äöüß]/g, "");
 for (const e of soll) {
   const text = texte.get(e.datei);
-  const x = extractFromText(text), k = categorize(text);
+  const x = extractFromText(text), k = categorize(text, EIGEN ? { eigenerName: EIGEN } : {});
   const ist = { betrag: x.betragBrutto, datum: x.datum, ust: x.ustSatz, richtung: k.richtung, konto: k.konto };
   for (const f of F) {
     if (e[f] == null) continue; // nicht gemessen
@@ -82,5 +83,5 @@ console.log("\nBookLedgerPro ⟷ Datei-Organizer-Kern am selben Stapel:");
 for (const [f, n] of VF) { const v = vgl[f]; if (!v.n) { console.log(`${n.padEnd(11)} nicht gemessen`); continue; }
   const p = mcnemar(v.nurBlp, v.nurKern);
   console.log(`${n.padEnd(11)} BLP ${pz({ ok: v.blp, n: v.n })} · Kern ${pz({ ok: v.kern, n: v.n })} · nur BLP richtig ${v.nurBlp}, nur Kern ${v.nurKern}, McNemar p=${p.toFixed(3)}${p < 0.05 ? (v.kern > v.blp ? " → Kern gesichert besser" : " → BLP gesichert besser") : " → kein gesicherter Unterschied"}`); }
-const ergebnis = { vergleich: vgl, ordner: ORDNER.replace(WURZEL, ""), belege: soll.length, felder: z, wilson: Object.fromEntries(F.map((f) => [f, wilson(z[f].ok, z[f].n)])), uebereinstimmung, kontoEinig: zEinig, verwechslung, fehler };
+const ergebnis = { eigenerName: EIGEN || null, blp: BLP.replace(WURZEL, ""), vergleich: vgl, ordner: ORDNER.replace(WURZEL, ""), belege: soll.length, felder: z, wilson: Object.fromEntries(F.map((f) => [f, wilson(z[f].ok, z[f].n)])), uebereinstimmung, kontoEinig: zEinig, verwechslung, fehler };
 if (arg("--json")) writeFileSync(resolve(WURZEL, arg("--json")), JSON.stringify(ergebnis, null, 1));

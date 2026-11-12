@@ -38,3 +38,8 @@ Festgelegt und eingecheckt, bevor der Stapel geschrieben und bevor gemessen wird
     Felder Konto und Richtung, je mit Wilson-Spanne; Unterschied mit McNemar (5 %). Die übrigen Felder werden mit berichtet.
 12. Das Training nutzt nur den ersten Stapel (`pruefstapel-blp/`, verbraucht). Der zweite Stapel wird vor der Messung nicht gelesen;
     nach der Messung wird an ihm nichts mehr nachgebessert, bevor die Zahl berichtet ist.
+13. **Eigener Firmenname (festgelegt vor der Messung des zweiten Stapels, ohne ihn gelesen zu haben):** Die neue Fassung kann den
+    Namen aus dem Firmenprofil nutzen (steht er im Briefkopf, ist es eine Ausgangsrechnung). Sie wird deshalb zweimal gemessen:
+    **ohne** Namen (wie ein leeres Firmenprofil) und **mit** dem Betriebsnamen des Stapels (Aufruf `--eigen "<Name>"`; der Name
+    kommt aus der Rückmeldung des Hilfs-Agenten bzw. dem Feld `betrieb` der ERWARTUNG.json, nicht aus den Belegen). Beide Zahlen
+    werden berichtet; der Vergleich alt ⟷ neu (McNemar) gilt für beide Spalten getrennt. Die alte Fassung kennt den Namen nicht.
