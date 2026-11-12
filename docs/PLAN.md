@@ -230,7 +230,7 @@ das Verschieben in echte Ordner mit Verlauf, die Sichten.
   so gleich mit in den Steckbrief – beim Weg über „Speichern unter“ gehen sie verloren.
 - **Lücke:** Outlook (klassisch) zieht `.msg`-Dateien. Die werden erkannt („Outlook-E-Mail (.msg)“), aber ihre Anhänge werden
   nicht ausgepackt. Für der Organizer nachrüsten (OLE-Format, nur lesen).
-- Android: „Teilen“ aus der Mail-App an Sieb bzw. Familienakte (gibt es für die Akte schon).
+- Android: „Teilen“ aus der Mail-App an den Datei-Organizer bzw. die Familienakte (gibt es für die Akte schon).
 - Automatisches Ablegen aller Anhänge (Thunderbird-Erweiterungen wie Attachment Extractor) ist laut Nutzerberichten bei neuen
   Thunderbird-Fassungen unzuverlässig – nicht darauf bauen.
 
@@ -280,7 +280,7 @@ das Verschieben in echte Ordner mit Verlauf, die Sichten.
 - **Texterkennung:** Tesseract ist schwächer als kaufbare Texterkennung oder Bild-Sprachmodelle, besonders bei Fotos und Handschrift.
 - **Kleine Modelle** erkennen ungewöhnliche Schreiben schlechter als ein großes Sprachmodell – dafür schnell, ohne Netz, ohne Server.
 - **Neu und ungeprüft:** Paperless-ngx hat Jahre an Nutzung und eine große Gemeinschaft; wir fangen an.
-- **Zwei Programme** (Sieb und Familienakte): nur tragbar mit einem gemeinsamen Kern, sonst sortieren beide bald verschieden.
+- **Zwei Programme** (Datei-Organizer und Familienakte): nur tragbar mit einem gemeinsamen Kern, sonst sortieren beide bald verschieden.
 - **Browser-Grenzen:** Ordnerzugriff im Browser nur in Chrome/Edge am PC; am Handy nur über die App.
 - **Index und Dateien können auseinanderlaufen**, wenn jemand außerhalb umbenennt oder verschiebt – deshalb Zuordnung am
   Fingerabdruck (SHA-256), nicht am Dateinamen.
