@@ -45,4 +45,8 @@ Folgen für den Bau:
 **Wortlaut (Klaus 13.11.):** Der Knopf nach einer Handzuordnung heißt sinngemäß „Als festes Muster merken“ bzw. „Ergebnis als
 Muster merken“; der genaue Wortlaut steht in der Vorschau zur Wahl.
 
+**Idee (Klaus 13.11.), noch nicht entschieden:** in den Einstellungen eine Seite „Ablage- und Suchregeln“, auf der genau die
+Fälle stehen, die mehrdeutig sind (die sieben Punkte oben und was der Nutzer selbst als Muster gemerkt hat) – je Fall wählbar,
+wo es liegt und wo es zusätzlich gefunden wird. Nur die strittigen Fälle, keine Liste aller Regeln.
+
 Sichtbare Bedienung dafür erst als Vorschau, Klaus sagt Ja je Punkt.
