@@ -43,3 +43,15 @@ Festgelegt und eingecheckt, bevor der Stapel geschrieben und bevor gemessen wird
     **ohne** Namen (wie ein leeres Firmenprofil) und **mit** dem Betriebsnamen des Stapels (Aufruf `--eigen "<Name>"`; der Name
     kommt aus der Rückmeldung des Hilfs-Agenten bzw. dem Feld `betrieb` der ERWARTUNG.json, nicht aus den Belegen). Beide Zahlen
     werden berichtet; der Vergleich alt ⟷ neu (McNemar) gilt für beide Spalten getrennt. Die alte Fassung kennt den Namen nicht.
+
+## Dritter, fremder Einordner (festgelegt 12.11.2026, bevor es ihn gibt; Klaus: „Agent aus einer anderen KI“)
+
+14. Eine **andere KI** (nicht Claude; von Klaus beauftragt) ordnet die 120 Belege des zweiten Stapels unabhängig ein. Sie bekommt nur
+    `pruefstapel-blp-2-ohne-loesung.txt` (alle Belege, ohne Soll-Werte) und `pruefstapel-blp-2-kontenliste.json`, keine Regeln von
+    BookLedgerPro, keine Messergebnisse, keine ERWARTUNG.json. Ihr Ergebnis kommt als `pruefstapel-blp-2/DRITTER.json`.
+15. Dazu ein zweiter Claude-Agent ohne Einblick (`ZWEITER.json`). Berichtet werden: Übereinstimmung je Paar, Fleiss' Kappa über
+    alle drei, Mehrheits-Soll (mindestens zwei gleich), Belege ohne Mehrheit als „strittig“ getrennt.
+16. Die schon berichteten Zahlen (Soll = erster Agent) bleiben stehen; die Zahlen mit Mehrheits-Soll kommen daneben, für alt und neu.
+    An BookLedgerPro wird zwischen beiden Auswertungen nichts geändert (Stand `a443d87`).
+17. Alternativ oder zusätzlich darf die andere KI einen **Bauplan für einen Einordner** liefern (Vorgehen, Reihenfolge der Prüfungen,
+    Zweifelsregeln), den ein Claude-Agent ausführt. Das zählt als anderes Verfahren, nicht als anderes Modell, und wird so benannt.
