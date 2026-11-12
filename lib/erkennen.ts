@@ -9,7 +9,7 @@ const w = (wert: string, sicher: boolean, grund: string): Wert => ({ wert, siche
 const klein = (s: string) => s.toLowerCase();
 
 // ---------- Sieb 2: Art des Schriftstücks ----------
-export const SCHRIFTSTUECKE = ["Mahnung", "Rechnung", "Bescheid", "Kündigung", "Vertrag", "Kontoauszug", "Abrechnung", "Befund", "Termin", "Aufforderung", "Angebot/Werbung", "Kassenbon", "Brief", "Foto", "Unklar"] as const;
+export const SCHRIFTSTUECKE = ["Mahnung", "Rechnung", "Bescheid", "Kündigung", "Vertrag", "Kontoauszug", "Abrechnung", "Befund", "Termin", "Aufforderung", "Angebot/Werbung", "Kassenbon", "Bescheinigung", "Brief", "Foto", "Unklar"] as const;
 
 const ART_REGELN: Array<{ art: string; muster: RegExp; wort: string }> = [
   { art: "Mahnung", muster: /\b(\d\.\s*)?mahnung\b|zahlungserinnerung|letzte zahlungsaufforderung/, wort: "Mahnung" },
@@ -22,6 +22,7 @@ const ART_REGELN: Array<{ art: string; muster: RegExp; wort: string }> = [
   { art: "Termin", muster: /terminbestätigung|\beinladung\b|ihr termin|terminvereinbarung|\btermin am\b/, wort: "Termin/Einladung" },
   { art: "Aufforderung", muster: /bitte teilen sie uns|aufforderung|wir bitten sie,? (uns|bis)|bitte reichen sie|bitte senden sie/, wort: "Aufforderung" },
   { art: "Vertrag", muster: /\b\w*vertrag\b|vertragsbestätigung|vertragsunterlagen|versicherungsschein/, wort: "Vertrag" },
+  { art: "Bescheinigung", muster: /\bbescheinigung\b|zuwendungsbestätigung|eheurkunde|geburtsurkunde|\burkunde\b|arbeitsunfähigkeitsbescheinigung/, wort: "Bescheinigung" },
   { art: "Kassenbon", muster: /kassenbon|\bbon-nr|summe eur|bar gegeben|kartenzahlung/, wort: "Kassenbon" },
   { art: "Angebot/Werbung", muster: /angebot der woche|nur für kurze zeit|jetzt bestellen|newsletter|rabatt|gutschein/, wort: "Werbung" },
 ];
@@ -106,16 +107,23 @@ export function kennzeichenImText(t: string): string[] {
 // ---------- Sieb 3: Kategorie ----------
 const NACH_ART: Record<string, string> = { Kontoauszug: "Finanzen & Konten", Befund: "Gesundheit & Pflege", Kassenbon: "Einkäufe, Rechnungen & Garantien" };
 
+const WORT_ZEICHEN = /[a-zäöüß0-9]/;
+function wortAnfang(text: string, wort: string): boolean {
+  for (let i = text.indexOf(wort); i >= 0; i = text.indexOf(wort, i + 1)) if (i === 0 || !WORT_ZEICHEN.test(text[i - 1])) return true;
+  return false;
+}
+
 export function erkenneKategorie(text: string, absender = "", art = ""): Wert {
   const t = ` ${klein(text)} `, a = ` ${klein(absender)} `;
   const punkte: Array<{ k: string; p: number; worte: string[] }> = [];
   for (const [k, worte] of Object.entries(KATEGORIE_WOERTER)) {
     let p = 0; const treffer: string[] = [];
     for (const wort of worte) {
-      if (a.includes(wort)) { p += 3; treffer.push(wort); }
-      else if (t.includes(wort)) { p += 1; treffer.push(wort); }
+      // Wortanfang zählt (versicherung… trifft „Versicherungsnummer“), Wortmitte nicht („gas“ nicht in „Gast“, „abo“ nicht in „Labor“).
+      if (wortAnfang(a, wort)) { p += 3; treffer.push(wort); }
+      else if (wortAnfang(t, wort)) { p += 1; treffer.push(wort); }
     }
-    if (NACH_ART[art] === k) { p += 3; treffer.push(art); }
+    if (NACH_ART[art] === k) { p += 2; treffer.push(art); }
     if (p) punkte.push({ k, p, worte: treffer });
   }
   punkte.sort((x, y) => y.p - x.p);
@@ -126,18 +134,18 @@ export function erkenneKategorie(text: string, absender = "", art = ""): Wert {
 }
 
 // ---------- Sieb 4: Absender ----------
-const FIRMA = /\b(gmbh|ag|kg|e\.\s?v\.|ohg|mbh|ug|se|stadtwerke|amt|finanzamt|bürgeramt|versicherung|bank|sparkasse|kasse|praxis|klinik|labor|schule|kita|autohaus|verwaltung|gemeinde|stadt|landkreis|rentenversicherung|krankenkasse|verlag|markt|dr\.|zahnarzt)\b/i;
+const FIRMA = /\b(gmbh|ag|kg|ggmbh|e\.\s?v\.|eg|ohg|mbh|ug|se|mvz|stadtwerke|dr\.|zahnarzt|kita|hort|markt|stadt|gemeinde|landkreis|landesbetrieb|jobcenter|agentur|universität|hochschule|notariat|studierendenwerk|gewerkschaft|apotheke|optik|inkasso|auskunftei|tankstelle|bäckerei|drogerie|baumarkt|discount|frischmarkt)\b|(amt|kasse|schule|gymnasium|gericht|werke|versicherung|gesellschaft|zentrum|stelle|behörde|kammer|genossenschaft|service|praxis|klinik|klinikum|labor|verein|verband|büro|institut|kanzlei|beratung|verwaltung|bank|sparkasse|verlag|haus|therapie|rentenversicherung)\b/i;
 
 export function erkenneAbsender(kopf: string): Wert | undefined {
   const zeilen = kopf.split(/\r?\n/).map((z) => z.trim()).filter(Boolean).slice(0, 18);
   // Absenderzeile über dem Anschriftfeld: „Firma · Straße · PLZ Ort“
   for (const z of zeilen) {
-    const m = z.match(/^(.+?)\s*[·|•–-]\s*.+\d{5}\s/);
+    const m = z.match(/^(.+?)\s+[·|•–]\s+.+\d{5}\s/) || z.match(/^(.+?)\s+-\s+.+\d{5}\s/);
     if (m && FIRMA.test(m[1])) return w(m[1].trim(), true, "Absenderzeile über der Anschrift");
   }
   for (const z of zeilen.slice(0, 6)) if (FIRMA.test(z) && z.length <= 70 && !/^(herrn|frau|familie)\b/i.test(z)) return w(z.replace(/[,;]$/, ""), true, "Briefkopf oben");
   const erste = zeilen[0];
-  if (erste && erste.length <= 60 && !/sehr geehrte|^(herrn|frau|familie)\b|\d{2}\.\d{2}\./i.test(erste)) return w(erste, false, "erste Zeile, ohne Firmenmerkmal");
+  if (erste && erste.length <= 60 && !/sehr geehrte|^(herrn|frau|familie|an die)\b|\d{2}\.\d{2}\.|\d,\d{2}/i.test(erste)) return w(erste, false, "erste Zeile, ohne Firmenmerkmal");
   return undefined;
 }
 
@@ -180,7 +188,8 @@ export function erkenneFrist(text: string, dokumentDatum?: string): Wert | undef
 
 export function erkenneBetrag(text: string): Wert | undefined {
   const t = text.replace(/\s+/g, " ");
-  const genannt = t.match(/(?:gesamtbetrag|rechnungsbetrag|zu zahlen|betrag|summe|offener betrag)[^0-9]{0,30}(\d{1,3}(?:\.\d{3})*,\d{2})\s?(?:€|eur)/i);
+  const genannt = t.match(/(?:gesamtbetrag|rechnungsbetrag|zu zahlen|betrag|summe|offener betrag)[^0-9]{0,30}(\d{1,3}(?:\.\d{3})*,\d{2})\s?(?:€|eur)/i)
+    || t.match(/(?:summe|gesamt|total|zu zahlen)\s*(?:eur|€)?\s*:?\s*(\d{1,3}(?:\.\d{3})*,\d{2})(?!\d)/i);
   if (genannt) return w(`${genannt[1]} €`, true, `„${genannt[0].trim()}“`);
   const alle = [...t.matchAll(/(\d{1,3}(?:\.\d{3})*,\d{2})\s?(?:€|eur)\b/gi)].map((m) => m[1]);
   if (!alle.length) return undefined;

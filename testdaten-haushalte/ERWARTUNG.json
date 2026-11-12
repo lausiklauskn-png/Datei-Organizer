@@ -183,7 +183,7 @@
    "pfad": "Eingang/familie-petersen/Durcheinander/Beitrag_20.pdf",
    "haushalt": "familie-petersen",
    "schriftstueck": "Rechnung",
-   "kategorie": "Verträge & Abonnements",
+   "kategorie": "Steuern & Behörden",
    "absender": "Rundfunkbeitrag Beispiel-Service",
    "betrifft": "Herr Petersen",
    "person": "Jan Petersen",
@@ -306,15 +306,198 @@
   {
    "pfad": "Eingang/familie-petersen/Scanner/scan_0033.pdf",
    "haushalt": "familie-petersen",
+   "schriftstueck": "Brief",
+   "kategorie": "Finanzen & Konten",
+   "absender": "Auskunftei Nord Beispiel GmbH",
+   "betrifft": "Herr Petersen",
+   "person": "Jan Petersen"
+  },
+  {
+   "pfad": "Eingang/familie-petersen/Scanner/scan_0034.pdf",
+   "haushalt": "familie-petersen",
+   "schriftstueck": "Bescheinigung",
+   "kategorie": "Familie & persönliche Dokumente",
+   "absender": "Standesamt Beispielstadt-Nord",
+   "betrifft": "Frau Petersen",
+   "person": "Maren Petersen"
+  },
+  {
+   "pfad": "Eingang/familie-petersen/Scanner/scan_0035.pdf",
+   "haushalt": "familie-petersen",
+   "schriftstueck": "Bescheinigung",
+   "kategorie": "Steuern & Behörden",
+   "absender": "Seenotretter Beispiel e. V.",
+   "betrifft": "Herr Petersen",
+   "person": "Jan Petersen"
+  },
+  {
+   "pfad": "Eingang/familie-petersen/Scanner/scan_0036.pdf",
+   "haushalt": "familie-petersen",
+   "schriftstueck": "Bescheid",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Rentenversicherung Beispiel-Nord",
+   "betrifft": "Herr Petersen",
+   "person": "Jan Petersen"
+  },
+  {
+   "pfad": "Eingang/familie-petersen/Downloads/IMG_2026037.pdf",
+   "haushalt": "familie-petersen",
+   "schriftstueck": "Bescheid",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Versorgungsamt Beispielstadt",
+   "betrifft": "Frau Petersen",
+   "person": "Maren Petersen"
+  },
+  {
+   "pfad": "Eingang/familie-petersen/Scanner/scan_0038.pdf",
+   "haushalt": "familie-petersen",
+   "schriftstueck": "Bescheid",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Nord-Krankenkasse Beispiel",
+   "betrifft": "Frau Petersen",
+   "person": "Maren Petersen"
+  },
+  {
+   "pfad": "Eingang/familie-petersen/Downloads/IMG_2026039.pdf",
+   "haushalt": "familie-petersen",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Optik Klarblick Beispiel",
+   "betrifft": "Frau Petersen",
+   "person": "Maren Petersen",
+   "frist": "2025-12-13"
+  },
+  {
+   "pfad": "Eingang/familie-petersen/Durcheinander/Eheurkunde_40.pdf",
+   "haushalt": "familie-petersen",
+   "schriftstueck": "Bescheinigung",
+   "kategorie": "Familie & persönliche Dokumente",
+   "absender": "Standesamt Beispielstadt-Nord",
+   "betrifft": "Herr Petersen",
+   "person": "Jan Petersen"
+  },
+  {
+   "pfad": "Eingang/familie-petersen/Scanner/Teilzeit_41.pdf",
+   "haushalt": "familie-petersen",
+   "schriftstueck": "Brief",
+   "kategorie": "Rente, Arbeit & Sozialversicherung",
+   "absender": "Pflegedienst Sonnenseite Beispiel gGmbH",
+   "betrifft": "Frau Petersen",
+   "person": "Maren Petersen"
+  },
+  {
+   "pfad": "Eingang/familie-petersen/Handy/DCIM/Camera/IMG_20261042_104263.jpg",
+   "haushalt": "familie-petersen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Frischmarkt Beispiel",
+   "betrag": "25,25",
+   "datum": "2025-10-20",
+   "buchung": "Lebensmittel",
+   "fotografiert": "Jan Petersen"
+  },
+  {
+   "pfad": "Eingang/familie-petersen/Handy/DCIM/Camera/IMG_20261043_181353.jpg",
+   "haushalt": "familie-petersen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Discount Nord Beispiel",
+   "betrag": "4,57",
+   "datum": "2026-10-02",
+   "buchung": "Lebensmittel",
+   "fotografiert": "Jan Petersen"
+  },
+  {
+   "pfad": "Eingang/familie-petersen/Handy/DCIM/Camera/IMG_20261044_185831.jpg",
+   "haushalt": "familie-petersen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Bäckerei Krümel Beispiel",
+   "betrag": "7,00",
+   "datum": "2026-08-26",
+   "buchung": "Lebensmittel",
+   "fotografiert": "Maren Petersen"
+  },
+  {
+   "pfad": "Eingang/familie-petersen/Handy/DCIM/Camera/IMG_20261045_217078.jpg",
+   "haushalt": "familie-petersen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Frischmarkt Beispiel",
+   "betrag": "14,25",
+   "datum": "2026-01-21",
+   "buchung": "Lebensmittel",
+   "fotografiert": "Jan Petersen"
+  },
+  {
+   "pfad": "Eingang/familie-petersen/Handy/DCIM/Camera/IMG_20261046_156089.jpg",
+   "haushalt": "familie-petersen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Auto & Mobilität",
+   "absender": "Tankstelle Nordstern Beispiel",
+   "betrag": "43,35",
+   "datum": "2025-04-24",
+   "buchung": "Tanken",
+   "fotografiert": "Jan Petersen"
+  },
+  {
+   "pfad": "Eingang/familie-petersen/Scanner/scan_0047.jpg",
+   "haushalt": "familie-petersen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Auto & Mobilität",
+   "absender": "Tankstelle Nordstern Beispiel",
+   "betrag": "74,37",
+   "datum": "2025-12-06",
+   "buchung": "Tanken",
+   "fotografiert": "Maren Petersen"
+  },
+  {
+   "pfad": "Eingang/familie-petersen/Handy/WhatsApp/Media/IMG-2026148-WA0045.jpg",
+   "haushalt": "familie-petersen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Auto & Mobilität",
+   "absender": "Tankstelle Nordstern Beispiel",
+   "betrag": "74,65",
+   "datum": "2026-08-24",
+   "buchung": "Tanken",
+   "fotografiert": "Maren Petersen"
+  },
+  {
+   "pfad": "Eingang/familie-petersen/Handy/DCIM/Camera/IMG_20261049_206151.jpg",
+   "haushalt": "familie-petersen",
+   "schriftstueck": "Angebot/Werbung",
+   "kategorie": "Auto & Mobilität",
+   "absender": "Autohaus Nordlicht Beispiel",
+   "betrag": "28990",
+   "rate": "292",
+   "fotografiert": "Maren Petersen",
+   "notiz": "Foto zum Vergleich mit dem Haushaltsbuch"
+  },
+  {
+   "pfad": "Eingang/familie-petersen/Handy/DCIM/Camera/IMG_20261050_149521.jpg",
+   "haushalt": "familie-petersen",
+   "schriftstueck": "Termin",
+   "kategorie": "Reisen & Freizeit",
+   "frist": "2025-03-02"
+  },
+  {
+   "pfad": "Eingang/familie-petersen/Scanner/scan_0051.jpg",
+   "haushalt": "familie-petersen",
+   "schriftstueck": "Foto",
+   "kategorie": "Fotos"
+  },
+  {
+   "pfad": "Eingang/familie-petersen/Durcheinander/Schule_52.pdf",
+   "haushalt": "familie-petersen",
    "schriftstueck": "Termin",
    "kategorie": "Familie & persönliche Dokumente",
    "absender": "Gymnasium Beispielstadt-Nord",
    "betrifft": "Finn Petersen",
    "person": "Finn Petersen",
-   "frist": "2026-07-07"
+   "frist": "2025-09-07"
   },
   {
-   "pfad": "Eingang/familie-petersen/Downloads/scan_0034.pdf",
+   "pfad": "Eingang/familie-petersen/Scanner/Schule_53.pdf",
    "haushalt": "familie-petersen",
    "schriftstueck": "Brief",
    "kategorie": "Familie & persönliche Dokumente",
@@ -323,7 +506,7 @@
    "person": "Finn Petersen"
   },
   {
-   "pfad": "Eingang/familie-petersen/Handy/scan_0035.pdf",
+   "pfad": "Eingang/familie-petersen/Handy/Befund_54.pdf",
    "haushalt": "familie-petersen",
    "schriftstueck": "Befund",
    "kategorie": "Gesundheit & Pflege",
@@ -332,37 +515,37 @@
    "person": "Finn Petersen"
   },
   {
-   "pfad": "Eingang/familie-petersen/Scanner/scan_0036.pdf",
+   "pfad": "Eingang/familie-petersen/Scanner/Dokument (55).pdf",
    "haushalt": "familie-petersen",
    "schriftstueck": "Rechnung",
    "kategorie": "Gesundheit & Pflege",
    "absender": "Kieferorthopädie Dr. Jana Beispiel",
    "betrifft": "Finn Petersen",
    "person": "Finn Petersen",
-   "frist": "2025-07-11"
+   "frist": "2025-01-16"
   },
   {
-   "pfad": "Eingang/familie-petersen/Scanner/scan_0037.pdf",
+   "pfad": "Eingang/familie-petersen/Handy/Verein_56.pdf",
    "haushalt": "familie-petersen",
    "schriftstueck": "Rechnung",
    "kategorie": "Reisen & Freizeit",
    "absender": "Turnverein Beispielstadt von 1890 e. V.",
    "betrifft": "Finn Petersen",
    "person": "Finn Petersen",
-   "frist": "2026-05-04"
+   "frist": "2025-12-09"
   },
   {
-   "pfad": "Eingang/familie-petersen/Scanner/scan_0038.pdf",
+   "pfad": "Eingang/familie-petersen/Durcheinander/scan_0057.pdf",
    "haushalt": "familie-petersen",
    "schriftstueck": "Termin",
    "kategorie": "Familie & persönliche Dokumente",
    "absender": "Grundschule am Beispielfleet",
    "betrifft": "Ida Petersen",
    "person": "Ida Petersen",
-   "frist": "2025-03-16"
+   "frist": "2026-01-29"
   },
   {
-   "pfad": "Eingang/familie-petersen/alt/Schule_39.pdf",
+   "pfad": "Eingang/familie-petersen/Handy/Schule_58.pdf",
    "haushalt": "familie-petersen",
    "schriftstueck": "Brief",
    "kategorie": "Familie & persönliche Dokumente",
@@ -371,7 +554,7 @@
    "person": "Ida Petersen"
   },
   {
-   "pfad": "Eingang/familie-petersen/Durcheinander/Befund_40.pdf",
+   "pfad": "Eingang/familie-petersen/Handy/scan_0059.pdf",
    "haushalt": "familie-petersen",
    "schriftstueck": "Befund",
    "kategorie": "Gesundheit & Pflege",
@@ -380,37 +563,37 @@
    "person": "Ida Petersen"
   },
   {
-   "pfad": "Eingang/familie-petersen/Scanner/Verein_41.pdf",
+   "pfad": "Eingang/familie-petersen/Durcheinander/scan_0060.pdf",
    "haushalt": "familie-petersen",
    "schriftstueck": "Rechnung",
    "kategorie": "Reisen & Freizeit",
    "absender": "Turnverein Beispielstadt von 1890 e. V.",
    "betrifft": "Ida Petersen",
    "person": "Ida Petersen",
-   "frist": "2026-02-23"
+   "frist": "2025-03-27"
   },
   {
-   "pfad": "Eingang/familie-petersen/Durcheinander/scan_0042.pdf",
+   "pfad": "Eingang/familie-petersen/Downloads/scan_0061.pdf",
    "haushalt": "familie-petersen",
    "schriftstueck": "Termin",
    "kategorie": "Familie & persönliche Dokumente",
    "absender": "Kita Möwennest Beispielstadt",
    "betrifft": "Lotta Petersen",
    "person": "Lotta Petersen",
-   "frist": "2025-10-31"
+   "frist": "2026-05-27"
   },
   {
-   "pfad": "Eingang/familie-petersen/Scanner/Kita_43.pdf",
+   "pfad": "Eingang/familie-petersen/Scanner/Kita_62.pdf",
    "haushalt": "familie-petersen",
    "schriftstueck": "Rechnung",
    "kategorie": "Familie & persönliche Dokumente",
    "absender": "Kita Möwennest Beispielstadt",
    "betrifft": "Lotta Petersen",
    "person": "Lotta Petersen",
-   "frist": "2025-07-10"
+   "frist": "2026-03-25"
   },
   {
-   "pfad": "Eingang/familie-petersen/Scanner/scan_0044.pdf",
+   "pfad": "Eingang/familie-petersen/Scanner/Befund_63.pdf",
    "haushalt": "familie-petersen",
    "schriftstueck": "Befund",
    "kategorie": "Gesundheit & Pflege",
@@ -419,7 +602,17 @@
    "person": "Lotta Petersen"
   },
   {
-   "pfad": "Eingang/familie-petersen/Handy/scan_0045.pdf",
+   "pfad": "Eingang/familie-petersen/Handy/Verein_64.pdf",
+   "haushalt": "familie-petersen",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Reisen & Freizeit",
+   "absender": "Turnverein Beispielstadt von 1890 e. V.",
+   "betrifft": "Lotta Petersen",
+   "person": "Lotta Petersen",
+   "frist": "2025-04-25"
+  },
+  {
+   "pfad": "Eingang/familie-petersen/Downloads/scan_0065.pdf",
    "haushalt": "familie-petersen",
    "schriftstueck": "Bescheid",
    "kategorie": "Familie & persönliche Dokumente",
@@ -428,46 +621,57 @@
    "person": "Maren Petersen"
   },
   {
-   "pfad": "Eingang/familie-petersen/alt/Kuendigung_46.pdf",
+   "pfad": "Eingang/familie-petersen/Durcheinander/scan_0066.pdf",
    "haushalt": "familie-petersen",
-   "schriftstueck": "Kündigung",
-   "kategorie": "Verträge & Abonnements",
-   "absender": "Hafen-Fitness Beispiel GmbH",
-   "betrifft": "Herr Petersen",
-   "person": "Jan Petersen"
-  },
-  {
-   "pfad": "Eingang/alleinerziehend-brodersen/alt/Rechnung_Strom_47.pdf",
-   "haushalt": "alleinerziehend-brodersen",
    "schriftstueck": "Rechnung",
-   "kategorie": "Energie & Versorgung",
-   "absender": "Nordstrom Beispiel GmbH",
-   "betrifft": "Familie Brodersen",
-   "person": "Familie Brodersen",
-   "frist": "2025-11-09"
+   "kategorie": "Technik, Geräte & Reparaturen",
+   "absender": "Reparaturservice Beispiel GmbH",
+   "betrifft": "Frau Petersen",
+   "person": "Maren Petersen",
+   "frist": "2026-08-16"
   },
   {
-   "pfad": "Eingang/alleinerziehend-brodersen/Durcheinander/Rechnung_Strom_48.pdf",
+   "pfad": "Eingang/familie-petersen/Durcheinander/scan_0067.pdf",
+   "haushalt": "familie-petersen",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Reisen & Freizeit",
+   "absender": "Reisebüro Kompass Beispiel GmbH",
+   "betrifft": "Herr Petersen",
+   "person": "Jan Petersen",
+   "frist": "2026-05-13"
+  },
+  {
+   "pfad": "Eingang/alleinerziehend-brodersen/Scanner/scan_0068.pdf",
    "haushalt": "alleinerziehend-brodersen",
    "schriftstueck": "Rechnung",
    "kategorie": "Energie & Versorgung",
    "absender": "Nordstrom Beispiel GmbH",
    "betrifft": "Frau Brodersen",
    "person": "Sabine Brodersen",
-   "frist": "2026-05-06"
+   "frist": "2026-01-06"
   },
   {
-   "pfad": "Eingang/alleinerziehend-brodersen/alt/Rechnung_Strom_49.pdf",
+   "pfad": "Eingang/alleinerziehend-brodersen/Durcheinander/Rechnung_Strom_69.pdf",
    "haushalt": "alleinerziehend-brodersen",
    "schriftstueck": "Rechnung",
    "kategorie": "Energie & Versorgung",
    "absender": "Nordstrom Beispiel GmbH",
    "betrifft": "Familie Brodersen",
    "person": "Familie Brodersen",
-   "frist": "2026-06-19"
+   "frist": "2026-02-21"
   },
   {
-   "pfad": "Eingang/alleinerziehend-brodersen/alt/Jahresabrechnung_50.pdf",
+   "pfad": "Eingang/alleinerziehend-brodersen/Scanner/Wichtig_70.pdf",
+   "haushalt": "alleinerziehend-brodersen",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Energie & Versorgung",
+   "absender": "Nordstrom Beispiel GmbH",
+   "betrifft": "Familie Brodersen",
+   "person": "Familie Brodersen",
+   "frist": "2026-09-21"
+  },
+  {
+   "pfad": "Eingang/alleinerziehend-brodersen/Handy/Jahresabrechnung_71.pdf",
    "haushalt": "alleinerziehend-brodersen",
    "schriftstueck": "Abrechnung",
    "kategorie": "Energie & Versorgung",
@@ -476,16 +680,7 @@
    "person": "Sabine Brodersen"
   },
   {
-   "pfad": "Eingang/alleinerziehend-brodersen/Scanner/Kontoauszug_51.pdf",
-   "haushalt": "alleinerziehend-brodersen",
-   "schriftstueck": "Kontoauszug",
-   "kategorie": "Finanzen & Konten",
-   "absender": "Beispiel Direktbank AG",
-   "betrifft": "Frau Brodersen",
-   "person": "Sabine Brodersen"
-  },
-  {
-   "pfad": "Eingang/alleinerziehend-brodersen/Durcheinander/Kontoauszug_52.pdf",
+   "pfad": "Eingang/alleinerziehend-brodersen/Scanner/scan_0072.pdf",
    "haushalt": "alleinerziehend-brodersen",
    "schriftstueck": "Kontoauszug",
    "kategorie": "Finanzen & Konten",
@@ -494,7 +689,7 @@
    "person": "Sabine Brodersen"
   },
   {
-   "pfad": "Eingang/alleinerziehend-brodersen/Scanner/scan_0053.pdf",
+   "pfad": "Eingang/alleinerziehend-brodersen/Downloads/Mobilfunk_73.pdf",
    "haushalt": "alleinerziehend-brodersen",
    "schriftstueck": "Vertrag",
    "kategorie": "Verträge & Abonnements",
@@ -503,17 +698,17 @@
    "person": "Sabine Brodersen"
   },
   {
-   "pfad": "Eingang/alleinerziehend-brodersen/Durcheinander/Dokument (54).pdf",
+   "pfad": "Eingang/alleinerziehend-brodersen/Handy/Dokument (74).pdf",
    "haushalt": "alleinerziehend-brodersen",
    "schriftstueck": "Rechnung",
    "kategorie": "Verträge & Abonnements",
    "absender": "Funkwelle Beispiel GmbH",
    "betrifft": "Frau Brodersen",
    "person": "Sabine Brodersen",
-   "frist": "2026-02-21"
+   "frist": "2026-09-29"
   },
   {
-   "pfad": "Eingang/alleinerziehend-brodersen/Scanner/scan_0055.pdf",
+   "pfad": "Eingang/alleinerziehend-brodersen/Scanner/scan_0075.pdf",
    "haushalt": "alleinerziehend-brodersen",
    "schriftstueck": "Vertrag",
    "kategorie": "Gesundheit & Pflege",
@@ -522,7 +717,7 @@
    "person": "Sabine Brodersen"
   },
   {
-   "pfad": "Eingang/alleinerziehend-brodersen/alt/Befund_56.pdf",
+   "pfad": "Eingang/alleinerziehend-brodersen/Downloads/IMG_2025076.pdf",
    "haushalt": "alleinerziehend-brodersen",
    "schriftstueck": "Befund",
    "kategorie": "Gesundheit & Pflege",
@@ -531,34 +726,34 @@
    "person": "Sabine Brodersen"
   },
   {
-   "pfad": "Eingang/alleinerziehend-brodersen/Handy/Termin_Zahnarzt_57.pdf",
+   "pfad": "Eingang/alleinerziehend-brodersen/alt/scan_0077.pdf",
    "haushalt": "alleinerziehend-brodersen",
    "schriftstueck": "Termin",
    "kategorie": "Gesundheit & Pflege",
    "absender": "Zahnarztpraxis Dr. Ole Beispiel",
    "betrifft": "Frau Brodersen",
    "person": "Sabine Brodersen",
-   "frist": "2025-11-24"
+   "frist": "2026-02-11"
   },
   {
-   "pfad": "Eingang/alleinerziehend-brodersen/Handy/Rechnung_Kauf_58.pdf",
+   "pfad": "Eingang/alleinerziehend-brodersen/alt/Rechnung_Kauf_78.pdf",
    "haushalt": "alleinerziehend-brodersen",
    "schriftstueck": "Rechnung",
    "kategorie": "Einkäufe, Rechnungen & Garantien",
    "absender": "Elektronikmarkt Beispiel GmbH",
    "betrifft": "Frau Brodersen",
    "person": "Sabine Brodersen",
-   "frist": "2025-08-25"
+   "frist": "2026-04-04"
   },
   {
-   "pfad": "Eingang/alleinerziehend-brodersen/Scanner/Prospekt_59.pdf",
+   "pfad": "Eingang/alleinerziehend-brodersen/alt/Prospekt_79.pdf",
    "haushalt": "alleinerziehend-brodersen",
    "schriftstueck": "Angebot/Werbung",
    "kategorie": "Einkäufe, Rechnungen & Garantien",
    "absender": "Möbelhaus Nordlicht Beispiel GmbH"
   },
   {
-   "pfad": "Eingang/alleinerziehend-brodersen/Handy/Ihre_60.eml",
+   "pfad": "Eingang/alleinerziehend-brodersen/Scanner/Ihre_80.eml",
    "haushalt": "alleinerziehend-brodersen",
    "schriftstueck": "Rechnung",
    "kategorie": "Einkäufe, Rechnungen & Garantien",
@@ -567,7 +762,7 @@
    "person": "Sabine Brodersen"
   },
   {
-   "pfad": "Eingang/alleinerziehend-brodersen/Handy/Rechnung_61.eml",
+   "pfad": "Eingang/alleinerziehend-brodersen/alt/Rechnung_81.eml",
    "haushalt": "alleinerziehend-brodersen",
    "schriftstueck": "Rechnung",
    "kategorie": "Verträge & Abonnements",
@@ -576,7 +771,7 @@
    "person": "Sabine Brodersen"
   },
   {
-   "pfad": "Eingang/alleinerziehend-brodersen/alt/Ihre_62.eml",
+   "pfad": "Eingang/alleinerziehend-brodersen/alt/Ihre_82.eml",
    "haushalt": "alleinerziehend-brodersen",
    "schriftstueck": "Rechnung",
    "kategorie": "Reisen & Freizeit",
@@ -585,7 +780,7 @@
    "person": "Sabine Brodersen"
   },
   {
-   "pfad": "Eingang/alleinerziehend-brodersen/alt/scan_0063.pdf",
+   "pfad": "Eingang/alleinerziehend-brodersen/alt/scan_0083.pdf",
    "haushalt": "alleinerziehend-brodersen",
    "schriftstueck": "Vertrag",
    "kategorie": "Versicherungen",
@@ -594,17 +789,7 @@
    "person": "Sabine Brodersen"
   },
   {
-   "pfad": "Eingang/alleinerziehend-brodersen/Handy/scan_0064.pdf",
-   "haushalt": "alleinerziehend-brodersen",
-   "schriftstueck": "Rechnung",
-   "kategorie": "Versicherungen",
-   "absender": "Küsten Hausrat- und Haftpflicht Beispiel AG",
-   "betrifft": "Frau Brodersen",
-   "person": "Sabine Brodersen",
-   "frist": "2025-02-14"
-  },
-  {
-   "pfad": "Eingang/alleinerziehend-brodersen/Scanner/scan_0065.pdf",
+   "pfad": "Eingang/alleinerziehend-brodersen/alt/Steuerbescheid_84.pdf",
    "haushalt": "alleinerziehend-brodersen",
    "schriftstueck": "Bescheid",
    "kategorie": "Steuern & Behörden",
@@ -613,17 +798,17 @@
    "person": "Sabine Brodersen"
   },
   {
-   "pfad": "Eingang/alleinerziehend-brodersen/alt/Beitrag_66.pdf",
+   "pfad": "Eingang/alleinerziehend-brodersen/Downloads/scan_0085.pdf",
    "haushalt": "alleinerziehend-brodersen",
    "schriftstueck": "Rechnung",
-   "kategorie": "Verträge & Abonnements",
+   "kategorie": "Steuern & Behörden",
    "absender": "Rundfunkbeitrag Beispiel-Service",
    "betrifft": "Frau Brodersen",
    "person": "Sabine Brodersen",
-   "frist": "2025-06-26"
+   "frist": "2025-11-23"
   },
   {
-   "pfad": "Eingang/alleinerziehend-brodersen/alt/scan_0067.pdf",
+   "pfad": "Eingang/alleinerziehend-brodersen/Durcheinander/scan_0086.pdf",
    "haushalt": "alleinerziehend-brodersen",
    "schriftstueck": "Vertrag",
    "kategorie": "Haus & Wohnung",
@@ -632,7 +817,7 @@
    "person": "Sabine Brodersen"
   },
   {
-   "pfad": "Eingang/alleinerziehend-brodersen/Scanner/scan_0068.pdf",
+   "pfad": "Eingang/alleinerziehend-brodersen/Handy/Nebenkosten_87.pdf",
    "haushalt": "alleinerziehend-brodersen",
    "schriftstueck": "Abrechnung",
    "kategorie": "Haus & Wohnung",
@@ -641,7 +826,7 @@
    "person": "Sabine Brodersen"
   },
   {
-   "pfad": "Eingang/alleinerziehend-brodersen/alt/scan_0069.pdf",
+   "pfad": "Eingang/alleinerziehend-brodersen/Durcheinander/scan_0088.pdf",
    "haushalt": "alleinerziehend-brodersen",
    "schriftstueck": "Vertrag",
    "kategorie": "Verträge & Abonnements",
@@ -650,7 +835,7 @@
    "person": "Sabine Brodersen"
   },
   {
-   "pfad": "Eingang/alleinerziehend-brodersen/Downloads/Gehalt_70.pdf",
+   "pfad": "Eingang/alleinerziehend-brodersen/Scanner/Gehalt_89.pdf",
    "haushalt": "alleinerziehend-brodersen",
    "schriftstueck": "Abrechnung",
    "kategorie": "Rente, Arbeit & Sozialversicherung",
@@ -659,7 +844,7 @@
    "person": "Sabine Brodersen"
   },
   {
-   "pfad": "Eingang/alleinerziehend-brodersen/Downloads/Gehalt_71.pdf",
+   "pfad": "Eingang/alleinerziehend-brodersen/Scanner/Gehalt_90.pdf",
    "haushalt": "alleinerziehend-brodersen",
    "schriftstueck": "Abrechnung",
    "kategorie": "Rente, Arbeit & Sozialversicherung",
@@ -668,17 +853,180 @@
    "person": "Sabine Brodersen"
   },
   {
-   "pfad": "Eingang/alleinerziehend-brodersen/Handy/Schule_72.pdf",
+   "pfad": "Eingang/alleinerziehend-brodersen/alt/Gehalt_91.pdf",
+   "haushalt": "alleinerziehend-brodersen",
+   "schriftstueck": "Abrechnung",
+   "kategorie": "Rente, Arbeit & Sozialversicherung",
+   "absender": "Modehaus Beispiel KG",
+   "betrifft": "Frau Brodersen",
+   "person": "Sabine Brodersen"
+  },
+  {
+   "pfad": "Eingang/alleinerziehend-brodersen/Downloads/scan_0092.pdf",
+   "haushalt": "alleinerziehend-brodersen",
+   "schriftstueck": "Bescheinigung",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Hausarztpraxis Dr. med. Tim Beispiel",
+   "betrifft": "Sabine Brodersen",
+   "person": "Sabine Brodersen"
+  },
+  {
+   "pfad": "Eingang/alleinerziehend-brodersen/Handy/scan_0093.pdf",
+   "haushalt": "alleinerziehend-brodersen",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Optik Klarblick Beispiel",
+   "betrifft": "Frau Brodersen",
+   "person": "Sabine Brodersen",
+   "frist": "2025-07-17"
+  },
+  {
+   "pfad": "Eingang/alleinerziehend-brodersen/Downloads/Hundesteuer_94.pdf",
+   "haushalt": "alleinerziehend-brodersen",
+   "schriftstueck": "Bescheid",
+   "kategorie": "Steuern & Behörden",
+   "absender": "Steueramt Beispielstadt – Hundesteuer",
+   "betrifft": "Frau Brodersen",
+   "person": "Sabine Brodersen"
+  },
+  {
+   "pfad": "Eingang/alleinerziehend-brodersen/Scanner/scan_0095.pdf",
+   "haushalt": "alleinerziehend-brodersen",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Reisen & Freizeit",
+   "absender": "Tierarztpraxis Pfote Beispiel",
+   "betrifft": "Frau Brodersen",
+   "person": "Sabine Brodersen",
+   "frist": "2025-03-31"
+  },
+  {
+   "pfad": "Eingang/alleinerziehend-brodersen/Downloads/scan_0096.pdf",
+   "haushalt": "alleinerziehend-brodersen",
+   "schriftstueck": "Bescheinigung",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Hausarztpraxis Dr. med. Tim Beispiel",
+   "betrifft": "Sabine Brodersen",
+   "person": "Sabine Brodersen"
+  },
+  {
+   "pfad": "Eingang/alleinerziehend-brodersen/Downloads/scan_0097.pdf",
+   "haushalt": "alleinerziehend-brodersen",
+   "schriftstueck": "Kontoauszug",
+   "kategorie": "Finanzen & Konten",
+   "absender": "Bausparkasse Leuchtturm Beispiel AG",
+   "betrifft": "Frau Brodersen",
+   "person": "Sabine Brodersen"
+  },
+  {
+   "pfad": "Eingang/alleinerziehend-brodersen/Handy/scan_0098.pdf",
+   "haushalt": "alleinerziehend-brodersen",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Garten & Grundstück",
+   "absender": "Kleingartenverein Sonnenblick Beispiel e. V.",
+   "betrifft": "Frau Brodersen",
+   "person": "Sabine Brodersen",
+   "frist": "2026-09-17"
+  },
+  {
+   "pfad": "Eingang/alleinerziehend-brodersen/Scanner/scan_0099.pdf",
+   "haushalt": "alleinerziehend-brodersen",
+   "schriftstueck": "Bescheid",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Nord-Krankenkasse Beispiel",
+   "betrifft": "Frau Brodersen",
+   "person": "Sabine Brodersen"
+  },
+  {
+   "pfad": "Eingang/alleinerziehend-brodersen/Scanner/Therapie_100.pdf",
+   "haushalt": "alleinerziehend-brodersen",
+   "schriftstueck": "Brief",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Psychotherapeutische Praxis Dipl.-Psych. Ruth Beispiel",
+   "betrifft": "Frau Brodersen",
+   "person": "Sabine Brodersen"
+  },
+  {
+   "pfad": "Eingang/alleinerziehend-brodersen/Scanner/Lebensversicherung_101.pdf",
+   "haushalt": "alleinerziehend-brodersen",
+   "schriftstueck": "Brief",
+   "kategorie": "Versicherungen",
+   "absender": "Hanse Lebensversicherung Beispiel AG",
+   "betrifft": "Frau Brodersen",
+   "person": "Sabine Brodersen"
+  },
+  {
+   "pfad": "Eingang/alleinerziehend-brodersen/Scanner/scan_0102.jpg",
+   "haushalt": "alleinerziehend-brodersen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Drogerie Hafenlicht Beispiel",
+   "betrag": "20,50",
+   "datum": "2025-06-26",
+   "buchung": "Drogerie",
+   "fotografiert": "Sabine Brodersen"
+  },
+  {
+   "pfad": "Eingang/alleinerziehend-brodersen/Scanner/scan_0103.jpg",
+   "haushalt": "alleinerziehend-brodersen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Drogerie Hafenlicht Beispiel",
+   "betrag": "20,00",
+   "datum": "2025-06-11",
+   "buchung": "Drogerie",
+   "fotografiert": "Sabine Brodersen"
+  },
+  {
+   "pfad": "Eingang/alleinerziehend-brodersen/Handy/DCIM/Camera/IMG_20261104_168001.jpg",
+   "haushalt": "alleinerziehend-brodersen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Frischmarkt Beispiel",
+   "betrag": "3,28",
+   "datum": "2026-05-09",
+   "buchung": "Lebensmittel",
+   "fotografiert": "Sabine Brodersen"
+  },
+  {
+   "pfad": "Eingang/alleinerziehend-brodersen/Handy/DCIM/Camera/IMG_20261105_151663.jpg",
+   "haushalt": "alleinerziehend-brodersen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Drogerie Hafenlicht Beispiel",
+   "betrag": "14,90",
+   "datum": "2025-05-15",
+   "buchung": "Drogerie",
+   "fotografiert": "Sabine Brodersen"
+  },
+  {
+   "pfad": "Eingang/alleinerziehend-brodersen/Handy/DCIM/Camera/IMG_20261106_191886.jpg",
+   "haushalt": "alleinerziehend-brodersen",
+   "schriftstueck": "Angebot/Werbung",
+   "kategorie": "Auto & Mobilität",
+   "absender": "Autohaus Nordlicht Beispiel",
+   "betrag": "30990",
+   "rate": "236",
+   "fotografiert": "Sabine Brodersen",
+   "notiz": "Foto zum Vergleich mit dem Haushaltsbuch"
+  },
+  {
+   "pfad": "Eingang/alleinerziehend-brodersen/Handy/DCIM/Camera/IMG_20261107_160822.jpg",
+   "haushalt": "alleinerziehend-brodersen",
+   "schriftstueck": "Foto",
+   "kategorie": "Fotos"
+  },
+  {
+   "pfad": "Eingang/alleinerziehend-brodersen/Handy/Post_108.pdf",
    "haushalt": "alleinerziehend-brodersen",
    "schriftstueck": "Termin",
    "kategorie": "Familie & persönliche Dokumente",
    "absender": "Grundschule am Beispielfleet",
    "betrifft": "Mia Brodersen",
    "person": "Mia Brodersen",
-   "frist": "2025-10-29"
+   "frist": "2026-10-21"
   },
   {
-   "pfad": "Eingang/alleinerziehend-brodersen/Durcheinander/IMG_2026073.pdf",
+   "pfad": "Eingang/alleinerziehend-brodersen/alt/scan_0109.pdf",
    "haushalt": "alleinerziehend-brodersen",
    "schriftstueck": "Befund",
    "kategorie": "Gesundheit & Pflege",
@@ -687,7 +1035,7 @@
    "person": "Mia Brodersen"
   },
   {
-   "pfad": "Eingang/alleinerziehend-brodersen/Handy/Rechnung_74.pdf",
+   "pfad": "Eingang/alleinerziehend-brodersen/Handy/IMG_2025110.pdf",
    "haushalt": "alleinerziehend-brodersen",
    "schriftstueck": "Bescheid",
    "kategorie": "Familie & persönliche Dokumente",
@@ -696,7 +1044,7 @@
    "person": "Sabine Brodersen"
   },
   {
-   "pfad": "Eingang/alleinerziehend-brodersen/Durcheinander/scan_0075.pdf",
+   "pfad": "Eingang/alleinerziehend-brodersen/Durcheinander/Unterhaltsvorschuss_111.pdf",
    "haushalt": "alleinerziehend-brodersen",
    "schriftstueck": "Bescheid",
    "kategorie": "Familie & persönliche Dokumente",
@@ -705,7 +1053,7 @@
    "person": "Sabine Brodersen"
   },
   {
-   "pfad": "Eingang/alleinerziehend-brodersen/Downloads/IMG_2025076.pdf",
+   "pfad": "Eingang/alleinerziehend-brodersen/Downloads/Wohngeld_112.pdf",
    "haushalt": "alleinerziehend-brodersen",
    "schriftstueck": "Bescheid",
    "kategorie": "Haus & Wohnung",
@@ -714,47 +1062,57 @@
    "person": "Sabine Brodersen"
   },
   {
-   "pfad": "Eingang/alleinerziehend-brodersen/Durcheinander/Post_77.pdf",
+   "pfad": "Eingang/alleinerziehend-brodersen/Durcheinander/Hort_113.pdf",
    "haushalt": "alleinerziehend-brodersen",
    "schriftstueck": "Rechnung",
    "kategorie": "Familie & persönliche Dokumente",
    "absender": "Hort Seestern Beispielstadt",
    "betrifft": "Mia Brodersen",
    "person": "Mia Brodersen",
-   "frist": "2026-10-06"
+   "frist": "2026-07-30"
   },
   {
-   "pfad": "Eingang/einzelperson-clausen/Scanner/Dokument (78).pdf",
-   "haushalt": "einzelperson-clausen",
+   "pfad": "Eingang/alleinerziehend-brodersen/Durcheinander/Rechnung_114.pdf",
+   "haushalt": "alleinerziehend-brodersen",
    "schriftstueck": "Rechnung",
-   "kategorie": "Energie & Versorgung",
-   "absender": "Nordstrom Beispiel GmbH",
-   "betrifft": "Familie Clausen",
-   "person": "Familie Clausen",
-   "frist": "2025-02-08"
+   "kategorie": "Technik, Geräte & Reparaturen",
+   "absender": "Reparaturservice Beispiel GmbH",
+   "betrifft": "Frau Brodersen",
+   "person": "Sabine Brodersen",
+   "frist": "2026-09-12"
   },
   {
-   "pfad": "Eingang/einzelperson-clausen/alt/Rechnung_Strom_79.pdf",
+   "pfad": "Eingang/einzelperson-clausen/Handy/scan_0115.pdf",
    "haushalt": "einzelperson-clausen",
    "schriftstueck": "Rechnung",
    "kategorie": "Energie & Versorgung",
    "absender": "Nordstrom Beispiel GmbH",
    "betrifft": "Herr Clausen",
    "person": "Thomas Clausen",
-   "frist": "2025-04-19"
+   "frist": "2025-08-26"
   },
   {
-   "pfad": "Eingang/einzelperson-clausen/Handy/Rechnung_Strom_80.pdf",
+   "pfad": "Eingang/einzelperson-clausen/Scanner/Rechnung_Strom_116.pdf",
+   "haushalt": "einzelperson-clausen",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Energie & Versorgung",
+   "absender": "Nordstrom Beispiel GmbH",
+   "betrifft": "Herr Clausen",
+   "person": "Thomas Clausen",
+   "frist": "2026-04-30"
+  },
+  {
+   "pfad": "Eingang/einzelperson-clausen/Downloads/IMG_2026117.pdf",
    "haushalt": "einzelperson-clausen",
    "schriftstueck": "Rechnung",
    "kategorie": "Energie & Versorgung",
    "absender": "Nordstrom Beispiel GmbH",
    "betrifft": "Familie Clausen",
    "person": "Familie Clausen",
-   "frist": "2025-11-16"
+   "frist": "2025-10-25"
   },
   {
-   "pfad": "Eingang/einzelperson-clausen/alt/scan_0081.pdf",
+   "pfad": "Eingang/einzelperson-clausen/Scanner/Jahresabrechnung_118.pdf",
    "haushalt": "einzelperson-clausen",
    "schriftstueck": "Abrechnung",
    "kategorie": "Energie & Versorgung",
@@ -763,7 +1121,16 @@
    "person": "Thomas Clausen"
   },
   {
-   "pfad": "Eingang/einzelperson-clausen/Durcheinander/Kontoauszug_82.pdf",
+   "pfad": "Eingang/einzelperson-clausen/Handy/Kontoauszug_119.pdf",
+   "haushalt": "einzelperson-clausen",
+   "schriftstueck": "Kontoauszug",
+   "kategorie": "Finanzen & Konten",
+   "absender": "Hafensparkasse Beispiel",
+   "betrifft": "Herr Clausen",
+   "person": "Thomas Clausen"
+  },
+  {
+   "pfad": "Eingang/einzelperson-clausen/Scanner/Kontoauszug_120.pdf",
    "haushalt": "einzelperson-clausen",
    "schriftstueck": "Kontoauszug",
    "kategorie": "Finanzen & Konten",
@@ -772,16 +1139,7 @@
    "person": "Thomas Clausen"
   },
   {
-   "pfad": "Eingang/einzelperson-clausen/Durcheinander/Kontoauszug_83.pdf",
-   "haushalt": "einzelperson-clausen",
-   "schriftstueck": "Kontoauszug",
-   "kategorie": "Finanzen & Konten",
-   "absender": "Beispiel Direktbank AG",
-   "betrifft": "Herr Clausen",
-   "person": "Thomas Clausen"
-  },
-  {
-   "pfad": "Eingang/einzelperson-clausen/Handy/Brief_84.pdf",
+   "pfad": "Eingang/einzelperson-clausen/Scanner/scan_0121.pdf",
    "haushalt": "einzelperson-clausen",
    "schriftstueck": "Vertrag",
    "kategorie": "Verträge & Abonnements",
@@ -790,17 +1148,17 @@
    "person": "Thomas Clausen"
   },
   {
-   "pfad": "Eingang/einzelperson-clausen/Handy/Rechnung_85.pdf",
+   "pfad": "Eingang/einzelperson-clausen/Downloads/Rechnung_122.pdf",
    "haushalt": "einzelperson-clausen",
    "schriftstueck": "Rechnung",
    "kategorie": "Verträge & Abonnements",
    "absender": "Funkwelle Beispiel GmbH",
    "betrifft": "Herr Clausen",
    "person": "Thomas Clausen",
-   "frist": "2025-11-12"
+   "frist": "2025-07-13"
   },
   {
-   "pfad": "Eingang/einzelperson-clausen/Downloads/scan_0086.pdf",
+   "pfad": "Eingang/einzelperson-clausen/Downloads/Krankenkasse_123.pdf",
    "haushalt": "einzelperson-clausen",
    "schriftstueck": "Vertrag",
    "kategorie": "Gesundheit & Pflege",
@@ -809,43 +1167,43 @@
    "person": "Thomas Clausen"
   },
   {
-   "pfad": "Eingang/einzelperson-clausen/Handy/Befund_87.pdf",
+   "pfad": "Eingang/einzelperson-clausen/Scanner/Rechnung_124.pdf",
    "haushalt": "einzelperson-clausen",
    "schriftstueck": "Befund",
    "kategorie": "Gesundheit & Pflege",
-   "absender": "Hausarztpraxis Dr. med. Tim Beispiel",
+   "absender": "Labor Nord Beispiel MVZ GmbH",
    "betrifft": "Thomas Clausen",
    "person": "Thomas Clausen"
   },
   {
-   "pfad": "Eingang/einzelperson-clausen/Scanner/Termin_Zahnarzt_88.pdf",
+   "pfad": "Eingang/einzelperson-clausen/Scanner/Dokument (125).pdf",
    "haushalt": "einzelperson-clausen",
    "schriftstueck": "Termin",
    "kategorie": "Gesundheit & Pflege",
    "absender": "Zahnarztpraxis Dr. Ole Beispiel",
    "betrifft": "Herr Clausen",
    "person": "Thomas Clausen",
-   "frist": "2025-01-30"
+   "frist": "2025-12-02"
   },
   {
-   "pfad": "Eingang/einzelperson-clausen/Durcheinander/Rechnung_Kauf_89.pdf",
+   "pfad": "Eingang/einzelperson-clausen/alt/Rechnung_Kauf_126.pdf",
    "haushalt": "einzelperson-clausen",
    "schriftstueck": "Rechnung",
    "kategorie": "Einkäufe, Rechnungen & Garantien",
    "absender": "Elektronikmarkt Beispiel GmbH",
    "betrifft": "Herr Clausen",
    "person": "Thomas Clausen",
-   "frist": "2025-10-06"
+   "frist": "2025-09-09"
   },
   {
-   "pfad": "Eingang/einzelperson-clausen/Scanner/scan_0090.pdf",
+   "pfad": "Eingang/einzelperson-clausen/Durcheinander/Prospekt_127.pdf",
    "haushalt": "einzelperson-clausen",
    "schriftstueck": "Angebot/Werbung",
    "kategorie": "Einkäufe, Rechnungen & Garantien",
-   "absender": "Möbelhaus Nordlicht Beispiel GmbH"
+   "absender": "Elektronikmarkt Beispiel GmbH"
   },
   {
-   "pfad": "Eingang/einzelperson-clausen/Scanner/Ihre_91.eml",
+   "pfad": "Eingang/einzelperson-clausen/Scanner/Ihre_128.eml",
    "haushalt": "einzelperson-clausen",
    "schriftstueck": "Rechnung",
    "kategorie": "Einkäufe, Rechnungen & Garantien",
@@ -854,7 +1212,7 @@
    "person": "Thomas Clausen"
   },
   {
-   "pfad": "Eingang/einzelperson-clausen/Downloads/Rechnung_92.eml",
+   "pfad": "Eingang/einzelperson-clausen/Scanner/Rechnung_129.eml",
    "haushalt": "einzelperson-clausen",
    "schriftstueck": "Rechnung",
    "kategorie": "Verträge & Abonnements",
@@ -863,7 +1221,7 @@
    "person": "Thomas Clausen"
   },
   {
-   "pfad": "Eingang/einzelperson-clausen/alt/Ihre_93.eml",
+   "pfad": "Eingang/einzelperson-clausen/Downloads/Ihre_130.eml",
    "haushalt": "einzelperson-clausen",
    "schriftstueck": "Rechnung",
    "kategorie": "Reisen & Freizeit",
@@ -872,7 +1230,7 @@
    "person": "Thomas Clausen"
   },
   {
-   "pfad": "Eingang/einzelperson-clausen/Durcheinander/Versicherung_94.pdf",
+   "pfad": "Eingang/einzelperson-clausen/Scanner/Dokument (131).pdf",
    "haushalt": "einzelperson-clausen",
    "schriftstueck": "Vertrag",
    "kategorie": "Versicherungen",
@@ -881,17 +1239,17 @@
    "person": "Thomas Clausen"
   },
   {
-   "pfad": "Eingang/einzelperson-clausen/alt/IMG_2026095.pdf",
+   "pfad": "Eingang/einzelperson-clausen/alt/Dokument (132).pdf",
    "haushalt": "einzelperson-clausen",
    "schriftstueck": "Rechnung",
    "kategorie": "Versicherungen",
    "absender": "Küsten Hausrat- und Haftpflicht Beispiel AG",
    "betrifft": "Herr Clausen",
    "person": "Thomas Clausen",
-   "frist": "2026-04-05"
+   "frist": "2025-03-30"
   },
   {
-   "pfad": "Eingang/einzelperson-clausen/alt/Steuerbescheid_96.pdf",
+   "pfad": "Eingang/einzelperson-clausen/alt/Steuerbescheid_133.pdf",
    "haushalt": "einzelperson-clausen",
    "schriftstueck": "Bescheid",
    "kategorie": "Steuern & Behörden",
@@ -900,17 +1258,17 @@
    "person": "Thomas Clausen"
   },
   {
-   "pfad": "Eingang/einzelperson-clausen/Handy/Beitrag_97.pdf",
+   "pfad": "Eingang/einzelperson-clausen/alt/scan_0134.pdf",
    "haushalt": "einzelperson-clausen",
    "schriftstueck": "Rechnung",
-   "kategorie": "Verträge & Abonnements",
+   "kategorie": "Steuern & Behörden",
    "absender": "Rundfunkbeitrag Beispiel-Service",
    "betrifft": "Herr Clausen",
    "person": "Thomas Clausen",
-   "frist": "2025-01-20"
+   "frist": "2025-02-14"
   },
   {
-   "pfad": "Eingang/einzelperson-clausen/Downloads/Mietvertrag_98.pdf",
+   "pfad": "Eingang/einzelperson-clausen/Scanner/Mietvertrag_135.pdf",
    "haushalt": "einzelperson-clausen",
    "schriftstueck": "Vertrag",
    "kategorie": "Haus & Wohnung",
@@ -919,7 +1277,7 @@
    "person": "Thomas Clausen"
   },
   {
-   "pfad": "Eingang/einzelperson-clausen/Scanner/scan_0099.pdf",
+   "pfad": "Eingang/einzelperson-clausen/Durcheinander/Nebenkosten_136.pdf",
    "haushalt": "einzelperson-clausen",
    "schriftstueck": "Abrechnung",
    "kategorie": "Haus & Wohnung",
@@ -928,7 +1286,7 @@
    "person": "Thomas Clausen"
   },
   {
-   "pfad": "Eingang/einzelperson-clausen/Handy/Post_100.pdf",
+   "pfad": "Eingang/einzelperson-clausen/Durcheinander/scan_0137.pdf",
    "haushalt": "einzelperson-clausen",
    "schriftstueck": "Vertrag",
    "kategorie": "Verträge & Abonnements",
@@ -937,7 +1295,7 @@
    "person": "Thomas Clausen"
   },
   {
-   "pfad": "Eingang/einzelperson-clausen/Durcheinander/Gehalt_101.pdf",
+   "pfad": "Eingang/einzelperson-clausen/Handy/Brief_138.pdf",
    "haushalt": "einzelperson-clausen",
    "schriftstueck": "Abrechnung",
    "kategorie": "Rente, Arbeit & Sozialversicherung",
@@ -946,77 +1304,244 @@
    "person": "Thomas Clausen"
   },
   {
-   "pfad": "Eingang/einzelperson-clausen/Scanner/Motorrad_102.pdf",
+   "pfad": "Eingang/einzelperson-clausen/Handy/Gehalt_139.pdf",
+   "haushalt": "einzelperson-clausen",
+   "schriftstueck": "Abrechnung",
+   "kategorie": "Rente, Arbeit & Sozialversicherung",
+   "absender": "Softwarehaus Beispiel GmbH",
+   "betrifft": "Herr Clausen",
+   "person": "Thomas Clausen"
+  },
+  {
+   "pfad": "Eingang/einzelperson-clausen/Downloads/Gehalt_140.pdf",
+   "haushalt": "einzelperson-clausen",
+   "schriftstueck": "Abrechnung",
+   "kategorie": "Rente, Arbeit & Sozialversicherung",
+   "absender": "Softwarehaus Beispiel GmbH",
+   "betrifft": "Herr Clausen",
+   "person": "Thomas Clausen"
+  },
+  {
+   "pfad": "Eingang/einzelperson-clausen/Handy/scan_0141.pdf",
    "haushalt": "einzelperson-clausen",
    "schriftstueck": "Rechnung",
    "kategorie": "Motorrad",
    "absender": "Zweirad Beispiel GmbH",
    "betrifft": "Herr Clausen",
    "person": "Thomas Clausen",
-   "frist": "2025-05-22"
+   "frist": "2025-10-08"
   },
   {
-   "pfad": "Eingang/einzelperson-clausen/alt/Versicherung_103.pdf",
+   "pfad": "Eingang/einzelperson-clausen/Scanner/Versicherung_142.pdf",
    "haushalt": "einzelperson-clausen",
    "schriftstueck": "Rechnung",
    "kategorie": "Versicherungen",
    "absender": "Elbe Kfz-Versicherung Beispiel AG",
    "betrifft": "Herr Clausen",
    "person": "Thomas Clausen",
-   "frist": "2026-06-20"
+   "frist": "2025-08-25"
   },
   {
-   "pfad": "Eingang/einzelperson-clausen/Handy/scan_0104.pdf",
+   "pfad": "Eingang/einzelperson-clausen/Scanner/Rechtsschutz_143.pdf",
+   "haushalt": "einzelperson-clausen",
+   "schriftstueck": "Brief",
+   "kategorie": "Versicherungen",
+   "absender": "Nord Rechtsschutz Beispiel AG",
+   "betrifft": "Herr Clausen",
+   "person": "Thomas Clausen"
+  },
+  {
+   "pfad": "Eingang/einzelperson-clausen/alt/scan_0144.pdf",
+   "haushalt": "einzelperson-clausen",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Optik Klarblick Beispiel",
+   "betrifft": "Herr Clausen",
+   "person": "Thomas Clausen",
+   "frist": "2025-11-13"
+  },
+  {
+   "pfad": "Eingang/einzelperson-clausen/Scanner/Brille_145.pdf",
+   "haushalt": "einzelperson-clausen",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Optik Klarblick Beispiel",
+   "betrifft": "Herr Clausen",
+   "person": "Thomas Clausen",
+   "frist": "2025-09-18"
+  },
+  {
+   "pfad": "Eingang/einzelperson-clausen/Downloads/scan_0146.pdf",
+   "haushalt": "einzelperson-clausen",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Physiotherapie Bewegung Beispiel",
+   "betrifft": "Herr Clausen",
+   "person": "Thomas Clausen",
+   "frist": "2026-01-28"
+  },
+  {
+   "pfad": "Eingang/einzelperson-clausen/alt/scan_0147.pdf",
+   "haushalt": "einzelperson-clausen",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Physiotherapie Bewegung Beispiel",
+   "betrifft": "Herr Clausen",
+   "person": "Thomas Clausen",
+   "frist": "2026-08-22"
+  },
+  {
+   "pfad": "Eingang/einzelperson-clausen/Handy/scan_0148.pdf",
+   "haushalt": "einzelperson-clausen",
+   "schriftstueck": "Brief",
+   "kategorie": "Rente, Arbeit & Sozialversicherung",
+   "absender": "Softwarehaus Beispiel GmbH",
+   "betrifft": "Herr Clausen",
+   "person": "Thomas Clausen"
+  },
+  {
+   "pfad": "Eingang/einzelperson-clausen/alt/Garten_149.pdf",
+   "haushalt": "einzelperson-clausen",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Garten & Grundstück",
+   "absender": "Kleingartenverein Sonnenblick Beispiel e. V.",
+   "betrifft": "Herr Clausen",
+   "person": "Thomas Clausen",
+   "frist": "2025-10-06"
+  },
+  {
+   "pfad": "Eingang/einzelperson-clausen/Scanner/IMG_2025150.pdf",
+   "haushalt": "einzelperson-clausen",
+   "schriftstueck": "Bescheid",
+   "kategorie": "Steuern & Behörden",
+   "absender": "Steueramt Beispielstadt – Hundesteuer",
+   "betrifft": "Herr Clausen",
+   "person": "Thomas Clausen"
+  },
+  {
+   "pfad": "Eingang/einzelperson-clausen/Durcheinander/scan_0151.pdf",
+   "haushalt": "einzelperson-clausen",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Reisen & Freizeit",
+   "absender": "Tierarztpraxis Pfote Beispiel",
+   "betrifft": "Herr Clausen",
+   "person": "Thomas Clausen",
+   "frist": "2026-05-15"
+  },
+  {
+   "pfad": "Eingang/einzelperson-clausen/Handy/DCIM/Camera/IMG_20261152_141800.jpg",
+   "haushalt": "einzelperson-clausen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Bäckerei Krümel Beispiel",
+   "betrag": "8,40",
+   "datum": "2025-11-04",
+   "buchung": "Lebensmittel",
+   "fotografiert": "Thomas Clausen"
+  },
+  {
+   "pfad": "Eingang/einzelperson-clausen/Handy/WhatsApp/Media/IMG-2026253-WA0011.jpg",
+   "haushalt": "einzelperson-clausen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Drogerie Hafenlicht Beispiel",
+   "betrag": "15,60",
+   "datum": "2025-05-04",
+   "buchung": "Drogerie",
+   "fotografiert": "Thomas Clausen"
+  },
+  {
+   "pfad": "Eingang/einzelperson-clausen/Handy/DCIM/Camera/IMG_20261154_189566.jpg",
+   "haushalt": "einzelperson-clausen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Frischmarkt Beispiel",
+   "betrag": "12,35",
+   "datum": "2025-08-31",
+   "buchung": "Lebensmittel",
+   "fotografiert": "Thomas Clausen"
+  },
+  {
+   "pfad": "Eingang/einzelperson-clausen/Handy/WhatsApp/Media/IMG-2026255-WA0042.jpg",
+   "haushalt": "einzelperson-clausen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Bäckerei Krümel Beispiel",
+   "betrag": "4,40",
+   "datum": "2025-01-25",
+   "buchung": "Lebensmittel",
+   "fotografiert": "Thomas Clausen"
+  },
+  {
+   "pfad": "Eingang/einzelperson-clausen/Scanner/scan_0156.jpg",
+   "haushalt": "einzelperson-clausen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Hafen-Apotheke Beispiel",
+   "betrag": "28,86",
+   "datum": "2026-08-11",
+   "buchung": "Gesundheit",
+   "fotografiert": "Thomas Clausen"
+  },
+  {
+   "pfad": "Eingang/einzelperson-clausen/Scanner/scan_0157.jpg",
+   "haushalt": "einzelperson-clausen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Auto & Mobilität",
+   "absender": "Tankstelle Nordstern Beispiel",
+   "betrag": "75,81",
+   "datum": "2026-10-20",
+   "buchung": "Tanken",
+   "fotografiert": "Thomas Clausen"
+  },
+  {
+   "pfad": "Eingang/einzelperson-clausen/Scanner/scan_0158.jpg",
+   "haushalt": "einzelperson-clausen",
+   "schriftstueck": "Foto",
+   "kategorie": "Fotos"
+  },
+  {
+   "pfad": "Eingang/einzelperson-clausen/Handy/Reparatur_159.pdf",
+   "haushalt": "einzelperson-clausen",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Technik, Geräte & Reparaturen",
+   "absender": "Reparaturservice Beispiel GmbH",
+   "betrifft": "Herr Clausen",
+   "person": "Thomas Clausen",
+   "frist": "2026-04-24"
+  },
+  {
+   "pfad": "Eingang/einzelperson-clausen/Scanner/Reise_160.pdf",
    "haushalt": "einzelperson-clausen",
    "schriftstueck": "Rechnung",
    "kategorie": "Reisen & Freizeit",
    "absender": "Reisebüro Kompass Beispiel GmbH",
    "betrifft": "Herr Clausen",
    "person": "Thomas Clausen",
-   "frist": "2026-07-14"
+   "frist": "2025-10-20"
   },
   {
-   "pfad": "Eingang/arbeitslos-lorenzen/Downloads/Rechnung_Strom_105.pdf",
+   "pfad": "Eingang/arbeitslos-lorenzen/Scanner/Rechnung_Strom_161.pdf",
    "haushalt": "arbeitslos-lorenzen",
    "schriftstueck": "Rechnung",
    "kategorie": "Energie & Versorgung",
    "absender": "Nordstrom Beispiel GmbH",
    "betrifft": "Herr Lorenzen",
    "person": "Dirk Lorenzen",
-   "frist": "2025-08-30"
+   "frist": "2025-01-17"
   },
   {
-   "pfad": "Eingang/arbeitslos-lorenzen/alt/scan_0106.pdf",
-   "haushalt": "arbeitslos-lorenzen",
-   "schriftstueck": "Rechnung",
-   "kategorie": "Energie & Versorgung",
-   "absender": "Nordstrom Beispiel GmbH",
-   "betrifft": "Familie Lorenzen",
-   "person": "Familie Lorenzen",
-   "frist": "2026-07-21"
-  },
-  {
-   "pfad": "Eingang/arbeitslos-lorenzen/Durcheinander/scan_0107.pdf",
+   "pfad": "Eingang/arbeitslos-lorenzen/Handy/scan_0162.pdf",
    "haushalt": "arbeitslos-lorenzen",
    "schriftstueck": "Rechnung",
    "kategorie": "Energie & Versorgung",
    "absender": "Nordstrom Beispiel GmbH",
    "betrifft": "Herr Lorenzen",
    "person": "Dirk Lorenzen",
-   "frist": "2025-03-10"
+   "frist": "2025-10-02"
   },
   {
-   "pfad": "Eingang/arbeitslos-lorenzen/Downloads/Rechnung_Strom_108.pdf",
-   "haushalt": "arbeitslos-lorenzen",
-   "schriftstueck": "Rechnung",
-   "kategorie": "Energie & Versorgung",
-   "absender": "Nordstrom Beispiel GmbH",
-   "betrifft": "Herr Lorenzen",
-   "person": "Dirk Lorenzen",
-   "frist": "2026-05-13"
-  },
-  {
-   "pfad": "Eingang/arbeitslos-lorenzen/Scanner/Rechnung_109.pdf",
+   "pfad": "Eingang/arbeitslos-lorenzen/Scanner/scan_0163.pdf",
    "haushalt": "arbeitslos-lorenzen",
    "schriftstueck": "Abrechnung",
    "kategorie": "Energie & Versorgung",
@@ -1025,7 +1550,7 @@
    "person": "Dirk Lorenzen"
   },
   {
-   "pfad": "Eingang/arbeitslos-lorenzen/Scanner/scan_0110.pdf",
+   "pfad": "Eingang/arbeitslos-lorenzen/Handy/scan_0164.pdf",
    "haushalt": "arbeitslos-lorenzen",
    "schriftstueck": "Kontoauszug",
    "kategorie": "Finanzen & Konten",
@@ -1034,7 +1559,7 @@
    "person": "Dirk Lorenzen"
   },
   {
-   "pfad": "Eingang/arbeitslos-lorenzen/Handy/IMG_2026111.pdf",
+   "pfad": "Eingang/arbeitslos-lorenzen/Downloads/Kontoauszug_165.pdf",
    "haushalt": "arbeitslos-lorenzen",
    "schriftstueck": "Kontoauszug",
    "kategorie": "Finanzen & Konten",
@@ -1043,7 +1568,7 @@
    "person": "Dirk Lorenzen"
   },
   {
-   "pfad": "Eingang/arbeitslos-lorenzen/Scanner/scan_0112.pdf",
+   "pfad": "Eingang/arbeitslos-lorenzen/Scanner/Mobilfunk_166.pdf",
    "haushalt": "arbeitslos-lorenzen",
    "schriftstueck": "Vertrag",
    "kategorie": "Verträge & Abonnements",
@@ -1052,17 +1577,17 @@
    "person": "Dirk Lorenzen"
   },
   {
-   "pfad": "Eingang/arbeitslos-lorenzen/Handy/IMG_2026113.pdf",
+   "pfad": "Eingang/arbeitslos-lorenzen/Scanner/scan_0167.pdf",
    "haushalt": "arbeitslos-lorenzen",
    "schriftstueck": "Rechnung",
    "kategorie": "Verträge & Abonnements",
    "absender": "Funkwelle Beispiel GmbH",
    "betrifft": "Herr Lorenzen",
    "person": "Dirk Lorenzen",
-   "frist": "2025-01-24"
+   "frist": "2026-02-14"
   },
   {
-   "pfad": "Eingang/arbeitslos-lorenzen/alt/Krankenkasse_114.pdf",
+   "pfad": "Eingang/arbeitslos-lorenzen/Scanner/IMG_2025168.pdf",
    "haushalt": "arbeitslos-lorenzen",
    "schriftstueck": "Vertrag",
    "kategorie": "Gesundheit & Pflege",
@@ -1071,7 +1596,7 @@
    "person": "Dirk Lorenzen"
   },
   {
-   "pfad": "Eingang/arbeitslos-lorenzen/Handy/scan_0115.pdf",
+   "pfad": "Eingang/arbeitslos-lorenzen/Handy/scan_0169.pdf",
    "haushalt": "arbeitslos-lorenzen",
    "schriftstueck": "Befund",
    "kategorie": "Gesundheit & Pflege",
@@ -1080,34 +1605,34 @@
    "person": "Dirk Lorenzen"
   },
   {
-   "pfad": "Eingang/arbeitslos-lorenzen/Scanner/scan_0116.pdf",
+   "pfad": "Eingang/arbeitslos-lorenzen/alt/scan_0170.pdf",
    "haushalt": "arbeitslos-lorenzen",
    "schriftstueck": "Termin",
    "kategorie": "Gesundheit & Pflege",
    "absender": "Zahnarztpraxis Dr. Ole Beispiel",
    "betrifft": "Herr Lorenzen",
    "person": "Dirk Lorenzen",
-   "frist": "2025-08-23"
+   "frist": "2026-09-14"
   },
   {
-   "pfad": "Eingang/arbeitslos-lorenzen/Scanner/scan_0117.pdf",
+   "pfad": "Eingang/arbeitslos-lorenzen/alt/Dokument (171).pdf",
    "haushalt": "arbeitslos-lorenzen",
    "schriftstueck": "Rechnung",
    "kategorie": "Einkäufe, Rechnungen & Garantien",
    "absender": "Elektronikmarkt Beispiel GmbH",
    "betrifft": "Herr Lorenzen",
    "person": "Dirk Lorenzen",
-   "frist": "2025-04-27"
+   "frist": "2025-05-07"
   },
   {
-   "pfad": "Eingang/arbeitslos-lorenzen/alt/Prospekt_118.pdf",
+   "pfad": "Eingang/arbeitslos-lorenzen/Handy/scan_0172.pdf",
    "haushalt": "arbeitslos-lorenzen",
    "schriftstueck": "Angebot/Werbung",
    "kategorie": "Einkäufe, Rechnungen & Garantien",
-   "absender": "Versandhandel Beispiel GmbH"
+   "absender": "Möbelhaus Nordlicht Beispiel GmbH"
   },
   {
-   "pfad": "Eingang/arbeitslos-lorenzen/alt/Ihre_119.eml",
+   "pfad": "Eingang/arbeitslos-lorenzen/Durcheinander/Ihre_173.eml",
    "haushalt": "arbeitslos-lorenzen",
    "schriftstueck": "Rechnung",
    "kategorie": "Einkäufe, Rechnungen & Garantien",
@@ -1116,7 +1641,7 @@
    "person": "Dirk Lorenzen"
   },
   {
-   "pfad": "Eingang/arbeitslos-lorenzen/alt/Rechnung_120.eml",
+   "pfad": "Eingang/arbeitslos-lorenzen/alt/Rechnung_174.eml",
    "haushalt": "arbeitslos-lorenzen",
    "schriftstueck": "Rechnung",
    "kategorie": "Verträge & Abonnements",
@@ -1125,7 +1650,7 @@
    "person": "Dirk Lorenzen"
   },
   {
-   "pfad": "Eingang/arbeitslos-lorenzen/Handy/Ihre_121.eml",
+   "pfad": "Eingang/arbeitslos-lorenzen/Handy/Ihre_175.eml",
    "haushalt": "arbeitslos-lorenzen",
    "schriftstueck": "Rechnung",
    "kategorie": "Reisen & Freizeit",
@@ -1134,7 +1659,7 @@
    "person": "Dirk Lorenzen"
   },
   {
-   "pfad": "Eingang/arbeitslos-lorenzen/Handy/scan_0122.pdf",
+   "pfad": "Eingang/arbeitslos-lorenzen/Handy/Versicherung_176.pdf",
    "haushalt": "arbeitslos-lorenzen",
    "schriftstueck": "Vertrag",
    "kategorie": "Versicherungen",
@@ -1143,17 +1668,17 @@
    "person": "Dirk Lorenzen"
   },
   {
-   "pfad": "Eingang/arbeitslos-lorenzen/Scanner/scan_0123.pdf",
+   "pfad": "Eingang/arbeitslos-lorenzen/Scanner/scan_0177.pdf",
    "haushalt": "arbeitslos-lorenzen",
    "schriftstueck": "Rechnung",
    "kategorie": "Versicherungen",
    "absender": "Küsten Hausrat- und Haftpflicht Beispiel AG",
    "betrifft": "Herr Lorenzen",
    "person": "Dirk Lorenzen",
-   "frist": "2025-10-12"
+   "frist": "2025-05-14"
   },
   {
-   "pfad": "Eingang/arbeitslos-lorenzen/Scanner/scan_0124.pdf",
+   "pfad": "Eingang/arbeitslos-lorenzen/Scanner/Steuerbescheid_178.pdf",
    "haushalt": "arbeitslos-lorenzen",
    "schriftstueck": "Bescheid",
    "kategorie": "Steuern & Behörden",
@@ -1162,17 +1687,17 @@
    "person": "Dirk Lorenzen"
   },
   {
-   "pfad": "Eingang/arbeitslos-lorenzen/Handy/Dokument (125).pdf",
+   "pfad": "Eingang/arbeitslos-lorenzen/Handy/Beitrag_179.pdf",
    "haushalt": "arbeitslos-lorenzen",
    "schriftstueck": "Rechnung",
-   "kategorie": "Verträge & Abonnements",
+   "kategorie": "Steuern & Behörden",
    "absender": "Rundfunkbeitrag Beispiel-Service",
    "betrifft": "Herr Lorenzen",
    "person": "Dirk Lorenzen",
-   "frist": "2026-04-21"
+   "frist": "2025-11-09"
   },
   {
-   "pfad": "Eingang/arbeitslos-lorenzen/alt/scan_0126.pdf",
+   "pfad": "Eingang/arbeitslos-lorenzen/Durcheinander/scan_0180.pdf",
    "haushalt": "arbeitslos-lorenzen",
    "schriftstueck": "Vertrag",
    "kategorie": "Haus & Wohnung",
@@ -1181,7 +1706,7 @@
    "person": "Dirk Lorenzen"
   },
   {
-   "pfad": "Eingang/arbeitslos-lorenzen/Durcheinander/scan_0127.pdf",
+   "pfad": "Eingang/arbeitslos-lorenzen/Scanner/Dokument (181).pdf",
    "haushalt": "arbeitslos-lorenzen",
    "schriftstueck": "Abrechnung",
    "kategorie": "Haus & Wohnung",
@@ -1190,7 +1715,7 @@
    "person": "Dirk Lorenzen"
   },
   {
-   "pfad": "Eingang/arbeitslos-lorenzen/Downloads/Internet_128.pdf",
+   "pfad": "Eingang/arbeitslos-lorenzen/Downloads/Internet_182.pdf",
    "haushalt": "arbeitslos-lorenzen",
    "schriftstueck": "Vertrag",
    "kategorie": "Verträge & Abonnements",
@@ -1199,7 +1724,160 @@
    "person": "Dirk Lorenzen"
   },
   {
-   "pfad": "Eingang/arbeitslos-lorenzen/Durcheinander/Buergergeld_129.pdf",
+   "pfad": "Eingang/arbeitslos-lorenzen/Handy/Hundesteuer_183.pdf",
+   "haushalt": "arbeitslos-lorenzen",
+   "schriftstueck": "Bescheid",
+   "kategorie": "Steuern & Behörden",
+   "absender": "Steueramt Beispielstadt – Hundesteuer",
+   "betrifft": "Herr Lorenzen",
+   "person": "Dirk Lorenzen"
+  },
+  {
+   "pfad": "Eingang/arbeitslos-lorenzen/Downloads/scan_0184.pdf",
+   "haushalt": "arbeitslos-lorenzen",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Reisen & Freizeit",
+   "absender": "Tierarztpraxis Pfote Beispiel",
+   "betrifft": "Herr Lorenzen",
+   "person": "Dirk Lorenzen",
+   "frist": "2025-07-11"
+  },
+  {
+   "pfad": "Eingang/arbeitslos-lorenzen/Scanner/Bausparen_185.pdf",
+   "haushalt": "arbeitslos-lorenzen",
+   "schriftstueck": "Kontoauszug",
+   "kategorie": "Finanzen & Konten",
+   "absender": "Bausparkasse Leuchtturm Beispiel AG",
+   "betrifft": "Herr Lorenzen",
+   "person": "Dirk Lorenzen"
+  },
+  {
+   "pfad": "Eingang/arbeitslos-lorenzen/Scanner/Spende_186.pdf",
+   "haushalt": "arbeitslos-lorenzen",
+   "schriftstueck": "Bescheinigung",
+   "kategorie": "Steuern & Behörden",
+   "absender": "Seenotretter Beispiel e. V.",
+   "betrifft": "Herr Lorenzen",
+   "person": "Dirk Lorenzen"
+  },
+  {
+   "pfad": "Eingang/arbeitslos-lorenzen/Scanner/GdB_187.pdf",
+   "haushalt": "arbeitslos-lorenzen",
+   "schriftstueck": "Bescheid",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Versorgungsamt Beispielstadt",
+   "betrifft": "Herr Lorenzen",
+   "person": "Dirk Lorenzen"
+  },
+  {
+   "pfad": "Eingang/arbeitslos-lorenzen/alt/Datenkopie_188.pdf",
+   "haushalt": "arbeitslos-lorenzen",
+   "schriftstueck": "Brief",
+   "kategorie": "Finanzen & Konten",
+   "absender": "Auskunftei Nord Beispiel GmbH",
+   "betrifft": "Herr Lorenzen",
+   "person": "Dirk Lorenzen"
+  },
+  {
+   "pfad": "Eingang/arbeitslos-lorenzen/Scanner/scan_0189.pdf",
+   "haushalt": "arbeitslos-lorenzen",
+   "schriftstueck": "Brief",
+   "kategorie": "Versicherungen",
+   "absender": "Hanse Lebensversicherung Beispiel AG",
+   "betrifft": "Herr Lorenzen",
+   "person": "Dirk Lorenzen"
+  },
+  {
+   "pfad": "Eingang/arbeitslos-lorenzen/Scanner/scan_0190.pdf",
+   "haushalt": "arbeitslos-lorenzen",
+   "schriftstueck": "Brief",
+   "kategorie": "Finanzen & Konten",
+   "absender": "Auskunftei Nord Beispiel GmbH",
+   "betrifft": "Herr Lorenzen",
+   "person": "Dirk Lorenzen"
+  },
+  {
+   "pfad": "Eingang/arbeitslos-lorenzen/Scanner/Physio_191.pdf",
+   "haushalt": "arbeitslos-lorenzen",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Physiotherapie Bewegung Beispiel",
+   "betrifft": "Herr Lorenzen",
+   "person": "Dirk Lorenzen",
+   "frist": "2026-05-26"
+  },
+  {
+   "pfad": "Eingang/arbeitslos-lorenzen/Scanner/scan_0192.pdf",
+   "haushalt": "arbeitslos-lorenzen",
+   "schriftstueck": "Bescheinigung",
+   "kategorie": "Steuern & Behörden",
+   "absender": "Seenotretter Beispiel e. V.",
+   "betrifft": "Herr Lorenzen",
+   "person": "Dirk Lorenzen"
+  },
+  {
+   "pfad": "Eingang/arbeitslos-lorenzen/Handy/WhatsApp/Media/IMG-2026293-WA0025.jpg",
+   "haushalt": "arbeitslos-lorenzen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Frischmarkt Beispiel",
+   "betrag": "3,37",
+   "datum": "2026-03-06",
+   "buchung": "Lebensmittel",
+   "fotografiert": "Dirk Lorenzen"
+  },
+  {
+   "pfad": "Eingang/arbeitslos-lorenzen/Handy/DCIM/Camera/IMG_20261194_225389.jpg",
+   "haushalt": "arbeitslos-lorenzen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Frischmarkt Beispiel",
+   "betrag": "16,35",
+   "datum": "2026-08-26",
+   "buchung": "Lebensmittel",
+   "fotografiert": "Dirk Lorenzen"
+  },
+  {
+   "pfad": "Eingang/arbeitslos-lorenzen/Handy/DCIM/Camera/IMG_20261195_221880.jpg",
+   "haushalt": "arbeitslos-lorenzen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Frischmarkt Beispiel",
+   "betrag": "4,78",
+   "datum": "2026-05-17",
+   "buchung": "Lebensmittel",
+   "fotografiert": "Dirk Lorenzen"
+  },
+  {
+   "pfad": "Eingang/arbeitslos-lorenzen/Scanner/scan_0196.jpg",
+   "haushalt": "arbeitslos-lorenzen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Discount Nord Beispiel",
+   "betrag": "3,98",
+   "datum": "2025-02-11",
+   "buchung": "Lebensmittel",
+   "fotografiert": "Dirk Lorenzen"
+  },
+  {
+   "pfad": "Eingang/arbeitslos-lorenzen/Scanner/scan_0197.jpg",
+   "haushalt": "arbeitslos-lorenzen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Hafen-Apotheke Beispiel",
+   "betrag": "28,92",
+   "datum": "2026-07-04",
+   "buchung": "Gesundheit",
+   "fotografiert": "Dirk Lorenzen"
+  },
+  {
+   "pfad": "Eingang/arbeitslos-lorenzen/Handy/DCIM/Camera/IMG_20261198_141883.jpg",
+   "haushalt": "arbeitslos-lorenzen",
+   "schriftstueck": "Foto",
+   "kategorie": "Fotos"
+  },
+  {
+   "pfad": "Eingang/arbeitslos-lorenzen/Durcheinander/Buergergeld_199.pdf",
    "haushalt": "arbeitslos-lorenzen",
    "schriftstueck": "Bescheid",
    "kategorie": "Rente, Arbeit & Sozialversicherung",
@@ -1208,37 +1886,37 @@
    "person": "Dirk Lorenzen"
   },
   {
-   "pfad": "Eingang/arbeitslos-lorenzen/Scanner/Einladung_Jobcenter_130.pdf",
+   "pfad": "Eingang/arbeitslos-lorenzen/Durcheinander/scan_0200.pdf",
    "haushalt": "arbeitslos-lorenzen",
    "schriftstueck": "Termin",
    "kategorie": "Rente, Arbeit & Sozialversicherung",
    "absender": "Jobcenter Beispielstadt",
    "betrifft": "Herr Lorenzen",
    "person": "Dirk Lorenzen",
-   "frist": "2026-11-11"
+   "frist": "2025-07-22"
   },
   {
-   "pfad": "Eingang/arbeitslos-lorenzen/Downloads/Jobcenter_131.pdf",
+   "pfad": "Eingang/arbeitslos-lorenzen/Scanner/Jobcenter_201.pdf",
    "haushalt": "arbeitslos-lorenzen",
    "schriftstueck": "Aufforderung",
    "kategorie": "Rente, Arbeit & Sozialversicherung",
    "absender": "Jobcenter Beispielstadt",
    "betrifft": "Herr Lorenzen",
    "person": "Dirk Lorenzen",
-   "frist": "2026-10-27"
+   "frist": "2025-06-29"
   },
   {
-   "pfad": "Eingang/arbeitslos-lorenzen/alt/Agentur_132.pdf",
+   "pfad": "Eingang/arbeitslos-lorenzen/Downloads/Agentur_202.pdf",
    "haushalt": "arbeitslos-lorenzen",
    "schriftstueck": "Termin",
    "kategorie": "Rente, Arbeit & Sozialversicherung",
    "absender": "Agentur für Arbeit Beispielstadt",
    "betrifft": "Herr Lorenzen",
    "person": "Dirk Lorenzen",
-   "frist": "2026-05-29"
+   "frist": "2025-07-12"
   },
   {
-   "pfad": "Eingang/arbeitslos-lorenzen/Downloads/scan_0133.pdf",
+   "pfad": "Eingang/arbeitslos-lorenzen/alt/Rechnung_203.pdf",
    "haushalt": "arbeitslos-lorenzen",
    "schriftstueck": "Aufforderung",
    "kategorie": "Rente, Arbeit & Sozialversicherung",
@@ -1247,76 +1925,66 @@
    "person": "Dirk Lorenzen"
   },
   {
-   "pfad": "Eingang/arbeitslos-lorenzen/Handy/scan_0134.pdf",
+   "pfad": "Eingang/arbeitslos-lorenzen/Scanner/IMG_2025204.pdf",
    "haushalt": "arbeitslos-lorenzen",
    "schriftstueck": "Mahnung",
    "kategorie": "Finanzen & Konten",
    "absender": "Inkasso Nord Beispiel GmbH",
    "betrifft": "Herr Lorenzen",
    "person": "Dirk Lorenzen",
-   "frist": "2026-09-19"
+   "frist": "2025-08-18"
   },
   {
-   "pfad": "Eingang/arbeitslos-lorenzen/alt/Befreiung_135.pdf",
+   "pfad": "Eingang/arbeitslos-lorenzen/alt/scan_0205.pdf",
    "haushalt": "arbeitslos-lorenzen",
    "schriftstueck": "Bescheid",
-   "kategorie": "Verträge & Abonnements",
+   "kategorie": "Steuern & Behörden",
    "absender": "Rundfunkbeitrag Beispiel-Service",
    "betrifft": "Herr Lorenzen",
    "person": "Dirk Lorenzen"
   },
   {
-   "pfad": "Eingang/arbeitslos-lorenzen/Downloads/IMG_2025136.pdf",
+   "pfad": "Eingang/arbeitslos-lorenzen/Scanner/Reparatur_206.pdf",
+   "haushalt": "arbeitslos-lorenzen",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Technik, Geräte & Reparaturen",
+   "absender": "Reparaturservice Beispiel GmbH",
+   "betrifft": "Herr Lorenzen",
+   "person": "Dirk Lorenzen",
+   "frist": "2026-11-10"
+  },
+  {
+   "pfad": "Eingang/arbeitslos-lorenzen/Scanner/Reise_207.pdf",
    "haushalt": "arbeitslos-lorenzen",
    "schriftstueck": "Rechnung",
    "kategorie": "Reisen & Freizeit",
    "absender": "Reisebüro Kompass Beispiel GmbH",
    "betrifft": "Herr Lorenzen",
    "person": "Dirk Lorenzen",
-   "frist": "2025-09-23"
+   "frist": "2025-03-09"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/alt/scan_0137.pdf",
+   "pfad": "Eingang/professorin-asmussen/Scanner/scan_0208.pdf",
+   "haushalt": "professorin-asmussen",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Energie & Versorgung",
+   "absender": "Nordstrom Beispiel GmbH",
+   "betrifft": "Frau Asmussen",
+   "person": "Katrin Asmussen",
+   "frist": "2026-08-16"
+  },
+  {
+   "pfad": "Eingang/professorin-asmussen/Handy/scan_0209.pdf",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Rechnung",
    "kategorie": "Energie & Versorgung",
    "absender": "Nordstrom Beispiel GmbH",
    "betrifft": "Familie Asmussen",
    "person": "Familie Asmussen",
-   "frist": "2025-02-09"
+   "frist": "2025-04-12"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/alt/Rechnung_Strom_138.pdf",
-   "haushalt": "professorin-asmussen",
-   "schriftstueck": "Rechnung",
-   "kategorie": "Energie & Versorgung",
-   "absender": "Nordstrom Beispiel GmbH",
-   "betrifft": "Familie Asmussen",
-   "person": "Familie Asmussen",
-   "frist": "2025-07-15"
-  },
-  {
-   "pfad": "Eingang/professorin-asmussen/alt/IMG_2026139.pdf",
-   "haushalt": "professorin-asmussen",
-   "schriftstueck": "Rechnung",
-   "kategorie": "Energie & Versorgung",
-   "absender": "Nordstrom Beispiel GmbH",
-   "betrifft": "Familie Asmussen",
-   "person": "Familie Asmussen",
-   "frist": "2025-03-17"
-  },
-  {
-   "pfad": "Eingang/professorin-asmussen/alt/Rechnung_Strom_140.pdf",
-   "haushalt": "professorin-asmussen",
-   "schriftstueck": "Rechnung",
-   "kategorie": "Energie & Versorgung",
-   "absender": "Nordstrom Beispiel GmbH",
-   "betrifft": "Familie Asmussen",
-   "person": "Familie Asmussen",
-   "frist": "2026-02-09"
-  },
-  {
-   "pfad": "Eingang/professorin-asmussen/alt/Jahresabrechnung_141.pdf",
+   "pfad": "Eingang/professorin-asmussen/Durcheinander/IMG_2025210.pdf",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Abrechnung",
    "kategorie": "Energie & Versorgung",
@@ -1325,7 +1993,7 @@
    "person": "Katrin Asmussen"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/Scanner/Kontoauszug_142.pdf",
+   "pfad": "Eingang/professorin-asmussen/Durcheinander/Kontoauszug_211.pdf",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Kontoauszug",
    "kategorie": "Finanzen & Konten",
@@ -1334,7 +2002,7 @@
    "person": "Katrin Asmussen"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/alt/Mobilfunk_143.pdf",
+   "pfad": "Eingang/professorin-asmussen/Durcheinander/IMG_2025212.pdf",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Vertrag",
    "kategorie": "Verträge & Abonnements",
@@ -1343,17 +2011,17 @@
    "person": "Katrin Asmussen"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/Durcheinander/Rechnung_144.pdf",
+   "pfad": "Eingang/professorin-asmussen/Scanner/IMG_2026213.pdf",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Rechnung",
    "kategorie": "Verträge & Abonnements",
    "absender": "Funkwelle Beispiel GmbH",
    "betrifft": "Frau Asmussen",
    "person": "Katrin Asmussen",
-   "frist": "2025-04-26"
+   "frist": "2025-10-18"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/Downloads/scan_0145.pdf",
+   "pfad": "Eingang/professorin-asmussen/Handy/Krankenkasse_214.pdf",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Vertrag",
    "kategorie": "Gesundheit & Pflege",
@@ -1362,7 +2030,7 @@
    "person": "Katrin Asmussen"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/Scanner/scan_0146.pdf",
+   "pfad": "Eingang/professorin-asmussen/Handy/scan_0215.pdf",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Befund",
    "kategorie": "Gesundheit & Pflege",
@@ -1371,27 +2039,34 @@
    "person": "Katrin Asmussen"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/Scanner/Dokument (147).pdf",
+   "pfad": "Eingang/professorin-asmussen/Downloads/Termin_Zahnarzt_216.pdf",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Termin",
    "kategorie": "Gesundheit & Pflege",
    "absender": "Zahnarztpraxis Dr. Ole Beispiel",
    "betrifft": "Frau Asmussen",
    "person": "Katrin Asmussen",
-   "frist": "2025-07-20"
+   "frist": "2025-08-18"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/Handy/IMG_2025148.pdf",
+   "pfad": "Eingang/professorin-asmussen/alt/scan_0217.pdf",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Rechnung",
    "kategorie": "Einkäufe, Rechnungen & Garantien",
    "absender": "Elektronikmarkt Beispiel GmbH",
    "betrifft": "Frau Asmussen",
    "person": "Katrin Asmussen",
-   "frist": "2025-08-25"
+   "frist": "2026-06-06"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/alt/Ihre_149.eml",
+   "pfad": "Eingang/professorin-asmussen/Downloads/scan_0218.pdf",
+   "haushalt": "professorin-asmussen",
+   "schriftstueck": "Angebot/Werbung",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Möbelhaus Nordlicht Beispiel GmbH"
+  },
+  {
+   "pfad": "Eingang/professorin-asmussen/alt/Ihre_219.eml",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Rechnung",
    "kategorie": "Einkäufe, Rechnungen & Garantien",
@@ -1400,7 +2075,7 @@
    "person": "Katrin Asmussen"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/Downloads/Rechnung_150.eml",
+   "pfad": "Eingang/professorin-asmussen/alt/Rechnung_220.eml",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Rechnung",
    "kategorie": "Verträge & Abonnements",
@@ -1409,7 +2084,7 @@
    "person": "Katrin Asmussen"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/Downloads/Ihre_151.eml",
+   "pfad": "Eingang/professorin-asmussen/Scanner/Ihre_221.eml",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Rechnung",
    "kategorie": "Reisen & Freizeit",
@@ -1418,7 +2093,7 @@
    "person": "Katrin Asmussen"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/Handy/scan_0152.pdf",
+   "pfad": "Eingang/professorin-asmussen/Scanner/scan_0222.pdf",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Vertrag",
    "kategorie": "Versicherungen",
@@ -1427,17 +2102,17 @@
    "person": "Katrin Asmussen"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/Scanner/scan_0153.pdf",
+   "pfad": "Eingang/professorin-asmussen/Handy/Beitrag_223.pdf",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Rechnung",
    "kategorie": "Versicherungen",
    "absender": "Küsten Hausrat- und Haftpflicht Beispiel AG",
    "betrifft": "Frau Asmussen",
    "person": "Katrin Asmussen",
-   "frist": "2026-04-14"
+   "frist": "2025-02-02"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/Handy/Steuerbescheid_154.pdf",
+   "pfad": "Eingang/professorin-asmussen/Durcheinander/scan_0224.pdf",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Bescheid",
    "kategorie": "Steuern & Behörden",
@@ -1446,17 +2121,17 @@
    "person": "Katrin Asmussen"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/alt/Beitrag_155.pdf",
+   "pfad": "Eingang/professorin-asmussen/Downloads/scan_0225.pdf",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Rechnung",
-   "kategorie": "Verträge & Abonnements",
+   "kategorie": "Steuern & Behörden",
    "absender": "Rundfunkbeitrag Beispiel-Service",
    "betrifft": "Frau Asmussen",
    "person": "Katrin Asmussen",
-   "frist": "2025-08-25"
+   "frist": "2025-06-10"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/Scanner/Grundsteuer_156.pdf",
+   "pfad": "Eingang/professorin-asmussen/Handy/scan_0226.pdf",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Bescheid",
    "kategorie": "Steuern & Behörden",
@@ -1465,27 +2140,27 @@
    "person": "Familie Asmussen"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/Scanner/scan_0157.pdf",
+   "pfad": "Eingang/professorin-asmussen/Durcheinander/scan_0227.pdf",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Rechnung",
    "kategorie": "Haus & Wohnung",
    "absender": "Stadtreinigung Beispielstadt",
    "betrifft": "Familie Asmussen",
    "person": "Familie Asmussen",
-   "frist": "2026-06-25"
+   "frist": "2025-04-19"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/Downloads/scan_0158.pdf",
+   "pfad": "Eingang/professorin-asmussen/Downloads/Wasser_228.pdf",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Rechnung",
    "kategorie": "Energie & Versorgung",
    "absender": "Wasserwerke Beispielstadt GmbH",
    "betrifft": "Familie Asmussen",
    "person": "Familie Asmussen",
-   "frist": "2026-09-20"
+   "frist": "2026-08-30"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/alt/Dokument (159).pdf",
+   "pfad": "Eingang/professorin-asmussen/Scanner/Dokument (229).pdf",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Vertrag",
    "kategorie": "Verträge & Abonnements",
@@ -1494,37 +2169,249 @@
    "person": "Katrin Asmussen"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/Scanner/scan_0160.pdf",
+   "pfad": "Eingang/professorin-asmussen/Downloads/Kfz_Versicherung_230.pdf",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Rechnung",
    "kategorie": "Versicherungen",
    "absender": "Elbe Kfz-Versicherung Beispiel AG",
    "betrifft": "Frau Asmussen",
    "person": "Katrin Asmussen",
-   "frist": "2026-09-28"
+   "frist": "2025-02-13"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/Scanner/Werkstatt_161.pdf",
+   "pfad": "Eingang/professorin-asmussen/Scanner/Dokument (231).pdf",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Rechnung",
    "kategorie": "Auto & Mobilität",
    "absender": "Kfz-Werkstatt Schrauber Beispiel GmbH",
    "betrifft": "Frau Asmussen",
    "person": "Katrin Asmussen",
-   "frist": "2026-09-06"
+   "frist": "2025-06-19"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/Scanner/HU_162.pdf",
+   "pfad": "Eingang/professorin-asmussen/Scanner/HU_232.pdf",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Termin",
    "kategorie": "Auto & Mobilität",
    "absender": "Prüfstelle Fahrzeugtechnik Beispiel",
    "betrifft": "Frau Asmussen",
    "person": "Katrin Asmussen",
-   "frist": "2025-07-25"
+   "frist": "2026-07-19"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/Downloads/Dokument (163).pdf",
+   "pfad": "Eingang/professorin-asmussen/alt/scan_0233.pdf",
+   "haushalt": "professorin-asmussen",
+   "schriftstueck": "Brief",
+   "kategorie": "Versicherungen",
+   "absender": "Nord Rechtsschutz Beispiel AG",
+   "betrifft": "Frau Asmussen",
+   "person": "Katrin Asmussen"
+  },
+  {
+   "pfad": "Eingang/professorin-asmussen/alt/scan_0234.pdf",
+   "haushalt": "professorin-asmussen",
+   "schriftstueck": "Brief",
+   "kategorie": "Erbschaft, Vollmachten & Vorsorge",
+   "absender": "Amtsgericht Beispielstadt – Nachlassgericht",
+   "betrifft": "Frau Asmussen",
+   "person": "Katrin Asmussen"
+  },
+  {
+   "pfad": "Eingang/professorin-asmussen/Handy/scan_0235.pdf",
+   "haushalt": "professorin-asmussen",
+   "schriftstueck": "Bescheinigung",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Hausarztpraxis Dr. med. Tim Beispiel",
+   "betrifft": "Katrin Asmussen",
+   "person": "Katrin Asmussen"
+  },
+  {
+   "pfad": "Eingang/professorin-asmussen/Downloads/Meldebescheinigung_236.pdf",
+   "haushalt": "professorin-asmussen",
+   "schriftstueck": "Bescheinigung",
+   "kategorie": "Familie & persönliche Dokumente",
+   "absender": "Kundenzentrum Bezirksamt Beispielstadt-Nord",
+   "betrifft": "Frau Asmussen",
+   "person": "Katrin Asmussen"
+  },
+  {
+   "pfad": "Eingang/professorin-asmussen/Handy/scan_0237.pdf",
+   "haushalt": "professorin-asmussen",
+   "schriftstueck": "Brief",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Psychotherapeutische Praxis Dipl.-Psych. Ruth Beispiel",
+   "betrifft": "Frau Asmussen",
+   "person": "Katrin Asmussen"
+  },
+  {
+   "pfad": "Eingang/professorin-asmussen/Scanner/scan_0238.pdf",
+   "haushalt": "professorin-asmussen",
+   "schriftstueck": "Brief",
+   "kategorie": "Erbschaft, Vollmachten & Vorsorge",
+   "absender": "Amtsgericht Beispielstadt – Nachlassgericht",
+   "betrifft": "Frau Asmussen",
+   "person": "Katrin Asmussen"
+  },
+  {
+   "pfad": "Eingang/professorin-asmussen/alt/scan_0239.pdf",
+   "haushalt": "professorin-asmussen",
+   "schriftstueck": "Bescheinigung",
+   "kategorie": "Familie & persönliche Dokumente",
+   "absender": "Kundenzentrum Bezirksamt Beispielstadt-Nord",
+   "betrifft": "Frau Asmussen",
+   "person": "Katrin Asmussen"
+  },
+  {
+   "pfad": "Eingang/professorin-asmussen/Scanner/scan_0240.pdf",
+   "haushalt": "professorin-asmussen",
+   "schriftstueck": "Termin",
+   "kategorie": "Familie & persönliche Dokumente",
+   "absender": "Kundenzentrum Bezirksamt Beispielstadt-Nord",
+   "betrifft": "Frau Asmussen",
+   "person": "Katrin Asmussen",
+   "frist": "2025-06-11"
+  },
+  {
+   "pfad": "Eingang/professorin-asmussen/Downloads/Hundesteuer_241.pdf",
+   "haushalt": "professorin-asmussen",
+   "schriftstueck": "Bescheid",
+   "kategorie": "Steuern & Behörden",
+   "absender": "Steueramt Beispielstadt – Hundesteuer",
+   "betrifft": "Frau Asmussen",
+   "person": "Katrin Asmussen"
+  },
+  {
+   "pfad": "Eingang/professorin-asmussen/alt/Dokument (242).pdf",
+   "haushalt": "professorin-asmussen",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Reisen & Freizeit",
+   "absender": "Tierarztpraxis Pfote Beispiel",
+   "betrifft": "Frau Asmussen",
+   "person": "Katrin Asmussen",
+   "frist": "2025-06-17"
+  },
+  {
+   "pfad": "Eingang/professorin-asmussen/Handy/Bausparen_243.pdf",
+   "haushalt": "professorin-asmussen",
+   "schriftstueck": "Kontoauszug",
+   "kategorie": "Finanzen & Konten",
+   "absender": "Bausparkasse Leuchtturm Beispiel AG",
+   "betrifft": "Frau Asmussen",
+   "person": "Katrin Asmussen"
+  },
+  {
+   "pfad": "Eingang/professorin-asmussen/Downloads/Ausweis_244.pdf",
+   "haushalt": "professorin-asmussen",
+   "schriftstueck": "Termin",
+   "kategorie": "Familie & persönliche Dokumente",
+   "absender": "Kundenzentrum Bezirksamt Beispielstadt-Nord",
+   "betrifft": "Frau Asmussen",
+   "person": "Katrin Asmussen",
+   "frist": "2026-04-22"
+  },
+  {
+   "pfad": "Eingang/professorin-asmussen/Handy/WhatsApp/Media/IMG-2026345-WA0071.jpg",
+   "haushalt": "professorin-asmussen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Frischmarkt Beispiel",
+   "betrag": "12,16",
+   "datum": "2025-04-02",
+   "buchung": "Lebensmittel",
+   "fotografiert": "Katrin Asmussen"
+  },
+  {
+   "pfad": "Eingang/professorin-asmussen/Handy/WhatsApp/Media/IMG-2026346-WA0032.jpg",
+   "haushalt": "professorin-asmussen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Frischmarkt Beispiel",
+   "betrag": "6,66",
+   "datum": "2025-03-16",
+   "buchung": "Lebensmittel",
+   "fotografiert": "Katrin Asmussen"
+  },
+  {
+   "pfad": "Eingang/professorin-asmussen/Handy/WhatsApp/Media/IMG-2026347-WA0031.jpg",
+   "haushalt": "professorin-asmussen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Bäckerei Krümel Beispiel",
+   "betrag": "4,40",
+   "datum": "2026-05-28",
+   "buchung": "Lebensmittel",
+   "fotografiert": "Katrin Asmussen"
+  },
+  {
+   "pfad": "Eingang/professorin-asmussen/Scanner/scan_0248.jpg",
+   "haushalt": "professorin-asmussen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Bäckerei Krümel Beispiel",
+   "betrag": "10,00",
+   "datum": "2025-06-20",
+   "buchung": "Lebensmittel",
+   "fotografiert": "Katrin Asmussen"
+  },
+  {
+   "pfad": "Eingang/professorin-asmussen/Scanner/scan_0249.jpg",
+   "haushalt": "professorin-asmussen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Hafen-Apotheke Beispiel",
+   "betrag": "24,97",
+   "datum": "2025-09-02",
+   "buchung": "Gesundheit",
+   "fotografiert": "Katrin Asmussen"
+  },
+  {
+   "pfad": "Eingang/professorin-asmussen/Handy/WhatsApp/Media/IMG-2026350-WA0085.jpg",
+   "haushalt": "professorin-asmussen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Auto & Mobilität",
+   "absender": "Tankstelle Nordstern Beispiel",
+   "betrag": "77,83",
+   "datum": "2025-10-04",
+   "buchung": "Tanken",
+   "fotografiert": "Katrin Asmussen"
+  },
+  {
+   "pfad": "Eingang/professorin-asmussen/Scanner/scan_0251.jpg",
+   "haushalt": "professorin-asmussen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Auto & Mobilität",
+   "absender": "Tankstelle Nordstern Beispiel",
+   "betrag": "53,94",
+   "datum": "2026-06-10",
+   "buchung": "Tanken",
+   "fotografiert": "Katrin Asmussen"
+  },
+  {
+   "pfad": "Eingang/professorin-asmussen/Scanner/scan_0252.jpg",
+   "haushalt": "professorin-asmussen",
+   "schriftstueck": "Angebot/Werbung",
+   "kategorie": "Auto & Mobilität",
+   "absender": "Autohaus Nordlicht Beispiel",
+   "betrag": "15990",
+   "rate": "239",
+   "fotografiert": "Katrin Asmussen",
+   "notiz": "Foto zum Vergleich mit dem Haushaltsbuch"
+  },
+  {
+   "pfad": "Eingang/professorin-asmussen/Handy/DCIM/Camera/IMG_20261253_119495.jpg",
+   "haushalt": "professorin-asmussen",
+   "schriftstueck": "Termin",
+   "kategorie": "Reisen & Freizeit",
+   "frist": "2025-10-23"
+  },
+  {
+   "pfad": "Eingang/professorin-asmussen/Handy/WhatsApp/Media/IMG-2026354-WA0063.jpg",
+   "haushalt": "professorin-asmussen",
+   "schriftstueck": "Foto",
+   "kategorie": "Fotos"
+  },
+  {
+   "pfad": "Eingang/professorin-asmussen/alt/scan_0255.pdf",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Abrechnung",
    "kategorie": "Rente, Arbeit & Sozialversicherung",
@@ -1533,7 +2420,7 @@
    "person": "Katrin Asmussen"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/Downloads/Bezuege_164.pdf",
+   "pfad": "Eingang/professorin-asmussen/Scanner/IMG_2025256.pdf",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Abrechnung",
    "kategorie": "Rente, Arbeit & Sozialversicherung",
@@ -1542,7 +2429,7 @@
    "person": "Katrin Asmussen"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/Scanner/Beihilfe_165.pdf",
+   "pfad": "Eingang/professorin-asmussen/Downloads/Beihilfe_257.pdf",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Bescheid",
    "kategorie": "Gesundheit & Pflege",
@@ -1551,7 +2438,7 @@
    "person": "Katrin Asmussen"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/Scanner/PKV_166.pdf",
+   "pfad": "Eingang/professorin-asmussen/Scanner/scan_0258.pdf",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Vertrag",
    "kategorie": "Gesundheit & Pflege",
@@ -1560,17 +2447,17 @@
    "person": "Katrin Asmussen"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/Handy/scan_0167.pdf",
+   "pfad": "Eingang/professorin-asmussen/Durcheinander/Arztrechnung_259.pdf",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Rechnung",
    "kategorie": "Gesundheit & Pflege",
    "absender": "Hausarztpraxis Dr. med. Tim Beispiel",
    "betrifft": "Frau Asmussen",
    "person": "Katrin Asmussen",
-   "frist": "2025-03-12"
+   "frist": "2025-12-26"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/Downloads/scan_0168.pdf",
+   "pfad": "Eingang/professorin-asmussen/Scanner/Verlagsvertrag_260.pdf",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Vertrag",
    "kategorie": "Rente, Arbeit & Sozialversicherung",
@@ -1579,7 +2466,7 @@
    "person": "Katrin Asmussen"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/Scanner/Anmeldebestätigung_169.eml",
+   "pfad": "Eingang/professorin-asmussen/Downloads/Anmeldebestätigung_261.eml",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Rechnung",
    "kategorie": "Reisen & Freizeit",
@@ -1588,7 +2475,7 @@
    "person": "Katrin Asmussen"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/Scanner/scan_0170.pdf",
+   "pfad": "Eingang/professorin-asmussen/Handy/Reisekosten_262.pdf",
    "haushalt": "professorin-asmussen",
    "schriftstueck": "Abrechnung",
    "kategorie": "Rente, Arbeit & Sozialversicherung",
@@ -1597,157 +2484,156 @@
    "person": "Katrin Asmussen"
   },
   {
-   "pfad": "Eingang/professorin-asmussen/Handy/scan_0171.pdf",
-   "haushalt": "professorin-asmussen",
-   "schriftstueck": "Rechnung",
-   "kategorie": "Reisen & Freizeit",
-   "absender": "Reisebüro Kompass Beispiel GmbH",
-   "betrifft": "Frau Asmussen",
-   "person": "Katrin Asmussen",
-   "frist": "2026-08-24"
-  },
-  {
-   "pfad": "Eingang/selbststaendig-thomsen/Handy/Rechnung_Strom_172.pdf",
+   "pfad": "Eingang/selbststaendig-thomsen/Scanner/IMG_2026263.pdf",
    "haushalt": "selbststaendig-thomsen",
    "schriftstueck": "Rechnung",
    "kategorie": "Energie & Versorgung",
    "absender": "Nordstrom Beispiel GmbH",
    "betrifft": "Familie Thomsen",
    "person": "Familie Thomsen",
-   "frist": "2026-10-27"
+   "frist": "2026-01-03"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/Scanner/scan_0173.pdf",
+   "pfad": "Eingang/selbststaendig-thomsen/Durcheinander/Rechnung_Strom_264.pdf",
    "haushalt": "selbststaendig-thomsen",
    "schriftstueck": "Rechnung",
    "kategorie": "Energie & Versorgung",
    "absender": "Nordstrom Beispiel GmbH",
    "betrifft": "Herr Thomsen",
    "person": "Ole Thomsen",
-   "frist": "2026-04-28"
+   "frist": "2026-01-31"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/Durcheinander/scan_0174.pdf",
+   "pfad": "Eingang/selbststaendig-thomsen/Scanner/Rechnung_Strom_265.pdf",
    "haushalt": "selbststaendig-thomsen",
    "schriftstueck": "Rechnung",
    "kategorie": "Energie & Versorgung",
    "absender": "Nordstrom Beispiel GmbH",
    "betrifft": "Familie Thomsen",
    "person": "Familie Thomsen",
-   "frist": "2026-01-04"
+   "frist": "2025-01-18"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/Handy/scan_0175.pdf",
+   "pfad": "Eingang/selbststaendig-thomsen/Durcheinander/Dokument (266).pdf",
    "haushalt": "selbststaendig-thomsen",
    "schriftstueck": "Abrechnung",
    "kategorie": "Energie & Versorgung",
    "absender": "Nordstrom Beispiel GmbH",
-   "betrifft": "Frau Thomsen",
-   "person": "Anke Thomsen"
-  },
-  {
-   "pfad": "Eingang/selbststaendig-thomsen/Handy/IMG_2025176.pdf",
-   "haushalt": "selbststaendig-thomsen",
-   "schriftstueck": "Kontoauszug",
-   "kategorie": "Finanzen & Konten",
-   "absender": "Hafensparkasse Beispiel",
    "betrifft": "Herr Thomsen",
    "person": "Ole Thomsen"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/Durcheinander/scan_0177.pdf",
+   "pfad": "Eingang/selbststaendig-thomsen/Scanner/Kontoauszug_267.pdf",
+   "haushalt": "selbststaendig-thomsen",
+   "schriftstueck": "Kontoauszug",
+   "kategorie": "Finanzen & Konten",
+   "absender": "Beispiel Direktbank AG",
+   "betrifft": "Herr Thomsen",
+   "person": "Ole Thomsen"
+  },
+  {
+   "pfad": "Eingang/selbststaendig-thomsen/Scanner/scan_0268.pdf",
+   "haushalt": "selbststaendig-thomsen",
+   "schriftstueck": "Kontoauszug",
+   "kategorie": "Finanzen & Konten",
+   "absender": "Beispiel Direktbank AG",
+   "betrifft": "Herr Thomsen",
+   "person": "Ole Thomsen"
+  },
+  {
+   "pfad": "Eingang/selbststaendig-thomsen/Downloads/IMG_2026269.pdf",
    "haushalt": "selbststaendig-thomsen",
    "schriftstueck": "Vertrag",
    "kategorie": "Verträge & Abonnements",
    "absender": "Funkwelle Beispiel GmbH",
-   "betrifft": "Herr Thomsen",
-   "person": "Ole Thomsen"
+   "betrifft": "Frau Thomsen",
+   "person": "Anke Thomsen"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/Scanner/IMG_2025178.pdf",
+   "pfad": "Eingang/selbststaendig-thomsen/Handy/scan_0270.pdf",
    "haushalt": "selbststaendig-thomsen",
    "schriftstueck": "Rechnung",
    "kategorie": "Verträge & Abonnements",
    "absender": "Funkwelle Beispiel GmbH",
-   "betrifft": "Herr Thomsen",
-   "person": "Ole Thomsen",
-   "frist": "2026-10-29"
-  },
-  {
-   "pfad": "Eingang/selbststaendig-thomsen/Durcheinander/Mahnung_179.pdf",
-   "haushalt": "selbststaendig-thomsen",
-   "schriftstueck": "Mahnung",
-   "kategorie": "Verträge & Abonnements",
-   "absender": "Funkwelle Beispiel GmbH",
    "betrifft": "Frau Thomsen",
    "person": "Anke Thomsen",
-   "frist": "2025-10-18"
+   "frist": "2026-06-11"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/Scanner/scan_0180.pdf",
+   "pfad": "Eingang/selbststaendig-thomsen/Durcheinander/scan_0271.pdf",
+   "haushalt": "selbststaendig-thomsen",
+   "schriftstueck": "Mahnung",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Versandhandel Beispiel GmbH",
+   "betrifft": "Herr Thomsen",
+   "person": "Ole Thomsen",
+   "frist": "2026-10-06"
+  },
+  {
+   "pfad": "Eingang/selbststaendig-thomsen/alt/Krankenkasse_272.pdf",
    "haushalt": "selbststaendig-thomsen",
    "schriftstueck": "Vertrag",
    "kategorie": "Gesundheit & Pflege",
    "absender": "Nord-Krankenkasse Beispiel",
-   "betrifft": "Herr Thomsen",
-   "person": "Ole Thomsen"
-  },
-  {
-   "pfad": "Eingang/selbststaendig-thomsen/Scanner/Befund_181.pdf",
-   "haushalt": "selbststaendig-thomsen",
-   "schriftstueck": "Befund",
-   "kategorie": "Gesundheit & Pflege",
-   "absender": "Labor Nord Beispiel MVZ GmbH",
-   "betrifft": "Anke Thomsen",
+   "betrifft": "Frau Thomsen",
    "person": "Anke Thomsen"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/Durcheinander/Termin_Zahnarzt_182.pdf",
+   "pfad": "Eingang/selbststaendig-thomsen/Durcheinander/Dokument (273).pdf",
+   "haushalt": "selbststaendig-thomsen",
+   "schriftstueck": "Befund",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Hausarztpraxis Dr. med. Tim Beispiel",
+   "betrifft": "Ole Thomsen",
+   "person": "Ole Thomsen"
+  },
+  {
+   "pfad": "Eingang/selbststaendig-thomsen/alt/Termin_Zahnarzt_274.pdf",
    "haushalt": "selbststaendig-thomsen",
    "schriftstueck": "Termin",
    "kategorie": "Gesundheit & Pflege",
    "absender": "Zahnarztpraxis Dr. Ole Beispiel",
    "betrifft": "Frau Thomsen",
    "person": "Anke Thomsen",
-   "frist": "2026-09-05"
+   "frist": "2025-09-13"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/Scanner/Rechnung_Kauf_183.pdf",
+   "pfad": "Eingang/selbststaendig-thomsen/Scanner/scan_0275.pdf",
    "haushalt": "selbststaendig-thomsen",
    "schriftstueck": "Rechnung",
    "kategorie": "Einkäufe, Rechnungen & Garantien",
    "absender": "Elektronikmarkt Beispiel GmbH",
    "betrifft": "Frau Thomsen",
    "person": "Anke Thomsen",
-   "frist": "2026-01-12"
+   "frist": "2025-04-09"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/alt/scan_0184.pdf",
+   "pfad": "Eingang/selbststaendig-thomsen/Scanner/IMG_2025276.pdf",
    "haushalt": "selbststaendig-thomsen",
    "schriftstueck": "Angebot/Werbung",
    "kategorie": "Einkäufe, Rechnungen & Garantien",
-   "absender": "Möbelhaus Nordlicht Beispiel GmbH"
+   "absender": "Versandhandel Beispiel GmbH"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/Handy/Ihre_185.eml",
+   "pfad": "Eingang/selbststaendig-thomsen/Handy/Ihre_277.eml",
    "haushalt": "selbststaendig-thomsen",
    "schriftstueck": "Rechnung",
    "kategorie": "Einkäufe, Rechnungen & Garantien",
    "absender": "Versandhandel Beispiel GmbH",
-   "betrifft": "Frau Thomsen",
-   "person": "Anke Thomsen"
-  },
-  {
-   "pfad": "Eingang/selbststaendig-thomsen/alt/Rechnung_186.eml",
-   "haushalt": "selbststaendig-thomsen",
-   "schriftstueck": "Rechnung",
-   "kategorie": "Verträge & Abonnements",
-   "absender": "Filmabend Beispiel GmbH",
    "betrifft": "Herr Thomsen",
    "person": "Ole Thomsen"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/Scanner/Ihre_187.eml",
+   "pfad": "Eingang/selbststaendig-thomsen/Handy/Rechnung_278.eml",
+   "haushalt": "selbststaendig-thomsen",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Verträge & Abonnements",
+   "absender": "Filmabend Beispiel GmbH",
+   "betrifft": "Frau Thomsen",
+   "person": "Anke Thomsen"
+  },
+  {
+   "pfad": "Eingang/selbststaendig-thomsen/Scanner/Ihre_279.eml",
    "haushalt": "selbststaendig-thomsen",
    "schriftstueck": "Rechnung",
    "kategorie": "Reisen & Freizeit",
@@ -1756,7 +2642,7 @@
    "person": "Ole Thomsen"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/Scanner/Versicherung_188.pdf",
+   "pfad": "Eingang/selbststaendig-thomsen/Scanner/Versicherung_280.pdf",
    "haushalt": "selbststaendig-thomsen",
    "schriftstueck": "Vertrag",
    "kategorie": "Versicherungen",
@@ -1765,17 +2651,17 @@
    "person": "Anke Thomsen"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/Durcheinander/scan_0189.pdf",
+   "pfad": "Eingang/selbststaendig-thomsen/Durcheinander/scan_0281.pdf",
    "haushalt": "selbststaendig-thomsen",
    "schriftstueck": "Rechnung",
    "kategorie": "Versicherungen",
    "absender": "Küsten Hausrat- und Haftpflicht Beispiel AG",
-   "betrifft": "Herr Thomsen",
-   "person": "Ole Thomsen",
-   "frist": "2025-02-16"
+   "betrifft": "Frau Thomsen",
+   "person": "Anke Thomsen",
+   "frist": "2026-03-28"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/Handy/scan_0190.pdf",
+   "pfad": "Eingang/selbststaendig-thomsen/Scanner/scan_0282.pdf",
    "haushalt": "selbststaendig-thomsen",
    "schriftstueck": "Bescheid",
    "kategorie": "Steuern & Behörden",
@@ -1784,17 +2670,17 @@
    "person": "Anke Thomsen"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/Scanner/Beitrag_191.pdf",
+   "pfad": "Eingang/selbststaendig-thomsen/alt/scan_0283.pdf",
    "haushalt": "selbststaendig-thomsen",
    "schriftstueck": "Rechnung",
-   "kategorie": "Verträge & Abonnements",
+   "kategorie": "Steuern & Behörden",
    "absender": "Rundfunkbeitrag Beispiel-Service",
-   "betrifft": "Frau Thomsen",
-   "person": "Anke Thomsen",
-   "frist": "2025-09-13"
+   "betrifft": "Herr Thomsen",
+   "person": "Ole Thomsen",
+   "frist": "2025-05-23"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/Scanner/scan_0192.pdf",
+   "pfad": "Eingang/selbststaendig-thomsen/Handy/scan_0284.pdf",
    "haushalt": "selbststaendig-thomsen",
    "schriftstueck": "Bescheid",
    "kategorie": "Steuern & Behörden",
@@ -1803,75 +2689,214 @@
    "person": "Familie Thomsen"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/Scanner/IMG_2026193.pdf",
+   "pfad": "Eingang/selbststaendig-thomsen/Scanner/Gebuehren_285.pdf",
    "haushalt": "selbststaendig-thomsen",
    "schriftstueck": "Rechnung",
    "kategorie": "Haus & Wohnung",
    "absender": "Stadtreinigung Beispielstadt",
    "betrifft": "Familie Thomsen",
    "person": "Familie Thomsen",
-   "frist": "2025-05-23"
+   "frist": "2026-08-20"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/Scanner/scan_0194.pdf",
+   "pfad": "Eingang/selbststaendig-thomsen/Handy/scan_0286.pdf",
    "haushalt": "selbststaendig-thomsen",
    "schriftstueck": "Rechnung",
    "kategorie": "Energie & Versorgung",
    "absender": "Wasserwerke Beispielstadt GmbH",
    "betrifft": "Familie Thomsen",
    "person": "Familie Thomsen",
-   "frist": "2026-09-24"
+   "frist": "2026-08-16"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/Scanner/Internet_195.pdf",
+   "pfad": "Eingang/selbststaendig-thomsen/Durcheinander/Internet_287.pdf",
    "haushalt": "selbststaendig-thomsen",
    "schriftstueck": "Vertrag",
    "kategorie": "Verträge & Abonnements",
    "absender": "Glasfaser Nord Beispiel GmbH",
-   "betrifft": "Frau Thomsen",
-   "person": "Anke Thomsen"
+   "betrifft": "Herr Thomsen",
+   "person": "Ole Thomsen"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/Scanner/IMG_2025196.pdf",
+   "pfad": "Eingang/selbststaendig-thomsen/alt/scan_0288.pdf",
    "haushalt": "selbststaendig-thomsen",
    "schriftstueck": "Rechnung",
    "kategorie": "Versicherungen",
    "absender": "Elbe Kfz-Versicherung Beispiel AG",
    "betrifft": "Herr Thomsen",
    "person": "Ole Thomsen",
-   "frist": "2025-04-22"
+   "frist": "2026-03-13"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/alt/Werkstatt_197.pdf",
+   "pfad": "Eingang/selbststaendig-thomsen/Downloads/scan_0289.pdf",
    "haushalt": "selbststaendig-thomsen",
    "schriftstueck": "Rechnung",
    "kategorie": "Auto & Mobilität",
    "absender": "Kfz-Werkstatt Schrauber Beispiel GmbH",
    "betrifft": "Herr Thomsen",
    "person": "Ole Thomsen",
-   "frist": "2026-10-02"
+   "frist": "2026-03-05"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/Durcheinander/HU_198.pdf",
+   "pfad": "Eingang/selbststaendig-thomsen/Handy/scan_0290.pdf",
    "haushalt": "selbststaendig-thomsen",
    "schriftstueck": "Termin",
    "kategorie": "Auto & Mobilität",
    "absender": "Prüfstelle Fahrzeugtechnik Beispiel",
    "betrifft": "Herr Thomsen",
    "person": "Ole Thomsen",
-   "frist": "2025-05-02"
+   "frist": "2025-11-15"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/Scanner/Zulassung_199.pdf",
+   "pfad": "Eingang/selbststaendig-thomsen/alt/scan_0291.pdf",
    "haushalt": "selbststaendig-thomsen",
-   "schriftstueck": "Bescheid",
+   "schriftstueck": "Bescheinigung",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Hausarztpraxis Dr. med. Tim Beispiel",
+   "betrifft": "Ole Thomsen",
+   "person": "Ole Thomsen"
+  },
+  {
+   "pfad": "Eingang/selbststaendig-thomsen/Scanner/scan_0292.pdf",
+   "haushalt": "selbststaendig-thomsen",
+   "schriftstueck": "Termin",
+   "kategorie": "Familie & persönliche Dokumente",
+   "absender": "Kundenzentrum Bezirksamt Beispielstadt-Nord",
+   "betrifft": "Herr Thomsen",
+   "person": "Ole Thomsen",
+   "frist": "2027-02-08"
+  },
+  {
+   "pfad": "Eingang/selbststaendig-thomsen/Scanner/Dokument (293).pdf",
+   "haushalt": "selbststaendig-thomsen",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Garten & Grundstück",
+   "absender": "Kleingartenverein Sonnenblick Beispiel e. V.",
+   "betrifft": "Herr Thomsen",
+   "person": "Ole Thomsen",
+   "frist": "2025-10-08"
+  },
+  {
+   "pfad": "Eingang/selbststaendig-thomsen/alt/scan_0294.pdf",
+   "haushalt": "selbststaendig-thomsen",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Garten & Grundstück",
+   "absender": "Kleingartenverein Sonnenblick Beispiel e. V.",
+   "betrifft": "Herr Thomsen",
+   "person": "Ole Thomsen",
+   "frist": "2025-05-26"
+  },
+  {
+   "pfad": "Eingang/selbststaendig-thomsen/alt/scan_0295.pdf",
+   "haushalt": "selbststaendig-thomsen",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Optik Klarblick Beispiel",
+   "betrifft": "Frau Thomsen",
+   "person": "Anke Thomsen",
+   "frist": "2025-02-01"
+  },
+  {
+   "pfad": "Eingang/selbststaendig-thomsen/Downloads/Dokument (296).pdf",
+   "haushalt": "selbststaendig-thomsen",
+   "schriftstueck": "Brief",
+   "kategorie": "Versicherungen",
+   "absender": "Elbe Kfz-Versicherung Beispiel AG",
+   "betrifft": "Frau Thomsen",
+   "person": "Anke Thomsen"
+  },
+  {
+   "pfad": "Eingang/selbststaendig-thomsen/Downloads/Nachlass_297.pdf",
+   "haushalt": "selbststaendig-thomsen",
+   "schriftstueck": "Brief",
+   "kategorie": "Erbschaft, Vollmachten & Vorsorge",
+   "absender": "Amtsgericht Beispielstadt – Nachlassgericht",
+   "betrifft": "Herr Thomsen",
+   "person": "Ole Thomsen"
+  },
+  {
+   "pfad": "Eingang/selbststaendig-thomsen/Durcheinander/Garten_298.pdf",
+   "haushalt": "selbststaendig-thomsen",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Garten & Grundstück",
+   "absender": "Kleingartenverein Sonnenblick Beispiel e. V.",
+   "betrifft": "Herr Thomsen",
+   "person": "Ole Thomsen",
+   "frist": "2026-10-24"
+  },
+  {
+   "pfad": "Eingang/selbststaendig-thomsen/Downloads/Physio_299.pdf",
+   "haushalt": "selbststaendig-thomsen",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Physiotherapie Bewegung Beispiel",
+   "betrifft": "Frau Thomsen",
+   "person": "Anke Thomsen",
+   "frist": "2026-06-22"
+  },
+  {
+   "pfad": "Eingang/selbststaendig-thomsen/Handy/WhatsApp/Media/IMG-2026400-WA0063.jpg",
+   "haushalt": "selbststaendig-thomsen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Discount Nord Beispiel",
+   "betrag": "11,10",
+   "datum": "2026-06-04",
+   "buchung": "Lebensmittel",
+   "fotografiert": "Anke Thomsen"
+  },
+  {
+   "pfad": "Eingang/selbststaendig-thomsen/Handy/WhatsApp/Media/IMG-2026401-WA0074.jpg",
+   "haushalt": "selbststaendig-thomsen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Frischmarkt Beispiel",
+   "betrag": "5,36",
+   "datum": "2026-08-19",
+   "buchung": "Lebensmittel",
+   "fotografiert": "Anke Thomsen"
+  },
+  {
+   "pfad": "Eingang/selbststaendig-thomsen/Handy/DCIM/Camera/IMG_20261302_182254.jpg",
+   "haushalt": "selbststaendig-thomsen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Frischmarkt Beispiel",
+   "betrag": "5,08",
+   "datum": "2025-10-18",
+   "buchung": "Lebensmittel",
+   "fotografiert": "Ole Thomsen"
+  },
+  {
+   "pfad": "Eingang/selbststaendig-thomsen/Handy/WhatsApp/Media/IMG-2026403-WA0040.jpg",
+   "haushalt": "selbststaendig-thomsen",
+   "schriftstueck": "Kassenbon",
    "kategorie": "Auto & Mobilität",
-   "absender": "Landesbetrieb Verkehr Beispielstadt",
-   "betrifft": "Herr Thomsen",
-   "person": "Ole Thomsen"
+   "absender": "Tankstelle Nordstern Beispiel",
+   "betrag": "65,27",
+   "datum": "2025-07-27",
+   "buchung": "Tanken",
+   "fotografiert": "Anke Thomsen"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/alt/USt_200.pdf",
+   "pfad": "Eingang/selbststaendig-thomsen/Handy/DCIM/Camera/IMG_20261304_147432.jpg",
+   "haushalt": "selbststaendig-thomsen",
+   "schriftstueck": "Angebot/Werbung",
+   "kategorie": "Auto & Mobilität",
+   "absender": "Autohaus Nordlicht Beispiel",
+   "betrag": "35990",
+   "rate": "440",
+   "fotografiert": "Ole Thomsen",
+   "notiz": "Foto zum Vergleich mit dem Haushaltsbuch"
+  },
+  {
+   "pfad": "Eingang/selbststaendig-thomsen/Handy/DCIM/Camera/IMG_20261305_195396.jpg",
+   "haushalt": "selbststaendig-thomsen",
+   "schriftstueck": "Foto",
+   "kategorie": "Fotos"
+  },
+  {
+   "pfad": "Eingang/selbststaendig-thomsen/Handy/scan_0306.pdf",
    "haushalt": "selbststaendig-thomsen",
    "schriftstueck": "Bescheid",
    "kategorie": "Steuern & Behörden",
@@ -1880,7 +2905,7 @@
    "person": "Ole Thomsen"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/Scanner/USt_201.pdf",
+   "pfad": "Eingang/selbststaendig-thomsen/Scanner/Dokument (307).pdf",
    "haushalt": "selbststaendig-thomsen",
    "schriftstueck": "Bescheid",
    "kategorie": "Steuern & Behörden",
@@ -1889,97 +2914,77 @@
    "person": "Ole Thomsen"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/Downloads/scan_0202.pdf",
+   "pfad": "Eingang/selbststaendig-thomsen/Scanner/Gewerbesteuer_308.pdf",
    "haushalt": "selbststaendig-thomsen",
    "schriftstueck": "Bescheid",
    "kategorie": "Steuern & Behörden",
    "absender": "Steueramt Beispielstadt – Gewerbesteuer",
    "betrifft": "Herr Thomsen",
    "person": "Ole Thomsen",
-   "frist": "2025-08-29"
+   "frist": "2025-07-27"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/Handy/IMG_2026203.pdf",
+   "pfad": "Eingang/selbststaendig-thomsen/Scanner/Kammerbeitrag_309.pdf",
    "haushalt": "selbststaendig-thomsen",
    "schriftstueck": "Rechnung",
    "kategorie": "Rente, Arbeit & Sozialversicherung",
    "absender": "Handwerkskammer Beispielstadt",
    "betrifft": "Herr Thomsen",
    "person": "Ole Thomsen",
-   "frist": "2026-09-17"
+   "frist": "2026-07-07"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/Downloads/Rechnung_204.pdf",
+   "pfad": "Eingang/selbststaendig-thomsen/Downloads/scan_0310.pdf",
    "haushalt": "selbststaendig-thomsen",
    "schriftstueck": "Rechnung",
    "kategorie": "Versicherungen",
    "absender": "Berufsgenossenschaft Bau Beispiel",
    "betrifft": "Herr Thomsen",
    "person": "Ole Thomsen",
-   "frist": "2025-01-31"
+   "frist": "2025-01-30"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/Scanner/scan_0205.pdf",
+   "pfad": "Eingang/selbststaendig-thomsen/Scanner/Steuerberater_311.pdf",
    "haushalt": "selbststaendig-thomsen",
    "schriftstueck": "Rechnung",
    "kategorie": "Steuern & Behörden",
    "absender": "Steuerberatung Hansen Beispiel",
    "betrifft": "Herr Thomsen",
    "person": "Ole Thomsen",
-   "frist": "2026-09-22"
+   "frist": "2025-12-19"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/Scanner/Finanzamt_206.pdf",
+   "pfad": "Eingang/selbststaendig-thomsen/Handy/scan_0312.pdf",
    "haushalt": "selbststaendig-thomsen",
    "schriftstueck": "Aufforderung",
    "kategorie": "Steuern & Behörden",
    "absender": "Finanzamt Beispielstadt-Mitte",
    "betrifft": "Herr Thomsen",
    "person": "Ole Thomsen",
-   "frist": "2026-01-23"
+   "frist": "2025-04-25"
   },
   {
-   "pfad": "Eingang/selbststaendig-thomsen/Scanner/Reise_207.pdf",
-   "haushalt": "selbststaendig-thomsen",
+   "pfad": "Eingang/rentner-jessen/Scanner/Rechnung_Strom_313.pdf",
+   "haushalt": "rentner-jessen",
    "schriftstueck": "Rechnung",
-   "kategorie": "Reisen & Freizeit",
-   "absender": "Reisebüro Kompass Beispiel GmbH",
-   "betrifft": "Frau Thomsen",
-   "person": "Anke Thomsen",
-   "frist": "2026-04-19"
+   "kategorie": "Energie & Versorgung",
+   "absender": "Nordstrom Beispiel GmbH",
+   "betrifft": "Frau Jessen",
+   "person": "Gerda Jessen",
+   "frist": "2025-11-19"
   },
   {
-   "pfad": "Eingang/rentner-jessen/Scanner/Rechnung_Strom_208.pdf",
+   "pfad": "Eingang/rentner-jessen/Handy/scan_0314.pdf",
    "haushalt": "rentner-jessen",
    "schriftstueck": "Rechnung",
    "kategorie": "Energie & Versorgung",
    "absender": "Nordstrom Beispiel GmbH",
    "betrifft": "Familie Jessen",
    "person": "Familie Jessen",
-   "frist": "2026-09-12"
+   "frist": "2025-03-18"
   },
   {
-   "pfad": "Eingang/rentner-jessen/Scanner/scan_0209.pdf",
-   "haushalt": "rentner-jessen",
-   "schriftstueck": "Rechnung",
-   "kategorie": "Energie & Versorgung",
-   "absender": "Nordstrom Beispiel GmbH",
-   "betrifft": "Herr Jessen",
-   "person": "Hinrich Jessen",
-   "frist": "2025-02-14"
-  },
-  {
-   "pfad": "Eingang/rentner-jessen/Handy/Rechnung_Strom_210.pdf",
-   "haushalt": "rentner-jessen",
-   "schriftstueck": "Rechnung",
-   "kategorie": "Energie & Versorgung",
-   "absender": "Nordstrom Beispiel GmbH",
-   "betrifft": "Familie Jessen",
-   "person": "Familie Jessen",
-   "frist": "2026-09-09"
-  },
-  {
-   "pfad": "Eingang/rentner-jessen/Scanner/scan_0211.pdf",
+   "pfad": "Eingang/rentner-jessen/Scanner/scan_0315.pdf",
    "haushalt": "rentner-jessen",
    "schriftstueck": "Abrechnung",
    "kategorie": "Energie & Versorgung",
@@ -1988,7 +2993,7 @@
    "person": "Hinrich Jessen"
   },
   {
-   "pfad": "Eingang/rentner-jessen/Durcheinander/IMG_2025212.pdf",
+   "pfad": "Eingang/rentner-jessen/Downloads/scan_0316.pdf",
    "haushalt": "rentner-jessen",
    "schriftstueck": "Kontoauszug",
    "kategorie": "Finanzen & Konten",
@@ -1997,36 +3002,26 @@
    "person": "Hinrich Jessen"
   },
   {
-   "pfad": "Eingang/rentner-jessen/Durcheinander/Rechnung_213.pdf",
+   "pfad": "Eingang/rentner-jessen/Scanner/IMG_2026317.pdf",
    "haushalt": "rentner-jessen",
    "schriftstueck": "Vertrag",
    "kategorie": "Verträge & Abonnements",
    "absender": "Funkwelle Beispiel GmbH",
-   "betrifft": "Frau Jessen",
-   "person": "Gerda Jessen"
+   "betrifft": "Herr Jessen",
+   "person": "Hinrich Jessen"
   },
   {
-   "pfad": "Eingang/rentner-jessen/Handy/scan_0214.pdf",
+   "pfad": "Eingang/rentner-jessen/Scanner/Dokument (318).pdf",
    "haushalt": "rentner-jessen",
    "schriftstueck": "Rechnung",
    "kategorie": "Verträge & Abonnements",
    "absender": "Funkwelle Beispiel GmbH",
-   "betrifft": "Herr Jessen",
-   "person": "Hinrich Jessen",
-   "frist": "2025-07-17"
-  },
-  {
-   "pfad": "Eingang/rentner-jessen/Durcheinander/Mahnung_215.pdf",
-   "haushalt": "rentner-jessen",
-   "schriftstueck": "Mahnung",
-   "kategorie": "Verträge & Abonnements",
-   "absender": "Funkwelle Beispiel GmbH",
    "betrifft": "Frau Jessen",
    "person": "Gerda Jessen",
-   "frist": "2026-04-17"
+   "frist": "2025-05-04"
   },
   {
-   "pfad": "Eingang/rentner-jessen/Handy/scan_0216.pdf",
+   "pfad": "Eingang/rentner-jessen/Handy/Post_319.pdf",
    "haushalt": "rentner-jessen",
    "schriftstueck": "Vertrag",
    "kategorie": "Gesundheit & Pflege",
@@ -2035,36 +3030,36 @@
    "person": "Hinrich Jessen"
   },
   {
-   "pfad": "Eingang/rentner-jessen/Scanner/Befund_217.pdf",
+   "pfad": "Eingang/rentner-jessen/Durcheinander/IMG_2025320.pdf",
    "haushalt": "rentner-jessen",
    "schriftstueck": "Befund",
    "kategorie": "Gesundheit & Pflege",
-   "absender": "Labor Nord Beispiel MVZ GmbH",
-   "betrifft": "Gerda Jessen",
-   "person": "Gerda Jessen"
+   "absender": "Hausarztpraxis Dr. med. Tim Beispiel",
+   "betrifft": "Hinrich Jessen",
+   "person": "Hinrich Jessen"
   },
   {
-   "pfad": "Eingang/rentner-jessen/Scanner/scan_0218.pdf",
+   "pfad": "Eingang/rentner-jessen/alt/scan_0321.pdf",
    "haushalt": "rentner-jessen",
    "schriftstueck": "Termin",
    "kategorie": "Gesundheit & Pflege",
    "absender": "Zahnarztpraxis Dr. Ole Beispiel",
-   "betrifft": "Herr Jessen",
-   "person": "Hinrich Jessen",
-   "frist": "2026-01-06"
+   "betrifft": "Frau Jessen",
+   "person": "Gerda Jessen",
+   "frist": "2025-08-27"
   },
   {
-   "pfad": "Eingang/rentner-jessen/alt/Dokument (219).pdf",
+   "pfad": "Eingang/rentner-jessen/Scanner/Rechnung_Kauf_322.pdf",
    "haushalt": "rentner-jessen",
    "schriftstueck": "Rechnung",
    "kategorie": "Einkäufe, Rechnungen & Garantien",
    "absender": "Elektronikmarkt Beispiel GmbH",
    "betrifft": "Herr Jessen",
    "person": "Hinrich Jessen",
-   "frist": "2026-01-26"
+   "frist": "2025-06-29"
   },
   {
-   "pfad": "Eingang/rentner-jessen/Durcheinander/Ihre_220.eml",
+   "pfad": "Eingang/rentner-jessen/alt/Ihre_323.eml",
    "haushalt": "rentner-jessen",
    "schriftstueck": "Rechnung",
    "kategorie": "Einkäufe, Rechnungen & Garantien",
@@ -2073,7 +3068,7 @@
    "person": "Gerda Jessen"
   },
   {
-   "pfad": "Eingang/rentner-jessen/Downloads/Rechnung_221.eml",
+   "pfad": "Eingang/rentner-jessen/Scanner/Rechnung_324.eml",
    "haushalt": "rentner-jessen",
    "schriftstueck": "Rechnung",
    "kategorie": "Verträge & Abonnements",
@@ -2082,16 +3077,16 @@
    "person": "Hinrich Jessen"
   },
   {
-   "pfad": "Eingang/rentner-jessen/Durcheinander/Ihre_222.eml",
+   "pfad": "Eingang/rentner-jessen/Handy/Ihre_325.eml",
    "haushalt": "rentner-jessen",
    "schriftstueck": "Rechnung",
    "kategorie": "Reisen & Freizeit",
    "absender": "Nordbahn Beispiel GmbH",
-   "betrifft": "Herr Jessen",
-   "person": "Hinrich Jessen"
+   "betrifft": "Frau Jessen",
+   "person": "Gerda Jessen"
   },
   {
-   "pfad": "Eingang/rentner-jessen/Scanner/Versicherung_223.pdf",
+   "pfad": "Eingang/rentner-jessen/Downloads/scan_0326.pdf",
    "haushalt": "rentner-jessen",
    "schriftstueck": "Vertrag",
    "kategorie": "Versicherungen",
@@ -2100,26 +3095,26 @@
    "person": "Gerda Jessen"
   },
   {
-   "pfad": "Eingang/rentner-jessen/Scanner/Steuerbescheid_224.pdf",
+   "pfad": "Eingang/rentner-jessen/Downloads/Steuerbescheid_327.pdf",
    "haushalt": "rentner-jessen",
    "schriftstueck": "Bescheid",
    "kategorie": "Steuern & Behörden",
    "absender": "Finanzamt Beispielstadt-Mitte",
-   "betrifft": "Herr Jessen",
-   "person": "Hinrich Jessen"
+   "betrifft": "Frau Jessen",
+   "person": "Gerda Jessen"
   },
   {
-   "pfad": "Eingang/rentner-jessen/Scanner/Beitrag_225.pdf",
+   "pfad": "Eingang/rentner-jessen/Scanner/Beitrag_328.pdf",
    "haushalt": "rentner-jessen",
    "schriftstueck": "Rechnung",
-   "kategorie": "Verträge & Abonnements",
+   "kategorie": "Steuern & Behörden",
    "absender": "Rundfunkbeitrag Beispiel-Service",
-   "betrifft": "Frau Jessen",
-   "person": "Gerda Jessen",
-   "frist": "2026-02-27"
+   "betrifft": "Herr Jessen",
+   "person": "Hinrich Jessen",
+   "frist": "2026-10-27"
   },
   {
-   "pfad": "Eingang/rentner-jessen/Downloads/Grundsteuer_226.pdf",
+   "pfad": "Eingang/rentner-jessen/alt/Grundsteuer_329.pdf",
    "haushalt": "rentner-jessen",
    "schriftstueck": "Bescheid",
    "kategorie": "Steuern & Behörden",
@@ -2128,27 +3123,27 @@
    "person": "Familie Jessen"
   },
   {
-   "pfad": "Eingang/rentner-jessen/Downloads/Post_227.pdf",
+   "pfad": "Eingang/rentner-jessen/Scanner/Gebuehren_330.pdf",
    "haushalt": "rentner-jessen",
    "schriftstueck": "Rechnung",
    "kategorie": "Haus & Wohnung",
    "absender": "Stadtreinigung Beispielstadt",
    "betrifft": "Familie Jessen",
    "person": "Familie Jessen",
-   "frist": "2026-04-16"
+   "frist": "2025-08-03"
   },
   {
-   "pfad": "Eingang/rentner-jessen/Scanner/Dokument (228).pdf",
+   "pfad": "Eingang/rentner-jessen/alt/Wasser_331.pdf",
    "haushalt": "rentner-jessen",
    "schriftstueck": "Rechnung",
    "kategorie": "Energie & Versorgung",
    "absender": "Wasserwerke Beispielstadt GmbH",
    "betrifft": "Familie Jessen",
    "person": "Familie Jessen",
-   "frist": "2026-08-11"
+   "frist": "2025-12-11"
   },
   {
-   "pfad": "Eingang/rentner-jessen/Downloads/Internet_229.pdf",
+   "pfad": "Eingang/rentner-jessen/Scanner/Internet_332.pdf",
    "haushalt": "rentner-jessen",
    "schriftstueck": "Vertrag",
    "kategorie": "Verträge & Abonnements",
@@ -2157,7 +3152,160 @@
    "person": "Gerda Jessen"
   },
   {
-   "pfad": "Eingang/rentner-jessen/Scanner/Dokument (230).pdf",
+   "pfad": "Eingang/rentner-jessen/Downloads/scan_0333.pdf",
+   "haushalt": "rentner-jessen",
+   "schriftstueck": "Bescheinigung",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Hausarztpraxis Dr. med. Tim Beispiel",
+   "betrifft": "Gerda Jessen",
+   "person": "Gerda Jessen"
+  },
+  {
+   "pfad": "Eingang/rentner-jessen/Handy/Nachlass_334.pdf",
+   "haushalt": "rentner-jessen",
+   "schriftstueck": "Brief",
+   "kategorie": "Erbschaft, Vollmachten & Vorsorge",
+   "absender": "Amtsgericht Beispielstadt – Nachlassgericht",
+   "betrifft": "Frau Jessen",
+   "person": "Gerda Jessen"
+  },
+  {
+   "pfad": "Eingang/rentner-jessen/Handy/Ausweis_335.pdf",
+   "haushalt": "rentner-jessen",
+   "schriftstueck": "Termin",
+   "kategorie": "Familie & persönliche Dokumente",
+   "absender": "Kundenzentrum Bezirksamt Beispielstadt-Nord",
+   "betrifft": "Frau Jessen",
+   "person": "Gerda Jessen",
+   "frist": "2026-05-03"
+  },
+  {
+   "pfad": "Eingang/rentner-jessen/Scanner/Wichtig_336.pdf",
+   "haushalt": "rentner-jessen",
+   "schriftstueck": "Brief",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Psychotherapeutische Praxis Dipl.-Psych. Ruth Beispiel",
+   "betrifft": "Frau Jessen",
+   "person": "Gerda Jessen"
+  },
+  {
+   "pfad": "Eingang/rentner-jessen/Handy/Rechtsschutz_337.pdf",
+   "haushalt": "rentner-jessen",
+   "schriftstueck": "Brief",
+   "kategorie": "Versicherungen",
+   "absender": "Nord Rechtsschutz Beispiel AG",
+   "betrifft": "Herr Jessen",
+   "person": "Hinrich Jessen"
+  },
+  {
+   "pfad": "Eingang/rentner-jessen/Handy/IMG_2025338.pdf",
+   "haushalt": "rentner-jessen",
+   "schriftstueck": "Bescheinigung",
+   "kategorie": "Familie & persönliche Dokumente",
+   "absender": "Kundenzentrum Bezirksamt Beispielstadt-Nord",
+   "betrifft": "Herr Jessen",
+   "person": "Hinrich Jessen"
+  },
+  {
+   "pfad": "Eingang/rentner-jessen/Scanner/scan_0339.pdf",
+   "haushalt": "rentner-jessen",
+   "schriftstueck": "Bescheinigung",
+   "kategorie": "Familie & persönliche Dokumente",
+   "absender": "Standesamt Beispielstadt-Nord",
+   "betrifft": "Frau Jessen",
+   "person": "Gerda Jessen"
+  },
+  {
+   "pfad": "Eingang/rentner-jessen/Scanner/IMG_2025340.pdf",
+   "haushalt": "rentner-jessen",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Physiotherapie Bewegung Beispiel",
+   "betrifft": "Herr Jessen",
+   "person": "Hinrich Jessen",
+   "frist": "2026-02-19"
+  },
+  {
+   "pfad": "Eingang/rentner-jessen/Handy/DCIM/Camera/IMG_20261341_201724.jpg",
+   "haushalt": "rentner-jessen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Bäckerei Krümel Beispiel",
+   "betrag": "14,20",
+   "datum": "2026-01-10",
+   "buchung": "Lebensmittel",
+   "fotografiert": "Gerda Jessen"
+  },
+  {
+   "pfad": "Eingang/rentner-jessen/Handy/DCIM/Camera/IMG_20261342_161002.jpg",
+   "haushalt": "rentner-jessen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Drogerie Hafenlicht Beispiel",
+   "betrag": "17,55",
+   "datum": "2026-10-21",
+   "buchung": "Drogerie",
+   "fotografiert": "Hinrich Jessen"
+  },
+  {
+   "pfad": "Eingang/rentner-jessen/Handy/DCIM/Camera/IMG_20261343_139661.jpg",
+   "haushalt": "rentner-jessen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Frischmarkt Beispiel",
+   "betrag": "4,28",
+   "datum": "2026-03-23",
+   "buchung": "Lebensmittel",
+   "fotografiert": "Gerda Jessen"
+  },
+  {
+   "pfad": "Eingang/rentner-jessen/Handy/DCIM/Camera/IMG_20261344_150273.jpg",
+   "haushalt": "rentner-jessen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Frischmarkt Beispiel",
+   "betrag": "3,27",
+   "datum": "2025-08-01",
+   "buchung": "Lebensmittel",
+   "fotografiert": "Hinrich Jessen"
+  },
+  {
+   "pfad": "Eingang/rentner-jessen/Handy/DCIM/Camera/IMG_20261345_185908.jpg",
+   "haushalt": "rentner-jessen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Haus & Wohnung",
+   "absender": "Baumarkt Werkzeugkiste Beispiel",
+   "betrag": "92,38",
+   "datum": "2026-09-06",
+   "buchung": "Haus & Garten",
+   "fotografiert": "Hinrich Jessen"
+  },
+  {
+   "pfad": "Eingang/rentner-jessen/Scanner/scan_0346.jpg",
+   "haushalt": "rentner-jessen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Hafen-Apotheke Beispiel",
+   "betrag": "14,91",
+   "datum": "2026-11-04",
+   "buchung": "Gesundheit",
+   "fotografiert": "Hinrich Jessen"
+  },
+  {
+   "pfad": "Eingang/rentner-jessen/Handy/WhatsApp/Media/IMG-2026447-WA0018.jpg",
+   "haushalt": "rentner-jessen",
+   "schriftstueck": "Termin",
+   "kategorie": "Reisen & Freizeit",
+   "frist": "2025-10-20"
+  },
+  {
+   "pfad": "Eingang/rentner-jessen/Handy/DCIM/Camera/IMG_20261348_101349.jpg",
+   "haushalt": "rentner-jessen",
+   "schriftstueck": "Foto",
+   "kategorie": "Fotos"
+  },
+  {
+   "pfad": "Eingang/rentner-jessen/Scanner/scan_0349.pdf",
    "haushalt": "rentner-jessen",
    "schriftstueck": "Bescheid",
    "kategorie": "Rente, Arbeit & Sozialversicherung",
@@ -2166,7 +3314,7 @@
    "person": "Hinrich Jessen"
   },
   {
-   "pfad": "Eingang/rentner-jessen/Handy/IMG_2026231.pdf",
+   "pfad": "Eingang/rentner-jessen/Scanner/Rente_350.pdf",
    "haushalt": "rentner-jessen",
    "schriftstueck": "Bescheid",
    "kategorie": "Rente, Arbeit & Sozialversicherung",
@@ -2175,7 +3323,7 @@
    "person": "Gerda Jessen"
   },
   {
-   "pfad": "Eingang/rentner-jessen/alt/Pflegekasse_232.pdf",
+   "pfad": "Eingang/rentner-jessen/Scanner/Pflegekasse_351.pdf",
    "haushalt": "rentner-jessen",
    "schriftstueck": "Bescheid",
    "kategorie": "Gesundheit & Pflege",
@@ -2184,27 +3332,27 @@
    "person": "Gerda Jessen"
   },
   {
-   "pfad": "Eingang/rentner-jessen/Handy/Hoergeraet_233.pdf",
+   "pfad": "Eingang/rentner-jessen/Downloads/Hoergeraet_352.pdf",
    "haushalt": "rentner-jessen",
    "schriftstueck": "Rechnung",
    "kategorie": "Gesundheit & Pflege",
    "absender": "Hörstudio Beispiel GmbH",
    "betrifft": "Herr Jessen",
    "person": "Hinrich Jessen",
-   "frist": "2026-05-18"
+   "frist": "2026-03-29"
   },
   {
-   "pfad": "Eingang/rentner-jessen/Scanner/Apotheke_234.pdf",
+   "pfad": "Eingang/rentner-jessen/Durcheinander/scan_0353.pdf",
    "haushalt": "rentner-jessen",
    "schriftstueck": "Rechnung",
    "kategorie": "Gesundheit & Pflege",
    "absender": "Hafen-Apotheke Beispiel",
    "betrifft": "Frau Jessen",
    "person": "Gerda Jessen",
-   "frist": "2025-08-03"
+   "frist": "2026-07-16"
   },
   {
-   "pfad": "Eingang/rentner-jessen/Scanner/scan_0235.pdf",
+   "pfad": "Eingang/rentner-jessen/Durcheinander/Vollmacht_354.pdf",
    "haushalt": "rentner-jessen",
    "schriftstueck": "Vertrag",
    "kategorie": "Erbschaft, Vollmachten & Vorsorge",
@@ -2213,17 +3361,17 @@
    "person": "Hinrich Jessen"
   },
   {
-   "pfad": "Eingang/rentner-jessen/alt/scan_0236.pdf",
+   "pfad": "Eingang/rentner-jessen/Scanner/Fernwaerme_355.pdf",
    "haushalt": "rentner-jessen",
    "schriftstueck": "Rechnung",
    "kategorie": "Energie & Versorgung",
    "absender": "Wärme Beispielstadt GmbH",
    "betrifft": "Familie Jessen",
    "person": "Familie Jessen",
-   "frist": "2025-04-01"
+   "frist": "2025-07-20"
   },
   {
-   "pfad": "Eingang/rentner-jessen/Downloads/Befund_237.pdf",
+   "pfad": "Eingang/rentner-jessen/Durcheinander/Befund_356.pdf",
    "haushalt": "rentner-jessen",
    "schriftstueck": "Befund",
    "kategorie": "Gesundheit & Pflege",
@@ -2232,76 +3380,46 @@
    "person": "Gerda Jessen"
   },
   {
-   "pfad": "Eingang/rentner-jessen/Scanner/Kuendigung_238.pdf",
+   "pfad": "Eingang/rentner-jessen/Durcheinander/scan_0357.pdf",
    "haushalt": "rentner-jessen",
    "schriftstueck": "Kündigung",
    "kategorie": "Verträge & Abonnements",
    "absender": "Hafen-Fitness Beispiel GmbH",
-   "betrifft": "Frau Jessen",
-   "person": "Gerda Jessen"
+   "betrifft": "Herr Jessen",
+   "person": "Hinrich Jessen"
   },
   {
-   "pfad": "Eingang/rentner-jessen/Handy/Reparatur_239.pdf",
+   "pfad": "Eingang/rentner-jessen/Downloads/scan_0358.pdf",
    "haushalt": "rentner-jessen",
    "schriftstueck": "Rechnung",
    "kategorie": "Technik, Geräte & Reparaturen",
    "absender": "Reparaturservice Beispiel GmbH",
-   "betrifft": "Frau Jessen",
-   "person": "Gerda Jessen",
-   "frist": "2025-01-21"
+   "betrifft": "Herr Jessen",
+   "person": "Hinrich Jessen",
+   "frist": "2025-05-31"
   },
   {
-   "pfad": "Eingang/rentner-jessen/Handy/Reise_240.pdf",
-   "haushalt": "rentner-jessen",
-   "schriftstueck": "Rechnung",
-   "kategorie": "Reisen & Freizeit",
-   "absender": "Reisebüro Kompass Beispiel GmbH",
-   "betrifft": "Frau Jessen",
-   "person": "Gerda Jessen",
-   "frist": "2025-12-23"
-  },
-  {
-   "pfad": "Eingang/studentin-ketelsen/Handy/Rechnung_Strom_241.pdf",
+   "pfad": "Eingang/studentin-ketelsen/Scanner/scan_0359.pdf",
    "haushalt": "studentin-ketelsen",
    "schriftstueck": "Rechnung",
    "kategorie": "Energie & Versorgung",
    "absender": "Nordstrom Beispiel GmbH",
    "betrifft": "Frau Ketelsen",
    "person": "Lena Ketelsen",
-   "frist": "2026-04-08"
+   "frist": "2026-07-26"
   },
   {
-   "pfad": "Eingang/studentin-ketelsen/Durcheinander/Rechnung_Strom_242.pdf",
-   "haushalt": "studentin-ketelsen",
-   "schriftstueck": "Rechnung",
-   "kategorie": "Energie & Versorgung",
-   "absender": "Nordstrom Beispiel GmbH",
-   "betrifft": "Frau Ketelsen",
-   "person": "Lena Ketelsen",
-   "frist": "2025-12-16"
-  },
-  {
-   "pfad": "Eingang/studentin-ketelsen/alt/Rechnung_Strom_243.pdf",
-   "haushalt": "studentin-ketelsen",
-   "schriftstueck": "Rechnung",
-   "kategorie": "Energie & Versorgung",
-   "absender": "Nordstrom Beispiel GmbH",
-   "betrifft": "Frau Ketelsen",
-   "person": "Lena Ketelsen",
-   "frist": "2025-12-30"
-  },
-  {
-   "pfad": "Eingang/studentin-ketelsen/Durcheinander/scan_0244.pdf",
+   "pfad": "Eingang/studentin-ketelsen/alt/scan_0360.pdf",
    "haushalt": "studentin-ketelsen",
    "schriftstueck": "Rechnung",
    "kategorie": "Energie & Versorgung",
    "absender": "Nordstrom Beispiel GmbH",
    "betrifft": "Familie Ketelsen",
    "person": "Familie Ketelsen",
-   "frist": "2025-11-28"
+   "frist": "2026-02-16"
   },
   {
-   "pfad": "Eingang/studentin-ketelsen/alt/Jahresabrechnung_245.pdf",
+   "pfad": "Eingang/studentin-ketelsen/Handy/Wichtig_361.pdf",
    "haushalt": "studentin-ketelsen",
    "schriftstueck": "Abrechnung",
    "kategorie": "Energie & Versorgung",
@@ -2310,7 +3428,16 @@
    "person": "Lena Ketelsen"
   },
   {
-   "pfad": "Eingang/studentin-ketelsen/Scanner/scan_0246.pdf",
+   "pfad": "Eingang/studentin-ketelsen/Durcheinander/IMG_2025362.pdf",
+   "haushalt": "studentin-ketelsen",
+   "schriftstueck": "Kontoauszug",
+   "kategorie": "Finanzen & Konten",
+   "absender": "Beispiel Direktbank AG",
+   "betrifft": "Frau Ketelsen",
+   "person": "Lena Ketelsen"
+  },
+  {
+   "pfad": "Eingang/studentin-ketelsen/Handy/scan_0363.pdf",
    "haushalt": "studentin-ketelsen",
    "schriftstueck": "Kontoauszug",
    "kategorie": "Finanzen & Konten",
@@ -2319,7 +3446,7 @@
    "person": "Lena Ketelsen"
   },
   {
-   "pfad": "Eingang/studentin-ketelsen/Scanner/scan_0247.pdf",
+   "pfad": "Eingang/studentin-ketelsen/Scanner/Mobilfunk_364.pdf",
    "haushalt": "studentin-ketelsen",
    "schriftstueck": "Vertrag",
    "kategorie": "Verträge & Abonnements",
@@ -2328,17 +3455,17 @@
    "person": "Lena Ketelsen"
   },
   {
-   "pfad": "Eingang/studentin-ketelsen/Durcheinander/scan_0248.pdf",
+   "pfad": "Eingang/studentin-ketelsen/Downloads/scan_0365.pdf",
    "haushalt": "studentin-ketelsen",
    "schriftstueck": "Rechnung",
    "kategorie": "Verträge & Abonnements",
    "absender": "Funkwelle Beispiel GmbH",
    "betrifft": "Frau Ketelsen",
    "person": "Lena Ketelsen",
-   "frist": "2026-04-23"
+   "frist": "2025-03-26"
   },
   {
-   "pfad": "Eingang/studentin-ketelsen/Downloads/Krankenkasse_249.pdf",
+   "pfad": "Eingang/studentin-ketelsen/Downloads/Krankenkasse_366.pdf",
    "haushalt": "studentin-ketelsen",
    "schriftstueck": "Vertrag",
    "kategorie": "Gesundheit & Pflege",
@@ -2347,43 +3474,36 @@
    "person": "Lena Ketelsen"
   },
   {
-   "pfad": "Eingang/studentin-ketelsen/alt/Befund_250.pdf",
+   "pfad": "Eingang/studentin-ketelsen/Scanner/Dokument (367).pdf",
    "haushalt": "studentin-ketelsen",
    "schriftstueck": "Befund",
    "kategorie": "Gesundheit & Pflege",
-   "absender": "Labor Nord Beispiel MVZ GmbH",
+   "absender": "Hausarztpraxis Dr. med. Tim Beispiel",
    "betrifft": "Lena Ketelsen",
    "person": "Lena Ketelsen"
   },
   {
-   "pfad": "Eingang/studentin-ketelsen/Scanner/scan_0251.pdf",
+   "pfad": "Eingang/studentin-ketelsen/Downloads/Termin_Zahnarzt_368.pdf",
    "haushalt": "studentin-ketelsen",
    "schriftstueck": "Termin",
    "kategorie": "Gesundheit & Pflege",
    "absender": "Zahnarztpraxis Dr. Ole Beispiel",
    "betrifft": "Frau Ketelsen",
    "person": "Lena Ketelsen",
-   "frist": "2025-04-24"
+   "frist": "2025-11-28"
   },
   {
-   "pfad": "Eingang/studentin-ketelsen/Durcheinander/Rechnung_Kauf_252.pdf",
+   "pfad": "Eingang/studentin-ketelsen/Durcheinander/Rechnung_Kauf_369.pdf",
    "haushalt": "studentin-ketelsen",
    "schriftstueck": "Rechnung",
    "kategorie": "Einkäufe, Rechnungen & Garantien",
    "absender": "Elektronikmarkt Beispiel GmbH",
    "betrifft": "Frau Ketelsen",
    "person": "Lena Ketelsen",
-   "frist": "2025-11-19"
+   "frist": "2025-06-30"
   },
   {
-   "pfad": "Eingang/studentin-ketelsen/Handy/scan_0253.pdf",
-   "haushalt": "studentin-ketelsen",
-   "schriftstueck": "Angebot/Werbung",
-   "kategorie": "Einkäufe, Rechnungen & Garantien",
-   "absender": "Versandhandel Beispiel GmbH"
-  },
-  {
-   "pfad": "Eingang/studentin-ketelsen/Scanner/Ihre_254.eml",
+   "pfad": "Eingang/studentin-ketelsen/Downloads/Ihre_370.eml",
    "haushalt": "studentin-ketelsen",
    "schriftstueck": "Rechnung",
    "kategorie": "Einkäufe, Rechnungen & Garantien",
@@ -2392,7 +3512,7 @@
    "person": "Lena Ketelsen"
   },
   {
-   "pfad": "Eingang/studentin-ketelsen/Scanner/Rechnung_255.eml",
+   "pfad": "Eingang/studentin-ketelsen/Handy/Rechnung_371.eml",
    "haushalt": "studentin-ketelsen",
    "schriftstueck": "Rechnung",
    "kategorie": "Verträge & Abonnements",
@@ -2401,7 +3521,7 @@
    "person": "Lena Ketelsen"
   },
   {
-   "pfad": "Eingang/studentin-ketelsen/Downloads/Ihre_256.eml",
+   "pfad": "Eingang/studentin-ketelsen/Handy/Ihre_372.eml",
    "haushalt": "studentin-ketelsen",
    "schriftstueck": "Rechnung",
    "kategorie": "Reisen & Freizeit",
@@ -2410,7 +3530,7 @@
    "person": "Lena Ketelsen"
   },
   {
-   "pfad": "Eingang/studentin-ketelsen/Scanner/scan_0257.pdf",
+   "pfad": "Eingang/studentin-ketelsen/alt/Versicherung_373.pdf",
    "haushalt": "studentin-ketelsen",
    "schriftstueck": "Vertrag",
    "kategorie": "Versicherungen",
@@ -2419,17 +3539,7 @@
    "person": "Lena Ketelsen"
   },
   {
-   "pfad": "Eingang/studentin-ketelsen/Scanner/scan_0258.pdf",
-   "haushalt": "studentin-ketelsen",
-   "schriftstueck": "Rechnung",
-   "kategorie": "Versicherungen",
-   "absender": "Küsten Hausrat- und Haftpflicht Beispiel AG",
-   "betrifft": "Frau Ketelsen",
-   "person": "Lena Ketelsen",
-   "frist": "2026-08-15"
-  },
-  {
-   "pfad": "Eingang/studentin-ketelsen/Durcheinander/Steuerbescheid_259.pdf",
+   "pfad": "Eingang/studentin-ketelsen/Handy/scan_0374.pdf",
    "haushalt": "studentin-ketelsen",
    "schriftstueck": "Bescheid",
    "kategorie": "Steuern & Behörden",
@@ -2438,17 +3548,17 @@
    "person": "Lena Ketelsen"
   },
   {
-   "pfad": "Eingang/studentin-ketelsen/Durcheinander/scan_0260.pdf",
+   "pfad": "Eingang/studentin-ketelsen/alt/Beitrag_375.pdf",
    "haushalt": "studentin-ketelsen",
    "schriftstueck": "Rechnung",
-   "kategorie": "Verträge & Abonnements",
+   "kategorie": "Steuern & Behörden",
    "absender": "Rundfunkbeitrag Beispiel-Service",
    "betrifft": "Frau Ketelsen",
    "person": "Lena Ketelsen",
-   "frist": "2026-04-12"
+   "frist": "2025-06-04"
   },
   {
-   "pfad": "Eingang/studentin-ketelsen/Handy/scan_0261.pdf",
+   "pfad": "Eingang/studentin-ketelsen/Scanner/Mietvertrag_376.pdf",
    "haushalt": "studentin-ketelsen",
    "schriftstueck": "Vertrag",
    "kategorie": "Haus & Wohnung",
@@ -2457,7 +3567,7 @@
    "person": "Lena Ketelsen"
   },
   {
-   "pfad": "Eingang/studentin-ketelsen/Scanner/Nebenkosten_262.pdf",
+   "pfad": "Eingang/studentin-ketelsen/Scanner/Nebenkosten_377.pdf",
    "haushalt": "studentin-ketelsen",
    "schriftstueck": "Abrechnung",
    "kategorie": "Haus & Wohnung",
@@ -2466,44 +3576,162 @@
    "person": "Lena Ketelsen"
   },
   {
-   "pfad": "Eingang/studentin-ketelsen/Scanner/Vermieter_263.pdf",
+   "pfad": "Eingang/studentin-ketelsen/Durcheinander/Dokument (378).pdf",
    "haushalt": "studentin-ketelsen",
-   "schriftstueck": "Aufforderung",
-   "kategorie": "Haus & Wohnung",
-   "absender": "Wohnungsbaugenossenschaft Beispielstadt eG",
+   "schriftstueck": "Abrechnung",
+   "kategorie": "Rente, Arbeit & Sozialversicherung",
+   "absender": "Café Möwe Beispiel",
+   "betrifft": "Frau Ketelsen",
+   "person": "Lena Ketelsen"
+  },
+  {
+   "pfad": "Eingang/studentin-ketelsen/Durcheinander/Gehalt_379.pdf",
+   "haushalt": "studentin-ketelsen",
+   "schriftstueck": "Abrechnung",
+   "kategorie": "Rente, Arbeit & Sozialversicherung",
+   "absender": "Café Möwe Beispiel",
+   "betrifft": "Frau Ketelsen",
+   "person": "Lena Ketelsen"
+  },
+  {
+   "pfad": "Eingang/studentin-ketelsen/alt/scan_0380.pdf",
+   "haushalt": "studentin-ketelsen",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Rente, Arbeit & Sozialversicherung",
+   "absender": "Gewerkschaft Arbeit Nord Beispiel",
    "betrifft": "Frau Ketelsen",
    "person": "Lena Ketelsen",
-   "frist": "2026-05-02"
+   "frist": "2025-05-22"
   },
   {
-   "pfad": "Eingang/studentin-ketelsen/Scanner/Dokument (264).pdf",
+   "pfad": "Eingang/studentin-ketelsen/Handy/Brille_381.pdf",
    "haushalt": "studentin-ketelsen",
-   "schriftstueck": "Abrechnung",
-   "kategorie": "Rente, Arbeit & Sozialversicherung",
-   "absender": "Café Möwe Beispiel",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Optik Klarblick Beispiel",
+   "betrifft": "Frau Ketelsen",
+   "person": "Lena Ketelsen",
+   "frist": "2025-10-22"
+  },
+  {
+   "pfad": "Eingang/studentin-ketelsen/Downloads/Datenkopie_382.pdf",
+   "haushalt": "studentin-ketelsen",
+   "schriftstueck": "Brief",
+   "kategorie": "Finanzen & Konten",
+   "absender": "Auskunftei Nord Beispiel GmbH",
    "betrifft": "Frau Ketelsen",
    "person": "Lena Ketelsen"
   },
   {
-   "pfad": "Eingang/studentin-ketelsen/alt/scan_0265.pdf",
+   "pfad": "Eingang/studentin-ketelsen/Downloads/scan_0383.pdf",
    "haushalt": "studentin-ketelsen",
-   "schriftstueck": "Abrechnung",
-   "kategorie": "Rente, Arbeit & Sozialversicherung",
-   "absender": "Café Möwe Beispiel",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Optik Klarblick Beispiel",
+   "betrifft": "Frau Ketelsen",
+   "person": "Lena Ketelsen",
+   "frist": "2025-06-07"
+  },
+  {
+   "pfad": "Eingang/studentin-ketelsen/Downloads/Rechtsschutz_384.pdf",
+   "haushalt": "studentin-ketelsen",
+   "schriftstueck": "Brief",
+   "kategorie": "Versicherungen",
+   "absender": "Nord Rechtsschutz Beispiel AG",
    "betrifft": "Frau Ketelsen",
    "person": "Lena Ketelsen"
   },
   {
-   "pfad": "Eingang/studentin-ketelsen/Durcheinander/IMG_2025266.pdf",
+   "pfad": "Eingang/studentin-ketelsen/Durcheinander/scan_0385.pdf",
    "haushalt": "studentin-ketelsen",
-   "schriftstueck": "Abrechnung",
-   "kategorie": "Rente, Arbeit & Sozialversicherung",
-   "absender": "Café Möwe Beispiel",
+   "schriftstueck": "Bescheinigung",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Hausarztpraxis Dr. med. Tim Beispiel",
+   "betrifft": "Lena Ketelsen",
+   "person": "Lena Ketelsen"
+  },
+  {
+   "pfad": "Eingang/studentin-ketelsen/Handy/Physio_386.pdf",
+   "haushalt": "studentin-ketelsen",
+   "schriftstueck": "Rechnung",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Physiotherapie Bewegung Beispiel",
+   "betrifft": "Frau Ketelsen",
+   "person": "Lena Ketelsen",
+   "frist": "2026-04-11"
+  },
+  {
+   "pfad": "Eingang/studentin-ketelsen/Durcheinander/Krankengeld_387.pdf",
+   "haushalt": "studentin-ketelsen",
+   "schriftstueck": "Bescheid",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Nord-Krankenkasse Beispiel",
    "betrifft": "Frau Ketelsen",
    "person": "Lena Ketelsen"
   },
   {
-   "pfad": "Eingang/studentin-ketelsen/alt/Wichtig_267.pdf",
+   "pfad": "Eingang/studentin-ketelsen/Handy/DCIM/Camera/IMG_20261388_231426.jpg",
+   "haushalt": "studentin-ketelsen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Frischmarkt Beispiel",
+   "betrag": "12,26",
+   "datum": "2025-11-09",
+   "buchung": "Lebensmittel",
+   "fotografiert": "Lena Ketelsen"
+  },
+  {
+   "pfad": "Eingang/studentin-ketelsen/Handy/DCIM/Camera/IMG_20261389_141983.jpg",
+   "haushalt": "studentin-ketelsen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Frischmarkt Beispiel",
+   "betrag": "15,74",
+   "datum": "2026-02-25",
+   "buchung": "Lebensmittel",
+   "fotografiert": "Lena Ketelsen"
+  },
+  {
+   "pfad": "Eingang/studentin-ketelsen/Handy/DCIM/Camera/IMG_20261390_177904.jpg",
+   "haushalt": "studentin-ketelsen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Frischmarkt Beispiel",
+   "betrag": "6,46",
+   "datum": "2026-05-08",
+   "buchung": "Lebensmittel",
+   "fotografiert": "Lena Ketelsen"
+  },
+  {
+   "pfad": "Eingang/studentin-ketelsen/Scanner/scan_0391.jpg",
+   "haushalt": "studentin-ketelsen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Einkäufe, Rechnungen & Garantien",
+   "absender": "Bäckerei Krümel Beispiel",
+   "betrag": "19,80",
+   "datum": "2025-04-29",
+   "buchung": "Lebensmittel",
+   "fotografiert": "Lena Ketelsen"
+  },
+  {
+   "pfad": "Eingang/studentin-ketelsen/Handy/WhatsApp/Media/IMG-2026492-WA0039.jpg",
+   "haushalt": "studentin-ketelsen",
+   "schriftstueck": "Kassenbon",
+   "kategorie": "Gesundheit & Pflege",
+   "absender": "Hafen-Apotheke Beispiel",
+   "betrag": "24,91",
+   "datum": "2026-02-04",
+   "buchung": "Gesundheit",
+   "fotografiert": "Lena Ketelsen"
+  },
+  {
+   "pfad": "Eingang/studentin-ketelsen/Handy/DCIM/Camera/IMG_20261393_212034.jpg",
+   "haushalt": "studentin-ketelsen",
+   "schriftstueck": "Foto",
+   "kategorie": "Fotos"
+  },
+  {
+   "pfad": "Eingang/studentin-ketelsen/Downloads/BAfoeG_394.pdf",
    "haushalt": "studentin-ketelsen",
    "schriftstueck": "Bescheid",
    "kategorie": "Familie & persönliche Dokumente",
@@ -2512,27 +3740,27 @@
    "person": "Lena Ketelsen"
   },
   {
-   "pfad": "Eingang/studentin-ketelsen/Scanner/scan_0268.pdf",
+   "pfad": "Eingang/studentin-ketelsen/Handy/Semesterbeitrag_395.pdf",
    "haushalt": "studentin-ketelsen",
    "schriftstueck": "Rechnung",
    "kategorie": "Familie & persönliche Dokumente",
    "absender": "Universität Beispielstadt",
    "betrifft": "Frau Ketelsen",
    "person": "Lena Ketelsen",
-   "frist": "2026-04-06"
+   "frist": "2025-05-14"
   },
   {
-   "pfad": "Eingang/studentin-ketelsen/Handy/BAfoeG_269.pdf",
+   "pfad": "Eingang/studentin-ketelsen/Durcheinander/scan_0396.pdf",
    "haushalt": "studentin-ketelsen",
    "schriftstueck": "Aufforderung",
    "kategorie": "Familie & persönliche Dokumente",
    "absender": "Studierendenwerk Beispielstadt – Amt für Ausbildungsförderung",
    "betrifft": "Frau Ketelsen",
    "person": "Lena Ketelsen",
-   "frist": "2026-08-21"
+   "frist": "2025-04-03"
   },
   {
-   "pfad": "Eingang/studentin-ketelsen/Durcheinander/scan_0270.pdf",
+   "pfad": "Eingang/studentin-ketelsen/alt/scan_0397.pdf",
    "haushalt": "studentin-ketelsen",
    "schriftstueck": "Vertrag",
    "kategorie": "Reisen & Freizeit",
@@ -2541,24 +3769,24 @@
    "person": "Lena Ketelsen"
   },
   {
-   "pfad": "Eingang/studentin-ketelsen/Durcheinander/scan_0271.pdf",
+   "pfad": "Eingang/studentin-ketelsen/Scanner/Reparatur_398.pdf",
    "haushalt": "studentin-ketelsen",
    "schriftstueck": "Rechnung",
    "kategorie": "Technik, Geräte & Reparaturen",
    "absender": "Reparaturservice Beispiel GmbH",
    "betrifft": "Frau Ketelsen",
    "person": "Lena Ketelsen",
-   "frist": "2026-02-23"
+   "frist": "2026-08-09"
   },
   {
-   "pfad": "Eingang/studentin-ketelsen/Scanner/Dokument (272).pdf",
+   "pfad": "Eingang/studentin-ketelsen/alt/Reise_399.pdf",
    "haushalt": "studentin-ketelsen",
    "schriftstueck": "Rechnung",
    "kategorie": "Reisen & Freizeit",
    "absender": "Reisebüro Kompass Beispiel GmbH",
    "betrifft": "Frau Ketelsen",
    "person": "Lena Ketelsen",
-   "frist": "2025-01-26"
+   "frist": "2026-02-12"
   }
  ]
 }

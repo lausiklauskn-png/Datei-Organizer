@@ -4,7 +4,9 @@
   "version": "0.1.0",
   "type": "module",
   "description": "Dateien in einen Ordner legen – der Datei-Organizer sortiert sie Sieb für Sieb und zeigt sie als Baum.",
-  "engines": { "node": ">=22.18.0" },
+  "engines": {
+    "node": ">=22.18.0"
+  },
   "scripts": {
     "dev": "vite",
     "probe:kern": "node scripts/run-kern-tests.mjs",
@@ -23,6 +25,7 @@
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "5.2.0",
+    "tesseract.js": "^5.1.1",
     "typescript": "5.9.3",
     "vite": "6.4.1"
   }

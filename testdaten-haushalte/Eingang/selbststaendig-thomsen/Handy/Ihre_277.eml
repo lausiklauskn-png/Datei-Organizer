@@ -1,0 +1,16 @@
+From: Versandhandel Beispiel GmbH <service@versandhandelbei.beispiel.invalid>
+To: ole.thomsen@beispiel.invalid
+Subject: Ihre Bestellung wurde versandt
+Date: Sun, 10 Aug 2025 10:00:00 GMT
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+
+Lieber Herr Thomsen,
+
+Ihre Bestellung ist unterwegs.
+Bestellnummer: B-63446696
+Rechnungsbetrag: 181,06 €
+
+Viele Grüße
+Versandhandel Beispiel GmbH

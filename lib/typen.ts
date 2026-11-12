@@ -52,7 +52,7 @@ export type Datei = {
   kopfText?: string;
   /** Ganzer Text – erst Sieb 5. */
   volltext?: string;
-  textQuelle?: "pdf" | "email" | "text" | "office" | "keiner";
+  textQuelle?: "pdf" | "email" | "text" | "office" | "ocr" | "keiner";
   /** Bis zu welchem Sieb die Datei gesiebt ist (0 = nur im Eingang). */
   stufe: number;
   felder: Felder;

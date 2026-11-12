@@ -5,6 +5,7 @@
 // Aufruf: node scripts/haushalte-bauen.mjs [startwert]  →  testdaten-haushalte/ (Eingang/…, dateien.json, ERWARTUNG.json, HAUSHALTE.json)
 // Gleicher Startwert = gleicher Stapel; neuer Startwert = neue Runde (andere Formulierungen, Daten, Beträge, Dateinamen, Stile).
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { textPdf } from "../lib/test-pdf.ts";
@@ -48,7 +49,7 @@ const ABS = {
   agentur: S("Agentur für Arbeit Beispielstadt", "Arbeitsallee 10", "20006", K.arb, "behoerde"),
   rente: S("Rentenversicherung Beispiel-Nord", "Rentenhof 1", "20007", K.arb, "behoerde"),
   bafoeg: S("Studierendenwerk Beispielstadt – Amt für Ausbildungsförderung", "Mensaweg 2", "20008", K.fam, "behoerde"),
-  rundfunk: S("Rundfunkbeitrag Beispiel-Service", "Sendeplatz 1", "20009", K.vert, "behoerde"),
+  rundfunk: S("Rundfunkbeitrag Beispiel-Service", "Sendeplatz 1", "20009", K.steu, "behoerde"),
   besoldung: S("Zentrum für Personaldienste Beispielstadt", "Bezügestraße 6", "20010", K.arb, "behoerde"),
   beihilfe: S("Beihilfestelle Beispielstadt", "Bezügestraße 8", "20010", K.ges, "behoerde"),
   schulbehoerde: S("Schulbehörde Beispielstadt", "Lernweg 1", "20011", K.fam, "behoerde"),
@@ -108,6 +109,18 @@ const ABS = {
   arbeitgeber4: S("Modehaus Beispiel KG", "Einkaufsstraße 9", "20060", K.arb, "firma"),
   minijob: S("Café Möwe Beispiel", "Hafenstraße 2", "20061", K.arb, "firma"),
 };
+
+// ---------- Läden für Kassenbons (erfunden; stehen für Supermarkt, Discounter, Drogerie …) ----------
+const LADEN = {
+  supermarkt: { name: "Frischmarkt Beispiel", kat: K.kauf, buchung: "Lebensmittel", waren: [["Vollmilch 1L", 1.19], ["Bauernbrot", 3.49], ["Äpfel 1kg", 2.79], ["Butter", 2.29], ["Joghurt", 0.89], ["Kaffee 500g", 6.99], ["Nudeln", 1.29], ["Tomaten", 1.99]] },
+  discounter: { name: "Discount Nord Beispiel", kat: K.kauf, buchung: "Lebensmittel", waren: [["Toast", 0.99], ["Bananen", 1.49], ["Käse Scheiben", 1.79], ["Mineralwasser 6x1,5L", 2.94], ["Pfand", 1.50], ["Eier 10 St", 2.39]] },
+  drogerie: { name: "Drogerie Hafenlicht Beispiel", kat: K.kauf, buchung: "Drogerie", waren: [["Zahnpasta", 1.95], ["Shampoo", 2.45], ["Windeln Gr. 4", 9.95], ["Duschgel", 1.25]] },
+  baecker: { name: "Bäckerei Krümel Beispiel", kat: K.kauf, buchung: "Lebensmittel", waren: [["Franzbrötchen", 1.60], ["Roggenbrot", 4.20], ["Kaffee to go", 2.80]] },
+  baumarkt: { name: "Baumarkt Werkzeugkiste Beispiel", kat: K.haus, buchung: "Haus & Garten", waren: [["Wandfarbe weiß 10L", 39.95], ["Schrauben-Set", 7.49], ["Pinsel", 4.99], ["Blumenerde 40L", 5.99]] },
+  apotheke: { name: "Hafen-Apotheke Beispiel", kat: K.ges, buchung: "Gesundheit", waren: [["Ibuprofen 400", 4.97], ["Nasenspray", 3.95], ["Zuzahlung Rezept", 5.00]] },
+};
+const TANKE = { name: "Tankstelle Nordstern Beispiel", kat: K.auto, buchung: "Tanken" };
+const AUTOHAUS = { name: "Autohaus Nordlicht Beispiel", kat: K.auto };
 
 // ---------- Haushalte (erfunden) ----------
 const P = (vorname, name, rolle, anrede, extra = {}) => ({ vorname, name, voll: `${vorname} ${name}`, rolle, anrede, ...extra });
@@ -189,6 +202,41 @@ function ablegen(h, art, inhalt, soll, sprechend) {
 const wer = (h, an) => an === "familie" ? `Familie ${h.name}` : an.anrede === "Kind" ? an.voll : `${an.anrede} ${an.name}`;
 const sollFuer = (h, abs, an, art, extra = {}) => ({ schriftstueck: art, kategorie: extra.kategorie || abs.kat, absender: abs.name, betrifft: wer(h, an), person: an === "familie" ? `Familie ${h.name}` : an.voll, ...extra });
 
+// ---------- Bilder: Belege und Fotos (Inhalt erst per Texterkennung lesbar) ----------
+const bildAuftrag = [];
+function bildAblegen(h, art, zeilen, soll, drehung = 0) {
+  const n = zaehler++;
+  const ordner = wahl(["Handy/DCIM/Camera", "Handy/DCIM/Camera", "Handy/WhatsApp/Media", "Scanner"]);
+  const name = ordner === "Scanner" ? `scan_${String(n).padStart(4, "0")}.jpg` : ordner.includes("WhatsApp") ? `IMG-2026${String(100 + n).slice(-3)}-WA00${zahl(10, 99)}.jpg` : `IMG_2026${String(1000 + n).slice(-4)}_${zahl(100000, 235959)}.jpg`;
+  const pfad = `Eingang/${h.id}/${ordner}/${name}`;
+  mkdirSync(dirname(join(AUS, pfad)), { recursive: true });
+  bildAuftrag.push({ datei: pfad, ziel: join(AUS, pfad), art, zeilen, drehung, rauschen: ja(0.4) ? 0.6 : 0, hell: ja(0.3) ? 0.85 : 0, tisch: [zahl(80, 160), zahl(80, 140), zahl(70, 120)] });
+  dateien.push(pfad);
+  erwartung.push({ pfad, haushalt: h.id, ...soll });
+}
+function kassenbon(h, laden, an) {
+  const d = tag(), uhr = `${zahl(8, 20)}:${String(zahl(0, 59)).padStart(2, "0")}`;
+  const posten = Array.from({ length: zahl(2, 6) }, () => wahl(laden.waren));
+  const summe = posten.reduce((a, [, p]) => a + p, 0).toFixed(2).replace(".", ",");
+  const zeilen = [`# ${laden.name.toUpperCase()}`, `${wahl(["Hafenstraße", "Marktplatz", "Nordring"])} ${zahl(1, 80)}, 201${zahl(10, 99)} Beispielstadt`, "", ...posten.map(([w, p]) => `${w.padEnd(24)}${p.toFixed(2).replace(".", ",").padStart(7)}`), "-".repeat(31), `SUMME EUR${summe.padStart(22)}`, wahl(["Kartenzahlung", "Bar gegeben", "EC-Karte kontaktlos"]), `MwSt 7% ${(Number(summe.replace(",", ".")) * 0.065).toFixed(2).replace(".", ",")}`, "", `${de(d)}  ${uhr}   Bon-Nr ${zahl(1000, 9999)}`, "Vielen Dank für Ihren Einkauf!"];
+  bildAblegen(h, "kassenbon", zeilen, { schriftstueck: "Kassenbon", kategorie: laden.kat, absender: laden.name, betrag: summe, datum: d, buchung: laden.buchung, fotografiert: an.voll }, wahl([0, 0, -2, 2, -4]));
+}
+function tankquittung(h, kz, an) {
+  const d = tag(), liter = 20 + rnd() * 35, preis = 1.65 + rnd() * 0.25, summe = (liter * preis).toFixed(2).replace(".", ",");
+  const zeilen = [`# ${TANKE.name.toUpperCase()}`, `Elbchaussee ${zahl(1, 200)}, 20199 Beispielstadt`, "", `Säule ${zahl(1, 8)}  ${wahl(["Super E10", "Super E5", "Diesel"])}`, `${liter.toFixed(2).replace(".", ",")} l x ${preis.toFixed(3).replace(".", ",")} EUR/l`, "-".repeat(31), `SUMME EUR${summe.padStart(22)}`, wahl(["Kartenzahlung", "EC-Karte"]), ja(0.6) ? `Kennzeichen: ${kz}` : "", "", `${de(d)}  ${zahl(6, 22)}:${String(zahl(0, 59)).padStart(2, "0")}   Beleg-Nr ${zahl(10000, 99999)}`];
+  bildAblegen(h, "kassenbon", zeilen, { schriftstueck: "Kassenbon", kategorie: TANKE.kat, absender: TANKE.name, betrag: summe, datum: d, buchung: TANKE.buchung, fotografiert: an.voll }, wahl([0, -3, 3]));
+}
+function autohausFoto(h, an) {
+  const preis = zahl(9, 39) * 1000 + 990, rate = zahl(149, 459);
+  bildAblegen(h, "schild", [`# ${AUTOHAUS.name}`, `# Angebot: ${wahl(["Kompaktwagen", "Kombi", "Familienvan", "Elektro-Kleinwagen"])}`, `Erstzulassung ${zahl(1, 12)}/${zahl(2019, 2024)}`, `Kilometerstand ${zahl(8, 120)}.000 km`, `Preis ${preis.toLocaleString("de-DE")},- EUR`, `Finanzierung ab ${rate} EUR mtl.`, "Jetzt Probefahrt vereinbaren"],
+    { schriftstueck: "Angebot/Werbung", kategorie: AUTOHAUS.kat, absender: AUTOHAUS.name, betrag: `${preis}`, rate: `${rate}`, fotografiert: an.voll, notiz: "Foto zum Vergleich mit dem Haushaltsbuch" }, wahl([0, -5, 5]));
+}
+function plakatFoto(h) {
+  const t = tag();
+  bildAblegen(h, "schild", ["# Hafenfest Beispielstadt", `# ${lang(t)}`, "Musik · Essen · Kinderprogramm", "Eintritt frei", "Landungsbrücken Beispiel"], { schriftstueck: "Termin", kategorie: K.reis, frist: t }, wahl([0, -4]));
+}
+function landschaftFoto(h) { bildAblegen(h, "landschaft", [], { schriftstueck: "Foto", kategorie: "Fotos" }); }
+
 // ---------- Vorlagen ----------
 function rechnung(h, abs, an, was, sprechend, nummern = [["Kundennummer", nr("KD-", 7)]], kat) {
   const d = tag(), frist = plus(d, 14), b = betrag(12, 480);
@@ -252,6 +300,78 @@ function mailVon(h, abs, an, betreff, absatz, art, extra = {}) {
   ablegen(h, "eml", mail({ h, abs, an, datum: d, betreff, absatz }), { ...sollFuer(h, abs, an, art, extra) }, betreff.split(" ")[0]);
 }
 
+// ---------- Lebensereignisse (Krankheit, Kinder, Arbeit, Familie, Wohnen, Geld …) ----------
+const ABS2 = {
+  versorgungsamt: S("Versorgungsamt Beispielstadt", "Amtsplatz 7", "20001", K.ges, "behoerde"),
+  elterngeld: S("Elterngeldstelle Bezirksamt Beispielstadt-Nord", "Amtsplatz 9", "20001", K.fam, "behoerde"),
+  standesamt: S("Standesamt Beispielstadt-Nord", "Rathausmarkt 2", "20062", K.fam, "behoerde"),
+  meldeamt: S("Kundenzentrum Bezirksamt Beispielstadt-Nord", "Amtsplatz 2", "20001", K.fam, "behoerde"),
+  familiengericht: S("Amtsgericht Beispielstadt – Familiengericht", "Justizplatz 1", "20050", K.fam, "behoerde"),
+  hundesteuer: S("Steueramt Beispielstadt – Hundesteuer", "Kämmereistraße 6", "20003", K.steu, "behoerde"),
+  tierarzt: S("Tierarztpraxis Pfote Beispiel", "Wiesenweg 3", "20063", K.reis, "praxis"),
+  kleingarten: S("Kleingartenverein Sonnenblick Beispiel e. V.", "Parzellenweg 1", "20064", "Garten & Grundstück", "schule"),
+  optiker: S("Optik Klarblick Beispiel", "Brillenweg 2", "20065", K.ges, "firma"),
+  physio: S("Physiotherapie Bewegung Beispiel", "Rückenweg 4", "20066", K.ges, "praxis"),
+  psycho: S("Psychotherapeutische Praxis Dipl.-Psych. Ruth Beispiel", "Ruheweg 1", "20067", K.ges, "praxis"),
+  kur: S("Kurklinik Ostseeblick Beispiel", "Strandweg 9", "20068", K.ges, "praxis"),
+  lebensvers: S("Hanse Lebensversicherung Beispiel AG", "Policenhof 5", "20017", K.vers, "firma"),
+  rechtsschutz: S("Nord Rechtsschutz Beispiel AG", "Paragraphenweg 1", "20069", K.vers, "firma"),
+  bauspar: S("Bausparkasse Leuchtturm Beispiel AG", "Ziegelweg 3", "20070", K.fin, "firma"),
+  auskunftei: S("Auskunftei Nord Beispiel GmbH", "Datenweg 1", "20071", K.fin, "firma"),
+  gewerkschaft: S("Gewerkschaft Arbeit Nord Beispiel", "Solidaritätsweg 1", "20072", K.arb, "firma"),
+  spende: S("Seenotretter Beispiel e. V.", "Rettungskai 1", "20073", K.steu, "firma"),
+  nachlassgericht: ABS.nachlass, notar: ABS.notar,
+};
+/** Briefe aus dem Arbeitgeber / der Krankenkasse für eine bestimmte Person */
+function einfach(h, abs, an, art, betreff, absatz, sprechend, extra = {}) {
+  const d = tag();
+  const frist = extra.fristTage ? plus(d, extra.fristTage) : undefined;
+  ablegen(h, "pdf", brief({ h, abs, an, datum: d, betreff, nummern: extra.nummern || [], rolleZeile: extra.rolle, absatz: absatz(d, frist) }),
+    { ...sollFuer(h, abs, an, art, { ...(frist ? { frist } : {}), ...(extra.kategorie ? { kategorie: extra.kategorie } : {}) }), ...(extra.betrifft ? { betrifft: extra.betrifft } : {}) }, sprechend);
+}
+const EREIGNISSE = [
+  // Gesundheit und Arbeit
+  { wer: "erwachsen", f: (h, p) => einfach(h, ABS.hausarzt, p, "Bescheinigung", "Arbeitsunfähigkeitsbescheinigung", (d) => [`${p.voll} ist vom ${de(d)} bis ${de(plus(d, zahl(3, 14)))} arbeitsunfähig.`, "Die Bescheinigung wurde elektronisch an die Krankenkasse übermittelt."], "AU", { rolle: `Patient${p.anrede === "Frau" ? "in" : ""}: ${p.voll}`, betrifft: p.voll }) },
+  { wer: "angestellt", f: (h, p) => einfach(h, ABS.kk, p, "Bescheid", "Krankengeld – Bewilligung", (d) => [`ab dem ${de(d)} zahlen wir Ihnen Krankengeld.`, `Kalendertägliches Krankengeld: ${betrag(40, 95)} €.`], "Krankengeld", { nummern: [["Versichertennummer", `A${zahl(100000000, 999999999)}`]] }) },
+  { wer: "angestellt", f: (h, p) => einfach(h, ABS[h.arbeitgeber[p.vorname]], p, "Brief", "Ihr Antrag auf Teilzeit aus gesundheitlichen Gründen", (d) => [`Ihrem Antrag auf Verringerung der Arbeitszeit auf ${zahl(20, 30)} Wochenstunden ab ${de(plus(d, 30))} stimmen wir zu.`, "Grund laut Antrag: gesundheitliche Einschränkungen nach ärztlichem Attest."], "Teilzeit", { kategorie: K.arb }) },
+  { wer: "angestellt-kind", f: (h, p) => einfach(h, ABS[h.arbeitgeber[p.vorname]], p, "Brief", "Teilzeit wegen Kinderbetreuung", (d) => ["wir bestätigen die Reduzierung Ihrer Arbeitszeit wegen der Betreuung Ihres Kindes.", `Neue Arbeitszeit ab ${de(plus(d, 14))}: ${zahl(15, 30)} Stunden pro Woche.`], "Teilzeit", { kategorie: K.arb }) },
+  { wer: "angestellt", f: (h, p) => einfach(h, ABS.rente, p, "Bescheid", "Bescheid über Leistungen zur medizinischen Rehabilitation", (d) => ["Ihrem Antrag auf eine stationäre Rehabilitation wird entsprochen.", `Die Maßnahme beginnt voraussichtlich am ${de(plus(d, 40))} in der Kurklinik Ostseeblick Beispiel.`], "Reha", { kategorie: K.ges }) },
+  { wer: "erwachsen", f: (h, p) => einfach(h, ABS2.versorgungsamt, p, "Bescheid", "Feststellung nach dem Schwerbehindertenrecht", () => [`bei Ihnen wird ein Grad der Behinderung von ${wahl([30, 40, 50, 60])} festgestellt.`, "Ein Ausweis wird bei einem GdB ab 50 ausgestellt."], "GdB") },
+  { wer: "erwachsen", f: (h, p) => einfach(h, ABS2.physio, p, "Rechnung", "Rechnung Krankengymnastik (6 Behandlungen)", (d, f) => [`für die verordnete Krankengymnastik berechnen wir die gesetzliche Zuzahlung von ${betrag(20, 45)} €.`, `Zahlbar bis ${de(f)}.`], "Physio", { fristTage: 14, rolle: `Patient${p.anrede === "Frau" ? "in" : ""}: ${p.voll}` }) },
+  { wer: "erwachsen", f: (h, p) => einfach(h, ABS2.psycho, p, "Brief", "Bewilligung der Kurzzeittherapie", () => ["die Krankenkasse hat 12 Sitzungen Kurzzeittherapie bewilligt.", "Die nächsten Termine vereinbaren wir telefonisch."], "Therapie", { rolle: `Patient${p.anrede === "Frau" ? "in" : ""}: ${p.voll}`, kategorie: K.ges }) },
+  { wer: "erwachsen", f: (h, p) => einfach(h, ABS.zahnarzt, p, "Brief", "Heil- und Kostenplan Zahnersatz", () => ["anbei der Heil- und Kostenplan für eine Krone.", `Voraussichtlicher Eigenanteil: ${betrag(300, 1200)} €. Bitte reichen Sie den Plan bei Ihrer Krankenkasse ein.`], "HKP", { kategorie: K.ges }) },
+  { wer: "erwachsen", f: (h, p) => einfach(h, ABS2.optiker, p, "Rechnung", "Rechnung Gleitsichtbrille", (d, f) => [`Gleitsichtbrille: ${betrag(250, 900)} €.`, `Zahlbar bis ${de(f)}.`], "Brille", { fristTage: 14 }) },
+  { wer: "mutter-kind", f: (h, p) => einfach(h, ABS.kk, p, "Bescheid", "Bewilligung einer Mutter-Kind-Kur", (d) => ["die Mutter-Kind-Maßnahme in der Kurklinik Ostseeblick Beispiel wird bewilligt.", `Beginn: ${de(plus(d, 60))}, Dauer drei Wochen.`], "Kur", { kategorie: K.ges }) },
+  // Familie
+  { wer: "eltern", f: (h, p) => einfach(h, ABS2.elterngeld, p, "Bescheid", "Bescheid über Elterngeld", () => [`Ihnen wird Basiselterngeld in Höhe von ${betrag(300, 1800)} € monatlich bewilligt.`, "Bezugszeitraum: 12 Lebensmonate."], "Elterngeld") },
+  { wer: "erwachsen", f: (h, p) => einfach(h, ABS2.meldeamt, p, "Bescheinigung", "Meldebescheinigung", () => [`hiermit wird bescheinigt, dass ${p.voll} unter der Anschrift ${h.strasse}, ${h.plz} Beispielstadt gemeldet ist.`], "Meldebescheinigung", { kategorie: K.fam }) },
+  { wer: "erwachsen", f: (h, p) => einfach(h, ABS2.meldeamt, p, "Termin", "Ihr Personalausweis liegt zur Abholung bereit", (d, f) => ["Ihr neuer Personalausweis kann abgeholt werden.", `Bitte holen Sie ihn bis zum ${de(f)} ab.`], "Ausweis", { fristTage: 90, kategorie: K.fam }) },
+  { wer: "paar", f: (h, p) => einfach(h, ABS2.standesamt, p, "Bescheinigung", "Ausfertigung der Eheurkunde", () => ["anbei erhalten Sie die beantragte Ausfertigung der Eheurkunde.", "Gebühr: 12,00 €."], "Eheurkunde") },
+  { wer: "alleinerziehend", f: (h, p) => einfach(h, ABS2.familiengericht, p, "Brief", "Beschluss zum Umgangsrecht", () => ["in der Familiensache wird folgender Umgang geregelt.", "Der Beschluss ist sofort wirksam."], "Familiengericht", { nummern: [["Geschäftszeichen", `F ${zahl(100, 999)}/26`]] }) },
+  // Tiere, Garten, Freizeit
+  { wer: "erwachsen", f: (h, p) => { einfach(h, ABS2.hundesteuer, p, "Bescheid", "Bescheid über Hundesteuer", () => ["für Ihren Hund wird Hundesteuer festgesetzt.", `Jahresbetrag: ${betrag(90, 120)} €.`], "Hundesteuer"); einfach(h, ABS2.tierarzt, p, "Rechnung", "Rechnung Impfung Hund „Bello“", (d, f) => [`Impfung und Untersuchung: ${betrag(40, 160)} €.`, `Zahlbar bis ${de(f)}.`], "Tierarzt", { fristTage: 14 }); } },
+  { wer: "erwachsen", f: (h, p) => einfach(h, ABS2.kleingarten, p, "Rechnung", "Pacht und Umlagen Parzelle 17", (d, f) => [`Jahrespacht und Wassergeld: ${betrag(180, 420)} €.`, `Bitte überweisen bis ${de(f)}.`], "Garten", { fristTage: 30 }) },
+  // Geld und Vorsorge
+  { wer: "erwachsen", f: (h, p) => einfach(h, ABS2.lebensvers, p, "Brief", "Standmitteilung Ihrer Lebensversicherung", () => [`Rückkaufswert zum 31.12.: ${betrag(2000, 40000)} €.`, "Ihre Beiträge werden unverändert fortgeführt."], "Lebensversicherung") },
+  { wer: "erwachsen", f: (h, p) => einfach(h, ABS2.bauspar, p, "Kontoauszug", "Jahreskontoauszug Bausparvertrag", () => [`Kontoauszug Ihres Bausparvertrags zum 31.12.`, `Guthaben: ${betrag(1000, 25000)} €.`], "Bausparen") },
+  { wer: "erwachsen", f: (h, p) => einfach(h, ABS2.auskunftei, p, "Brief", "Ihre Datenkopie nach Art. 15 DSGVO", () => ["anbei erhalten Sie die bei uns gespeicherten Daten.", "Ihr Basisscore ist unverändert."], "Datenkopie") },
+  { wer: "erwachsen", f: (h, p) => einfach(h, ABS2.spende, p, "Bescheinigung", "Zuwendungsbestätigung für Spenden", () => [`Bestätigung über Geldzuwendungen in Höhe von ${betrag(20, 300)} €.`, "Zur Vorlage beim Finanzamt."], "Spende") },
+  { wer: "erwachsen", f: (h, p) => einfach(h, ABS2.rechtsschutz, p, "Brief", "Deckungszusage Rechtsschutz", () => ["für Ihre Angelegenheit erteilen wir Deckungszusage.", "Die Selbstbeteiligung beträgt 150 €."], "Rechtsschutz") },
+  { wer: "angestellt", f: (h, p) => einfach(h, ABS2.gewerkschaft, p, "Rechnung", "Beitragsrechnung Mitgliedschaft", (d, f) => [`Ihr Mitgliedsbeitrag beträgt ${betrag(10, 40)} € monatlich.`, `Bitte begleichen bis ${de(f)}.`], "Gewerkschaft", { fristTage: 14 }) },
+  // Erbe
+  { wer: "erwachsen", f: (h, p) => einfach(h, ABS.nachlass, p, "Brief", "Eröffnung eines Testaments", () => ["in der Nachlasssache wurde ein Testament eröffnet.", "Eine Abschrift liegt diesem Schreiben bei."], "Nachlass", { nummern: [["Aktenzeichen", `VI ${zahl(100, 999)}/26`]] }) },
+  // Auto
+  { wer: "auto", f: (h, p) => einfach(h, ABS.kfzvers, p, "Brief", `Schadenmeldung Fahrzeug ${h.fahrzeuge[0]}`, () => [`wir haben Ihre Schadenmeldung zum Fahrzeug ${h.fahrzeuge[0]} erhalten.`, "Ein Gutachter wird sich bei Ihnen melden."], "Schaden", { kategorie: K.vers, nummern: [["Schadennummer", nr("S-", 7)]] }) },
+];
+function passt(h, wer) {
+  const erw = h.personen.filter((x) => x.anrede !== "Kind");
+  const kinder = h.personen.some((x) => x.anrede === "Kind");
+  const ang = erw.filter((x) => h.arbeitgeber[x.vorname]);
+  const kandidaten = { erwachsen: erw, angestellt: ang, "angestellt-kind": kinder ? ang : [], "mutter-kind": kinder ? erw.filter((x) => x.anrede === "Frau") : [],
+    eltern: kinder ? erw : [], paar: erw.length > 1 ? erw : [], alleinerziehend: h.id.startsWith("allein") ? erw : [], auto: h.fahrzeuge.length ? erw : [] }[wer] || [];
+  return kandidaten;
+}
+
 // ---------- Was jeder Haushalt bekommt ----------
 for (const h of HAUSHALTE) {
   const [p1, p2] = h.personen;
@@ -276,7 +396,7 @@ for (const h of HAUSHALTE) {
   vertrag(h, ABS.hausrat, wahl(erw), "Hausratversicherung", "Versicherung");
   if (ja(0.5)) rechnung(h, ABS.hausrat, jemand(), "Jahresbeitrag Haftpflicht", "Beitrag", [["Versicherungsnummer", nr("HH-", 8)]]);
   bescheid(h, ABS.finanzamt, wahl(erw), `Einkommensteuer ${zahl(2023, 2025)}`, (d) => [`die Einkommensteuer wird festgesetzt auf ${betrag(0, 6000)} €.`, `Erstattung: ${betrag(0, 900)} €.`], "Steuerbescheid");
-  rechnung(h, ABS.rundfunk, jemand(), "Rundfunkbeitrag Quartal", "Beitrag", [["Beitragsnummer", nr("", 9)]], K.vert);
+  rechnung(h, ABS.rundfunk, jemand(), "Rundfunkbeitrag Quartal", "Beitrag", [["Beitragsnummer", nr("", 9)]], K.steu);
   // Wohnen
   if (h.wohnen === "eigentum") {
     bescheid(h, ABS.steueramt, "familie", `Grundsteuer ${zahl(2025, 2026)}`, (d) => [`die Grundsteuer für das Grundstück ${h.strasse} wird festgesetzt.`, `Vierteljährlich fällig: ${betrag(80, 300)} €.`], "Grundsteuer", { kategorie: K.steu });
@@ -309,6 +429,20 @@ for (const h of HAUSHALTE) {
     rechnung(h, ABS.motoversand, p1, `Motorradreifen für ${h.motorrad}`, "Motorrad", [["Kennzeichen", h.motorrad]]);
     rechnung(h, ABS.kfzvers, p1, `Saisonkennzeichen Motorrad ${h.motorrad}`, "Versicherung", [["Versicherungsnummer", nr("KR-", 8)], ["Kennzeichen", h.motorrad]], K.vers);
   }
+  // Lebensereignisse: 8 bis 12 passende
+  for (let i = 0, n = zahl(8, 12), versuche = 0; i < n && versuche < 80; versuche++) {
+    const e = wahl(EREIGNISSE), wer = passt(h, e.wer);
+    if (!wer.length) continue;
+    e.f(h, wahl(wer)); i++;
+  }
+  // Belege und Fotos
+  for (let i = 0; i < zahl(3, 6); i++) kassenbon(h, wahl([LADEN.supermarkt, LADEN.supermarkt, LADEN.discounter, LADEN.drogerie, LADEN.baecker]), jemand());
+  if (ja(0.6)) kassenbon(h, h.wohnen === "eigentum" ? LADEN.baumarkt : LADEN.apotheke, jemand());
+  if (h.rente || ja(0.3)) kassenbon(h, LADEN.apotheke, jemand());
+  for (const kz of [...h.fahrzeuge, ...(h.motorrad ? [h.motorrad] : [])]) for (let i = 0; i < zahl(1, 2); i++) tankquittung(h, kz, jemand());
+  if (h.fahrzeuge.length || ja(0.4)) autohausFoto(h, jemand());
+  if (ja(0.5)) plakatFoto(h);
+  landschaftFoto(h);
   // Kinder
   for (const k of kinder) {
     const alter = Number(k.rolle.match(/\d+/)?.[0] || 6);
@@ -333,7 +467,7 @@ for (const h of HAUSHALTE) {
     termin(h, ABS.agentur, p1, "Beratungsgespräch berufliche Weiterbildung", "Agentur");
     ablegen(h, "pdf", brief({ h, abs: ABS.rente, an: p1, datum: tag(), betreff: "Kontenklärung", nummern: [["Versicherungsnummer", `00 ${zahl(100000, 999999)} B ${zahl(100, 999)}`]], absatz: ["in Ihrem Versicherungsverlauf fehlen Zeiten.", "Bitte füllen Sie den beiliegenden Fragebogen aus."] }), sollFuer(h, ABS.rente, p1, "Aufforderung"), "Rente");
     mahnung(h, ABS.inkasso, p1);
-    bescheid(h, ABS.rundfunk, p1, "Befreiung von der Rundfunkbeitragspflicht", () => ["Sie werden von der Rundfunkbeitragspflicht befreit.", "Grundlage ist Ihr Bürgergeldbescheid."], "Befreiung", { kategorie: K.vert });
+    bescheid(h, ABS.rundfunk, p1, "Befreiung von der Rundfunkbeitragspflicht", () => ["Sie werden von der Rundfunkbeitragspflicht befreit.", "Grundlage ist Ihr Bürgergeldbescheid."], "Befreiung", { kategorie: K.steu });
   }
   if (h.beamtin) {
     for (let i = 0; i < 2; i++) { const d = tag(); ablegen(h, "pdf", brief({ h, abs: ABS.besoldung, an: p1, datum: d, betreff: `Bezügemitteilung ${MON[Number(d.slice(5, 7)) - 1]} ${d.slice(0, 4)}`, nummern: [["Personalnummer", nr("", 7)]], absatz: ["Besoldungsgruppe W 2.", `Auszahlung: ${betrag(4000, 6500)} €.`] }), sollFuer(h, ABS.besoldung, p1, "Abrechnung"), "Bezuege"); }
@@ -370,6 +504,16 @@ for (const h of HAUSHALTE) {
   if (erw.length > 1 && ja(0.5)) kuendigung(h, ABS.fitness, jemand(), "Mitgliedschaft Fitness");
   if (ja(0.5)) rechnung(h, ABS.reparatur, jemand(), wahl(["Reparatur Geschirrspüler", "Displaytausch Smartphone"]), "Reparatur");
   if (ja(0.6)) rechnung(h, ABS.reise, jemand(), wahl(["Pauschalreise Beispielinsel", "Ferienhaus an der Küste"]), "Reise");
+}
+
+// ---------- Bilder rendern ----------
+if (bildAuftrag.length) {
+  const auftragDatei = join(AUS, ".bilder-auftrag.json");
+  mkdirSync(AUS, { recursive: true });
+  writeFileSync(auftragDatei, JSON.stringify(bildAuftrag));
+  const r = spawnSync("python3", [join(WURZEL, "scripts/belege-bilder.py"), auftragDatei], { stdio: "inherit" });
+  rmSync(auftragDatei, { force: true });
+  if (r.status !== 0) throw new Error("Bilder konnten nicht gebaut werden (python3 mit Pillow nötig).");
 }
 
 // ---------- Schreiben ----------
