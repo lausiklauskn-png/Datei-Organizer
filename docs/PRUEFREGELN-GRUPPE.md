@@ -4,7 +4,13 @@ Klaus 12.11.2026: „Die Prüfung soll für die ganze Gruppe gelten.“ Gruppe i
 **Private Brain Pro** und der **Datei-Organizer** als Prüf- und Sortierwerkzeug. Klaus 12.11. (Nachtrag): Die **Basic-Fassungen gehören
 dazu** – Familienakte Basic (die Web-App aus demselben Repo), BookLedger Basic (eigenes Repo, byte-gleich aus Pro nachgezogen) und
 Private Brain Basic. Ein Nachweis gilt für eine Basic-Fassung nur, wenn dort derselbe Code läuft (byte-gleich nachgezogen oder
-derselbe Bau); weicht sie ab, wird sie eigens gemessen. Ob Workflow PDF Pro dazugehört, ist noch nicht entschieden. Dieses Dokument ist die gemeinsame Prüfquelle: Wer eine Erkennung, Zuordnung oder ein gelerntes Modell
+derselbe Bau); weicht sie ab, wird sie eigens gemessen. Ob Workflow PDF Pro dazugehört, ist noch nicht entschieden.
+
+**Ein Kern für alle (Klaus 12.11.):** Die Basic-Fassungen sollen im Kern gleich sein wie der Datei-Organizer – derselbe Sortier-Kern
+(`lib/`), einmal gebaut, byte-gleich mit Pin in jedem Knoten, Pro wie Basic; keine zweite Fassung. Das ist das Ziel. Der Weg dorthin
+bleibt Regel 8: Ein Knoten übernimmt den Kern erst, wenn er dort am fremden Stapel gesichert besser ist als das Vorhandene.
+Stand: BookLedger Basic ist byte-gleich mit Pro, trägt aber den Sortier-Kern nicht (Belege: eigene Leser, dort besser gemessen);
+Familienakte und Private Brain tragen ihn noch nicht. Dieses Dokument ist die gemeinsame Prüfquelle: Wer eine Erkennung, Zuordnung oder ein gelerntes Modell
 in einer dieser Apps verbessert, weist es nach diesen Regeln nach. Die Einzelheiten je Test stehen in
 `docs/PRUEFSTAPEL-REGELN.md` (Briefe) und `docs/PRUEFSTAPEL-BLP-REGELN.md` (Belege).
 
