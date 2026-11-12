@@ -181,5 +181,18 @@
    "nurNeuRichtig": 21,
    "p": 0.00006604194641113281
   }
+ },
+ "bauplan": {
+  "modell": "Claude-Agent nach Codex-Bauplan",
+  "ohneKonto": 1,
+  "unsicher": 13,
+  "gegenMehrheitAlle": {
+   "ok": 119,
+   "n": 119
+  },
+  "gegenMehrheitWoKonto": {
+   "ok": 119,
+   "n": 119
+  }
  }
 }
