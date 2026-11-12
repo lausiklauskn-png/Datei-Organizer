@@ -66,4 +66,4 @@ export type Datei = {
 
 export type Korrektur = { zeit: string; pfad: string; feld: FeldName; von: string; zu: string; bestaetigt?: boolean };
 
-export type Lernregel = { wenn: { absender: string }; feld: "kategorie" | "betrifft" | "schriftstueck"; dann: string; anzahl: number };
+export type Lernregel = { wenn: { absender: string }; feld: "kategorie" | "betrifft" | "schriftstueck"; dann: string; anzahl: number; stimmen?: Record<string, number> };

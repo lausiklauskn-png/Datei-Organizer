@@ -4,15 +4,18 @@
 // ALLES ERFUNDEN: Namen, Anschriften, Nummern, Kennzeichen (BSP-…), IBANs mit Nullen. Keine echten Briefe, keine echten Personen.
 // Aufruf: node scripts/haushalte-bauen.mjs [startwert]  →  testdaten-haushalte/ (Eingang/…, dateien.json, ERWARTUNG.json, HAUSHALTE.json)
 // Gleicher Startwert = gleicher Stapel; neuer Startwert = neue Runde (andere Formulierungen, Daten, Beträge, Dateinamen, Stile).
-import { mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { textPdf } from "../lib/test-pdf.ts";
 
 const START = Number(process.argv[2] || 1);
+/** --chaos: ein Nutzer „neben der Spur“: abfotografierte statt gescannte Briefe, schief/unscharf/dunkel, Unsinnsnamen, Mehrfachkopien. */
+const CHAOS = process.argv.includes("--chaos");
+const AUS_NAME = process.argv.includes("--aus") ? process.argv[process.argv.indexOf("--aus") + 1] : "testdaten-haushalte";
 const WURZEL = join(dirname(fileURLToPath(import.meta.url)), "..");
-const AUS = join(WURZEL, "testdaten-haushalte");
+const AUS = join(WURZEL, AUS_NAME);
 rmSync(AUS, { recursive: true, force: true });
 let z = (START * 2654435761) % 2147483648 || 1;
 const rnd = () => (z = (z * 1103515245 + 12345) % 2147483648) / 2147483648;
@@ -205,7 +208,11 @@ function mail({ h, abs, an, datum, betreff, absatz }) {
 // ---------- Ablage mit unordentlichen Dateinamen ----------
 const dateien = [], erwartung = [];
 let zaehler = 1;
+const UNSINN = () => wahl(["neu", "asdf", "Unbenannt", "Dokument", "scan", "Bild", "xx", "WhatsApp Image 2026-0" + zahl(1, 9) + "-" + zahl(10, 28) + " at 1" + zahl(0, 9) + "." + zahl(10, 59) + ".22", "rechnung.pdf", "Kopie von Kopie"]);
+const kopien = [];
 function ablegen(h, art, inhalt, soll, sprechend) {
+  if (CHAOS && art === "pdf" && ja(0.45)) { bildAblegen(h, "blatt", inhalt, soll, wahl([-9, -6, -4, 4, 6, 9]), true); return; }
+  if (CHAOS && ja(0.5)) sprechend = `${UNSINN()}${ja(0.3) ? ` (${zahl(1, 9)})` : ""}`;
   const ordner = wahl(["Scanner", "Scanner", "Downloads", "Handy", "Durcheinander", "alt"]);
   const n = zaehler++;
   const name = art === "eml" ? `${sprechend || "Mail"}_${n}.eml`
@@ -217,21 +224,24 @@ function ablegen(h, art, inhalt, soll, sprechend) {
   writeFileSync(voll, art === "eml" ? inhalt : textPdf([inhalt]));
   dateien.push(pfad);
   erwartung.push({ pfad, haushalt: h.id, ...soll });
+  if (CHAOS && ja(0.15)) kopien.push({ von: pfad, h, soll });
 }
 const wer = (h, an) => an === "familie" ? `Familie ${h.name}` : an.anrede === "Kind" ? an.voll : `${an.anrede} ${an.name}`;
 const sollFuer = (h, abs, an, art, extra = {}) => ({ schriftstueck: art, kategorie: extra.kategorie || abs.kat, absender: abs.name, betrifft: wer(h, an), person: an === "familie" ? `Familie ${h.name}` : an.voll, ...extra });
 
 // ---------- Bilder: Belege und Fotos (Inhalt erst per Texterkennung lesbar) ----------
 const bildAuftrag = [];
-function bildAblegen(h, art, zeilen, soll, drehung = 0) {
+function bildAblegen(h, art, zeilen, soll, drehung = 0, abfotografiert = false) {
   const n = zaehler++;
   const ordner = wahl(["Handy/DCIM/Camera", "Handy/DCIM/Camera", "Handy/WhatsApp/Media", "Scanner"]);
   const name = ordner === "Scanner" ? `scan_${String(n).padStart(4, "0")}.jpg` : ordner.includes("WhatsApp") ? `IMG-2026${String(100 + n).slice(-3)}-WA00${zahl(10, 99)}.jpg` : `IMG_2026${String(1000 + n).slice(-4)}_${zahl(100000, 235959)}.jpg`;
   const pfad = `Eingang/${h.id}/${ordner}/${name}`;
   mkdirSync(dirname(join(AUS, pfad)), { recursive: true });
-  bildAuftrag.push({ datei: pfad, ziel: join(AUS, pfad), art, zeilen, drehung, rauschen: ja(0.4) ? 0.6 : 0, hell: ja(0.3) ? 0.85 : 0, tisch: [zahl(80, 160), zahl(80, 140), zahl(70, 120)] });
+  const wild = CHAOS || abfotografiert;
+  bildAuftrag.push({ datei: pfad, ziel: join(AUS, pfad), art, zeilen, drehung: wild ? drehung + (ja(0.5) ? zahl(-3, 3) : 0) : drehung, rauschen: wild ? (ja(0.6) ? 0.8 + rnd() * 0.7 : 0.4) : ja(0.4) ? 0.6 : 0, hell: wild ? (ja(0.4) ? 0.62 + rnd() * 0.15 : 0) : ja(0.3) ? 0.85 : 0, tisch: [zahl(80, 160), zahl(80, 140), zahl(70, 120)] });
   dateien.push(pfad);
-  erwartung.push({ pfad, haushalt: h.id, ...soll });
+  erwartung.push({ pfad, haushalt: h.id, ...soll, ...(abfotografiert ? { abfotografiert: true } : {}) });
+  if (CHAOS && ja(0.15)) kopien.push({ von: pfad, h, soll });
 }
 function kassenbon(h, laden, an) {
   const d = tag(), uhr = `${zahl(8, 20)}:${String(zahl(0, 59)).padStart(2, "0")}`;
@@ -706,6 +716,16 @@ if (bildAuftrag.length) {
   const r = spawnSync("python3", [join(WURZEL, "scripts/belege-bilder.py"), auftragDatei], { stdio: "inherit" });
   rmSync(auftragDatei, { force: true });
   if (r.status !== 0) throw new Error("Bilder konnten nicht gebaut werden (python3 mit Pillow nötig).");
+}
+
+// ---------- Mehrfachkopien (dieselben Bytes, über WhatsApp/Handy nochmal gespeichert) ----------
+for (const k of kopien) {
+  const n = zaehler++;
+  const pfad = `Eingang/${k.h.id}/${wahl(["Handy/WhatsApp/Media", "Handy/Download", "Durcheinander"])}/${k.von.split("/").pop().replace(/(\.\w+)$/, ` (${zahl(1, 4)})$1`)}`;
+  mkdirSync(dirname(join(AUS, pfad)), { recursive: true });
+  writeFileSync(join(AUS, pfad), readFileSync(join(AUS, k.von)));
+  dateien.push(pfad);
+  erwartung.push({ pfad, haushalt: k.h.id, ...k.soll, doppelt: true });
 }
 
 // ---------- Schreiben ----------

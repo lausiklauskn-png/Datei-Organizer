@@ -10,6 +10,7 @@ import { runInThisContext } from "node:vm";
 import { einlesen, doppelteMarkieren, ueberspringen } from "../lib/einlesen.ts";
 import { gehaltLesen } from "../lib/gehalt.ts";
 import { siebe } from "../lib/siebe.ts";
+import { absenderVereinheitlichen } from "../lib/abgleich.ts";
 import { pdfTextLesen } from "../lib/pdf-text.ts";
 import { personZuordnen } from "../lib/personen.ts";
 import { sha256Hex } from "../lib/dateiart.ts";
@@ -24,8 +25,10 @@ const STILL = process.argv.includes("--still");
 // ---------- Leser ----------
 const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
 pdfjs.GlobalWorkerOptions.workerSrc = new URL("../node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs", import.meta.url).href;
-const cacheDatei = join(ORDNER, ".ocr-cache.json");
+// Ein gemeinsamer Zwischenspeicher für alle Testordner (Schlüssel = Fingerabdruck der Datei)
+const cacheDatei = join(WURZEL, ".ocr-cache.json");
 const cache = existsSync(cacheDatei) ? JSON.parse(readFileSync(cacheDatei, "utf8")) : {};
+for (const alt of [join(ORDNER, ".ocr-cache.json")]) if (existsSync(alt)) Object.assign(cache, JSON.parse(readFileSync(alt, "utf8")));
 let worker = null;
 const LANG = join(FA, "public/apps/workflow-pdf/vendor/tesseract/lang");
 async function ocr(bytes) {
@@ -42,21 +45,55 @@ async function ocr(bytes) {
 }
 
 // ---------- Einlesen und sieben ----------
-const soll = JSON.parse(readFileSync(join(ORDNER, "ERWARTUNG.json"), "utf8")).dateien;
-const liste = JSON.parse(readFileSync(join(ORDNER, "dateien.json"), "utf8"));
-const hh = existsSync(join(ORDNER, "HAUSHALTE.json")) ? Object.fromEntries(JSON.parse(readFileSync(join(ORDNER, "HAUSHALTE.json"), "utf8")).haushalte.map((h) => [h.id, h])) : {};
-let dateien = [];
 let uebersprungen = 0;
-for (const [i, pfad] of liste.entries()) {
-  if (ueberspringen(pfad.split("/").pop())) { uebersprungen++; continue; }
-  const bytes = new Uint8Array(readFileSync(join(ORDNER, pfad)));
-  dateien.push(...await einlesen({ pfad, name: pfad.split("/").pop(), geaendert: Date.UTC(2026, 10, 1) + i, bytes }, (b) => pdfTextLesen(pdfjs, b), 0, ocr));
+async function lesen(ordner) {
+  const liste = JSON.parse(readFileSync(join(ordner, "dateien.json"), "utf8"));
+  let ds = [];
+  for (const [i, pfad] of liste.entries()) {
+    if (ueberspringen(pfad.split("/").pop())) { if (ordner === ORDNER) uebersprungen++; continue; }
+    const bytes = new Uint8Array(readFileSync(join(ordner, pfad)));
+    ds.push(...await einlesen({ pfad, name: pfad.split("/").pop(), geaendert: Date.UTC(2026, 10, 1) + i, bytes }, (b) => pdfTextLesen(pdfjs, b), 0, ocr));
+  }
+  return doppelteMarkieren(ds);
+}
+const soll = JSON.parse(readFileSync(join(ORDNER, "ERWARTUNG.json"), "utf8")).dateien;
+const hh = existsSync(join(ORDNER, "HAUSHALTE.json")) ? Object.fromEntries(JSON.parse(readFileSync(join(ORDNER, "HAUSHALTE.json"), "utf8")).haushalte.map((h) => [h.id, h])) : {};
+let dateien = await lesen(ORDNER);
+
+// ---------- Nutzer-Simulation: aus einem anderen Stapel lernen (sorgfältig oder „neben der Spur“) ----------
+let regeln = existsSync(join(ORDNER, "REGELN.json")) ? JSON.parse(readFileSync(join(ORDNER, "REGELN.json"), "utf8")) : [];
+const LERN = arg("--lernen-aus"), NUTZER = arg("--nutzer", "sorgfaeltig");
+const nutzerBericht = { profil: LERN ? NUTZER : "kein Lernen", antworten: 0, falscheAntworten: 0 };
+if (LERN) {
+  const { lernen } = await import("../lib/lernen.ts");
+  const { KATEGORIEN, FOTOS, UNKLAR } = await import("../lib/kategorien.ts");
+  const { SCHRIFTSTUECKE } = await import("../lib/erkennen.ts");
+  const lo = resolve(WURZEL, LERN);
+  const lsoll = new Map(JSON.parse(readFileSync(join(lo, "ERWARTUNG.json"), "utf8")).dateien.map((e) => [e.pfad, e]));
+  let z = 7; const r = () => (z = (z * 1103515245 + 12345) % 2147483648) / 2147483648;
+  for (const d0 of await lesen(lo)) {
+    const e = lsoll.get(d0.pfad); if (!e || e.doppelt || e.leer) continue;
+    const d = siebe(d0, 5, regeln);
+    for (const feld of ["kategorie", "schriftstueck"]) {
+      const wahr = e[feld], w = d.felder[feld];
+      if (!wahr || !w) continue;
+      let antwort = null;
+      if (NUTZER === "sorgfaeltig") { if (!w.sicher) antwort = wahr; }
+      else { // chaotisch: drückt meist „Stimmt“, wählt manchmal irgendetwas, verstellt auch Sicheres
+        const x = r();
+        if (!w.sicher) antwort = x < 0.5 ? w.wert : x < 0.7 ? (feld === "kategorie" ? [...KATEGORIEN, FOTOS, UNKLAR] : SCHRIFTSTUECKE)[Math.floor(r() * 15)] : wahr;
+        else if (x < 0.05) antwort = (feld === "kategorie" ? KATEGORIEN : SCHRIFTSTUECKE)[Math.floor(r() * 12)];
+      }
+      if (antwort == null) continue;
+      nutzerBericht.antworten++; if (antwort !== wahr) nutzerBericht.falscheAntworten++;
+      regeln = lernen(regeln, d, { zeit: "", pfad: d.pfad, feld, von: w.wert, zu: antwort });
+    }
+  }
+  nutzerBericht.regeln = regeln.length;
 }
 if (worker) await worker.terminate();
 writeFileSync(cacheDatei, JSON.stringify(cache));
-dateien = doppelteMarkieren(dateien);
-const regeln = existsSync(join(ORDNER, "REGELN.json")) ? JSON.parse(readFileSync(join(ORDNER, "REGELN.json"), "utf8")) : [];
-const org = new Map(dateien.map((d) => [d.pfad, siebe(d, 5, regeln)]));
+const org = new Map(absenderVereinheitlichen(dateien.map((d) => siebe(d, 5, regeln))).map((d) => [d.pfad, d]));
 
 // ---------- Familienakte heute ----------
 const fa = new Map();
@@ -148,7 +185,10 @@ for (const e of soll) {
 const pz = (a, b) => b ? `${a}/${b} = ${Math.round((100 * a) / b)} %` : "–";
 const ergebnis = { ordner: ORDNER.replace(WURZEL, ""), dateien: soll.length, organizer: z, familienakte: zfa, bookledgerpro: zblp, offenDateien, jeHaushalt };
 if (arg("--json")) writeFileSync(resolve(WURZEL, arg("--json")), JSON.stringify(ergebnis, null, 1));
-console.log(`Messung ${ergebnis.ordner}: ${soll.length} Dateien${regeln.length ? `, ${regeln.length} gelernte Regeln` : ""}\n`);
+console.log(`Messung ${ergebnis.ordner}: ${soll.length} Dateien${regeln.length ? `, ${regeln.length} gelernte Regeln` : ""}`);
+if (LERN) console.log(`Gelernt aus ${LERN} – Nutzer ${NUTZER}: ${nutzerBericht.antworten} Antworten, davon ${nutzerBericht.falscheAntworten} falsch`);
+console.log("");
+ergebnis.nutzer = nutzerBericht;
 console.log("Feld            Organizer-Kern            sicher-falsch  unsicher   Familienakte heute");
 for (const f of felder) console.log(`${f.padEnd(16)}${pz(z[f].ok, z[f].n).padEnd(26)}${String(z[f].falschSicher).padEnd(15)}${String(z[f].offen).padEnd(11)}${f === "kategorie" ? pz(zfa.kat.ok, zfa.kat.n) : f === "absender" ? pz(zfa.abs.ok, zfa.abs.n) : ""}`);
 console.log(`\nzur Prüfung (mind. ein Feld unsicher): Organizer ${pz(offenDateien, soll.length)} · Familienakte ${pz(zfa.pruef, soll.length)}`);
@@ -156,7 +196,7 @@ if (blp) console.log(`BookLedgerPro an Kassenbons: Betrag ${pz(zblp.betrag.ok, z
 console.log(`Doppelte erkannt ${pz(zdopp.ok, zdopp.n)} (fälschlich doppelt: ${zdopp.falsch}) · leere Sync-Dateien gemeldet ${pz(zleer.ok, zleer.n)} · Mail-Anhänge ausgepackt ${pz(zanh.ok, zanh.n)} · Systemdateien übergangen ${uebersprungen}`);
 console.log("Gehaltsabrechnungen: " + GF.map((f) => `${f} ${pz(zg[f].ok, zg[f].n)}`).join(" · "));
 if (blpKat) console.log(`BookLedgerPro Konto (SKR03) an Geschäftsbelegen: ${pz(zkonto.blp, zkonto.n)}`);
-ergebnis.gehalt = zg; ergebnis.doppelt = zdopp; ergebnis.leer = zleer; ergebnis.anhang = zanh; ergebnis.blpKonto = zkonto;
+ergebnis.gehalt = zg; ergebnis.nutzer = nutzerBericht; ergebnis.doppelt = zdopp; ergebnis.leer = zleer; ergebnis.anhang = zanh; ergebnis.blpKonto = zkonto;
 if (!STILL && gfehler.length) { console.log("\nFehler Gehalt:"); for (const x of gfehler) console.log("  " + x); }
 console.log("\nBereich je Haushalt:", Object.entries(jeHaushalt).map(([k, v]) => `${k.split("-")[0]} ${Math.round((100 * v.ok) / v.n)} %`).join(" · "));
 if (!STILL) for (const f of felder) if (fehler[f].length) { console.log(`\nFehler ${f} (${fehler[f].length}):`); for (const x of fehler[f].slice(0, 25)) console.log(`  ${x}`); }

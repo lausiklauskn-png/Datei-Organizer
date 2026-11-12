@@ -4,3 +4,8 @@ node_modules/
 testdaten-haushalte/.ocr-cache.json
 testdaten-haushalte/.tess/
 testdaten/.ocr-cache.json
+.ocr-cache.json
+testdaten-chaos/.tess/
+testdaten-haushalte/.tess/
+testdaten-chaos/
+laeufe/

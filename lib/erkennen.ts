@@ -152,14 +152,20 @@ export function absenderAusGruss(text: string): Wert | undefined {
   return undefined;
 }
 
+/** Anschrift hinter dem Namen abschneiden (Texterkennung macht aus „·“ oft „.“, „-“ oder „'“). */
+const STRASSE = /\s*[.,·•|'°:–-]?\s+[A-ZÄÖÜa-zäöüß][\wäöüß-]*(straße|strasse|str\.|weg|platz|ring|kai|allee|gasse|damm|hof|markt|chaussee|stieg|wall|fleet|passage)\s*\d+.*$/i;
+const TITEL = /^(meldebescheinigung|gehaltsabrechnung|abrechnung|ausdruck|rechnung|bescheid|kontoauszug|bescheinigung|lohnsteuer|vertrag|befund|einladung|mahnung|angebot)\b/i;
+const kuerze = (z: string) => z.replace(STRASSE, "").replace(/\s*[.,·•|'°:–-]\s*$/, "").trim();
+
 export function erkenneAbsender(kopf: string): Wert | undefined {
-  const zeilen = kopf.split(/\r?\n/).map((z) => z.trim()).filter(Boolean).slice(0, 18);
+  const zeilen = kopf.split(/\r?\n/).map((z) => z.trim()).filter((z) => z && !TITEL.test(z)).slice(0, 18);
   // Absenderzeile über dem Anschriftfeld: „Firma · Straße · PLZ Ort“
   for (const z of zeilen) {
     const m = z.match(/^(.+?)\s+[·|•]\s+.+\d{5}\s/);
     if (m && FIRMA.test(m[1])) return w(m[1].trim(), true, "Absenderzeile über der Anschrift");
+    if (/\d{5}/.test(z) && STRASSE.test(z)) { const k = kuerze(z); if (k.length >= 4 && FIRMA.test(k)) return w(k, true, "Absenderzeile über der Anschrift"); }
   }
-  for (const roh of zeilen.slice(0, 6)) { const z = roh.replace(/^(arbeitgeber|absender|von|aussteller)\s*:\s*/i, "");
+  for (const roh of zeilen.slice(0, 6)) { const z = kuerze(roh.replace(/^(arbeitgeber|absender|von|aussteller)\s*:\s*/i, ""));
     if (FIRMA.test(z) && z.length <= 70 && !/^(herrn|frau|familie)\b/i.test(z)) return w(z.replace(/[,;]$/, ""), true, "Briefkopf oben"); }
   const erste = zeilen[0];
   if (erste && erste.length <= 60 && !/sehr geehrte|^(herrn|frau|familie|an die)\b|\d{2}\.\d{2}\.|\d,\d{2}/i.test(erste)) return w(erste, false, "erste Zeile, ohne Firmenmerkmal");
