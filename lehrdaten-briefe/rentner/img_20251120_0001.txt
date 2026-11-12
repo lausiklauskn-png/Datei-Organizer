@@ -5,7 +5,7 @@ Steuernummer 241/209/04476
 
 M A H N U N G
 
-Folgende Beträge sind bei Fälligkeit nicht entrichtet worden:
+Folgende Beträge sind bei Fälligkeit nicht entnchtet worden:
 
  Abgabeart                     Zeitraum   fällig am     Betrag
  Einkommensteuer-Vorauszahlung  III/2025   10.09.2025    78,00 €

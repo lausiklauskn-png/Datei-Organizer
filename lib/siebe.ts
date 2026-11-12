@@ -4,6 +4,7 @@ import { absenderAusGruss, erkenneAbsender, erkenneBetrag, erkenneBetrifft, erke
 import { FOTOS } from "./kategorien.ts";
 import { absenderName } from "./eml.ts";
 import { lernregelAnwenden } from "./lernen.ts";
+import { artMitModell, bereichMitModell } from "./wortmodell.ts";
 import type { Lernregel } from "./typen.ts";
 
 /**
@@ -43,7 +44,7 @@ export function siebe(datei: Datei, stufe: number, regeln: Lernregel[] = []): Da
       setze(d, "schriftstueck", { wert: "Foto", sicher: true, grund: d.bild?.aufnahme ? "Bild ohne lesbaren Text, Aufnahmedaten vorhanden" : "Bild ohne lesbaren Text", quelle: "regel" });
       if (d.bild?.aufnahme) setze(d, "datum", { wert: d.bild.aufnahme.slice(0, 10), sicher: true, grund: `Aufnahme laut Foto-Daten${d.bild.modell ? ` (${d.bild.modell})` : ""}`, quelle: "regel" });
     } else {
-      setze(d, "schriftstueck", istGehaltsabrechnung(voll) ? { wert: "Abrechnung", sicher: true, grund: "Gehaltsabrechnung erkannt (Brutto, Netto, Abzüge)", quelle: "regel" } : erkenneSchriftstueck(kopf, d.email?.betreff));
+      setze(d, "schriftstueck", istGehaltsabrechnung(voll) ? { wert: "Abrechnung", sicher: true, grund: "Gehaltsabrechnung erkannt (Brutto, Netto, Abzüge)", quelle: "regel" } : artMitModell(erkenneSchriftstueck(kopf, d.email?.betreff), `${d.email?.betreff || ""}\n${voll}`));
       const datum = d.email?.datum ? { wert: d.email.datum, sicher: true, grund: "Datum der E-Mail", quelle: "regel" as const } : erkenneDatum(kopf);
       setze(d, "datum", datum || (d.geaendert ? { wert: new Date(d.geaendert).toISOString().slice(0, 10), sicher: false, grund: "kein Datum im Text – Änderungsdatum der Datei", quelle: "regel" } : undefined));
     }
@@ -51,7 +52,7 @@ export function siebe(datei: Datei, stufe: number, regeln: Lernregel[] = []): Da
   if (stufe >= 3 && d.stufe < 3) {
     if (d.art === "bild" && textOhne(d)) setze(d, "kategorie", { wert: FOTOS, sicher: true, grund: "Foto ohne Text – Zuordnung später (Texterkennung kommt in einer späteren Fassung)", quelle: "regel" });
     else if (istGehaltsabrechnung(voll)) setze(d, "kategorie", { wert: "Rente, Arbeit & Sozialversicherung", sicher: true, grund: "Gehaltsabrechnung", quelle: "regel" });
-    else setze(d, "kategorie", erkenneKategorie(`${d.email?.betreff || ""}\n${kopf}`, d.email?.von || erkenneAbsender(kopf)?.wert || absenderAusGruss(voll)?.wert || "", d.felder.schriftstueck?.wert));
+    else setze(d, "kategorie", bereichMitModell(erkenneKategorie(`${d.email?.betreff || ""}\n${kopf}`, d.email?.von || erkenneAbsender(kopf)?.wert || absenderAusGruss(voll)?.wert || "", d.felder.schriftstueck?.wert), `${d.email?.betreff || ""}\n${voll}`));
     d.felder.nummern = erkenneNummern(kopf + "\n" + (d.email?.betreff || ""));
   }
   if (stufe >= 4 && d.stufe < 4) {
