@@ -9,6 +9,9 @@ derselbe Bau); weicht sie ab, wird sie eigens gemessen. Ob Workflow PDF Pro dazu
 **Ein Kern für alle (Klaus 12.11.):** Die Basic-Fassungen sollen im Kern gleich sein wie der Datei-Organizer – derselbe Sortier-Kern
 (`lib/`), einmal gebaut, byte-gleich mit Pin in jedem Knoten, Pro wie Basic; keine zweite Fassung. Das ist das Ziel. Der Weg dorthin
 bleibt Regel 8: Ein Knoten übernimmt den Kern erst, wenn er dort am fremden Stapel gesichert besser ist als das Vorhandene.
+Klaus dazu (12.11., Nachtrag): Die Basic-Fassungen müssen mit dem Kern **mindestens so weit übereinstimmen, dass eine Verbesserung
+dort sichtbar und messbar ist – genau wie bei den Pro-Apps**. Folge: Jede nachgewiesene Verbesserung wird in der Basic-Fassung
+nachgezogen und dort am selben Stapel mitgemessen (oder die Byte-Gleichheit mit Pro belegt); ein Bericht nennt Pro und Basic getrennt.
 Stand: BookLedger Basic ist byte-gleich mit Pro, trägt aber den Sortier-Kern nicht (Belege: eigene Leser, dort besser gemessen);
 Familienakte und Private Brain tragen ihn noch nicht. Dieses Dokument ist die gemeinsame Prüfquelle: Wer eine Erkennung, Zuordnung oder ein gelerntes Modell
 in einer dieser Apps verbessert, weist es nach diesen Regeln nach. Die Einzelheiten je Test stehen in
