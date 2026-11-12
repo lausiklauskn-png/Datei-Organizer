@@ -9,7 +9,7 @@ Aufforderung, Termin, Foto …), dann nach Kategorie und Nummern, dann nach Abse
 worum geht es). Dafür **schnelle kleine Modelle statt großer Sprachmodelle**, die nur **Teile** des Textes lesen. Am Ende ist jede
 Datei unter mehreren Gesichtspunkten auffindbar.
 
-Name: **Datei-Organizer** (Klaus, 12.11.2026; Arbeitsname war „Datei-Organizer“). Nur Plan, nichts gebaut. Wo das Werkzeug wohnt, ist Frage S1.
+Name: **Datei-Organizer** (Klaus, 12.11.2026; Arbeitsname war „Sortiersieb“). Erste Fassung 0.1.0 gebaut (siehe „Stand 0.1.0“ am Ende).
 
 ## Leitgedanke: jede Stufe liest nur so viel, wie sie braucht
 
@@ -52,7 +52,7 @@ Name: **Datei-Organizer** (Klaus, 12.11.2026; Arbeitsname war „Datei-Organizer
     S11 (Server, Schlüssel, Pseudonymisierung).
   - **S6** Beides: je Stufe ein Klick, dazu ein Knopf „ganz durchsieben“, der bei Unsicherem anhält; jede Stufe bleibt einzeln
     sichtbar und rückgängig.
-- Bau: eigenes Repo **`lausiklauskn-png/Datei-Organizer`** (Name: Klaus, 12.11.2026; Anlage durch Klaus – am 12.11. noch nicht angelegt); der Kern `lib/organizer.ts` kann vorher hier entstehen und wird dann wie
+- Bau: eigenes Repo **`lausiklauskn-png/Datei-Organizer`** (Name und Anlage: Klaus, 12.11.2026); der Kern `lib/organizer.ts` kann vorher hier entstehen und wird dann wie
   Workflow PDF byte-gleich mit Pin übernommen.
 
 ## Die „schnellen KIs“
@@ -358,3 +358,64 @@ Plan fertig zur Durchsicht (12.11.2026). Entschieden: S1 eigene App, S2 ein Ordn
 S9 Lehrer = Claude (Haiku 5.5, Opus 5.5 für Schwieriges). S10 beantwortet (Hetzner-Server mit Claude Code und KimHub-Schicht). **S11 entschieden (Klaus, 12.11.2026): Weg A über den Server,
 mit Schlüssel (nicht Abo), Pseudonymisierung immer an, Gesundheitsunterlagen nur mit Freigabe je Lauf.** Repo-Name: Datei-Organizer. Offen: S8,
 Anthropics Bedingungen zu Speicherdauer/Training vor dem ersten echten Lauf nachsehen, eigenes Repo.
+
+
+## Stand 0.1.0 – erste Fassung gebaut (12.11.2026, Freibrief Klaus)
+
+Klaus 12.11.: Design wie die Familienakte (Kopf, Navi-Leiste, Knöpfe, Fuß, Impressum, Datenschutz), einfach wie ein Explorer,
+Erklärungen nur hinter „?“, Bäume wie in der Hilfe; Ordner auf der SD-Karte neben den Tresoren; Originale bleiben, nur Kopien gehen
+weiter; Archivnummern laufen parallel, fortlaufend erst, wenn die Reihenfolge steht; 50–100 durcheinander liegende Testdateien.
+
+### Aufbau
+
+| Teil | Wo | Was |
+|---|---|---|
+| Kern (rein, Node + Browser) | `lib/` | Siebe 1–5 (`siebe.ts`), Erkennung (`erkennen.ts`), Dateiart und Fingerabdruck (`dateiart.ts`), Foto-Daten (`exif.ts`), Mails mit Anhängen (`eml.ts`), docx/odt (`zip.ts`), PDF-Text mit Kopf = obere Hälfte von Seite 1 (`pdf-text.ts`), Lernen (`lernen.ts`), Sichten/Baum (`sichten.ts`), Index (`index-format.ts`), Archivnummern (`archivnummer.ts`) |
+| Oberfläche | `src/` → gebaut nach `app/` | Ordner · Sortieren · Finden · Verlauf · Familienakte · Hilfe; Familienakte-Farben und -Klassen; Merken in IndexedDB `DateiOrganizer1` |
+| Testdaten | `testdaten/Eingang/` (Bau: `scripts/testdaten-bauen.mjs`) | 101 erfundene Dateien („Familie Beispiel“, Firmen „… Beispiel“, Kennzeichen BSP-FA 12) in Scanner/Downloads/Durcheinander/alt/Handy/Mail-Anhänge/Bilder/Notizen; Mails mit Anhängen, docx, txt, ics, Fotos mit EXIF, 2 Kopien, 3 auffällige; Erwartung je Datei in `ERWARTUNG.json` |
+| Proben | `scripts/run-kern-tests.mjs`, `tests/ui-probe.mjs`, CI `.github/workflows/pruefung.yml` | Kern 85 Prüfungen inkl. Treffermessung; Browser 40 Prüfungen (ganzer Ablauf, Handybreite 360 px, keine Konsolenfehler) |
+
+### Wo der Ordner liegt (SD-Karte)
+
+```
+SD-Karte
+├─ Family_Projekt_de      Pro-Tresor (verschlüsselt) – NICHT hinein
+└─ Datei-Organizer        diesen Ordner wählen
+   ├─ Eingang …           alles durcheinander
+   └─ organizer-index.json  schreibt der Organizer, sonst nichts
+```
+
+Neben den Tresor, nicht hinein: der Tresor verschlüsselt seine Inhalte, und der Ordnerzugriff schreibt nicht in den Tresor.
+
+Zugang je Gerät: Familienakte Pro (Android/Windows) über deren Ordnerzugriff (`FamilyFolders`, auch SD-Karte; am Gerät ungeprüft) ·
+PC mit Chrome/Edge über die Ordnerwahl (lesen und Index zurückschreiben) · jeder Browser über „Dateien wählen“/„Ordner hochladen“
+(nur lesen, Index als Download) · „Testordner“ lädt die erfundenen Daten aus dem Repo.
+
+### Originale und Kopien
+
+Der Organizer **liest nur**. Er schreibt höchstens `organizer-index.json`. Die Familienakte holt **Kopien** (heute schon:
+Sicherheit › „Cloud-Ordner hereinholen“, 2.28.65) – die Originale bleiben im Ordner und können jederzeit neu gelesen werden.
+Gesperrte (Programm, Endung passt nicht) und Doppelte gibt der Organizer nicht weiter.
+
+### Archivnummern
+
+- Format `A-JJJJ-NNNN`, je Jahr fortlaufend.
+- Vergeben nur auf Knopf und nur für Dateien, die **ganz gesiebt** sind und **nichts mehr zu prüfen** haben – erst dann steht die
+  Reihenfolge (Datum › Bereich › Absender).
+- Eine Nummer ändert sich nie; neue Dateien bekommen die nächste. Mail-Anhänge, Gesperrte und Doppelte bekommen keine.
+- Wird der Ordner neu gelesen, übernimmt der Organizer Nummern und Bestätigtes aus dem vorhandenen Index (am Fingerabdruck).
+- S8 (Nummer für Papier) damit beantwortet wie besprochen: parallel zur Sortierung, fortlaufend erst wenn die Reihenfolge steht.
+
+### Treffer am Testordner (Kern-Probe, 12.11.2026)
+
+Art 94/94 · Bereich 76/79 · Absender 78/78 · Betrifft 74/74 · Frist 33/33 · „sicher, aber falsch“: 0.
+Das ist an selbst gebauten Daten gemessen – an echten Scans wird es schlechter sein. Unsicheres hält das Sieb an („bitte prüfen“).
+
+### Nicht drin / ungeprüft
+
+- **Texterkennung (OCR)** in Bildern und gescannten PDFs ohne Textebene: nicht drin. Solche Dateien landen bei „bitte prüfen“.
+- Lehrer-Dienst (Claude Haiku über den Server, S9–S11): nicht drin.
+- Barcodes, gründliche Prüfung (S4): nicht drin.
+- `.msg` (Outlook): nicht lesbar, nur als Datei erkannt.
+- Am Gerät ungeprüft: Familienakte-Ordnerzugriff/SD-Karte, Android-WebView, Ordnerwahl am Windows-PC.
+- Familienakte liest `organizer-index.json` noch nicht (nächster Schritt dort: „Ordner übernehmen“ mit Index).

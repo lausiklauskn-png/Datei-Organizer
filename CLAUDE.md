@@ -9,14 +9,15 @@ oder Altbestand kommen in **einen** Ordner; der Organizer sortiert sie Klick fü
 Nummern → Absender → Inhalt) und zeigt sie als Baum nach vielen Gesichtspunkten. Zuerst für die Familienakte gemacht: der Ordner
 wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). Plan und alle Entscheidungen: `docs/PLAN.md`.
 
-## Stand (12.11.2026)
+## Stand (12.11.2026, Fassung 0.1.0)
 
-- Nur Plan und **Vorschau** (Stufe A): `vorschau/seite.html` (eine Quelle) → `node tools/index-bauen.mjs` → `index.html`
-  (GitHub Pages, https://lausiklauskn-png.github.io/Datei-Organizer/). 20 erfundene Dateien, keine echte Funktion.
-  `index.html` nie von Hand ändern.
-- Entschieden: S1 eigene App · S2 ein Ordner, Baum als Sicht · S3–S6 wie vorgeschlagen · S7 Format kompatibel mit der Familienakte ·
-  S9 Lehrer = Claude Haiku 5.5 · S10/S11 über Klaus' Hetzner-Server (KimHub `schicht/api.mjs`) mit Schlüssel, pseudonymisiert.
-- Offen: S8 (Archivnummer für Papier), Klaus' Ja zur Vorschau, dann Stufe B (Kern, rein, in Node prüfbar).
+- **Erste Fassung gebaut** (Freibrief Klaus 12.11.): Kern `lib/`, Oberfläche `src/` → gebaut nach `app/` (Pages:
+  https://lausiklauskn-png.github.io/Datei-Organizer/ leitet auf `app/` weiter). `app/` nie von Hand ändern: `npm run build`.
+- Testordner `testdaten/Eingang/` (101 erfundene Dateien, `node scripts/testdaten-bauen.mjs`), Erwartung `testdaten/ERWARTUNG.json`.
+- Proben: `npm run build` (Kern + Typen + Bau), `node tests/ui-probe.mjs` (Browser). CI `.github/workflows/pruefung.yml`.
+- Entschieden: S1–S11 (S8: Archivnummern parallel, fortlaufend erst wenn die Reihenfolge steht). Einzelheiten `docs/PLAN.md`,
+  Abschnitt „Stand 0.1.0“.
+- Offen: Klaus' Gerätetest (SD-Karte über Familienakte Pro, PC), OCR, Lehrer-Dienst, Übernahme des Index in der Familienakte.
 
 ## Feste Regeln
 

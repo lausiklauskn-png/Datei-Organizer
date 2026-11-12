@@ -1,0 +1,2 @@
+{ "name": "Datei-Organizer", "short_name": "Organizer", "lang": "de", "start_url": "./", "scope": "./", "display": "standalone", "background_color": "#f2f7fa", "theme_color": "#0b3154",
+  "icons": [{ "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }] }

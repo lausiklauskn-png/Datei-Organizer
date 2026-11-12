@@ -81,3 +81,6 @@ export function unsichereFelder(d: Datei, stufe: number): string[] {
 }
 
 export const istUnsicher = (d: Datei, stufe: number) => unsichereFelder(d, stufe).length > 0;
+
+/** Alle noch unsicheren Felder aus allen Sieben, die über die Datei gelaufen sind (für die Prüfliste). */
+export const offeneFelder = (d: Datei): string[] => [2, 3, 4, 5].filter((s) => s <= d.stufe).flatMap((s) => unsichereFelder(d, s));
