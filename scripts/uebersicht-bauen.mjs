@@ -52,12 +52,24 @@ const lernZeilen = lernen.map((l) => {
   return `<tr><td>${m?.[3] === "chaotisch" ? "neben der Spur" : "sorgfältig"}</td><td>${esc(m?.[1] || "")}</td><td>${esc(m?.[2] || "")}</td><td class="z">${zahl(l.nutzer?.antworten || 0)}</td><td class="z">${zahl(l.nutzer?.falscheAntworten || 0)}</td><td class="z">${fmt(pz(ohne?.organizer.kategorie || { n: 0 }))}</td><td class="z ${ton(pz(l.organizer.kategorie))}">${fmt(pz(l.organizer.kategorie))}</td></tr>`;
 }).join("");
 
-let unabhaengig = "";
+let unabhaengig = "", blindKz = "";
 if (existsSync("ergebnisse/unabhaengig.json")) {
   const u = JSON.parse(readFileSync("ergebnisse/unabhaengig.json", "utf8"));
+  const um = existsSync("ergebnisse/unabhaengig-zusammengesetzt.json") ? JSON.parse(readFileSync("ergebnisse/unabhaengig-zusammengesetzt.json", "utf8")) : null;
+  blindKz = `<section class="kennzahlen" aria-label="Kennzahlen Blindtest">
+<div class="kz"><b>${fmt(pz(u.organizer.kategorie))}</b><span>Blindtest (fremde Briefe): Bereich richtig${um ? `, ${fmt(pz(um.organizer.kategorie))} mit zusammengesetzten Namen` : ""} · Familienakte heute ${fmt(pz(u.familienakte.kat))}</span></div>
+<div class="kz"><b>${fmt(pz(u.organizer.absender))}</b><span>Blindtest: Absender richtig · heute ${fmt(pz(u.familienakte.abs))}</span></div>
+<div class="kz"><b>${fmt(pz(u.organizer.schriftstueck))}</b><span>Blindtest: Dokumentart richtig</span></div>
+<div class="kz"><b>${fmt(pz(u.organizer.person))}</b><span>Blindtest: Person richtig</span></div>
+</section>`;
   unabhaengig = `<section class="karte"><h2>Unabhängiger Prüfstapel (${zahl(u.dateien)} Briefe, von einem anderen Agenten geschrieben)</h2>
-<p class="leise">Ein Hilfs-Agent ohne Einblick in den Kern und in die eigenen Vorlagen hat eigene erfundene Briefe mit eigenen Soll-Werten geschrieben. Einmal gemessen, ohne Anpassung vorher. Das ist der ehrlichere Wert für „ungesehene Post“.</p>
-<div class="tab"><table><thead><tr><th>Feld</th><th>Datei-Organizer-Kern</th><th>sicher, aber falsch</th><th>Familienakte heute</th></tr></thead><tbody>${FELDER.slice(0, 5).map(([f, n]) => { const v = pz(u.organizer[f]); const fa = f === "kategorie" ? pz(u.familienakte.kat) : f === "absender" ? pz(u.familienakte.abs) : null; return `<tr><th scope="row">${n}</th><td class="z ${ton(v)}">${fmt(v)}</td><td class="z">${zahl(u.organizer[f].falschSicher)}</td><td class="z">${fa != null ? fmt(fa) : "–"}</td></tr>`; }).join("")}</tbody></table></div></section>`;
+<p class="leise">Ein Hilfs-Agent ohne Einblick in den Kern und in die eigenen Vorlagen hat 150 eigene erfundene Briefe aus 7 Haushalten (Ort „Brakenhude“) mit eigenen Soll-Werten geschrieben. Regeln vorab festgelegt (docs/PRUEFSTAPEL-REGELN.md), einmal gemessen, ohne Anpassung. <b>Das ist der ehrliche Wert für fremde Post – und er liegt weit unter dem des eigenen Generators.</b></p>
+<div class="tab"><table><thead><tr><th>Feld</th><th>Datei-Organizer-Kern</th><th>sicher, aber falsch</th><th>Familienakte heute</th>${um ? "<th>nachträglich: Bereichsnamen zusammengesetzt</th>" : ""}</tr></thead><tbody>${FELDER.slice(0, 5).map(([f, n]) => { const v = pz(u.organizer[f]); const fa = f === "kategorie" ? pz(u.familienakte.kat) : f === "absender" ? pz(u.familienakte.abs) : null; const vm = um && f === "kategorie" ? `${fmt(pz(um.organizer.kategorie))} (Familienakte ${fmt(pz(um.familienakte.kat))})` : um ? "gleich" : ""; return `<tr><th scope="row">${n}</th><td class="z ${ton(v)}">${fmt(v)}</td><td class="z">${zahl(u.organizer[f].falschSicher)}</td><td class="z">${fa != null ? fmt(fa) : "–"}</td>${um ? `<td class="z">${vm}</td>` : ""}</tr>`; }).join("")}</tbody></table></div>
+<ul class="leise">
+<li>Die offizielle Zahl ist die linke. Der Wert rechts ist nachträglich: In meinem Auftrag an den Hilfs-Agenten standen die Bereiche durch Kommas getrennt; er hat dadurch 32 Soll-Werte als Bruchstücke geschrieben („Rente“, „Einkäufe“ …), die kein Programm treffen kann. Rechts sind diese Bruchstücke mechanisch auf den vollen Namen gesetzt, sonst nichts.</li>
+<li>Typische echte Fehler des Kerns: Absender mit Werbezeile oder Anschrift dahinter („… GmbH – Ihr Partner für …“), „Von:“-Zeilen in Mails als Text, private Absender („Oma Hanne“), Strafzettel als Behörde statt Auto, Apothekenbon als Einkauf statt Gesundheit, Ferienhaus als Wohnen statt Reisen.</li>
+<li>Nicht gemessen: Beträge auf Kassenbons und Gehaltsfelder (der Stapel enthält dafür keine Soll-Werte).</li>
+</ul></section>`;
 }
 const html = `<title>Datei-Organizer Testlauf</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -95,18 +107,20 @@ ul{margin:0;padding-left:20px;display:grid;gap:4px}
 <div class="seite">
 <header class="karte" style="gap:6px">
 <p class="leise" style="font-size:.8rem;letter-spacing:.06em;text-transform:uppercase">Datei-Organizer · Testlauf vom 12.11.2026 · alles erfundene Daten</p>
-<h1>Wie gut sortiert der Kern ${zahl(alleDateien)} Dateien von ${hids.length} Haushalten?</h1>
+<h1>Wie gut sortiert der Datei-Organizer – an eigenen und an fremden Briefen?</h1>
 <p class="leise">${normal.length} normale Runden und ${chaos.length} Runden „neben der Spur“ (abfotografierte, schiefe, dunkle Briefe, Unsinnsnamen, Mehrfachkopien). Jede Runde hat neue Formulierungen, Daten, Beträge und Dateinamen. Daneben der heutige Eingang der Familienakte und BookLedgerPro am selben Stapel.</p>
 </header>
-<section class="kennzahlen" aria-label="Kennzahlen">
-<div class="kz"><b>${zahl(alleDateien)}</b><span>Dateien geprüft</span></div>
-<div class="kz"><b>${fmt(pz(gesamt.kategorie))}</b><span>Bereich richtig (Familienakte heute ${fmt(pz(faKat))})</span></div>
+${blindKz}
+<section class="kennzahlen" aria-label="Kennzahlen eigener Generator">
+<div class="kz"><b>${zahl(alleDateien)}</b><span>Dateien aus dem eigenen Generator</span></div>
+<div class="kz"><b>${fmt(pz(gesamt.kategorie))}</b><span>Bereich richtig, eigener Generator (Familienakte heute ${fmt(pz(faKat))}) – geschönt durch Überanpassung</span></div>
 <div class="kz"><b>${fmt(pz(gesamt.absender))}</b><span>Absender richtig (heute ${fmt(pz(faAbs))})</span></div>
 <div class="kz"><b>${fmt(pz(gesamt.person))}</b><span>Person richtig zugeordnet</span></div>
 <div class="kz"><b>${Math.round((100 * offen) / alleDateien)} %</b><span>landen bei „bitte prüfen“ (heute ${Math.round((100 * faPruef) / alleDateien)} %)</span></div>
 </section>
+${unabhaengig}
 <section class="karte">
-<h2>Je Feld</h2>
+<h2>Je Feld (eigener Generator)</h2>
 <div class="legende"><span><i style="background:var(--akzent)"></i>Datei-Organizer-Kern</span><span><i style="background:var(--fa)"></i>Familienakte heute</span><span>„sicher, aber falsch“ = die App war sich sicher und lag falsch (das Schlimmste)</span></div>
 <div class="tab"><table><thead><tr><th>Feld</th><th>gesamt</th><th>normal</th><th>neben der Spur</th><th>sicher, aber falsch</th><th>Familienakte heute</th><th></th></tr></thead><tbody>${FELDER.map(zeileFeld).join("")}</tbody></table></div>
 </section>
@@ -136,7 +150,6 @@ ul{margin:0;padding-left:20px;display:grid;gap:4px}
 <li>BookLedgerPro an Kassenbons: Betrag <b>${fmt(pz(blpB))}</b>, Datum <b>${fmt(pz(blpD))}</b>. Buchungskonto (SKR03) an Geschäftsbelegen der Boutique: <b>${fmt(pz(blpK))}</b> – die Kontenregeln kennen Wareneingang aus dem Ausland, Kartengebühren und Werbung noch nicht.</li>
 </ul>
 </section>
-${unabhaengig}
 <section class="karte">
 <h2>Wo das Ergebnis zu gut aussehen kann</h2>
 <ul>

@@ -162,7 +162,7 @@ for (const e of soll) {
     const richtig = w && (f === "betrag" ? cents(w.wert) === cents(s) : f === "absender" ? norm(w.wert) === norm(s) : w.wert === s);
     if (richtig) z[f].ok++;
     else {
-      if (w?.sicher) { z[f].falschSicher++; fehler[f].push(`${e.pfad.split("/").slice(1, 2)[0].slice(0, 12)} ${e.pfad.split("/").pop()}: „${w?.wert || "–"}“ statt „${s}“`); }
+      if (w?.sicher) { z[f].falschSicher++; fehler[f].push(`${(e.haushalt || "").slice(0, 12)} ${e.pfad.split("/").pop()}: „${w?.wert || "–"}“ statt „${s}“`); }
       else { z[f].offen++; fehler[f].push(`(unsicher) ${e.pfad.split("/").pop()}: „${w?.wert || "–"}“ statt „${s}“`); }
     }
     if (!w || !w.sicher) offen = true;

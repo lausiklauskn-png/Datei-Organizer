@@ -34,18 +34,32 @@ ul{margin:0;padding-left:20px;display:grid;gap:4px}
 <div class="seite">
 <header class="karte" style="gap:6px">
 <p class="leise" style="font-size:.8rem;letter-spacing:.06em;text-transform:uppercase">Datei-Organizer · Testlauf vom 12.11.2026 · alles erfundene Daten</p>
-<h1>Wie gut sortiert der Kern 5.790 Dateien von 10 Haushalten?</h1>
+<h1>Wie gut sortiert der Datei-Organizer – an eigenen und an fremden Briefen?</h1>
 <p class="leise">6 normale Runden und 2 Runden „neben der Spur“ (abfotografierte, schiefe, dunkle Briefe, Unsinnsnamen, Mehrfachkopien). Jede Runde hat neue Formulierungen, Daten, Beträge und Dateinamen. Daneben der heutige Eingang der Familienakte und BookLedgerPro am selben Stapel.</p>
 </header>
-<section class="kennzahlen" aria-label="Kennzahlen">
-<div class="kz"><b>5.790</b><span>Dateien geprüft</span></div>
-<div class="kz"><b>91,3 %</b><span>Bereich richtig (Familienakte heute 54,9 %)</span></div>
+<section class="kennzahlen" aria-label="Kennzahlen Blindtest">
+<div class="kz"><b>50,7 %</b><span>Blindtest (fremde Briefe): Bereich richtig, 65,3 % mit zusammengesetzten Namen · Familienakte heute 28 %</span></div>
+<div class="kz"><b>54 %</b><span>Blindtest: Absender richtig · heute 36 %</span></div>
+<div class="kz"><b>61,3 %</b><span>Blindtest: Dokumentart richtig</span></div>
+<div class="kz"><b>67,1 %</b><span>Blindtest: Person richtig</span></div>
+</section>
+<section class="kennzahlen" aria-label="Kennzahlen eigener Generator">
+<div class="kz"><b>5.790</b><span>Dateien aus dem eigenen Generator</span></div>
+<div class="kz"><b>91,3 %</b><span>Bereich richtig, eigener Generator (Familienakte heute 54,9 %) – geschönt durch Überanpassung</span></div>
 <div class="kz"><b>96,3 %</b><span>Absender richtig (heute 76,4 %)</span></div>
 <div class="kz"><b>99,2 %</b><span>Person richtig zugeordnet</span></div>
 <div class="kz"><b>40 %</b><span>landen bei „bitte prüfen“ (heute 93 %)</span></div>
 </section>
+<section class="karte"><h2>Unabhängiger Prüfstapel (150 Briefe, von einem anderen Agenten geschrieben)</h2>
+<p class="leise">Ein Hilfs-Agent ohne Einblick in den Kern und in die eigenen Vorlagen hat 150 eigene erfundene Briefe aus 7 Haushalten (Ort „Brakenhude“) mit eigenen Soll-Werten geschrieben. Regeln vorab festgelegt (docs/PRUEFSTAPEL-REGELN.md), einmal gemessen, ohne Anpassung. <b>Das ist der ehrliche Wert für fremde Post – und er liegt weit unter dem des eigenen Generators.</b></p>
+<div class="tab"><table><thead><tr><th>Feld</th><th>Datei-Organizer-Kern</th><th>sicher, aber falsch</th><th>Familienakte heute</th><th>nachträglich: Bereichsnamen zusammengesetzt</th></tr></thead><tbody><tr><th scope="row">Bereich</th><td class="z schwach">50,7 %</td><td class="z">31</td><td class="z">28 %</td><td class="z">65,3 % (Familienakte 36 %)</td></tr><tr><th scope="row">Dokumentart</th><td class="z schwach">61,3 %</td><td class="z">15</td><td class="z">–</td><td class="z">gleich</td></tr><tr><th scope="row">Absender</th><td class="z schwach">54 %</td><td class="z">47</td><td class="z">36 %</td><td class="z">gleich</td></tr><tr><th scope="row">Person</th><td class="z schwach">67,1 %</td><td class="z">2</td><td class="z">–</td><td class="z">gleich</td></tr><tr><th scope="row">Frist</th><td class="z schwach">48,2 %</td><td class="z">4</td><td class="z">–</td><td class="z">gleich</td></tr></tbody></table></div>
+<ul class="leise">
+<li>Die offizielle Zahl ist die linke. Der Wert rechts ist nachträglich: In meinem Auftrag an den Hilfs-Agenten standen die Bereiche durch Kommas getrennt; er hat dadurch 32 Soll-Werte als Bruchstücke geschrieben („Rente“, „Einkäufe“ …), die kein Programm treffen kann. Rechts sind diese Bruchstücke mechanisch auf den vollen Namen gesetzt, sonst nichts.</li>
+<li>Typische echte Fehler des Kerns: Absender mit Werbezeile oder Anschrift dahinter („… GmbH – Ihr Partner für …“), „Von:“-Zeilen in Mails als Text, private Absender („Oma Hanne“), Strafzettel als Behörde statt Auto, Apothekenbon als Einkauf statt Gesundheit, Ferienhaus als Wohnen statt Reisen.</li>
+<li>Nicht gemessen: Beträge auf Kassenbons und Gehaltsfelder (der Stapel enthält dafür keine Soll-Werte).</li>
+</ul></section>
 <section class="karte">
-<h2>Je Feld</h2>
+<h2>Je Feld (eigener Generator)</h2>
 <div class="legende"><span><i style="background:var(--akzent)"></i>Datei-Organizer-Kern</span><span><i style="background:var(--fa)"></i>Familienakte heute</span><span>„sicher, aber falsch“ = die App war sich sicher und lag falsch (das Schlimmste)</span></div>
 <div class="tab"><table><thead><tr><th>Feld</th><th>gesamt</th><th>normal</th><th>neben der Spur</th><th>sicher, aber falsch</th><th>Familienakte heute</th><th></th></tr></thead><tbody><tr><th scope="row">Bereich</th><td class="z mittel">91,3 %</td><td class="z">91,9 %</td><td class="z">89,4 %</td><td class="z leise">125</td><td class="z">54,9 %</td><td class="bz"><div class="balken" role="img" aria-label="Organizer 91,3 %, Familienakte heute 54,9 %"><span class="org" style="width:91.3%"></span><span class="fa" style="left:54.9%"></span></div></td></tr><tr><th scope="row">Dokumentart</th><td class="z mittel">88,3 %</td><td class="z">88,9 %</td><td class="z">86,7 %</td><td class="z leise">226</td><td class="z">–</td><td class="bz"><div class="balken" role="img" aria-label="Organizer 88,3 %"><span class="org" style="width:88.3%"></span></div></td></tr><tr><th scope="row">Absender</th><td class="z gut">96,3 %</td><td class="z">97,8 %</td><td class="z">91,9 %</td><td class="z leise">71</td><td class="z">76,4 %</td><td class="bz"><div class="balken" role="img" aria-label="Organizer 96,3 %, Familienakte heute 76,4 %"><span class="org" style="width:96.3%"></span><span class="fa" style="left:76.4%"></span></div></td></tr><tr><th scope="row">Person</th><td class="z gut">99,2 %</td><td class="z">99,8 %</td><td class="z">97,5 %</td><td class="z leise">8</td><td class="z">–</td><td class="bz"><div class="balken" role="img" aria-label="Organizer 99,2 %"><span class="org" style="width:99.2%"></span></div></td></tr><tr><th scope="row">Frist</th><td class="z mittel">94,8 %</td><td class="z">96,9 %</td><td class="z">88,3 %</td><td class="z leise">8</td><td class="z">–</td><td class="bz"><div class="balken" role="img" aria-label="Organizer 94,8 %"><span class="org" style="width:94.8%"></span></div></td></tr><tr><th scope="row">Betrag (Bon)</th><td class="z mittel">87,8 %</td><td class="z">85,4 %</td><td class="z">94,7 %</td><td class="z leise">38</td><td class="z">–</td><td class="bz"><div class="balken" role="img" aria-label="Organizer 87,8 %"><span class="org" style="width:87.8%"></span></div></td></tr></tbody></table></div>
 </section>
@@ -75,7 +89,6 @@ ul{margin:0;padding-left:20px;display:grid;gap:4px}
 <li>BookLedgerPro an Kassenbons: Betrag <b>88 %</b>, Datum <b>92,5 %</b>. Buchungskonto (SKR03) an Geschäftsbelegen der Boutique: <b>24,2 %</b> – die Kontenregeln kennen Wareneingang aus dem Ausland, Kartengebühren und Werbung noch nicht.</li>
 </ul>
 </section>
-
 <section class="karte">
 <h2>Wo das Ergebnis zu gut aussehen kann</h2>
 <ul>
