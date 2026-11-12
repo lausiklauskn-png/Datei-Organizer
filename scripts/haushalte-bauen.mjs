@@ -108,6 +108,21 @@ const ABS = {
   arbeitgeber3: S("Softwarehaus Beispiel GmbH", "Codeweg 1", "20059", K.arb, "firma"),
   arbeitgeber4: S("Modehaus Beispiel KG", "Einkaufsstraße 9", "20060", K.arb, "firma"),
   minijob: S("Café Möwe Beispiel", "Hafenstraße 2", "20061", K.arb, "firma"),
+  arbeitgeber5: S("Hafenservice Nord Beispiel GmbH", "Kaispeicher 3", "20074", K.arb, "firma"),
+  zahlungsdienst: S("Zahldienst Beispiel Europe S.A.", "Rue de l'Exemple 1", "20075", K.fin, "mail"),
+  serverhaus: S("Serverhaus Nord Beispiel GmbH", "Rechenweg 1", "20076", K.vert, "firma"),
+  kidienst: S("KI-Dienst Beispiel Inc.", "Model Street 5", "20077", K.vert, "mail"),
+  domain: S("Domainhafen Beispiel GmbH", "Adressweg 1", "20078", K.vert, "mail"),
+  boutique: S("Boutique Moderaum Beispiel", "Jungfernstieg-Beispiel 3", "20110", K.steu, "firma"),
+  modaitalia: S("Moda Italia Beispiel S.r.l.", "Via Esempio 7", "20111", K.steu, "firma"),
+  kosmetikgh: S("Kosmetik-Großhandel Nord Beispiel GmbH", "Puderweg 2", "20112", K.steu, "firma"),
+  kartenterminal: S("Kartenzahlung Beispiel Payment GmbH", "Terminalweg 1", "20113", K.fin, "firma"),
+  gewerbevermieter: S("Ladenflächen Hanse Beispiel GmbH", "Passage 1", "20114", K.haus, "firma"),
+  ihk: S("Handelskammer Beispielstadt", "Börsenhof 1", "20115", K.arb, "behoerde"),
+  gewerbevers: S("Betriebsversicherung Nord Beispiel AG", "Policenhof 7", "20017", K.vers, "firma"),
+  werbung: S("Sozialwerbung Beispiel Ltd.", "Ad Lane 1", "20116", K.vert, "mail"),
+  verpackung: S("Verpackungshandel Beispiel GmbH", "Kartonweg 4", "20117", K.kauf, "firma"),
+  spendenverein: S("Familienprojekt Beispiel e. V.", "Gemeinsinnweg 1", "20079", K.steu, "firma"),
 };
 
 // ---------- Läden für Kassenbons (erfunden; stehen für Supermarkt, Discounter, Drogerie …) ----------
@@ -144,6 +159,10 @@ const HAUSHALTE = [
   { id: "rentner-jessen", titel: "Rentnerpaar", name: "Jessen", strasse: "Rosenstieg 2", plz: "20107",
     personen: [P("Hinrich", "Jessen", "Rentner, 78", "Herr"), P("Gerda", "Jessen", "Rentnerin, 75, Pflegegrad", "Frau")],
     fahrzeuge: [], arbeitgeber: {}, wohnen: "eigentum", rente: true },
+  { id: "entwickler-fleetmann", titel: "Selbstständiger App-Entwickler (wie Klaus), nebenher angestellt", name: "Fleetmann", strasse: "Elbblick 14", plz: "20109",
+    personen: [P("Klaus", "Fleetmann", "App-Entwickler, Android-Nutzer, Haushaltsbuch", "Herr")], fahrzeuge: [], arbeitgeber: { Klaus: "arbeitgeber5" }, wohnen: "miete", entwickler: true },
+  { id: "boutique-hafenrose", titel: "Inhaberin einer Boutique (Mode, Dessous, Parfüm, Beauty)", name: "Hafenrose", strasse: "Jungfernstieg-Beispiel 3", plz: "20110",
+    personen: [P("Ali", "Hafenrose", "Inhaberin Boutique Moderaum Beispiel", "Frau"), P("Tom", "Hafenrose", "Ehemann, angestellt", "Herr")], fahrzeuge: ["BSP-AH 12"], arbeitgeber: { Tom: "arbeitgeber1" }, wohnen: "miete", boutique: true },
   { id: "studentin-ketelsen", titel: "Studentin", name: "Ketelsen", strasse: "WG Hafenblick 7", plz: "20108",
     personen: [P("Lena", "Ketelsen", "Studentin, 22", "Frau")], fahrzeuge: [], arbeitgeber: { Lena: "minijob" }, wohnen: "wg", studentin: true },
 ];
@@ -372,6 +391,169 @@ function passt(h, wer) {
   return kandidaten;
 }
 
+// ---------- Gehaltsabrechnungen (vereinfachte Sätze, erfunden) ----------
+const KONF = ["ev", "rk", "--", "--"];
+function gehaltsStamm(h, p, ag) {
+  const kinder = h.personen.filter((x) => x.anrede === "Kind").length;
+  return {
+    personalNr: String(zahl(1000, 99999)).padStart(5, "0"), eintritt: `01.${String(zahl(1, 12)).padStart(2, "0")}.${zahl(2005, 2023)}`,
+    steuerId: `${zahl(10, 99)} ${zahl(100, 999)} ${zahl(100, 999)} ${zahl(100, 999)}`, svNr: `${zahl(10, 65)} ${String(zahl(10101, 311299)).padStart(6, "0")} ${p.name[0]} ${String(zahl(0, 999)).padStart(3, "0")}`,
+    stkl: h.personen.filter((x) => x.anrede !== "Kind").length > 1 ? wahl([3, 4, 5]) : kinder ? 2 : 1, kfb: kinder ? (kinder * 0.5 * (h.personen.length > 2 ? 2 : 1)).toFixed(1).replace(".", ",") : "0,0",
+    konf: wahl(KONF), kk: wahl([ABS.kk.name, "BKK Hafen Beispiel", "Ersatzkasse Nord Beispiel"]), grund: ag === ABS.minijob ? 556 : zahl(18, 62) * 100, teilzeit: ja(0.25),
+    iban: `DE00 0000 0000 ${zahl(1000, 9999)} ${zahl(1000, 9999)} 00`,
+  };
+}
+const eur = (x) => x.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+function gehaltsabrechnung(h, p, ag, st, jahr, monat) {
+  const minijob = ag === ABS.minijob;
+  const posten = [["1000", minijob ? "Aushilfslohn" : "Gehalt", st.grund * (st.teilzeit ? 0.75 : 1)]];
+  if (!minijob) {
+    if (ja(0.3)) posten.push(["1200", "Provision", zahl(50, 900)]);
+    if (ja(0.3)) posten.push(["1300", wahl(["Nachtzuschlag stfr.", "Sonntagszuschlag stfr.", "Überstunden 25 %"]), zahl(40, 400)]);
+    if (ja(0.4)) posten.push(["1400", "VWL-Zuschuss AG", 40]);
+    if (ja(0.3)) posten.push(["1500", "Fahrtkostenzuschuss pausch.", zahl(30, 120)]);
+    if (monat === 6 && ja(0.6)) posten.push(["1600", "Urlaubsgeld", zahl(300, 1500)]);
+    if (monat === 11 && ja(0.7)) posten.push(["1700", "Weihnachtsgeld", zahl(500, 3000)]);
+    if (ja(0.15)) posten.push(["1800", "Sachbezug Gutschein", 50]);
+  }
+  const brutto = posten.reduce((a, x) => a + x[2], 0);
+  const lst = minijob ? 0 : Math.max(0, (brutto - [0, 1250, 1450, 2550, 1250, 0, 0][st.stkl]) * [0, 0.19, 0.17, 0.12, 0.19, 0.27, 0.3][st.stkl]);
+  const kist = st.konf === "--" ? 0 : lst * 0.09;
+  const kv = minijob ? 0 : brutto * 0.0875, rv = minijob ? brutto * 0.036 : brutto * 0.093, av = minijob ? 0 : brutto * 0.013, pv = minijob ? 0 : brutto * (h.personen.some((x) => x.anrede === "Kind") ? 0.017 : 0.023);
+  const netto = brutto - lst - kist - kv - rv - av - pv;
+  const vwl = posten.some((x) => x[0] === "1400") ? 40 : 0;
+  const auszahlung = netto - vwl;
+  const zr = `${String(monat).padStart(2, "0")}.${jahr}`;
+  const mon = MON[monat - 1];
+  const layoutA = ja(0.6);
+  const kopf = layoutA
+    ? [`# ${ag.name}`, `# Abrechnung der Brutto/Netto-Bezüge für ${mon} ${jahr}`, `Personal-Nr. ${st.personalNr}   Eintritt ${st.eintritt}   Abrechnungszeitraum ${zr}`, "", ...kopfzeilen(h, p), "",
+      `Steuer-ID ${st.steuerId}   St.Kl. ${st.stkl}   Kinderfreibetrag ${st.kfb}   Konfession ${st.konf}`, `SV-Nummer ${st.svNr}   Krankenkasse ${st.kk}`, "", "Lohnart  Bezeichnung                      Betrag"]
+    : [`# Gehaltsabrechnung ${mon} ${jahr}`, ag.zeile, "", ...kopfzeilen(h, p), "", `Personalnummer: ${st.personalNr}`, `Steuerliche Identifikationsnummer: ${st.steuerId}`, `Steuerklasse: ${st.stkl}`, `Sozialversicherungsnummer: ${st.svNr}`, `Krankenkasse: ${st.kk}`, "", "Bezüge"];
+  const zeilen = [...kopf, ...posten.map(([nrr, b, x]) => layoutA ? `${nrr}     ${b.padEnd(30)} ${eur(x).padStart(10)}` : `${b}: ${eur(x)} EUR`),
+    layoutA ? `Gesamt-Brutto ${eur(brutto).padStart(33)}` : `Bruttolohn gesamt: ${eur(brutto)} EUR`, "", layoutA ? "Steuer- und Sozialversicherungsabzüge" : "Abzüge",
+    `Lohnsteuer ${eur(lst).padStart(30)}`, `Solidaritätszuschlag ${eur(0).padStart(20)}`, `Kirchensteuer ${eur(kist).padStart(27)}`,
+    `Krankenversicherung ${eur(kv).padStart(21)}`, `Rentenversicherung ${eur(rv).padStart(22)}`, `Arbeitslosenversicherung ${eur(av).padStart(16)}`, `Pflegeversicherung ${eur(pv).padStart(22)}`, "",
+    layoutA ? `Nettobezüge ${eur(netto).padStart(30)}` : `Nettolohn: ${eur(netto)} EUR`, ...(vwl ? [`VWL-Überweisung ${eur(vwl).padStart(26)}`] : []),
+    layoutA ? `Auszahlungsbetrag ${eur(auszahlung).padStart(24)}` : `Auszahlung: ${eur(auszahlung)} EUR`, `Überweisung an ${st.iban}`];
+  const soll = { schriftstueck: "Abrechnung", kategorie: K.arb, absender: ag.name, betrifft: `${p.anrede} ${p.name}`, person: p.voll,
+    gehalt: { zeitraum: `${jahr}-${String(monat).padStart(2, "0")}`, brutto: eur(brutto), netto: eur(netto), auszahlung: eur(auszahlung), lohnsteuer: eur(lst), steuerklasse: String(st.stkl), steuerId: st.steuerId.replace(/\s/g, ""), svNummer: st.svNr.replace(/\s/g, ""), krankenkasse: st.kk } };
+  if (ja(0.2)) bildAblegen(h, "blatt", zeilen, soll, wahl([0, -1, 1]));
+  else ablegen(h, "pdf", zeilen, soll, `Gehalt_${jahr}_${String(monat).padStart(2, "0")}`);
+}
+function lohnsteuerbescheinigung(h, p, ag, st) {
+  const jahr = 2025, brutto = st.grund * 12 * (st.teilzeit ? 0.75 : 1), lst = brutto * 0.12;
+  ablegen(h, "pdf", [`# Ausdruck der elektronischen Lohnsteuerbescheinigung für ${jahr}`, `Arbeitgeber: ${ag.name}`, "", ...kopfzeilen(h, p), "", `Identifikationsnummer: ${st.steuerId}`, `Personalnummer: ${st.personalNr}`, `Steuerklasse ${st.stkl}`, "",
+    `3. Bruttoarbeitslohn ${eur(brutto)}`, `4. Einbehaltene Lohnsteuer ${eur(lst)}`, `5. Einbehaltener Solidaritätszuschlag 0,00`, `22. Arbeitgeberanteil zur gesetzlichen Rentenversicherung ${eur(brutto * 0.093)}`, `23. Arbeitnehmeranteil zur gesetzlichen Rentenversicherung ${eur(brutto * 0.093)}`, "",
+    "Diese Bescheinigung wurde dem Finanzamt elektronisch übermittelt."],
+  { schriftstueck: "Bescheinigung", kategorie: K.steu, absender: ag.name, betrifft: `${p.anrede} ${p.name}`, person: p.voll }, "Lohnsteuerbescheinigung");
+}
+function svMeldung(h, p, ag, st) {
+  ablegen(h, "pdf", [`# Meldebescheinigung zur Sozialversicherung`, ag.zeile, "", ...kopfzeilen(h, p), "", `Versicherungsnummer: ${st.svNr}`, `Krankenkasse: ${st.kk}`, "Grund der Abgabe: 50 Jahresmeldung", `Beschäftigungszeit: 01.01.2025 – 31.12.2025`, `Beitragspflichtiges Bruttoarbeitsentgelt: ${eur(st.grund * 12)} EUR`],
+    { schriftstueck: "Bescheinigung", kategorie: K.arb, absender: ag.name, betrifft: `${p.anrede} ${p.name}`, person: p.voll }, "SV_Meldung");
+}
+function renteninformation(h, p, st) {
+  const d = tag();
+  ablegen(h, "pdf", brief({ h, abs: ABS.rente, an: p, datum: d, betreff: "Ihre Renteninformation", nummern: [["Versicherungsnummer", st.svNr]],
+    absatz: [`Ihre bisher erreichte Rentenanwartschaft entspräche einer monatlichen Rente von ${betrag(300, 1400)} €.`, `Ihre Regelaltersrente können Sie ab dem ${de(plus(d, zahl(3000, 9000)))} erhalten.`, `Höhe der künftigen Regelaltersrente bei gleichbleibenden Beiträgen: ${betrag(900, 2400)} €.`] }),
+    sollFuer(h, ABS.rente, p, "Brief"), "Renteninformation");
+}
+function jahresabschluss(h, p) {
+  const ein = zahl(30000, 140000), aus = zahl(10000, 60000);
+  ablegen(h, "pdf", brief({ h, abs: ABS.steuerberater, an: p, datum: tag(), betreff: `Jahresabschluss 2025 – Einnahmenüberschussrechnung`, nummern: [["Mandantennummer", nr("M-", 5)]],
+    absatz: [`Betriebseinnahmen: ${eur(ein)} €`, `Betriebsausgaben: ${eur(aus)} €`, `Gewinn: ${eur(ein - aus)} €`, "Die Anlage EÜR wurde elektronisch an das Finanzamt übermittelt."] }),
+    sollFuer(h, ABS.steuerberater, p, "Abrechnung", { kategorie: K.steu }), "Jahresabschluss");
+}
+function schenkung(h, p) {
+  const b = zahl(2, 60) * 1000;
+  ablegen(h, "pdf", brief({ h, abs: ABS.notar, an: p, datum: tag(), betreff: "Schenkungsvertrag – Ausfertigung", nummern: [["Urkundenrolle", nr("UR ", 4)]], absatz: [`anbei die Ausfertigung des Schenkungsvertrags über einen Geldbetrag von ${eur(b)} €.`, "Die Schenkung wird dem Finanzamt angezeigt."] }),
+    sollFuer(h, ABS.notar, p, "Vertrag", { kategorie: K.erb }), "Schenkung");
+  ablegen(h, "pdf", brief({ h, abs: ABS.finanzamt, an: p, datum: tag(), betreff: "Schenkungsteuer – Anforderung einer Steuererklärung", nummern: [["Steuernummer", `${zahl(10, 99)}/${zahl(100, 999)}/${zahl(10000, 99999)}`]], absatz: ["uns wurde eine Schenkung angezeigt.", `Bitte reichen Sie die Schenkungsteuererklärung bis zum ${de(plus(tag(), 30))} ein.`] }),
+    sollFuer(h, ABS.finanzamt, p, "Aufforderung", { kategorie: K.steu }), "Schenkungsteuer");
+}
+function versicherungsleistung(h, p) {
+  const abs = wahl([ABS.hausrat, ABS.kfzvers, ABS2.lebensvers]);
+  const b = betrag(150, 9000);
+  ablegen(h, "pdf", brief({ h, abs, an: p, datum: tag(), betreff: wahl(["Leistungsabrechnung zu Ihrem Schaden", "Regulierung Ihres Schadens", "Auszahlung der Versicherungsleistung"]), nummern: [["Schadennummer", nr("S-", 7)]],
+    absatz: [`wir zahlen Ihnen ${b} € aus.`, `Die Überweisung erfolgt auf Ihr Konto DE00 0000 0000 0000 0000 00.`] }), sollFuer(h, abs, p, "Abrechnung", { kategorie: K.vers }), "Versicherung_Auszahlung");
+}
+function entwicklerPost(h, p) {
+  for (let i = 0; i < zahl(3, 6); i++) mailVon(h, ABS.zahlungsdienst, p, "Sie haben eine Spende erhalten", [`über Ihre App „Familienakte Beispiel“ ist eine Spende eingegangen: ${betrag(2, 50)} €.`, "Der Betrag wird Ihrem Guthaben gutgeschrieben."], "Brief", { kategorie: K.fin });
+  for (let i = 0; i < zahl(2, 4); i++) rechnung(h, ABS.serverhaus, p, `Server CX22 ${MON[zahl(0, 11)]}`, "Rechnung_Server", [["Kundennummer", nr("K", 7)]]);
+  for (let i = 0; i < zahl(2, 4); i++) mailVon(h, ABS.kidienst, p, "Your receipt / Ihre Rechnung", ["Thank you for your subscription. Vielen Dank für Ihr Abo.", `Amount paid: $${betrag(20, 200)} USD`, `Rechnungsnummer: ${nr("INV-", 8)}`], "Rechnung");
+  mailVon(h, ABS.domain, p, "Ihre Domain wurde verlängert", ["Ihre Domain beispiel-familie.invalid wurde um ein Jahr verlängert.", `Rechnungsbetrag: ${betrag(10, 30)} €`], "Rechnung");
+  rechnung(h, ABS.elektro, p, "Tablet mit Stift", "Rechnung_Kauf");
+  for (let q = 1; q <= 2; q++) ablegen(h, "pdf", brief({ h, abs: ABS.finanzamt, an: p, datum: tag(), betreff: `Umsatzsteuer-Voranmeldung ${q}. Quartal`, nummern: [["Steuernummer", `${zahl(10, 99)}/${zahl(100, 999)}/${zahl(10000, 99999)}`]], absatz: ["die Umsatzsteuer-Voranmeldung wurde verarbeitet.", `Zahllast: ${betrag(0, 400)} €.`] }), sollFuer(h, ABS.finanzamt, p, "Bescheid", { kategorie: K.steu }), "USt");
+  vertrag(h, ABS.kk, p, "freiwillige Mitgliedschaft (Selbstständige)", "Krankenkasse");
+}
+
+// ---------- Boutique (Vorbild: Alinas Moderaum / Perfect Skin Fashion; alles erfunden). konto = SKR03 für BookLedgerPro ----------
+function boutiquePost(h, p) {
+  for (let i = 0; i < zahl(3, 6); i++) { const d = tag(); const b = zahl(800, 6000);
+    ablegen(h, "pdf", brief({ h, abs: ABS.modaitalia, an: p, datum: d, betreff: `Fattura / Rechnung Nr. ${nr("IT-", 5)}`, nummern: [["USt-IdNr.", `IT0${zahl(1000000000, 9999999999)}`], ["Kundennummer", "C-0815"]],
+      absatz: [`Kollektion ${wahl(["Primavera", "Autunno"])} ${d.slice(0, 4)}: ${zahl(10, 60)} Teile Damenbekleidung (Kleider, Blusen, Strick).`, `Warenwert netto: ${eur(b)} €. Steuerschuldnerschaft des Leistungsempfängers (innergemeinschaftliche Lieferung).`, `Zahlbar bis ${de(plus(d, 30))}.`] }),
+      { ...sollFuer(h, ABS.modaitalia, p, "Rechnung", { frist: plus(d, 30) }), konto: "3400" }, "Lieferant_Rechnung"); }
+  for (let i = 0; i < zahl(2, 4); i++) { const d = tag();
+    ablegen(h, "pdf", brief({ h, abs: ABS.kosmetikgh, an: p, datum: d, betreff: "Rechnung Wareneingang Parfüm und Pflege", nummern: [["Kundennummer", nr("KG-", 5)], ["Rechnungsnummer", nr("R", 6)]],
+      absatz: [`Parfüm ${zahl(5, 30)} Flakons, Pflegeserie Perfect Skin ${zahl(10, 40)} Stück.`, `Rechnungsbetrag: ${betrag(300, 2500)} € inkl. 19 % USt.`, `Zahlbar bis ${de(plus(d, 14))}.`] }),
+      { ...sollFuer(h, ABS.kosmetikgh, p, "Rechnung", { frist: plus(d, 14) }), konto: "3400" }, "Wareneingang"); }
+  for (let i = 0; i < zahl(2, 3); i++) { const d = tag();
+    ablegen(h, "pdf", brief({ h, abs: ABS.kartenterminal, an: p, datum: d, betreff: `Abrechnung Kartenumsätze ${MON[Number(d.slice(5, 7)) - 1]}`, nummern: [["Händlernummer", nr("H", 8)]],
+      absatz: [`Kartenumsätze: ${betrag(4000, 20000)} €.`, `Disagio und Transaktionsgebühren: ${betrag(40, 300)} €.`, "Die Auszahlung erfolgt abzüglich der Gebühren."] }), { ...sollFuer(h, ABS.kartenterminal, p, "Abrechnung"), konto: "4970" }, "Kartenabrechnung"); }
+  rechnung(h, ABS.gewerbevermieter, p, "Miete Ladenlokal Passage", "Ladenmiete", [["Mietobjekt", "Laden 3"]]);
+  erwartung.at(-1).konto = "4210"; erwartung.at(-1).kategorie = K.haus;
+  rechnung(h, ABS.ihk, p, "Kammerbeitrag Handelskammer", "IHK", [["Mitgliedsnummer", nr("IHK-", 6)]], K.arb); erwartung.at(-1).konto = "4380";
+  vertrag(h, ABS.gewerbevers, p, "Inhalts- und Betriebshaftpflichtversicherung Boutique", "Versicherung"); erwartung.at(-1).konto = "4360";
+  for (let i = 0; i < 2; i++) { mailVon(h, ABS.werbung, p, "Rechnung Werbeanzeigen", ["Ihre Werbekampagne für die Boutique ist abgeschlossen.", `Rechnungsbetrag: ${betrag(50, 600)} €`, `Rechnungsnummer: ${nr("AD-", 7)}`], "Rechnung"); erwartung.at(-1).konto = "4600"; }
+  rechnung(h, ABS.verpackung, p, "Tüten und Seidenpapier mit Logo", "Verpackung"); erwartung.at(-1).konto = "4980";
+  ablegen(h, "pdf", brief({ h, abs: ABS.steuerberater, an: p, datum: tag(), betreff: "Betriebswirtschaftliche Auswertung (BWA) September", nummern: [["Mandantennummer", nr("M-", 5)]], absatz: [`Umsatzerlöse: ${eur(zahl(15000, 60000))} €`, `Wareneinsatz: ${eur(zahl(6000, 25000))} €`, `Vorläufiges Ergebnis: ${eur(zahl(1000, 15000))} €`] }),
+    sollFuer(h, ABS.steuerberater, p, "Abrechnung", { kategorie: K.steu }), "BWA");
+  for (let q = 1; q <= 2; q++) ablegen(h, "pdf", brief({ h, abs: ABS.finanzamt, an: p, datum: tag(), betreff: `Umsatzsteuer-Voranmeldung ${q}. Quartal`, nummern: [["Steuernummer", `${zahl(10, 99)}/${zahl(100, 999)}/${zahl(10000, 99999)}`]], absatz: ["die Umsatzsteuer-Voranmeldung wurde verarbeitet.", `Zahllast: ${betrag(500, 4000)} €.`] }), sollFuer(h, ABS.finanzamt, p, "Bescheid", { kategorie: K.steu }), "USt");
+  // eigene Kassenbons (Kartenzahlung) und Online-Bestellungen
+  const WAREN = [["Leinenkleid", 129.0], ["Seidenbluse", 89.9], ["Strickjacke", 109.0], ["Dessous-Set", 69.9], ["Ledertasche", 179.0], ["Eau de Parfum 50 ml", 79.0], ["Pflegeserum", 39.9]];
+  for (let i = 0; i < zahl(3, 5); i++) { const d = tag(); const pos = Array.from({ length: zahl(1, 3) }, () => wahl(WAREN)); const summe = pos.reduce((a, x) => a + x[1], 0).toFixed(2).replace(".", ",");
+    bildAblegen(h, "kassenbon", [`# BOUTIQUE MODERAUM BEISPIEL`, "Damenmode · Dessous · Parfüm", "", ...pos.map(([w, x]) => `${w.padEnd(22)}${x.toFixed(2).replace(".", ",").padStart(9)}`), "-".repeat(31), `SUMME EUR${summe.padStart(22)}`, "Kartenzahlung", "", `${de(d)}  Bon-Nr ${zahl(100, 999)}`, "Danke für Ihren Besuch!"],
+      { schriftstueck: "Kassenbon", kategorie: K.steu, absender: "Boutique Moderaum Beispiel", betrag: summe, datum: d, konto: "8400", notiz: "eigener Verkauf (Einnahme)" }); }
+  for (let i = 0; i < zahl(1, 3); i++) mailVon(h, ABS.boutique, p, `Neue Bestellung im Onlineshop`, [`Bestellung ${nr("WEB-", 5)}: ${wahl(WAREN)[0]}, Größe ${wahl(["S", "M", "L"])}.`, `Bestellwert: ${betrag(40, 300)} € (bezahlt).`], "Brief", { kategorie: K.steu });
+}
+
+// ---------- E-Mails mit Anhängen (wie aus dem Postfach gespeichert) ----------
+function emailMitAnhang(h, p) {
+  const abs = wahl([ABS.strom, ABS.kk, ABS.mobil, ABS.versand, ABS.hausrat]);
+  const d = tag(), frist = plus(d, 14);
+  const zeilen = brief({ h, abs, an: p, datum: d, betreff: `Ihre Rechnung ${MON[Number(d.slice(5, 7)) - 1]}`, nummern: [["Kundennummer", nr("KD-", 7)], ["Rechnungsnummer", nr("RE-", 6)]], absatz: [`Rechnungsbetrag: ${betrag(15, 300)} €, zahlbar bis ${de(frist)}.`] });
+  const pdfB64 = Buffer.from(textPdf([zeilen])).toString("base64").replace(/.{76}/g, "$&\r\n");
+  const grenze = `----=_Teil_${zahl(100000, 999999)}`;
+  const adr = `${p.vorname.toLowerCase()}.${h.name.toLowerCase()}@beispiel.invalid`;
+  const roh = [`From: ${abs.name} <rechnung@${abs.name.toLowerCase().replace(/[^a-z]/g, "").slice(0, 12)}.beispiel.invalid>`, `To: ${adr}`, `Subject: Ihre Rechnung ist da`, `Date: ${new Date(`${d}T09:00:00Z`).toUTCString()}`, "MIME-Version: 1.0",
+    `Content-Type: multipart/mixed; boundary="${grenze}"`, "", `--${grenze}`, "Content-Type: text/plain; charset=utf-8", "Content-Transfer-Encoding: 8bit", "", `${anredeSatz(h, p, "mail")}`, "", "im Anhang finden Sie Ihre aktuelle Rechnung als PDF.", "", "Viele Grüße", abs.name, "",
+    `--${grenze}`, `Content-Type: application/pdf; name="Rechnung_${d.slice(0, 7)}.pdf"`, "Content-Transfer-Encoding: base64", `Content-Disposition: attachment; filename="Rechnung_${d.slice(0, 7)}.pdf"`, "", pdfB64, `--${grenze}--`, ""].join("\r\n");
+  ablegen(h, "eml", roh, sollFuer(h, abs, p, "Rechnung"), "Rechnung_Mail");
+  const mailPfad = dateien.at(-1);
+  erwartung.push({ pfad: `${mailPfad} › Rechnung_${d.slice(0, 7)}.pdf`, haushalt: h.id, ...sollFuer(h, abs, p, "Rechnung", { frist }), anhang: true });
+}
+
+// ---------- OneDrive: so sieht ein synchronisierter Ordner im echten Leben aus ----------
+function oneDrive(h, p) {
+  const basis = `Eingang/${h.id}/OneDrive`;
+  const schreib = (rel, inhalt, soll) => { const pfad = `${basis}/${rel}`; mkdirSync(dirname(join(AUS, pfad)), { recursive: true }); writeFileSync(join(AUS, pfad), inhalt); dateien.push(pfad); if (soll) erwartung.push({ pfad, haushalt: h.id, ...soll }); };
+  // Scan-App („Office Lens“-artig) und Kamera-Upload mit Datumsnamen
+  const d = tag(), frist = plus(d, 21);
+  const z1 = brief({ h, abs: ABS.bezirk, an: p, datum: d, betreff: "Bitte um Rückmeldung", nummern: [["Aktenzeichen", nr("AZ-", 6)]], absatz: [`bitte teilen Sie uns bis zum ${de(frist)} mit, ob Sie den Termin wahrnehmen.`] });
+  const scanName = `Dokumente/Scans/Scan ${d.replaceAll("-", "")} ${zahl(10, 23)}${zahl(10, 59)}.pdf`;
+  schreib(scanName, textPdf([z1]), sollFuer(h, ABS.bezirk, p, "Aufforderung", { frist }));
+  // Konfliktkopie (gleicher Inhalt, Gerätename im Namen) → doppelt
+  schreib(scanName.replace(".pdf", `-DESKTOP-${String(zahl(1000, 9999))}K.pdf`), textPdf([z1]), { doppelt: true, ...sollFuer(h, ABS.bezirk, p, "Aufforderung", { frist }) });
+  // „(1)“-Kopie einer Rechnung → doppelt
+  const z2 = brief({ h, abs: ABS.strom, an: p, datum: tag(), betreff: "Ihre Rechnung Strom", nummern: [["Kundennummer", nr("NS-", 7)]], absatz: ["Rechnungsbetrag: 84,00 €."] });
+  schreib("Dokumente/Rechnung Strom.pdf", textPdf([z2]), sollFuer(h, ABS.strom, p, "Rechnung"));
+  schreib("Dokumente/Rechnung Strom (1).pdf", textPdf([z2]), { doppelt: true, ...sollFuer(h, ABS.strom, p, "Rechnung") });
+  // Systemreste und abgebrochene Synchronisierung
+  schreib("desktop.ini", "[.ShellClassInfo]\r\nIconResource=C:\\Program Files\\Microsoft OneDrive\\OneDrive.exe,0\r\n", null);
+  schreib("Bilder/Thumbs.db", Buffer.from([0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1, 0, 0, 0, 0]), null);
+  schreib(`Dokumente/Kontoauszug_${d.slice(0, 7)}.pdf`, Buffer.alloc(0), { leer: true });
+}
+
 // ---------- Was jeder Haushalt bekommt ----------
 for (const h of HAUSHALTE) {
   const [p1, p2] = h.personen;
@@ -392,7 +574,7 @@ for (const h of HAUSHALTE) {
   if (ja(0.6)) werbung(h, wahl([ABS.moebel, ABS.elektro, ABS.versand]));
   mailVon(h, ABS.versand, jemand(), "Ihre Bestellung wurde versandt", ["Ihre Bestellung ist unterwegs.", `Bestellnummer: ${nr("B-", 8)}`, `Rechnungsbetrag: ${betrag(10, 200)} €`], "Rechnung", { kategorie: K.kauf });
   mailVon(h, ABS.streaming, jemand(), "Rechnung für Ihr Abo", ["vielen Dank, dass Sie Filmabend nutzen.", `Ihre Rechnung über ${betrag(5, 18)} € ist beigefügt.`, `Rechnungsnummer: ${nr("FA-", 7)}`], "Rechnung");
-  mailVon(h, ABS.bahn, jemand(), "Ihre Fahrkarte", ["anbei Ihre Buchungsbestätigung.", `Reise am ${de(tag())} nach Beispielhafen.`], "Rechnung");
+  mailVon(h, ABS.bahn, jemand(), "Ihre Fahrkarte", ["anbei Ihre Buchungsbestätigung.", `Reise am ${de(tag())} nach Beispielhafen.`], "Brief");
   vertrag(h, ABS.hausrat, wahl(erw), "Hausratversicherung", "Versicherung");
   if (ja(0.5)) rechnung(h, ABS.hausrat, jemand(), "Jahresbeitrag Haftpflicht", "Beitrag", [["Versicherungsnummer", nr("HH-", 8)]]);
   bescheid(h, ABS.finanzamt, wahl(erw), `Einkommensteuer ${zahl(2023, 2025)}`, (d) => [`die Einkommensteuer wird festgesetzt auf ${betrag(0, 6000)} €.`, `Erstattung: ${betrag(0, 900)} €.`], "Steuerbescheid");
@@ -408,14 +590,15 @@ for (const h of HAUSHALTE) {
     if (ja(0.5)) aufforderung(h, ABS.vermieter, p1, "die Zählerstände", "Vermieter");
   }
   if (h.wohnen !== "wg") vertrag(h, ABS.internet, jemand(), "Glasfaser 500", "Internet");
-  // Arbeit
+  // Arbeit: Gehaltsabrechnungen (Aufbau wie in Lohnprogrammen), Jahresunterlagen
   for (const [vor, ag] of Object.entries(h.arbeitgeber)) {
     const p = h.personen.find((x) => x.vorname === vor);
-    for (let i = 0; i < zahl(1, 3); i++) {
-      const d = tag();
-      ablegen(h, "pdf", brief({ h, abs: ABS[ag], an: p, datum: d, betreff: `Entgeltabrechnung ${MON[Number(d.slice(5, 7)) - 1]} ${d.slice(0, 4)}`, nummern: [["Personalnummer", nr("P-", 5)]],
-        absatz: [`Bruttoentgelt: ${betrag(520, 4800)} €`, `Auszahlungsbetrag netto: ${betrag(500, 3200)} €`, "Steuerklasse und Sozialversicherung siehe Anlage."] }), sollFuer(h, ABS[ag], p, "Abrechnung"), "Gehalt");
-    }
+    const stamm = gehaltsStamm(h, p, ABS[ag]);
+    const start = zahl(0, 6);
+    for (let m = start; m < start + zahl(6, 12); m++) gehaltsabrechnung(h, p, ABS[ag], stamm, 2025 + Math.floor(m / 12), (m % 12) + 1);
+    lohnsteuerbescheinigung(h, p, ABS[ag], stamm);
+    svMeldung(h, p, ABS[ag], stamm);
+    renteninformation(h, p, stamm);
   }
   // Fahrzeuge
   for (const kz of h.fahrzeuge) {
@@ -501,6 +684,15 @@ for (const h of HAUSHALTE) {
     aufforderung(h, ABS.bafoeg, p1, "den Leistungsnachweis nach § 48 BAföG", "BAfoeG");
     vertrag(h, ABS.bahn, p1, "Deutschlandticket im Abo", "Ticket");
   }
+  if (h.selbststaendig || h.entwickler) jahresabschluss(h, p1);
+  // BookLedgerPro-Fälle: Schenkung, Versicherungsleistung, Spende
+  if (ja(0.4)) schenkung(h, jemand());
+  if (ja(0.6)) versicherungsleistung(h, jemand());
+  if (ja(0.5)) einfach(h, ABS2.spende, jemand(), "Bescheinigung", "Zuwendungsbestätigung für Spenden", () => [`Bestätigung über Geldzuwendungen in Höhe von ${betrag(20, 300)} €.`, "Zur Vorlage beim Finanzamt."], "Spende");
+  if (h.entwickler) entwicklerPost(h, p1);
+  if (h.boutique) boutiquePost(h, p1);
+  emailMitAnhang(h, jemand());
+  oneDrive(h, jemand());
   if (erw.length > 1 && ja(0.5)) kuendigung(h, ABS.fitness, jemand(), "Mitgliedschaft Fitness");
   if (ja(0.5)) rechnung(h, ABS.reparatur, jemand(), wahl(["Reparatur Geschirrspüler", "Displaytausch Smartphone"]), "Reparatur");
   if (ja(0.6)) rechnung(h, ABS.reise, jemand(), wahl(["Pauschalreise Beispielinsel", "Ferienhaus an der Küste"]), "Reise");

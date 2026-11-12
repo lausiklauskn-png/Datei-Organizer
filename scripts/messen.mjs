@@ -7,7 +7,8 @@ import { readFileSync, existsSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { runInThisContext } from "node:vm";
-import { einlesen, doppelteMarkieren } from "../lib/einlesen.ts";
+import { einlesen, doppelteMarkieren, ueberspringen } from "../lib/einlesen.ts";
+import { gehaltLesen } from "../lib/gehalt.ts";
 import { siebe } from "../lib/siebe.ts";
 import { pdfTextLesen } from "../lib/pdf-text.ts";
 import { personZuordnen } from "../lib/personen.ts";
@@ -45,7 +46,9 @@ const soll = JSON.parse(readFileSync(join(ORDNER, "ERWARTUNG.json"), "utf8")).da
 const liste = JSON.parse(readFileSync(join(ORDNER, "dateien.json"), "utf8"));
 const hh = existsSync(join(ORDNER, "HAUSHALTE.json")) ? Object.fromEntries(JSON.parse(readFileSync(join(ORDNER, "HAUSHALTE.json"), "utf8")).haushalte.map((h) => [h.id, h])) : {};
 let dateien = [];
+let uebersprungen = 0;
 for (const [i, pfad] of liste.entries()) {
+  if (ueberspringen(pfad.split("/").pop())) { uebersprungen++; continue; }
   const bytes = new Uint8Array(readFileSync(join(ORDNER, pfad)));
   dateien.push(...await einlesen({ pfad, name: pfad.split("/").pop(), geaendert: Date.UTC(2026, 10, 1) + i, bytes }, (b) => pdfTextLesen(pdfjs, b), 0, ocr));
 }
@@ -75,7 +78,8 @@ if (existsSync(join(FA, "lib/document-intake.ts"))) {
 
 // ---------- BookLedgerPro (Belege) ----------
 let blp = null;
-if (existsSync(join(BLP, "src/ai/extract.js"))) blp = await import(join(BLP, "src/ai/extract.js"));
+let blpKat = null;
+if (existsSync(join(BLP, "src/ai/extract.js"))) { blp = await import(join(BLP, "src/ai/extract.js")); blpKat = await import(join(BLP, "src/ai/categorize.js")); }
 
 // ---------- Vergleichen ----------
 const norm = (s) => (s || "").toLowerCase().replace(/[^a-z0-9äöüß]/g, "");
@@ -87,9 +91,23 @@ const zblp = { betrag: { n: 0, ok: 0 }, datum: { n: 0, ok: 0 } };
 const jeHaushalt = {};
 const fehler = Object.fromEntries(felder.map((f) => [f, []]));
 let offenDateien = 0;
+const GF = ["zeitraum", "brutto", "netto", "auszahlung", "lohnsteuer", "steuerklasse", "steuerId", "svNummer", "krankenkasse"];
+const zg = Object.fromEntries(GF.map((f) => [f, { n: 0, ok: 0 }]));
+const gfehler = [];
+const zkonto = { n: 0, blp: 0 };
+const zdopp = { n: 0, ok: 0, falsch: 0 }, zleer = { n: 0, ok: 0 }, zanh = { n: 0, ok: 0 };
 for (const e of soll) {
   const o = org.get(e.pfad);
+  if (e.anhang) { zanh.n++; if (o) zanh.ok++; }
   if (!o) continue;
+  if (e.doppelt) { zdopp.n++; if (o.doppeltVon) zdopp.ok++; continue; } else if (o.doppeltVon) zdopp.falsch++;
+  if (e.leer) { zleer.n++; if (/leere datei/i.test(o.felder.schriftstueck?.grund || "")) zleer.ok++; continue; }
+  if (e.gehalt) {
+    const g = gehaltLesen(o.volltext || "") || {};
+    for (const f of GF) { zg[f].n++; const a = String(g[f] ?? "").replace(/\s/g, ""), b = String(e.gehalt[f]).replace(/\s/g, "");
+      const ok = ["brutto", "netto", "auszahlung", "lohnsteuer"].includes(f) ? cents(a) === cents(b) : a.toLowerCase() === b.toLowerCase();
+      if (ok) zg[f].ok++; else if (gfehler.length < 30) gfehler.push(`${f}: „${a}“ statt „${b}“ (${o.textQuelle})`); }
+  }
   const text = o.volltext || "";
   const h = hh[e.haushalt];
   const ist = {
@@ -119,6 +137,7 @@ for (const e of soll) {
     if (e.kategorie && e.kategorie !== "Fotos") { zfa.kat.n++; if (f.kat === e.kategorie) zfa.kat.ok++; }
     if (e.absender) { zfa.abs.n++; if (norm(f.abs) && (norm(f.abs).includes(norm(e.absender)) || norm(e.absender).includes(norm(f.abs)))) zfa.abs.ok++; }
   }
+  if (blp && e.konto) { zkonto.n++; if (blpKat?.categorize(text).konto === e.konto) zkonto.blp++; }
   if (blp && e.schriftstueck === "Kassenbon" && text) {
     const x = blp.extractFromText(text);
     zblp.betrag.n++; if (x.betragBrutto === cents(e.betrag)) zblp.betrag.ok++;
@@ -134,5 +153,10 @@ console.log("Feld            Organizer-Kern            sicher-falsch  unsicher  
 for (const f of felder) console.log(`${f.padEnd(16)}${pz(z[f].ok, z[f].n).padEnd(26)}${String(z[f].falschSicher).padEnd(15)}${String(z[f].offen).padEnd(11)}${f === "kategorie" ? pz(zfa.kat.ok, zfa.kat.n) : f === "absender" ? pz(zfa.abs.ok, zfa.abs.n) : ""}`);
 console.log(`\nzur Prüfung (mind. ein Feld unsicher): Organizer ${pz(offenDateien, soll.length)} · Familienakte ${pz(zfa.pruef, soll.length)}`);
 if (blp) console.log(`BookLedgerPro an Kassenbons: Betrag ${pz(zblp.betrag.ok, zblp.betrag.n)}, Datum ${pz(zblp.datum.ok, zblp.datum.n)}`);
+console.log(`Doppelte erkannt ${pz(zdopp.ok, zdopp.n)} (fälschlich doppelt: ${zdopp.falsch}) · leere Sync-Dateien gemeldet ${pz(zleer.ok, zleer.n)} · Mail-Anhänge ausgepackt ${pz(zanh.ok, zanh.n)} · Systemdateien übergangen ${uebersprungen}`);
+console.log("Gehaltsabrechnungen: " + GF.map((f) => `${f} ${pz(zg[f].ok, zg[f].n)}`).join(" · "));
+if (blpKat) console.log(`BookLedgerPro Konto (SKR03) an Geschäftsbelegen: ${pz(zkonto.blp, zkonto.n)}`);
+ergebnis.gehalt = zg; ergebnis.doppelt = zdopp; ergebnis.leer = zleer; ergebnis.anhang = zanh; ergebnis.blpKonto = zkonto;
+if (!STILL && gfehler.length) { console.log("\nFehler Gehalt:"); for (const x of gfehler) console.log("  " + x); }
 console.log("\nBereich je Haushalt:", Object.entries(jeHaushalt).map(([k, v]) => `${k.split("-")[0]} ${Math.round((100 * v.ok) / v.n)} %`).join(" · "));
 if (!STILL) for (const f of felder) if (fehler[f].length) { console.log(`\nFehler ${f} (${fehler[f].length}):`); for (const x of fehler[f].slice(0, 25)) console.log(`  ${x}`); }

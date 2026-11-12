@@ -187,6 +187,53 @@
    "arbeitgeber": {}
   },
   {
+   "id": "entwickler-fleetmann",
+   "titel": "Selbstständiger App-Entwickler (wie Klaus), nebenher angestellt",
+   "name": "Fleetmann",
+   "anschrift": "Elbblick 14, 20109 Beispielstadt",
+   "personen": [
+    {
+     "vorname": "Klaus",
+     "name": "Fleetmann",
+     "voll": "Klaus Fleetmann",
+     "rolle": "App-Entwickler, Android-Nutzer, Haushaltsbuch",
+     "anrede": "Herr"
+    }
+   ],
+   "fahrzeuge": [],
+   "arbeitgeber": {
+    "Klaus": "Hafenservice Nord Beispiel GmbH"
+   }
+  },
+  {
+   "id": "boutique-hafenrose",
+   "titel": "Inhaberin einer Boutique (Mode, Dessous, Parfüm, Beauty)",
+   "name": "Hafenrose",
+   "anschrift": "Jungfernstieg-Beispiel 3, 20110 Beispielstadt",
+   "personen": [
+    {
+     "vorname": "Ali",
+     "name": "Hafenrose",
+     "voll": "Ali Hafenrose",
+     "rolle": "Inhaberin Boutique Moderaum Beispiel",
+     "anrede": "Frau"
+    },
+    {
+     "vorname": "Tom",
+     "name": "Hafenrose",
+     "voll": "Tom Hafenrose",
+     "rolle": "Ehemann, angestellt",
+     "anrede": "Herr"
+    }
+   ],
+   "fahrzeuge": [
+    "BSP-AH 12"
+   ],
+   "arbeitgeber": {
+    "Tom": "Logistik Nord Beispiel GmbH"
+   }
+  },
+  {
    "id": "studentin-ketelsen",
    "titel": "Studentin",
    "name": "Ketelsen",

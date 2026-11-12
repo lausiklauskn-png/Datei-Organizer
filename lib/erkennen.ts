@@ -18,11 +18,11 @@ const ART_REGELN: Array<{ art: string; muster: RegExp; wort: string }> = [
   { art: "Bescheid", muster: /\bbescheid\b|steuerbescheid|bewilligungsbescheid/, wort: "Bescheid" },
   { art: "Kündigung", muster: /\bkündigung\b|kündigungsbestätigung/, wort: "Kündigung" },
   { art: "Befund", muster: /\bbefund|arztbrief|laborwerte|laborbefund|entlassungsbrief/, wort: "Befund" },
-  { art: "Rechnung", muster: /\brechnung\b|rechnungsnummer|beitragsrechnung|rechnungsdatum|zahlbar bis/, wort: "Rechnung" },
+  { art: "Rechnung", muster: /\brechnung\b|rechnungsnummer|rechnungsbetrag|beitragsrechnung|rechnungsdatum|zahlbar bis|your receipt/, wort: "Rechnung" },
   { art: "Termin", muster: /terminbestätigung|\beinladung\b|ihr termin|terminvereinbarung|\btermin am\b/, wort: "Termin/Einladung" },
   { art: "Aufforderung", muster: /bitte teilen sie uns|aufforderung|wir bitten sie,? (uns|bis)|bitte reichen sie|bitte senden sie/, wort: "Aufforderung" },
   { art: "Vertrag", muster: /\b\w*vertrag\b|vertragsbestätigung|vertragsunterlagen|versicherungsschein/, wort: "Vertrag" },
-  { art: "Bescheinigung", muster: /\bbescheinigung\b|zuwendungsbestätigung|eheurkunde|geburtsurkunde|\burkunde\b|arbeitsunfähigkeitsbescheinigung/, wort: "Bescheinigung" },
+  { art: "Bescheinigung", muster: /\bbescheinigung\b|meldebescheinigung|lohnsteuerbescheinigung|zuwendungsbestätigung|eheurkunde|geburtsurkunde|\burkunde\b|arbeitsunfähigkeitsbescheinigung/, wort: "Bescheinigung" },
   { art: "Kassenbon", muster: /kassenbon|\bbon-nr|summe eur|bar gegeben|kartenzahlung/, wort: "Kassenbon" },
   { art: "Angebot/Werbung", muster: /angebot der woche|nur für kurze zeit|jetzt bestellen|newsletter|rabatt|gutschein/, wort: "Werbung" },
 ];
@@ -107,6 +107,14 @@ export function kennzeichenImText(t: string): string[] {
 // ---------- Sieb 3: Kategorie ----------
 const NACH_ART: Record<string, string> = { Kontoauszug: "Finanzen & Konten", Befund: "Gesundheit & Pflege", Kassenbon: "Einkäufe, Rechnungen & Garantien" };
 
+/** Eindeutige Schriftstück-Namen schlagen einzelne Wörter (z. B. „Krankenversicherung“ auf jeder Gehaltsabrechnung). */
+const STARKE_SIGNALE: Array<[RegExp, string]> = [
+  [/lohnsteuerbescheinigung/, "Steuern & Behörden"], [/umsatzsteuer-voranmeldung/, "Steuern & Behörden"], [/einnahmenüberschussrechnung|jahresabschluss|betriebswirtschaftliche auswertung/, "Steuern & Behörden"],
+  [/zuwendungsbestätigung/, "Steuern & Behörden"], [/schenkungsteuer/, "Steuern & Behörden"], [/rundfunkbeitrag/, "Steuern & Behörden"],
+  [/meldebescheinigung zur sozialversicherung|jahresmeldung/, "Rente, Arbeit & Sozialversicherung"], [/renteninformation|rentenanpassung|bezügemitteilung/, "Rente, Arbeit & Sozialversicherung"],
+  [/schenkungsvertrag|vorsorgevollmacht|testament/, "Erbschaft, Vollmachten & Vorsorge"], [/arbeitsunfähigkeitsbescheinigung|befundbericht|arztbrief/, "Gesundheit & Pflege"],
+  [/kindergeld|unterhaltsvorschuss|elterngeld/, "Familie & persönliche Dokumente"], [/medizinischen rehabilitation|\breha\b|mutter-kind/, "Gesundheit & Pflege"], [/wohngeld/, "Haus & Wohnung"], [/\bliter\b|eur\/l\b|zapfsäule|tankstelle/, "Auto & Mobilität"],
+];
 const WORT_ZEICHEN = /[a-zäöüß0-9]/;
 function wortAnfang(text: string, wort: string): boolean {
   for (let i = text.indexOf(wort); i >= 0; i = text.indexOf(wort, i + 1)) if (i === 0 || !WORT_ZEICHEN.test(text[i - 1])) return true;
@@ -120,10 +128,11 @@ export function erkenneKategorie(text: string, absender = "", art = ""): Wert {
     let p = 0; const treffer: string[] = [];
     for (const wort of worte) {
       // Wortanfang zählt (versicherung… trifft „Versicherungsnummer“), Wortmitte nicht („gas“ nicht in „Gast“, „abo“ nicht in „Labor“).
-      if (wortAnfang(a, wort)) { p += 3; treffer.push(wort); }
+      if (a.includes(wort.trim())) { p += 3; treffer.push(wort); }
       else if (wortAnfang(t, wort)) { p += 1; treffer.push(wort); }
     }
     if (NACH_ART[art] === k) { p += 2; treffer.push(art); }
+    for (const [signal, kat] of STARKE_SIGNALE) if (kat === k && signal.test(t)) { p += 6; treffer.unshift(signal.source.replace(/\\b|\\/g, "")); }
     if (p) punkte.push({ k, p, worte: treffer });
   }
   punkte.sort((x, y) => y.p - x.p);
@@ -136,14 +145,22 @@ export function erkenneKategorie(text: string, absender = "", art = ""): Wert {
 // ---------- Sieb 4: Absender ----------
 const FIRMA = /\b(gmbh|ag|kg|ggmbh|e\.\s?v\.|eg|ohg|mbh|ug|se|mvz|stadtwerke|dr\.|zahnarzt|kita|hort|markt|stadt|gemeinde|landkreis|landesbetrieb|jobcenter|agentur|universität|hochschule|notariat|studierendenwerk|gewerkschaft|apotheke|optik|inkasso|auskunftei|tankstelle|bäckerei|drogerie|baumarkt|discount|frischmarkt)\b|(amt|kasse|schule|gymnasium|gericht|werke|versicherung|gesellschaft|zentrum|stelle|behörde|kammer|genossenschaft|service|praxis|klinik|klinikum|labor|verein|verband|büro|institut|kanzlei|beratung|verwaltung|bank|sparkasse|verlag|haus|therapie|rentenversicherung)\b/i;
 
+/** Absender unter der Grußformel (wenn der Briefkopf fehlt): „Mit freundlichen Grüßen / Firma GmbH“. */
+export function absenderAusGruss(text: string): Wert | undefined {
+  const m = text.match(/(?:mit freundlichen grüßen|freundliche grüße|mit freundlichem gruß|viele grüße|herzliche grüße)\s*\n+\s*([^\n]{3,70})/i);
+  if (m && FIRMA.test(m[1])) return w(m[1].trim(), true, "unter der Grußformel");
+  return undefined;
+}
+
 export function erkenneAbsender(kopf: string): Wert | undefined {
   const zeilen = kopf.split(/\r?\n/).map((z) => z.trim()).filter(Boolean).slice(0, 18);
   // Absenderzeile über dem Anschriftfeld: „Firma · Straße · PLZ Ort“
   for (const z of zeilen) {
-    const m = z.match(/^(.+?)\s+[·|•–]\s+.+\d{5}\s/) || z.match(/^(.+?)\s+-\s+.+\d{5}\s/);
+    const m = z.match(/^(.+?)\s+[·|•]\s+.+\d{5}\s/);
     if (m && FIRMA.test(m[1])) return w(m[1].trim(), true, "Absenderzeile über der Anschrift");
   }
-  for (const z of zeilen.slice(0, 6)) if (FIRMA.test(z) && z.length <= 70 && !/^(herrn|frau|familie)\b/i.test(z)) return w(z.replace(/[,;]$/, ""), true, "Briefkopf oben");
+  for (const roh of zeilen.slice(0, 6)) { const z = roh.replace(/^(arbeitgeber|absender|von|aussteller)\s*:\s*/i, "");
+    if (FIRMA.test(z) && z.length <= 70 && !/^(herrn|frau|familie)\b/i.test(z)) return w(z.replace(/[,;]$/, ""), true, "Briefkopf oben"); }
   const erste = zeilen[0];
   if (erste && erste.length <= 60 && !/sehr geehrte|^(herrn|frau|familie|an die)\b|\d{2}\.\d{2}\.|\d,\d{2}/i.test(erste)) return w(erste, false, "erste Zeile, ohne Firmenmerkmal");
   return undefined;

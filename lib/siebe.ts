@@ -1,5 +1,6 @@
+import { istGehaltsabrechnung, gehaltLesen } from "./gehalt.ts";
 import type { Datei, Wert } from "./typen.ts";
-import { erkenneAbsender, erkenneBetrag, erkenneBetrifft, erkenneDatum, erkenneFrist, erkenneKategorie, erkenneNummern, erkenneSchriftstueck } from "./erkennen.ts";
+import { absenderAusGruss, erkenneAbsender, erkenneBetrag, erkenneBetrifft, erkenneDatum, erkenneFrist, erkenneKategorie, erkenneNummern, erkenneSchriftstueck } from "./erkennen.ts";
 import { FOTOS } from "./kategorien.ts";
 import { absenderName } from "./eml.ts";
 import { lernregelAnwenden } from "./lernen.ts";
@@ -34,6 +35,7 @@ function setze(d: Datei, feld: keyof Omit<Datei["felder"], "nummern">, wert: Wer
 export function siebe(datei: Datei, stufe: number, regeln: Lernregel[] = []): Datei {
   const d: Datei = { ...datei, felder: { ...datei.felder } };
   if (gesperrt(d) || stufe <= d.stufe && stufe !== 0) return d;
+  if (d.groesse === 0) { d.stufe = Math.max(d.stufe, stufe); return d; } // leere Datei: Hinweis aus dem Einlesen bleibt stehen
   const kopf = (d.kopfText || d.volltext || "").slice(0, KOPF_ZEICHEN);
   const voll = d.volltext || d.kopfText || "";
   if (stufe >= 2 && d.stufe < 2) {
@@ -41,19 +43,20 @@ export function siebe(datei: Datei, stufe: number, regeln: Lernregel[] = []): Da
       setze(d, "schriftstueck", { wert: "Foto", sicher: true, grund: d.bild?.aufnahme ? "Bild ohne lesbaren Text, Aufnahmedaten vorhanden" : "Bild ohne lesbaren Text", quelle: "regel" });
       if (d.bild?.aufnahme) setze(d, "datum", { wert: d.bild.aufnahme.slice(0, 10), sicher: true, grund: `Aufnahme laut Foto-Daten${d.bild.modell ? ` (${d.bild.modell})` : ""}`, quelle: "regel" });
     } else {
-      setze(d, "schriftstueck", erkenneSchriftstueck(kopf, d.email?.betreff));
+      setze(d, "schriftstueck", istGehaltsabrechnung(voll) ? { wert: "Abrechnung", sicher: true, grund: "Gehaltsabrechnung erkannt (Brutto, Netto, Abzüge)", quelle: "regel" } : erkenneSchriftstueck(kopf, d.email?.betreff));
       const datum = d.email?.datum ? { wert: d.email.datum, sicher: true, grund: "Datum der E-Mail", quelle: "regel" as const } : erkenneDatum(kopf);
       setze(d, "datum", datum || (d.geaendert ? { wert: new Date(d.geaendert).toISOString().slice(0, 10), sicher: false, grund: "kein Datum im Text – Änderungsdatum der Datei", quelle: "regel" } : undefined));
     }
   }
   if (stufe >= 3 && d.stufe < 3) {
     if (d.art === "bild" && textOhne(d)) setze(d, "kategorie", { wert: FOTOS, sicher: true, grund: "Foto ohne Text – Zuordnung später (Texterkennung kommt in einer späteren Fassung)", quelle: "regel" });
-    else setze(d, "kategorie", erkenneKategorie(`${d.email?.betreff || ""}\n${kopf}`, d.email?.von || erkenneAbsender(kopf)?.wert || "", d.felder.schriftstueck?.wert));
+    else if (istGehaltsabrechnung(voll)) setze(d, "kategorie", { wert: "Rente, Arbeit & Sozialversicherung", sicher: true, grund: "Gehaltsabrechnung", quelle: "regel" });
+    else setze(d, "kategorie", erkenneKategorie(`${d.email?.betreff || ""}\n${kopf}`, d.email?.von || erkenneAbsender(kopf)?.wert || absenderAusGruss(voll)?.wert || "", d.felder.schriftstueck?.wert));
     d.felder.nummern = erkenneNummern(kopf + "\n" + (d.email?.betreff || ""));
   }
   if (stufe >= 4 && d.stufe < 4) {
     if (d.email?.von) setze(d, "absender", { wert: absenderName(d.email.von), sicher: true, grund: "Absender der E-Mail", quelle: "regel" });
-    else if (!textOhne(d)) setze(d, "absender", erkenneAbsender(kopf) || { wert: "unbekannt", sicher: false, grund: "kein Absender im Kopf gefunden", quelle: "regel" });
+    else if (!textOhne(d)) setze(d, "absender", erkenneAbsender(kopf) || absenderAusGruss(voll) || { wert: "unbekannt", sicher: false, grund: "kein Absender im Kopf gefunden", quelle: "regel" });
     else setze(d, "absender", { wert: d.bild?.modell ? `eigenes Foto (${d.bild.modell})` : "eigenes Foto", sicher: true, grund: "Foto ohne Text", quelle: "regel" });
     // Gelerntes wirkt ab hier: es kennt den Absender
     for (const r of regeln) lernregelAnwenden(d, r);
@@ -66,6 +69,8 @@ export function siebe(datei: Datei, stufe: number, regeln: Lernregel[] = []): Da
       setze(d, "betrifft", erkenneBetrifft(voll) || { wert: "unbekannt", sicher: false, grund: "keine Anrede, kein Anschriftfeld", quelle: "regel" });
       setze(d, "frist", erkenneFrist(voll, d.felder.datum?.wert));
       setze(d, "betrag", erkenneBetrag(voll));
+      const g = gehaltLesen(voll);
+      if (g) { d.gehalt = g; if (g.auszahlung) setze(d, "betrag", { wert: `${g.auszahlung} €`, sicher: true, grund: "Auszahlungsbetrag der Gehaltsabrechnung", quelle: "regel" }); }
     }
     for (const r of regeln) lernregelAnwenden(d, r);
   }

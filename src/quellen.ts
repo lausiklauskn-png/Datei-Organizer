@@ -20,7 +20,7 @@ export type Quelle = {
 };
 
 export const INDEX_NAME = "organizer-index.json";
-const UEBERSPRINGEN = (name: string) => name === INDEX_NAME || name.startsWith(".") || name === "Thumbs.db" || name === "desktop.ini";
+import { ueberspringen as UEBERSPRINGEN } from "../lib/einlesen.ts";
 
 // ---------- 1 Ordner am PC ----------
 type DirHandle = { name: string; kind: "directory"; values: () => AsyncIterable<FileHandle | DirHandle>; getFileHandle: (n: string, o?: { create?: boolean }) => Promise<FileHandle>; queryPermission?: (o: { mode: string }) => Promise<string>; requestPermission?: (o: { mode: string }) => Promise<string> };

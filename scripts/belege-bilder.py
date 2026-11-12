@@ -42,6 +42,18 @@ def schild(a, r):
         d.text((240, 190 + i * 62), t, fill=(20, 20, 20), font=f)
     return img
 
+def blatt(a, r):
+    b, zh = 1240, 38
+    papier = Image.new("RGB", (b, max(1754, 140 + zh * len(a["zeilen"]))), (252, 252, 250))
+    d = ImageDraw.Draw(papier)
+    for i, z in enumerate(a["zeilen"]):
+        fett = z.startswith("# ")
+        t = z[2:] if fett else z
+        d.text((90, 90 + i * zh), t, fill=(25, 25, 25), font=schrift(30 if fett else 24, fett))
+    hg = Image.new("RGB", (papier.width + 120, papier.height + 120), tuple(int(c) for c in a.get("tisch", (120, 110, 100))))
+    hg.paste(papier, (60, 60))
+    return hg
+
 def landschaft(a, r):
     img = Image.new("RGB", (1200, 900))
     d = ImageDraw.Draw(img)
@@ -56,7 +68,7 @@ def main():
     auftrag = json.load(open(sys.argv[1], encoding="utf-8"))
     for a in auftrag:
         r = random.Random(a["datei"])
-        img = {"kassenbon": kassenbon, "schild": schild, "landschaft": landschaft}[a["art"]](a, r)
+        img = {"kassenbon": kassenbon, "schild": schild, "landschaft": landschaft, "blatt": blatt}[a["art"]](a, r)
         if a.get("drehung"):
             img = img.rotate(a["drehung"], expand=True, fillcolor=(80, 80, 80))
         if a.get("rauschen"):

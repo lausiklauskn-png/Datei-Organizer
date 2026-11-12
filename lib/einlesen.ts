@@ -15,12 +15,20 @@ export type Eingabe = { pfad: string; name: string; geaendert: number; bytes: Ui
 export type BildLeser = (bytes: Uint8Array) => Promise<string>;
 
 const MAX_TEXT_BYTES = 30 * 1024 * 1024;
+/** Systemdateien und Synchronisierungsreste, die nie ein Dokument sind (Windows, OneDrive, macOS, Office-Sperrdateien). */
+export const ueberspringen = (name: string) => /^(organizer-index\.json|desktop\.ini|thumbs\.db|\.ds_store|icon\r?)$/i.test(name) || name.startsWith(".") || name.startsWith("~$");
 
 export async function einlesen(e: Eingabe, pdfLesen: PdfLeser, tiefe = 0, bildLesen?: BildLeser): Promise<Datei[]> {
   const art = erkenneArt(e.name, e.bytes.slice(0, 600));
   const d: Datei = { pfad: e.pfad, name: e.name, groesse: e.bytes.length, geaendert: e.geaendert, art: art.art, artText: art.artText, auffaellig: art.auffaellig, stufe: 1, felder: {} };
-  d.sha256 = await sha256Hex(e.bytes);
+  // Leere Dateien bekommen keinen Fingerabdruck: sie wären sonst alle „doppelt“ zueinander.
+  if (e.bytes.length) d.sha256 = await sha256Hex(e.bytes);
   const aus: Datei[] = [d];
+  if (e.bytes.length === 0) {
+    d.textQuelle = "keiner";
+    d.felder.schriftstueck = { wert: "Unklar", sicher: false, grund: "leere Datei – Synchronisierung (z. B. OneDrive) noch nicht fertig? Original prüfen", quelle: "regel" };
+    return aus;
+  }
   if (d.auffaellig || e.bytes.length > MAX_TEXT_BYTES) { d.textQuelle = "keiner"; return aus; }
   try {
     if (art.art === "pdf") {
@@ -56,7 +64,7 @@ export async function einlesen(e: Eingabe, pdfLesen: PdfLeser, tiefe = 0, bildLe
 export function doppelteMarkieren(dateien: Datei[]): Datei[] {
   const erste = new Map<string, string>();
   // Original = die ohne „Kopie“/„(2)“ im Namen; sonst die ältere (Änderungszeiten sind nach Kopieren oder Auschecken unzuverlässig)
-  const kopie = (d: Datei) => /kopie|copy|\(\d+\)/i.test(d.name) ? 1 : 0;
+  const kopie = (d: Datei) => /kopie|copy|\(\d+\)|-(desktop|laptop|pc|tablet|handy|[a-z]+-pc)-[a-z0-9]+(?=\.\w+$)/i.test(d.name) ? 1 : 0;
   for (const d of [...dateien].sort((a, b) => kopie(a) - kopie(b) || a.geaendert - b.geaendert || a.pfad.localeCompare(b.pfad, "de"))) if (d.sha256 && !erste.has(d.sha256)) erste.set(d.sha256, d.pfad);
   return dateien.map((d) => {
     const e = d.sha256 ? erste.get(d.sha256) : undefined;

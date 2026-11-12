@@ -58,6 +58,8 @@ export type Datei = {
   felder: Felder;
   /** Archivnummer (z. B. „A-2026-0007“), erst vergeben, wenn die Reihenfolge steht; ändert sich danach nie. */
   archivnummer?: string;
+  /** Gelesene Gehaltsabrechnung (Zeitraum, Brutto, Netto, Abzüge, Steuer-ID …), nur bei Gehaltsabrechnungen. */
+  gehalt?: import("./gehalt.ts").Gehalt;
   /** Felder, die der Nutzer bestätigt oder korrigiert hat. */
   bestaetigt?: Partial<Record<FeldName, true>>;
 };
