@@ -42,4 +42,7 @@ Folgen für den Bau:
 5. **Messung:** Blindtests messen die Vorgabe ab Werk. Dass eine eigene Regel wirkt und nichts anderes verstellt, wird eigens
    geprüft (Probe: Regel umstellen → betroffene Fälle wechseln das Fach, alle anderen bleiben).
 
+**Wortlaut (Klaus 13.11.):** Der Knopf nach einer Handzuordnung heißt sinngemäß „Als festes Muster merken“ bzw. „Ergebnis als
+Muster merken“; der genaue Wortlaut steht in der Vorschau zur Wahl.
+
 Sichtbare Bedienung dafür erst als Vorschau, Klaus sagt Ja je Punkt.
