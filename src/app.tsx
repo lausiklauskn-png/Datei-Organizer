@@ -4,6 +4,7 @@ import type { Datei, FeldName, Korrektur, Lernregel } from "../lib/typen.ts";
 import { einlesen, doppelteMarkieren } from "../lib/einlesen.ts";
 import { leseEml } from "../lib/eml.ts";
 import { siebe, istUnsicher, offeneFelder } from "../lib/siebe.ts";
+import { absenderVereinheitlichen } from "../lib/abgleich.ts";
 import { korrigieren as korrigiereDatei, lernen, regelnAufAlle } from "../lib/lernen.ts";
 import { archivnummernVergeben } from "../lib/archivnummer.ts";
 import { indexLesen, organizerIndex, INDEX_DATEI } from "../lib/index-format.ts";
@@ -115,6 +116,7 @@ function useOrganizer() {
       stapel.current.push(d);
       s++;
       d = d.map((x) => siebe(x, s, regeln));
+      if (s >= 4) d = absenderVereinheitlichen(d);
       const offen = d.filter((x) => istUnsicher(x, s)).length;
       if (bis !== undefined && offen) { setDateien(d); setStufe(s); setMeldung({ text: `Halt bei Sieb ${s}: ${offen} ${offen === 1 ? "Datei" : "Dateien"} bitte prüfen. Danach geht es weiter.`, art: "halt" }); return; }
       if (bis === undefined) { setMeldung(offen ? { text: `Sieb ${s} fertig · ${offen} bitte prüfen.`, art: "halt" } : { text: `Sieb ${s} fertig · alles sicher.` }); }

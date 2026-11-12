@@ -419,3 +419,27 @@ Das ist an selbst gebauten Daten gemessen – an echten Scans wird es schlechter
 - `.msg` (Outlook): nicht lesbar, nur als Datei erkannt.
 - Am Gerät ungeprüft: Familienakte-Ordnerzugriff/SD-Karte, Android-WebView, Ordnerwahl am Windows-PC.
 - Familienakte liest `organizer-index.json` noch nicht (nächster Schritt dort: „Ordner übernehmen“ mit Index).
+
+## Training an erfundenen Haushalten (12.11.2026, Klaus' Auftrag)
+
+Klaus: viele erfundene Dateien und Personen mit verschiedenen Lebensumständen, Behördenpost, Krankenakten, Gehaltsabrechnungen
+(Aufbau wie in Lohnprogrammen), Kassenbons und Tankquittungen, Fotos, E-Mail-Anhänge, OneDrive, ein Geschäft (Vorbild Alinas
+Moderaum / Perfect Skin Fashion) und ein Nutzer „neben der Spur“. Am Ende eine Übersicht je Person und die Trainingsdaten.
+
+| Baustein | Datei |
+|---|---|
+| Generator mit 10 Haushalten (Familie mit 3 Kindern, alleinerziehend, Einzelperson, Bürgergeld, Professorin, Handwerker, Rentnerpaar, App-Entwickler wie Klaus, Boutique, Studentin) | `scripts/haushalte-bauen.mjs [startwert] [--chaos] [--aus ordner]` |
+| Bilder (Kassenbons, abfotografierte Blätter, Schilder, Landschaft) | `scripts/belege-bilder.py` |
+| Messung je Feld, Familienakte und BookLedgerPro daneben, Bedien-Simulation | `scripts/messen.mjs` |
+| Vergleich Familienakte gegen Kern | `scripts/vergleich-familienakte.mjs` |
+| Großlauf und Übersicht | `scripts/grosslauf.mjs`, `scripts/uebersicht-bauen.mjs` → `ergebnisse/` |
+
+Neu im Kern: Texterkennung für Bilder (`einlesen(…, bildLesen)`), Gehaltsabrechnung lesen (`lib/gehalt.ts`), Person mit den Angaben
+eines Start-Assistenten (`lib/personen.ts`), Absender vereinheitlichen (`lib/abgleich.ts`), starke Signale je Schriftstück,
+Wortanfang statt Wortmitte, leere Sync-Dateien und OneDrive-Konfliktkopien, Lernen mit Stimmen (nur der Bereich, sicher erst
+ab zwei Stimmen, Kern-Sicheres erst ab drei ohne Widerspruch).
+
+Gemessen (alles erfunden, an ungesehenen Runden): Bereich 91 % (Familienakte heute 56 %), Absender 97 % (79 %), Person 100 %,
+Gehaltsabrechnungen 90–100 % je Feld; „neben der Spur“: Bereich 90 %, Absender 94 %, alle Mehrfachkopien erkannt. Lernen:
+sorgfältiger Nutzer 91 → 97 %, chaotischer Nutzer (über die Hälfte der Antworten falsch) 92 % – nicht schlechter als ohne Lernen.
+Großlauf mit mehreren tausend Dateien: `ergebnisse/uebersicht.html`. Grenzen: Generator-Daten, keine Handschrift, keine echten Handyfotos.

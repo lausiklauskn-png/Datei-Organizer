@@ -128,6 +128,7 @@ const zblp = { betrag: { n: 0, ok: 0 }, datum: { n: 0, ok: 0 } };
 const jeHaushalt = {};
 const fehler = Object.fromEntries(felder.map((f) => [f, []]));
 let offenDateien = 0;
+const jeHF = {}, jeArt = {}, training = [];
 const GF = ["zeitraum", "brutto", "netto", "auszahlung", "lohnsteuer", "steuerklasse", "steuerId", "svNummer", "krankenkasse"];
 const zg = Object.fromEntries(GF.map((f) => [f, { n: 0, ok: 0 }]));
 const gfehler = [];
@@ -166,8 +167,15 @@ for (const e of soll) {
     }
     if (!w || !w.sicher) offen = true;
     if (f === "kategorie") { jeHaushalt[e.haushalt] ??= { n: 0, ok: 0 }; jeHaushalt[e.haushalt].n++; if (richtig) jeHaushalt[e.haushalt].ok++; }
+    const hk = (jeHF[e.haushalt] ??= {}); const fz = (hk[f] ??= { n: 0, ok: 0, falschSicher: 0 }); fz.n++; if (richtig) fz.ok++; else if (w?.sicher) fz.falschSicher++;
+    if (f === "kategorie") { const ak = (jeArt[e.schriftstueck || "?"] ??= { n: 0, ok: 0 }); ak.n++; if (richtig) ak.ok++; }
   }
   if (offen) offenDateien++;
+  (jeHF[e.haushalt] ??= {}).offen = ((jeHF[e.haushalt] ??= {}).offen || 0) + (offen ? 1 : 0);
+  (jeHF[e.haushalt]).dateien = ((jeHF[e.haushalt]).dateien || 0) + 1;
+  if (arg("--trainingsdaten")) training.push({ pfad: e.pfad, haushalt: e.haushalt, quelle: o.textQuelle, art: o.artText, text: text.slice(0, 4000),
+    soll: Object.fromEntries(Object.entries(e).filter(([k]) => !["pfad", "haushalt"].includes(k))),
+    kern: { schriftstueck: ist.schriftstueck?.wert, kategorie: ist.kategorie?.wert, absender: ist.absender?.wert, person: ist.person?.wert, frist: ist.frist?.wert, betrag: ist.betrag?.wert, sicher: Object.fromEntries(["schriftstueck", "kategorie", "absender"].map((f) => [f, !!ist[f]?.sicher])) } });
   const f = fa.get(e.pfad);
   if (f) {
     if (f.pruef) zfa.pruef++;
@@ -184,7 +192,6 @@ for (const e of soll) {
 
 const pz = (a, b) => b ? `${a}/${b} = ${Math.round((100 * a) / b)} %` : "–";
 const ergebnis = { ordner: ORDNER.replace(WURZEL, ""), dateien: soll.length, organizer: z, familienakte: zfa, bookledgerpro: zblp, offenDateien, jeHaushalt };
-if (arg("--json")) writeFileSync(resolve(WURZEL, arg("--json")), JSON.stringify(ergebnis, null, 1));
 console.log(`Messung ${ergebnis.ordner}: ${soll.length} Dateien${regeln.length ? `, ${regeln.length} gelernte Regeln` : ""}`);
 if (LERN) console.log(`Gelernt aus ${LERN} – Nutzer ${NUTZER}: ${nutzerBericht.antworten} Antworten, davon ${nutzerBericht.falscheAntworten} falsch`);
 console.log("");
@@ -196,7 +203,10 @@ if (blp) console.log(`BookLedgerPro an Kassenbons: Betrag ${pz(zblp.betrag.ok, z
 console.log(`Doppelte erkannt ${pz(zdopp.ok, zdopp.n)} (fälschlich doppelt: ${zdopp.falsch}) · leere Sync-Dateien gemeldet ${pz(zleer.ok, zleer.n)} · Mail-Anhänge ausgepackt ${pz(zanh.ok, zanh.n)} · Systemdateien übergangen ${uebersprungen}`);
 console.log("Gehaltsabrechnungen: " + GF.map((f) => `${f} ${pz(zg[f].ok, zg[f].n)}`).join(" · "));
 if (blpKat) console.log(`BookLedgerPro Konto (SKR03) an Geschäftsbelegen: ${pz(zkonto.blp, zkonto.n)}`);
-ergebnis.gehalt = zg; ergebnis.nutzer = nutzerBericht; ergebnis.doppelt = zdopp; ergebnis.leer = zleer; ergebnis.anhang = zanh; ergebnis.blpKonto = zkonto;
+ergebnis.gehalt = zg; ergebnis.nutzer = nutzerBericht; ergebnis.jeHaushaltFeld = jeHF; ergebnis.jeArt = jeArt;
+if (arg("--trainingsdaten")) { const { appendFileSync } = await import("node:fs"); appendFileSync(resolve(WURZEL, arg("--trainingsdaten")), training.map((t) => JSON.stringify({ runde: ergebnis.ordner, ...t })).join("\n") + "\n"); }
+ergebnis.doppelt = zdopp; ergebnis.leer = zleer; ergebnis.anhang = zanh; ergebnis.blpKonto = zkonto;
+if (arg("--json")) writeFileSync(resolve(WURZEL, arg("--json")), JSON.stringify(ergebnis, null, 1));
 if (!STILL && gfehler.length) { console.log("\nFehler Gehalt:"); for (const x of gfehler) console.log("  " + x); }
 console.log("\nBereich je Haushalt:", Object.entries(jeHaushalt).map(([k, v]) => `${k.split("-")[0]} ${Math.round((100 * v.ok) / v.n)} %`).join(" · "));
 if (!STILL) for (const f of felder) if (fehler[f].length) { console.log(`\nFehler ${f} (${fehler[f].length}):`); for (const x of fehler[f].slice(0, 25)) console.log(`  ${x}`); }
