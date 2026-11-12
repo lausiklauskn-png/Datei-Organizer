@@ -19,3 +19,13 @@ Festgelegt und eingecheckt, bevor der Stapel geschrieben und bevor gemessen wird
 5. **Nicht gemessene Felder heißen „nicht gemessen“, nie 0 %.** Ein Beleg ohne Soll-Wert für ein Feld zählt bei diesem Feld nicht mit.
 6. **Danach** dürfen die Regeln von BookLedgerPro an den Fehlern lernen (eigener Zweig, Entwurfs-PR dort, vorhandene Proben grün).
    Der Stapel ist dann verbraucht; für einen neuen Blindtest braucht es einen neuen Stapel.
+
+## Ergänzung, festgelegt vor dem ersten Beleg (12.11.2026, Klaus: „Kern übernehmen, wenn nachweislich besser“)
+
+7. **Datei-Organizer-Kern als zweite Spalte:** Am selben Stapel wird der Kern (Stand Commit `85526fe`, `lib/` unverändert seit
+   `44a88c1`) gemessen: Betrag (`erkenneBetrag`), Datum (`erkenneDatum`), Aussteller (`erkenneAbsender`/Grußformel, nach
+   `absenderVereinheitlichen`). Vergleich je Feld mit BookLedgerPro, beide mit Fehlerspanne; dazu McNemar-Test auf den Belegen,
+   bei denen beide einen Wert liefern. „Besser“ gilt nur, wenn der Unterschied bei 5 % Irrtum gesichert ist.
+8. **Kein Gewinner wird nachträglich gewählt:** Feld für Feld zählt die gemessene Zahl, auch wenn sie gegen den Kern ausfällt.
+9. **Verbesserungen am Kern** (aus dem ersten Blindtest des Datei-Organizers) gelten erst als nachgewiesen, wenn alter und neuer
+   Kern an einem **neuen**, von einem anderen Agenten geschriebenen Stapel je einmal gemessen sind (McNemar, 5 %).
