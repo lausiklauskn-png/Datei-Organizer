@@ -29,17 +29,17 @@
     {
      "a": "Erster (Stapel-Autor)",
      "b": "ZWEITER",
-     "gleich": 112
+     "gleich": 143
     },
     {
      "a": "Erster (Stapel-Autor)",
      "b": "DRITTER-CLAUDE",
-     "gleich": 114
+     "gleich": 144
     },
     {
      "a": "Erster (Stapel-Autor)",
      "b": "DRITTER",
-     "gleich": 102
+     "gleich": 128
     },
     {
      "a": "ZWEITER",
@@ -57,19 +57,9 @@
      "gleich": 129
     }
    ],
-   "fleissKappa": 0.7950856506030594,
-   "einstimmig": 100,
-   "strittig": [
-    {
-     "datei": "KV Beitrag freiwillig.txt",
-     "stimmen": [
-      "Arbeit & Sozialversicherung",
-      "Rente, Arbeit & Sozialversicherung",
-      "Gesundheit & Pflege",
-      "Versicherungen"
-     ]
-    }
-   ]
+   "fleissKappa": 0.8984937192988818,
+   "einstimmig": 126,
+   "strittig": []
   },
   "schriftstueck": {
    "paare": [

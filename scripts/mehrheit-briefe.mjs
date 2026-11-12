@@ -9,7 +9,11 @@ const arg = (n, v) => { const i = process.argv.indexOf(n); return i > 0 ? proces
 const ORDNER = resolve(WURZEL, process.argv[2]);
 const lade = (f) => existsSync(join(ORDNER, f)) ? JSON.parse(readFileSync(join(ORDNER, f), "utf8")) : null;
 const norm = (s) => s == null || s === "" ? null : String(s).toLowerCase().replace(/\b(gmbh|ag|e\.?\s?k\.?|kg|ohg|mbh|e\.?\s?v\.?|co\.?|&|und)\b/g, " ").replace(/[^a-zäöüß0-9]+/g, " ").trim() || null;
-const FORM = { bereich: (x) => x.bereich ?? x.kategorie ?? null, schriftstueck: (x) => x.schriftstueck ?? null, absender: (x) => norm(x.absender), person: (x) => norm(x.person), frist: (x) => x.frist || null };
+// Der Stapel-Autor schrieb nach der feineren Liste des Kerns (21 Fächer), die Einordner bekamen die Liste der Familienakte (18 Fächer,
+// drei Paare zusammengelegt). Für den Vergleich wird die feinere Liste eindeutig auf die gröbere abgebildet.
+const GROB = { "Arbeit & Sozialversicherung": "Rente, Arbeit & Sozialversicherung", "Rente": "Rente, Arbeit & Sozialversicherung", "Einkäufe": "Einkäufe, Rechnungen & Garantien", "Rechnungen & Garantien": "Einkäufe, Rechnungen & Garantien", "Erbschaft": "Erbschaft, Vollmachten & Vorsorge", "Vollmachten & Vorsorge": "Erbschaft, Vollmachten & Vorsorge" };
+const grob = (b) => b == null ? null : (GROB[b] ?? b);
+const FORM = { bereich: (x) => grob(x.bereich ?? x.kategorie ?? null), schriftstueck: (x) => x.schriftstueck ?? null, absender: (x) => norm(x.absender), person: (x) => norm(x.person), frist: (x) => x.frist || null };
 const FELDER = Object.keys(FORM);
 const erw = lade("ERWARTUNG.json"), dateien = erw.dateien.map((x) => x.datei);
 const quellen = [["Erster (Stapel-Autor)", erw], ...arg("--dateien", "ZWEITER.json,DRITTER-CLAUDE.json,DRITTER.json").split(",").map((f) => [f.replace(".json", ""), lade(f)])].filter(([, d]) => d);
