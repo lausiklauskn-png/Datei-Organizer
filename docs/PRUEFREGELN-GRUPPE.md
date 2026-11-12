@@ -90,3 +90,9 @@ Berichtet wird je Runde und als Verlauf über alle Runden – auch, wenn eine Ru
 A: ländliche Haushalte in Bayern, Sachsen und im Saarland mit dortigen Behörden- und Kassenbezeichnungen. B: Lebenslagen
 Zuwanderung, Pflegeheim, Scheidung, Privatinsolvenz, Todesfall mit Nachlass, Hausbau, Beamtenhaushalt. Ordner
 `pruefstapel-briefe-a/`, `pruefstapel-briefe-b/`. Gemessen wird erst nach dem zweiten Blindtest, je einmal.
+
+**Runde H vergeben (Klaus 13.11.2026: Schwerbehinderung mit hinein):** eigener Stapel `pruefstapel-briefe-h/`, 150 Schriftstücke,
+sieben Haushalte, in denen ein Mitglied schwerbehindert oder chronisch krank ist – Hilfsmittel (Rollstuhl, Hörgerät, Umbau),
+Gutschriften und Rechnungen von Krankenhäusern, Erstattungen privater und gesetzlicher Kassen, Beihilfe, Schwerbehindertenausweis
+und Merkzeichen, Erwerbsminderungsrente, Pflegegrad, Eingliederungshilfe, Nachteilsausgleiche (Kfz-Steuer, Wertmarke, Pauschbetrag).
+Bedingungen wie bei A und B; Kern `7ac9d4f` gegen `fe55b5f`, einmal gemessen nach dem zweiten Blindtest.
