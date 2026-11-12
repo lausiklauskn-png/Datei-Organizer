@@ -29,6 +29,22 @@ in einer dieser Apps verbessert, weist es nach diesen Regeln nach. Die Einzelhei
 10. **Keine echten Daten in Repos, keine Forschung außerhalb von KimHub.** Stapel und Lehrdaten sind erfunden; Sitzungs-Befunde und
     Stunden stehen in KimHub.
 
+## Die Suche über die Knoten (Klaus 12.11.: „sowohl intern als auch extern muss die Suche valide sein“)
+
+Die Knoten wirken über die Suche zusammen: Wer ein Dokument sucht und nicht weiß, ob es in BookLedgerPro, Private Brain Pro, der
+Familienakte oder in den E-Mails liegt, muss es über „Überall suchen“ bzw. das eigene Netz finden. Dafür gilt dasselbe Muster,
+mit einem anderen Maß:
+
+11. **Suchprüfstapel:** erfundene Unterlagen, verteilt auf die Knoten (und Mail-Anhänge), dazu Fragen in Alltagssprache, je mit dem
+    Dokument, das die Antwort ist. Fragen und Unterlagen schreibt ein Agent, der die Suche nicht kennt; drei Einordner bestätigen
+    unabhängig, welches Dokument zur Frage gehört (Fragen ohne Mehrheit zählen nicht).
+12. **Gemessen wird je Frage:** steht das richtige Dokument an erster Stelle, unter den ersten drei, oder gar nicht – getrennt für
+    Wortsuche und Bedeutungssuche, **intern** (im Knoten, in dem es liegt) und **extern** (von einem anderen Knoten aus über das Netz),
+    und ob der richtige Knoten genannt wird. Dazu: wie oft ein falsches Dokument als sicher ausgegeben wird.
+13. **Verschiedene Arten zu fragen:** wörtlich, umschrieben, mit Tippfehler, nur mit Datum oder Betrag, mit dem Namen einer Person.
+    Jede Art wird getrennt ausgewiesen.
+14. Für die Bedeutungssuche zählt nur eine Messung mit dem **echten** Modell der App; eine gestellte Antwort ist kein Nachweis.
+
 ## Stand je Knoten (12.11.2026)
 
 | Knoten | Was nach diesen Regeln nachgewiesen ist | Offen |
@@ -37,3 +53,4 @@ in einer dieser Apps verbessert, weist es nach diesen Regeln nach. Die Einzelhei
 | Datei-Organizer | erster Blindtest Briefe mit **einem** Einordner (Bereich 51–65 %, Absender 54 %) | zweiter und dritter Einordner, Verbesserung des Kerns mit neuem Stapel |
 | Familienakte | Vergleich am selben Briefstapel mit einem Einordner (Bereich 28–36 %, Absender 36 %) | Übernahme des Kerns erst nach Nachweis; Messung mit gefüllter Akte |
 | Private Brain Pro | nichts gemessen | Dokumentart-Vorschlag gegen denselben Briefstapel |
+| Suche über die Knoten | nichts gemessen (Proben bisher nur mit gestellter Hülle und gestelltem Modell) | Suchprüfstapel nach Regel 11–14, intern und extern |
