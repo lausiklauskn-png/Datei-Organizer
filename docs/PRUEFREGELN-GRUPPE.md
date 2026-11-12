@@ -65,3 +65,22 @@ mit einem anderen Maß:
 | Familienakte Pro und Basic (ein Repo, derselbe Kern) | Vergleich am selben Briefstapel mit einem Einordner (Bereich 28–36 %, Absender 36 %) | Übernahme des Kerns erst nach Nachweis; Messung mit gefüllter Akte |
 | Private Brain Pro und Basic | nichts gemessen; ob Basic denselben Code trägt, ist nicht nachgesehen | Dokumentart-Vorschlag gegen denselben Briefstapel |
 | Suche über die Knoten | nichts gemessen (Proben bisher nur mit gestellter Hülle und gestelltem Modell) | Suchprüfstapel nach Regel 11–14, intern und extern |
+
+## Prüfreihe: jede Runde andere Bedingungen (Klaus 13.11.2026)
+
+Klaus: zwischendurch die Prüfungen anpassen – neue Dokumente, neue Familien, neue Vorgänge, andere Standorte, andere
+Lebensbedingungen. Daraus wird eine Reihe; jede Runde ist ein neuer Stapel nach den Regeln 1–10, einmal gemessen, danach verbraucht.
+Was eine Runde ändert, steht vorab fest; gelernt wird erst nach der Messung.
+
+| Runde | Was anders ist | Wozu |
+| --- | --- | --- |
+| A | andere Gegend und Verwaltung (anderes Bundesland, Dorf statt Stadt, andere Behördennamen und Kassen) | hängt der Kern an Wörtern einer Gegend? |
+| B | andere Lebenslagen (Zuwanderung mit Aufenthaltspapieren, Pflegeheim, Scheidung, Insolvenz, Todesfall, Hausbau, Beamte, Grenzpendler) | seltene Fächer und Behörden |
+| C | Vorgänge statt Einzelbriefe: ein erfundenes Jahr mit Ereignisregister (Umzug → Mietvertrag, Ummeldung, Stromwechsel, Kaution …), Vorschlag von Codex | gehören Schriftstücke eines Vorgangs zusammen, stimmt die Frist im Verlauf? |
+| D | andere Schreiber: Stapel von Codex-Agenten, Lehrdaten gemischt aus beiden Systemen | Machart des Schreibers (Kreuztest Belege: 79 % eigene, 60 % fremde Machart) |
+| E | andere Form: dieselben Stücke als Foto/Scan durch die echte Texterkennung, mehrseitig, zwei Stücke in einem Scan, Mail mit Anlage | Lesefehler statt sauberem Text |
+| F | Zeit: Stapel mit Daten aus anderen Jahren, neue Gebührennamen, alte Vordrucke | veralten die Regeln? |
+| G | echte Stichprobe: 50–100 eigene Unterlagen auf dem Gerät des Nutzers, nur Zahlen verlassen das Gerät | die einzige Aussage über echte Unterlagen |
+
+Reihenfolge: zuerst der laufende zweite Blindtest Briefe, dann A und B (billig, nur neue Stapel), dann D, C, E; G sobald Klaus es will.
+Berichtet wird je Runde und als Verlauf über alle Runden – auch, wenn eine Runde schlechter ausfällt als die davor.
