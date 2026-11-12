@@ -29,3 +29,12 @@ Festgelegt und eingecheckt, bevor der Stapel geschrieben und bevor gemessen wird
 8. **Kein Gewinner wird nachträglich gewählt:** Feld für Feld zählt die gemessene Zahl, auch wenn sie gegen den Kern ausfällt.
 9. **Verbesserungen am Kern** (aus dem ersten Blindtest des Datei-Organizers) gelten erst als nachgewiesen, wenn alter und neuer
    Kern an einem **neuen**, von einem anderen Agenten geschriebenen Stapel je einmal gemessen sind (McNemar, 5 %).
+
+## Zweiter Blindtest (Nachweis des Trainings), festgelegt vor Stapel und Training (12.11.2026)
+
+10. Ein weiterer Hilfs-Agent ohne Einblick schreibt 120 neue Belege eines **anderen** Betriebs (anderes Gewerbe, andere Lieferanten)
+    nach `pruefstapel-blp-2/`, gleiche Felder, gleiche Kontenliste als JSON.
+11. Gemessen wird je einmal: BookLedgerPro **alt** (`a705ed5`) und **neu** (Zweig mit den trainierten Regeln) am selben Stapel.
+    Felder Konto und Richtung, je mit Wilson-Spanne; Unterschied mit McNemar (5 %). Die übrigen Felder werden mit berichtet.
+12. Das Training nutzt nur den ersten Stapel (`pruefstapel-blp/`, verbraucht). Der zweite Stapel wird vor der Messung nicht gelesen;
+    nach der Messung wird an ihm nichts mehr nachgebessert, bevor die Zahl berichtet ist.
