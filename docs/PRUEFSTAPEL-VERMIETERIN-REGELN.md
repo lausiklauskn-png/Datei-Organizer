@@ -81,3 +81,27 @@ zweiten Mal besser werden – 2024, 2025, 2026 und notfalls Jahre, die noch nich
   (wiederkehrende Absender, Daueraufträge, Rechnungsnummern-Muster). Das Zweite ist kein Nachweis für fremde Haushalte.
 - Das „Merken wie ein Nutzer“ gibt es in den Apps noch nicht als Bedienung; im Lauf wird es als Werkzeug im Repo nachgestellt und
   so benannt.
+
+## Nachtrag 13.11.2026 (Klaus, vor der Messung): Fristen bis zur Glocke, alle Werkzeuge der Gruppe
+
+Klaus: Termine und Fristen (Finanzamt usw.) müssen eingehalten werden – auch das wird getestet, mit Erinnerung und Glocke der
+Familienakte; alle Werkzeuge, die über das Mycel/SBKIM verknüpft sind, sollen im Lauf vorkommen.
+
+Der Lauf misst deshalb zusätzlich die **Kette**, nicht nur die einzelnen Erkenner. Je Glied eine eigene Zahl, damit sichtbar bleibt,
+wo ein Stück verloren geht:
+
+1. **Texterkennung** (Workflow-PDF-Kern): Stück lesbar? (Wort-/Zeichenfehler; Datum und Betrag der Frist unversehrt?)
+2. **Sortierung** (Datei-Organizer): Bereich, Art, Absender, Person, Frist.
+3. **Familienakte, Eingang:** Wie viele Stücke mit Soll-Frist stehen nach dem Ablegen als Frist/Aufgabe mit dem richtigen Datum in der
+   Akte (`lib/central-intake.ts`)? Wie viele ohne Soll-Frist bekommen fälschlich eine?
+4. **Kalender und Glocke** (`lib/kalender.ts`, `lib/glocke.ts`): Wird für jede richtige Frist eine Erinnerung vor dem Fälligkeitstag
+   geplant? Gemessen an den Planungsdaten; ob das Gerät wirklich klingelt, misst nur ein Gerät („nicht gemessen“).
+5. **BookLedgerPro:** Belege und Kontoauszüge wie oben; zusätzlich fällige Rechnungen (Zahlungsziel) gegen die Umsätze: bezahlt,
+   offen, überfällig.
+6. **Suche über die Knoten** (Gruppenregeln 11–14): Fragen in Alltagssprache zum Stapel („Wann ist die Grundsteuer fällig?“, „Was hat
+   der Dachdecker gekostet?“), geschrieben von einem Agenten, der die Suche nicht kennt; gemessen intern je Knoten. Extern über das
+   Netz und die Bedeutungssuche nur mit echtem Modell und echtem Relais – sonst „nicht gemessen“.
+
+**Ende-zu-Ende-Zahl:** Anteil der Soll-Fristen, die vom gescannten Stück bis zur geplanten Erinnerung mit richtigem Datum durchkommen.
+Daneben jede verpasste Frist einzeln mit dem Glied, an dem sie verloren ging. Was ein Werkzeug heute nicht kann, heißt „kann die App
+nicht“; Private Brain Pro und Workflow PDF Pro (als App) sind in dieser Sitzung nicht geklont und werden so benannt, nicht geschätzt.
