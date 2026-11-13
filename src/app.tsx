@@ -139,7 +139,7 @@ function useOrganizer() {
       if (s >= 4) d = absenderVereinheitlichen(d);
       const offen = d.filter((x) => istUnsicher(x, s)).length;
       if (bis !== undefined && offen) { setDateien(d); setStufe(s); setMeldung({ text: `Halt bei Sieb ${s}: ${offen} ${offen === 1 ? "Datei" : "Dateien"} bitte prüfen. Danach geht es weiter.`, art: "halt" }); return; }
-      if (bis === undefined) { const gesamt = d.filter((x) => offeneFelder(x).length > 0).length; setMeldung(offen ? { text: `Sieb ${s} fertig · ${offen} neu zu prüfen${gesamt > offen ? `, ${gesamt} insgesamt offen` : ""}. Sie stehen unten zuerst.`, art: "halt" } : gesamt ? { text: `Sieb ${s} fertig · nichts Neues, ${gesamt} noch offen.`, art: "halt" } : { text: `Sieb ${s} fertig · alles sicher.` }); }
+      if (bis === undefined) { const gesamt = d.filter((x) => offeneFelder(x).length > 0).length; setMeldung(offen ? { text: `Sieb Nr. ${s} ist durchgelaufen: ${offen} neu zu prüfen${gesamt > offen ? `, zusammen mit den früheren ${gesamt} offen` : ""}. Die neuen stehen unten zuerst.`, art: "halt" } : gesamt ? { text: `Sieb Nr. ${s} ist durchgelaufen: nichts Neues zu prüfen, ${gesamt} von früher noch offen.`, art: "halt" } : { text: `Sieb Nr. ${s} ist durchgelaufen: alles sicher.` }); }
     }
     setDateien(d); setStufe(s);
     if (bis !== undefined) setMeldung({ text: "Ganz durchgesiebt. Alles sicher oder von dir bestätigt." });
