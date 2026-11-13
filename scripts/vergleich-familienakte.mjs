@@ -17,6 +17,8 @@ if (!existsSync(join(FA, "lib/document-intake.ts"))) { console.log(`Familienakte
 
 const { buildDocumentIntakePlan } = await import(join(FA, "lib/document-intake.ts"));
 const { briefAngaben } = await import(join(FA, "lib/briefkopf-titel.ts"));
+// seit Familienakte 2.28.67: Absender aus dem Sortier-Kern, wenn gelesener Text da ist (lib/sortier-vorschlag.ts mitKernAbsender) – wie die App
+const { mitKernAbsender } = await import(join(FA, "lib/sortier-vorschlag.ts")).catch(() => ({}));
 // briefkopf.js meldet sich als globalThis.__WFP_BRIEFKOPF (das Familienakte-Paket ist ein ES-Modul-Paket; module.exports greift dort nicht).
 const { runInThisContext } = await import("node:vm");
 runInThisContext(readFileSync(join(FA, "public/apps/workflow-pdf/assets/briefkopf.js"), "utf8"));
@@ -44,7 +46,7 @@ const fa = new Map();
 for (const d of dateien) {
   const text = d.volltext || d.kopfText || "";
   let brief = null;
-  try { brief = text.trim() ? briefAngaben(Briefkopf.lesen(text.split(/\r?\n/).slice(0, 400))) : null; } catch (e) { fehlerBrief++; brief = null; }
+  try { brief = text.trim() ? briefAngaben((mitKernAbsender || ((k) => k))(Briefkopf.lesen(text.split(/\r?\n/).slice(0, 400)), text)) : null; } catch (e) { fehlerBrief++; brief = null; }
   const plan = buildDocumentIntakePlan({ file: { name: d.name, size: d.groesse, type: "", lastModified: d.geaendert, textHint: text, titleHint: d.email?.betreff, brief }, source: "file-picker", documents: abgelegt, records: [] });
   abgelegt.push({ id: d.pfad, originalName: d.name, sizeBytes: d.groesse });
   fa.set(d.pfad, { plan, brief });
