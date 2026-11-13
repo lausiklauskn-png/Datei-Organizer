@@ -261,6 +261,37 @@ Vorläufiger Befund: Das einfache Merken „Absender → Bereich“ hilft in der
 einzelne Stücke – derselbe Absender schreibt zu verschiedenen Sachen (Fachregel: die Sache entscheidet, nicht der Absender).
 Beim Konto und bei den Kontoauszügen bringt es nichts Messbares. Endgültig erst mit dem dritten Einordner.
 
+## Ergebnis Jahr 2026 – mit drei Einordnern (13.11.2026)
+
+Codex (GPT-6) hat Auftrag 010 geliefert (Puls 11; Form geprüft: 94 Schriftstücke, 45 Belege, 12 Auszüge mit 240 Umsätzen, Salden
+nachgerechnet; unverändert übernommen als `DRITTER.json`, `belege/DRITTER.json`, `bank/DRITTER-BANK.json`, Text und gescannt).
+Soll = Mehrheit aus Stapel-Autor, Claude-Agent und Codex. Die Apps wurden nicht verändert, nur gegen das neue Soll ausgewertet
+(`bash scripts/lauf-vermieterin.sh …`, Belege mit `scripts/mehrheit-blp.mjs` und `scripts/messen-blp.mjs`). Ersetzt die vorläufigen Zahlen oben.
+
+Einigkeit (Fleiss' Kappa): Bereich 0,94 · Schriftstück 0,96 · Absender 0,91 · Frist 0,98 · Person 0,03 (nicht tragfähig: der
+Stapel-Autor nennt keine Person, Claude-Agent nennt den Mieter, Codex die Vermieterin; 14 ohne Mehrheit). Ohne Mehrheit sonst nur ein Absender.
+
+| Was | Text | gescannt |
+| --- | --- | --- |
+| Datei-Organizer Bereich | 73/94 = 78 % (68–85), falsch und sicher 11 | 72/94 = 77 %, 11 |
+| Datei-Organizer Schriftstück | 64/94 = 68 % (58–77), 22 | 64/94 = 68 %, 22 |
+| Datei-Organizer Absender | 91/93 = 98 % (92–99), 0 | 72/93 = 77 %, 15 |
+| Datei-Organizer Frist (alle Stücke) | 78/94 = 83 % (74–89), 9 | 77/94 = 82 %, 9 |
+| Fristen: Familienakte bis zur Erinnerung (Stand vor dem Einbau) | 27/42 = 64 % (49–77); keine 15, fälschlich 5/52 | gleich |
+| Fristen: Kern des Datei-Organizers | 33/42 = 79 % (64–88); falsches Datum 5, keine 4, fälschlich 7/52 | 32/42 = 76 % |
+| BookLedgerPro Konto (Mehrheit): Regeln · Regeln + Wortmodell mit Namen | 25/45 = 56 % · 26/45 = 58 % | gleich |
+| BookLedgerPro Richtung (Mehrheit) | 42/45 = 93 % | 41/45 = 91 % |
+| BookLedgerPro Betrag · Datum · Steuersatz (Soll Stapel-Autor) | 41/45 · 43/45 · 43/43 | gleich |
+| Aussteller: BookLedgerPro · Kern (Soll Stapel-Autor) | 20/45 = 44 % · 43/45 = 96 % (p < 0,001) | 20/45 · 39/45 = 87 % |
+| Private Brain Pro: Rechnung/Vertrag/Angebot richtig · andere fälschlich so | 15/19 · 16/75 | gleich |
+| Kontoauszug gescannt: Umsatz vollständig lesbar · Rechnungsnummer | – | 203/240 = 85 % · 49/52 |
+| Zahlungsabgleich (MT940, 19 strittig): ein Beleg · ohne Beleg fälschlich zugeordnet | 47/59 = 80 % · 18/161 | – |
+
+**Mit dem aus 2025 Gemerkten:** Bereich 73 → 79 von 94 (Text; besser 11, schlechter 5, p = 0,21), gescannt 72 → 79 (11/4, p = 0,12);
+Konto 26 → 29 von 45 (5/2, p = 0,45); Umsätze ohne Beleg fälschlich 18 → 18 von 161. **Antwort auf „wird es beim zweiten Mal
+besser?“ mit drei Einordnern: in der Tendenz ja, gesichert nein.** Das Merken nach Absender verschlechtert einzelne Stücke
+(Fachregel: die Sache entscheidet) – Anlass für Punkt 7 (Merken nach Sache). Der Stapel ist damit verbraucht.
+
 ## Einbau in die Familienakte (Klaus 13.11.2026: „wenn es sinnvoll ist, mach es“)
 
 Frage: Soll der Kern jetzt schon in die Familienakte und die anderen Apps? Geprüft an sechs Stapeln, an denen der Kern eingefroren

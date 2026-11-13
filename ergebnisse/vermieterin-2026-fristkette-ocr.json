@@ -1,19 +1,19 @@
 {
  "text": "/home/user/datei-organizer/pruefstapel-vermieterin-2026-ocr",
- "mitSollFrist": 41,
+ "mitSollFrist": 42,
  "ohneSollFrist": 52,
- "strittig": 1,
+ "strittig": 0,
  "familienakte": {
-  "fristRichtig": "26/41 = 63.4 % (48–76)",
+  "fristRichtig": "27/42 = 64.3 % (49–77)",
   "falschesDatum": 0,
   "keineErkannt": 15,
   "faelschlichEineFrist": "5/52",
-  "erinnerungGeplant": "26/41 = 63.4 % (48–76)"
+  "erinnerungGeplant": "27/42 = 64.3 % (49–77)"
  },
  "kern": {
-  "fristRichtig": "32/41 = 78.0 % (63–88)",
+  "fristRichtig": "32/42 = 76.2 % (61–87)",
   "falschesDatum": 5,
-  "keineErkannt": 4,
+  "keineErkannt": 5,
   "faelschlichEineFrist": "7/52"
  },
  "verloren": [

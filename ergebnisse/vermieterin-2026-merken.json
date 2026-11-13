@@ -3,45 +3,45 @@
  "text": "pruefstapel-vermieterin-2026",
  "gemerkt": "merken/vermieterin-2025.json",
  "bereich": {
-  "n": 91,
-  "ohne": "70/91",
-  "mit": "76/91",
+  "n": 94,
+  "ohne": "73/94",
+  "mit": "79/94",
   "spanneOhne": [
-   0.672831372058367,
-   0.8438195490564182
+   0.6824893271662207,
+   0.8489819488554307
   ],
   "spanneMit": [
-   0.7456910843906761,
-   0.8974865929154849
+   0.7532737570410223,
+   0.9008447365240871
   ],
   "besserDurchMerken": 11,
   "schlechterDurchMerken": 5,
   "p": 0.2101,
-  "gemerktGegriffen": 77
+  "gemerktGegriffen": 78
  },
  "konto": {
-  "n": 36,
-  "ohne": "25/36",
-  "mit": "26/36",
+  "n": 45,
+  "ohne": "26/45",
+  "mit": "29/45",
   "spanneOhne": [
-   0.5314342132091627,
-   0.8199572971719464
+   0.433005327959445,
+   0.7103151201831219
   ],
   "spanneMit": [
-   0.5600719978365485,
-   0.841518299741862
+   0.49835546011952203,
+   0.7678110864309596
   ],
-  "besserDurchMerken": 3,
+  "besserDurchMerken": 5,
   "schlechterDurchMerken": 2,
-  "p": 1,
-  "gemerktGegriffen": 26
+  "p": 0.4531,
+  "gemerktGegriffen": 32
  },
  "bank": {
-  "ohneBeleg": 133,
+  "ohneBeleg": 161,
   "faelschlichOhneMerken": 18,
   "faelschlichMitMerken": 18,
-  "mitBeleg": 33,
-  "richtigOhneMerken": 23,
-  "richtigMitMerken": 23
+  "mitBeleg": 59,
+  "richtigOhneMerken": 47,
+  "richtigMitMerken": 46
  }
 }

@@ -17,22 +17,24 @@
   "rechnungsnummer": "94.2 % (49/52; 84–98)"
  },
  "blp": {
-  "einordner": 2,
+  "einordner": 3,
   "auszuegeSaldoStimmt": "12/12",
   "umsaetzeGelesen": 240,
-  "strittig": 73,
+  "strittig": 19,
   "einBeleg": {
-   "richtig": "69.7 % (23/33; 53–83)",
+   "richtig": "79.7 % (47/59; 68–88)",
    "falscherBeleg": 0,
-   "keinTreffer": 10
+   "keinTreffer": 12
   },
   "mehrereBelegeInEinerZahlung": "1/1",
   "ohneBeleg": {
-   "n": 133,
+   "n": 161,
    "faelschlichZugeordnet": 18
   },
   "fehler": [
    "2026-01.txt #1: belege/Brinkmeier R 26-014 Januar.txt, obwohl kein Beleg dazugehört",
+   "2026-01.txt #6: kein Treffer für belege/SW Gutschrift Allgemeinstrom 2025.txt",
+   "2026-02.txt #6: kein Treffer für belege/SW Gutschrift Allgemeinstrom 2025.txt",
    "2026-02.txt #13: belege/AK-26-1012.txt, obwohl kein Beleg dazugehört",
    "2026-03.txt #6: kein Treffer für belege/SW Gutschrift Allgemeinstrom 2025.txt",
    "2026-03.txt #14: belege/AK-26-1012.txt, obwohl kein Beleg dazugehört",
