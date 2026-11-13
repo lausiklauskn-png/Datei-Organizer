@@ -290,3 +290,12 @@ Vermieterin gescannt: 25/40 → 33/40 (2025), 26/41 → 32/41 (2026) bis zur gep
 **Nicht eingebaut:** Absender/Titel (Kern 87 % gegen 35 %, hängt am Titelvorschlag), Zweitfach, eigene Muster. BookLedgerPro: eigene
 Belegleser gleich gut; nur der Aussteller wäre aus dem Kern besser (84 % gegen 44 %) – offen. Private Brain Pro: kennt keine Fächer –
 erst Vorschau. Grenze: alles an erfundenen Stücken; ein frischer Stapel nach dem Einbau steht aus (nächster Lebenslauf).
+
+**Nachtrag zum Einbau (13.11.2026, nach den Bedienproben der Familienakte):** Zwei Ergänzungen im Anschluss (nicht im Kern):
+„Korrespondenz“ aus dem Kern überstimmt keinen Bereich, den Dateiname oder Stichwörter schon nennen; die Schutzklasse wird durch den
+Kern nie herabgesetzt. An den sechs verbrauchten Stapeln ändert die erste Ergänzung die Summe um +1 von 784 (81/72/127/120/111/114
+statt 74/70/130/121/114/115) – kein Nachweis, nur kein Schaden. Die Bedienprobe „Dateieingang“ der Familienakte erwartet jetzt nach
+der Fachregel: Gerät mit Garantie → Technik, Nebenkostenabrechnung → Haus & Wohnung (vorher „Einkäufe“). Entscheidung zu den anderen
+Apps: BookLedgerPro und Private Brain Pro bekommen den Kern jetzt nicht (Belegleser dort gleich gut; Aussteller wäre besser, verlangt
+aber eine übersetzte Fassung des Kerns in einer App ohne Bauschritt; Private Brain kennt keine Fächer). Familienakte Basic ist
+derselbe Bau wie Pro.
