@@ -33,6 +33,16 @@ wo es in der Gruppe um die Familienakte noch möglich ist. Dazu: Kontoauszug als
    Prüfung, nichts still buchen. Das Messwerkzeug `scripts/messen-bank.mjs` enthält einen Zeilenleser als Ausgangspunkt. Nachweis
    an einem **neuen** fremden Stapel (die Vermieterin-Auszüge sind dafür verbraucht), Regeln vorab festlegen.
 
+## Daneben: Jahr 2026 abschließen und frischer Stapel (Klaus 13.11., „Punkt 2“)
+
+- **Auftrag 010** (Vermieterin 2026) liegt im Briefkasten der Familienakte (`docs/fremdpruefung/`), Stand „offen“. Sobald Codex
+  geliefert hat: Ergebnis unverändert nach `pruefstapel-vermieterin-2026` (+ `-ocr`) übernehmen, mit drei Einordnern neu auswerten
+  (`bash scripts/lauf-vermieterin.sh pruefstapel-vermieterin-2026 pruefstapel-vermieterin-2026-ocr vermieterin-2026 merken/vermieterin-2025.json`),
+  im Briefkasten quittieren.
+- **Frischer Stapel nach dem Einbau:** anderer Lebenslauf (z. B. Witwe mit drei Kindern, Mann verstorben, Nachlass), Regeln vorab,
+  Autor ohne Einblick, zweiter Einordner, Codex als dritter über **Auftrag 011**; gemessen wird die Familienakte mit eingebautem
+  Kern, einmal.
+
 ## Regeln
 
 - Nach jeder Kernänderung in jeder App nachziehen und dort messen. Byte-gleiche Bausteine nie von Hand ändern.
@@ -52,6 +62,7 @@ Auftrag (Klaus): Sortier-Kern aus dem Datei-Organizer in die übrigen Apps der G
 3. BookLedgerPro: Aussteller aus dem Kern, vorher/nachher messen; Basic nur per Nachziehen.
 4. Workflow PDF Pro und Private Brain Pro: erst Vorschau, ich sage Ja je Punkt.
 5. Kontoauszug als Foto/PDF: aus dem gelesenen Text Umsätze machen (BookLedgerPro), Nachweis an neuem fremdem Stapel.
+Daneben: Codex-Auftrag 010 auswerten, sobald geliefert; frischer Stapel nach dem Einbau (anderer Lebenslauf, Familie mit drei Kindern), Codex als dritter Einordner über Auftrag 011.
 Nicht: veröffentlichen ohne mein Wort, byte-gleiche Dateien von Hand ändern, verbrauchte Stapel als Nachweis nehmen.
 Wenig Text, Ergebnis zuerst.
 ```
