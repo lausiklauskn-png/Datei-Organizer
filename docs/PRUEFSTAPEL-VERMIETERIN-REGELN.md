@@ -212,3 +212,19 @@ Steuersatz 40/45, Konto 34/45. Kein Schriftstück, kein Beleg und kein Umsatz oh
 
 **Ende-zu-Ende heute:** 25 von 40 Fristen (63 %) vom gescannten Stück bis zur geplanten Erinnerung in der Familienakte.
 Der Stapel ist damit verbraucht.
+
+## Eingefroren für das Jahr 2026 (13.11.2026, bevor der Folgestapel existiert)
+
+- Apps unverändert wie beim Jahr 2025 (Datei-Organizer-Kern, BookLedgerPro `d08c071`, Familienakte, Private Brain Pro). Allgemeines
+  Lernen an den Erkennern findet vor 2026 **nicht** statt; gemessen wird allein, was das Merken dieses Haushalts bringt.
+- **Gemerkt** aus dem Jahr 2025 (`scripts/merken.mjs lernen`, Datei `merken/vermieterin-2025.json`): 48 Absender → Bereich,
+  26 Aussteller → Konto, 29 Gegenparteien, deren Zahlungen nie zu einem Beleg gehörten. Gemerkt wird nur, was im Jahr 2025 zu
+  mindestens zwei Dritteln eindeutig war. Angewendet wird es über den erkannten Absender (gleich oder sehr ähnlich geschrieben);
+  das Gemerkte geht dem Vorschlag der App vor.
+- **Messung 2026** (`scripts/merken.mjs messen`, je einmal, Text und gescannt): Bereich der Schriftstücke, Konto der Belege,
+  fälschliche Zuordnung von Umsätzen ohne Beleg – jeweils ohne und mit dem Gemerkten, Unterschied mit McNemar. Dazu alle Zahlen
+  wie 2025 (Fristenkette, Betrag, Datum, Lesbarkeit der Auszüge) ohne Änderung, als Wiederholung.
+- Kontrolle des Werkzeugs am Jahr 2025 selbst (kein Nachweis, das Gemerkte stammt von dort): Bereich 74 → 85 von 93,
+  Konto 28 → 41 von 45, Umsätze ohne Beleg fälschlich zugeordnet 22 → 20 von 171.
+- Der Stapel-Autor 2026 bekommt nur Stammdaten (Haushalt, Mieter, Namen der Absender und Vertragspartner, Konto, übliche Beträge
+  2025), die Listen und die Fachregel – keine Lösungen, keine Apps, nicht das Gemerkte.
