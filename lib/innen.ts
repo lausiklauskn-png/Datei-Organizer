@@ -9,7 +9,7 @@ import type { Innen } from "./typen.ts";
  */
 export type Befund = { kennung: string; satz: string };
 
-const FELD: Record<string, keyof Omit<Innen, "befunde">> = {
+const FELD: Record<string, keyof Omit<Innen, "befunde" | "pdfKennung">> = {
   Author: "autor", "dc:creator": "autor", Creator: "programm", "xmp:CreatorTool": "programm",
   Producer: "erzeuger", "pdf:Producer": "erzeuger", Title: "titel", Subject: "betreff", "xmp:CreateDate": "erstellt",
 };
