@@ -60,3 +60,19 @@ eingehängt in `parseBankauszug`; (c) Rechnungsnummer in `extractFromText`; (d) 
 Pin @ Datei-Organizer `4fa3f9d`). Gelernt nur an den verbrauchten Vermieterin-Stapeln. Abstimmwerte (kein Nachweis): Konto Regeln
 an Vermieterin 49 → 62 von 90 (Mehrheit), übrige Belegstapel 327 → 329 von 480; Auszug Text 463/463 richtig, gescannt 451/463,
 falsch ohne Warnung 0; Rechnungsnummer 58 richtig, 5 falsch von 60; Aussteller 44 % → 84–96 %.
+
+## Ergebnis (13.11.2026, einmal gemessen; vorläufig zwei Einordner – Codex Auftrag 012 steht aus)
+
+BookLedgerPro `d08c071` gegen `136c2f5`, Soll = Mehrheit aus Stapel-Autor und Claude-Agent (Konto: 12 von 50 ohne Mehrheit, Kappa 0,73).
+Zahlen: `ergebnisse/vermieter-2-*.json`.
+
+| Teil | Ergebnis | Grenze | Entscheidung |
+| --- | --- | --- | --- |
+| (a) Konto (Mehrheit) | 21/50 → 23/50 (Text und gescannt), McNemar p = 0,5 | gesichert besser | **nicht ausgegeben** (Zweig `claude/kontoregeln-vermietung`) |
+| (b) Auszug Text | Salden 12/12, 207/232 = 89,2 % vollständig richtig; Tag und Betrag überall richtig, 25-mal Gegenpartei = Buchungswort („Geldautomat“, „Entgelt“), ohne Warnung | ≥ 90 %, keine Fehler ohne Warnung | **hinter Vorschau-Schalter** (ab Werk aus) |
+| (b) Auszug gescannt | Salden 6/12 stimmig, 202/232 = 87,1 %, 12 falsch ohne Warnung, 124 als unsicher markiert (106 davon richtig) | dto. | dto. |
+| (c) Rechnungsnummer | 33 richtig, 2 falsch, 3 leer von 36 (5,6 % falsch); Text = gescannt | ≤ 5 % falsch | **hinter Vorschau-Schalter** |
+| (d) Aussteller | alt 45/50 = 90 %, neu 45/50 = 90 % (dieser Aussteller steht in der ersten Zeile) | gesichert besser | **ausgegeben** – Nachweis aus Lauf „Vermieterin“ (44 → 84 %, p < 0,001), hier kein Schaden |
+
+Schwächen: Gegenpartei bei Barabhebung und Entgelt; Texterkennung verliest Beträge („790,00“ statt „700,00“); Kontoregeln bei
+Privatvermietung bleiben bei rund 45 % – das SKR03-Konto für Mieterlöse fehlt in der Liste (Autor 8120, Claude-Agent 8400).

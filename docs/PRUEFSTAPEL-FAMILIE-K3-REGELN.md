@@ -75,3 +75,24 @@ Neuer Kern = Commit `f98a400` (Datei-Organizer). Gelernt nur an verbrauchten Sta
   lernt zusätzlich an den sechs verbrauchten Stapeln (Soll = Mehrheit).
 - **Abstimmung, kein Nachweis:** an den verbrauchten Stapeln Frist 851 → 881 von 937 (falsch und sicher 35 → 21); Wortmodell reihum
   je Stapel ausgelassen: Art 615 → 650 von 887, Bereich 639 → 647. Eigene Kernprobe 119 grün.
+
+## Ergebnis (13.11.2026, einmal gemessen; vorläufig zwei Einordner – Codex Auftrag 011 steht aus)
+
+Stapel: 150 Schriftstücke, 69 mit Frist; Einigkeit Autor/Claude-Agent: Kappa Bereich 0,97, Art 0,93, Absender 0,97, Person 0,93, Frist 0,99.
+Kern `534cc08` gegen `f98a400` (`ergebnisse/familie-k3-kern*.json`), Familienakte 2.28.66 gegen 2.28.67 (`ergebnisse/familie-k3-fa-*.json`).
+
+| Feld | alt | neu | gesichert? |
+| --- | --- | --- | --- |
+| Kern Bereich | 118/146 = 81 % | 126/146 = 86 % | nein (p = 0,12) |
+| Kern Art (Punkt 5) | 123/141 = 87 % | 119/141 = 84 % | nein – eher schlechter (gescannt 125 → 119) |
+| Kern Frist (Punkt 3) | 130/149, falsch und sicher 5 | 131/149, falsch und sicher 3 | nein |
+| Kern Absender · Person | 137/146 · 91/120 | gleich | – |
+| Familienakte Absender (Punkt 4) | 64/141 = 45 % | 137/141 = 97 % (gescannt 134) | **ja**, p < 0,001 |
+| Familienakte Bereich | 112/146 = 77 % | 122/146 = 84 % | **ja**, p = 0,03 |
+| Familienakte Frist bis Erinnerung | 54/69, falsches Datum 4, fälschlich 4/80 | 54/69, 2, 3/80 | nein |
+
+Befund: Punkt 4 nachgewiesen und mit 2.28.67 ausgegeben. Punkte 3 und 5 **nicht nachgewiesen** – die Verbesserungen an den verbrauchten
+Stapeln tragen am fremden Stapel nicht (Art: das Wortmodell aus den verbrauchten Stapeln verallgemeinert nicht). Der Kern bleibt, weil
+er in der Familienakte den Bereich gesichert verbessert und bei Fristen nichts verschlechtert; die Art nutzt die Familienakte nicht.
+Private Brain Pro mit Art aus dem Kern (Zuordnung vor der Messung festgelegt): Rechnung/Vertrag/Angebot 31/40 → 36/40, andere fälschlich
+19/101 → 20/101 – nicht gesichert, nicht eingebaut.

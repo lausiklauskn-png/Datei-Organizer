@@ -13,7 +13,7 @@ import { ausHandle, erlaubnisPruefen, herunterladen, type Quelle, type QuellDate
 import { laden, loeschen, ordnerHolen, ordnerMerken, speichern } from "./zustand.ts";
 import { OrdnerSeite, SortierenSeite, FindenSeite, VerlaufSeite, AkteSeite, HilfeSeite } from "./seiten.tsx";
 
-export const FASSUNG = "0.2.0";
+export const FASSUNG = "0.3.0";
 export type SeitenId = "ordner" | "sortieren" | "finden" | "verlauf" | "akte" | "hilfe";
 export type Meldung = { text: string; art?: "halt" | "fehler" } | null;
 export const heute = () => new Date().toISOString().slice(0, 10);

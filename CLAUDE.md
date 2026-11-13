@@ -9,6 +9,16 @@ oder Altbestand kommen in **einen** Ordner; der Organizer sortiert sie Klick fü
 Nummern → Absender → Inhalt) und zeigt sie als Baum nach vielen Gesichtspunkten. Zuerst für die Familienakte gemacht: der Ordner
 wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). Plan und alle Entscheidungen: `docs/PLAN.md`.
 
+## Stand (13.11.2026 abends, Fassung 0.3.0)
+
+- **Sitzung Punkte 3–9 (13.11., Freibrief):** Brief `docs/BRIEF_ABSCHLUSS_2026-11-13_PUNKTE-3-9.md`. Neue fremde Stapel `pruefstapel-familie-k3`
+  (+`-ocr`, Punkte 3–5), `pruefstapel-vermieter-2` (+`-ocr`, Punkt 6), `pruefstapel-anfragen` (Punkt 8) – je Regeln vorab
+  (`docs/PRUEFSTAPEL-FAMILIE-K3-REGELN.md`, `-VERMIETER-2-`, `-CALCULATE-`), vorläufig zwei Einordner (Codex-Aufträge 011/012 im Briefkasten).
+  Kern 0.3.0: Fristen, Briefdatum, Wortmodell aus verbrauchten Stapeln (`briefmodell-abstimmen.mjs --verbraucht …`), **Merken nach Sache**
+  (`lib/lernen.ts`), **Stichprobe nur Zahlen** (`lib/stichprobe.ts`, Seite „Verlauf“). **Kern als JavaScript** für Apps ohne Bau-Schritt:
+  `kern-js/` (`node scripts/kern-js.mjs`, im Bau geprüft) – BookLedgerPro zieht `erkennen.js`/`kategorien.js` mit Pin.
+  Ergebnisse: Familienakte-Absender 45 → 97 % (gesichert), Fristen und Art am fremden Stapel **nicht** besser; Calculate erster Blindtest.
+
 ## Stand (13.11.2026, Fassung 0.2.0)
 
 - **Lauf „Vermieterin“ (13.11., PR #3 Entwurf):** Regeln und alle Ergebnisse in `docs/PRUEFSTAPEL-VERMIETERIN-REGELN.md`. Stapel

@@ -330,3 +330,17 @@ der Fachregel: Gerät mit Garantie → Technik, Nebenkostenabrechnung → Haus &
 Apps: BookLedgerPro und Private Brain Pro bekommen den Kern jetzt nicht (Belegleser dort gleich gut; Aussteller wäre besser, verlangt
 aber eine übersetzte Fassung des Kerns in einer App ohne Bauschritt; Private Brain kennt keine Fächer). Familienakte Basic ist
 derselbe Bau wie Pro.
+
+## Nachtrag 13.11.2026 (Punkt 7): Merken nach Sache
+
+Gemerkt wird „Absender + Vorschlag des Kerns → Bereich“; „Absender → Bereich“ allein nur, wenn der Nutzer bei diesem Absender immer
+dasselbe gewählt hat (`lib/lernen.ts`, Werkzeug `scripts/merken.mjs`, Feld `bereichNachSache`). Gemessen am Jahr 2026 mit dem aus 2025
+Gemerkten und einem Kern, der 2026 **nicht** gelernt hat (Wortmodell ohne `pruefstapel-vermieterin-2026`), Soll = drei Einordner:
+
+| | ohne | nach Absender | nach Sache |
+| --- | --- | --- | --- |
+| Bereich (Text) | 75/94 | 81/94 (11 besser, 5 schlechter, p = 0,21) | 83/94 (9 besser, 1 schlechter, p = 0,02) |
+| Bereich (gescannt) | 75/94 | 82/94 (11/4, p = 0,12) | 83/94 (9/1, p = 0,02) |
+
+Grenze: ein Haushalt, ein Folgejahr, das schon verbraucht war; die Regel ist nach der Fachregel („die Sache entscheidet“) gebaut, nicht an
+diesem Stapel abgestimmt. Ein frischer Folgejahr-Stapel steht aus. Eingebaut im Datei-Organizer 0.3.0 (Seite „Verlauf“ zeigt die Regel).
