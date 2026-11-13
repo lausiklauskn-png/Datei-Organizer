@@ -62,3 +62,22 @@ denselben Regeln und messen, ob das Gelernte trägt.
 ## Grenzen
 
 Ein Haushalt, erfunden, von einem KI-Agenten geschrieben; gesetzte PDF-Seiten sind keine echten Scans; nichts am Gerät.
+
+## Nachtrag 13.11.2026 (Klaus, noch bevor der Stapel vorliegt): Folgejahre desselben Haushalts
+
+Klaus: denselben Haushalt noch einmal mit einem anderen Jahr und geänderten Werten durchlaufen lassen und prüfen, ob die Werte beim
+zweiten Mal besser werden – 2024, 2025, 2026 und notfalls Jahre, die noch nicht gekommen sind.
+
+- **Folgestapel** `pruefstapel-vermieterin-2026/` (danach weitere Jahre): dieselbe Vermieterin, dieselben Absender und Vertragspartner,
+  aber neue Schriftstücke, Belege und Kontoauszüge mit geänderten Werten: Grundsteuer und Abgaben erhöht, Kosten allgemein rund 3 %
+  höher, Tankquittungen und Zahnarzt teurer, Rentenanpassung; bei den Mieterfamilien ein weiteres Kind, höheres Kindergeld,
+  Arbeitslosengeld bzw. wieder Arbeit gefunden, Gehaltserhöhung, daraus Mietrückstand ausgeglichen oder Mieterhöhung.
+  Geschrieben von einem neuen Agenten, der nur die Stammdaten des Haushalts (Namen, Wohnungen, Vertragspartner) kennt, nicht die
+  Lösungen und nicht die Apps.
+- **Ablauf:** Jahr 2025 messen (verbraucht) → daran lernen (Regeln, Wortmodell, gemerkte Zuordnungen wie ein Nutzer, der die
+  Vorschläge des ersten Jahres berichtigt hat) → einfrieren → Jahr 2026 schreiben lassen → einmal messen, **mit und ohne** das
+  Gelernte. Der Unterschied am Jahr 2026 ist die Antwort auf „wird es beim zweiten Mal besser?“ (McNemar).
+- Getrennt ausgewiesen wird, was allgemein gelernt ist (gilt für jeden Haushalt) und was nur dieser Haushalt gelernt hat
+  (wiederkehrende Absender, Daueraufträge, Rechnungsnummern-Muster). Das Zweite ist kein Nachweis für fremde Haushalte.
+- Das „Merken wie ein Nutzer“ gibt es in den Apps noch nicht als Bedienung; im Lauf wird es als Werkzeug im Repo nachgestellt und
+  so benannt.
