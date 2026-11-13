@@ -4,6 +4,13 @@ Auftrag Klaus 13.11.: die gebauten Apps als Beispiele in Workflow Needs, dazu de
 `BRIEF_SITZUNG_2026-11-14_NEEDS-RUECKWAERTSTEST.md` (Zweig claude/familienakte-bildintegration-il59yw). Nachtrag Klaus: Fehler
 gleich korrigieren und die Beispiele auch rückwärts von Agenten gegenprüfen lassen.
 
+## Freibrief (Klaus 13.11.)
+
+Klaus: „PRs mergen und den Freibrief für das Mergen an die nächste Sitzung mit übergeben. Selbstständig handeln, bis der
+Auftrag zu Ende geführt ist.“ Die nächste Sitzung darf ihre eigenen, geprüften PRs (CI grün, Proben grün) in Workflow-Needs und
+Datei-Organizer selbst nach `main` mergen und arbeitet den Auftrag ohne Rückfrage zu Ende. Ausnahme bleiben Veröffentlichungen
+und sichtbare Änderungen an Needs, die laut Brief erst als Vorschau zu Klaus gehen.
+
 ## Ergebnis
 
 - **Rückwärtstest (12 simulierte Kunden):** keiner erreicht 80 % der Kern-Merkmale; Mittel 43–49 %, gesprächig 59–73 %, knapp 26–44 %.
@@ -47,5 +54,6 @@ Auftrag: HTML-Vorschau für die Needs-Änderungen aus NEEDS-LUECKEN.md (neue Fra
 „was ausdrücklich nicht“, Zusammenspiel mit eigenen Programmen; „Rahmen“-Absatz und Abnahmekriterien im Bauauftrag;
 Schlüssigkeits-Hinweis im Umfang). Erst Klaus' Ja je Punkt, dann bauen, dann den Rückwärtstest mit NEUEN Kunden wiederholen
 (rueckwaertstest/werkzeug/, Regeln unverändert, Grenze 80 %).
-Nichts veröffentlichen. Forschungseinträge nur nach KimHub. Abschlussbrief mit Stundennachweis.
+Freibrief (Klaus 13.11.): eigene geprüfte PRs in Workflow-Needs und Datei-Organizer selbst mergen, selbstständig bis zum Ende
+arbeiten. Nichts veröffentlichen. Forschungseinträge nur nach KimHub. Abschlussbrief mit Stundennachweis.
 ```
