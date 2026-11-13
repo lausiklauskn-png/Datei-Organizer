@@ -9,6 +9,17 @@ oder Altbestand kommen in **einen** Ordner; der Organizer sortiert sie Klick fü
 Nummern → Absender → Inhalt) und zeigt sie als Baum nach vielen Gesichtspunkten. Zuerst für die Familienakte gemacht: der Ordner
 wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). Plan und alle Entscheidungen: `docs/PLAN.md`.
 
+## Stand (13.11.2026 nachts, Fassung 0.3.4, nicht veröffentlicht)
+
+- **0.3.4 (Klaus 13.11.: „das, was noch fehlt im Code, soll mit eingebaut werden“):** **Texterkennung in der App** (Fotos und gescannte
+  PDFs ohne Textebene, erste 2 Seiten; `src/vendor.ts`, `src/pdf.ts`), **Prüfkern des Auslieferungsprüfers eingebunden** (Merkmale aus
+  dem Datei-Innern: Autor, Programm, Titel, Erstelldatum, Befunde → `d.innen`, `lib/innen.ts`; Text aus Excel/PowerPoint), **Doppelungen
+  über den gleichen Inhalt hinaus** (`lib/aehnlich.ts`: ältere Fassung, gleicher Text, gleicher Beleg, gleiches Foto, gleicher Name – nur
+  markiert, nicht entfernt; `gleicheGroesse` für große Bestände). Prüfkern und Tesseract (nur Deutsch) **byte-gleich mit Pin** aus der
+  Familienakte: `src/public/vendor/` + `HERKUNFT.json`, nur über `node scripts/vendor-nachziehen.mjs`, im Bau geprüft (`--pruefen`).
+  Proben: Kern 141 (17 neu, gegengeprüft 5/5 nach Schärfen), UI 58 (2 neu, OCR-Probe gegengeprüft). ⚠ Noch nicht: Mengen über ~800
+  Dateien (Klaus: die nächsten 2–3 Wochen Schritt für Schritt), Outlook-MSG/PST, PDF-/ID, Familienakte-Kern nicht nachgezogen.
+
 ## Stand (13.11.2026 abends, Needs mit Rahmen, Runde 2)
 
 - Needs-Vorschau: Klaus Ja zu allen 14 Punkten, gebaut in Workflow-Needs #36. **Runde 2** des Rückwärtstests mit sieben Marktideen

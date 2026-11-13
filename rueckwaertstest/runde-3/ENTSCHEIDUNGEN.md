@@ -30,3 +30,7 @@ Gebaut wird aus 1, 3, 4, 5 erst nach einer Vorschau mit Klaus' Ja je Punkt (sich
 9. **Prüfkern ausbauen (Klaus, Nachtrag):** Den Auslieferungsprüfer so erweitern, dass er Formate liest, die heute nicht lesbar sind
    (z. B. Office-Dateien, Outlook-Mails, Archive, Bildformate), damit der Organizer sie erkennen, zuordnen und Doppelungen finden kann.
    Ausbau im Repo des Auslieferungsprüfers, dann byte-gleich mit Pin in Organizer und Familienakte nachziehen.
+10. **Umsetzung (Klaus, 13.11. nachts):** Texterkennung, Prüfkern und Doppelungen über den gleichen Inhalt hinaus werden eingebaut
+    (Fassung 0.3.4). Mengen über ~800 Dateien: in den nächsten 2–3 Wochen Schritt für Schritt; dafür die Hälfte bis zwei Drittel des Budgets.
+    Klaus' Begründung für den Vorsprung: Wer Paperless, Windows oder eine lokale KI hat, hat damit noch keinen sortierten Bestand – die
+    **trainierte Vorsortierung** (an Prüfstapeln gemessen) nimmt die Fehler weg, das Programm allein nicht.

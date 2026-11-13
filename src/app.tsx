@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Archive, FolderOpen, FolderTree, HelpCircle, History, ListChecks, RefreshCw, Search } from "lucide-react";
 import type { Datei, FeldName, Korrektur, Lernregel } from "../lib/typen.ts";
 import { einlesen, doppelteMarkieren } from "../lib/einlesen.ts";
+import { aehnlicheFinden } from "../lib/aehnlich.ts";
+import { bildLeser, kernLeser } from "./vendor.ts";
 import { leseEml } from "../lib/eml.ts";
 import { siebe, istUnsicher, offeneFelder } from "../lib/siebe.ts";
 import { absenderVereinheitlichen } from "../lib/abgleich.ts";
@@ -13,7 +15,7 @@ import { ausHandle, erlaubnisPruefen, herunterladen, type Quelle, type QuellDate
 import { laden, loeschen, ordnerHolen, ordnerMerken, speichern } from "./zustand.ts";
 import { OrdnerSeite, SortierenSeite, FindenSeite, VerlaufSeite, AkteSeite, HilfeSeite } from "./seiten.tsx";
 
-export const FASSUNG = "0.3.3";
+export const FASSUNG = "0.3.4";
 // Ladeanzeige: „suchen“ = Ordner wird durchgesehen (Zahl noch unbekannt), „lesen“ = Datei für Datei, „stand“ = gemerkter Stand beim Start.
 export type Fortschritt = { phase: "stand" | "suchen" | "lesen"; fertig: number; gesamt: number; name?: string };
 const luft = () => new Promise<void>((r) => setTimeout(r)); // dem Browser Zeit zum Zeichnen geben
@@ -62,7 +64,7 @@ function useOrganizer() {
     let liste: QuellDatei[];
     try { liste = await q.dateien(); } catch (e) { setFortschritt(null); setMeldung({ text: `Ordner „${q.name}“ nicht lesbar: ${(e as Error).message}. Die Anzeige ist unverändert.`, art: "fehler" }); return; }
     if (!liste.length) { setFortschritt(null); setMeldung({ text: `In „${q.name}“ liegen keine lesbaren Dateien. Die Anzeige ist unverändert.`, art: "halt" }); return; }
-    const lesePdf = await pdfLeser();
+    const lesePdf = await pdfLeser(bildLeser);
     const neu: Datei[] = [];
     if (!dazu) originale.current.clear();
     setFortschritt({ phase: "lesen", fertig: 0, gesamt: liste.length });
@@ -71,7 +73,7 @@ function useOrganizer() {
       if (performance.now() - gezeichnet > 80) { setFortschritt({ phase: "lesen", fertig: i, gesamt: liste.length, name: qd.name }); await luft(); gezeichnet = performance.now(); }
       try {
         const bytes = await qd.lesen();
-        const teile = await einlesen({ pfad: qd.pfad, name: qd.name, geaendert: qd.geaendert, bytes }, lesePdf);
+        const teile = await einlesen({ pfad: qd.pfad, name: qd.name, geaendert: qd.geaendert, bytes }, lesePdf, 0, bildLeser, kernLeser);
         originale.current.set(qd.pfad, qd);
         neu.push(...teile);
       } catch (e) {
@@ -137,6 +139,8 @@ function useOrganizer() {
       s++;
       d = d.map((x) => siebe(x, s, regeln));
       if (s >= 4) d = absenderVereinheitlichen(d);
+      // Nach jedem Sieb neu: gleicher Beleg wird erst mit Absender und Nummer sichtbar.
+      d = aehnlicheFinden(d);
       const offen = d.filter((x) => istUnsicher(x, s)).length;
       if (bis !== undefined && offen) { setDateien(d); setStufe(s); setMeldung({ text: `Halt bei Sieb ${s}: ${offen} ${offen === 1 ? "Datei" : "Dateien"} bitte prüfen. Danach geht es weiter.`, art: "halt" }); return; }
       if (bis === undefined) { const gesamt = d.filter((x) => offeneFelder(x).length > 0).length; setMeldung(offen ? { text: `Sieb Nr. ${s} ist durchgelaufen: ${offen} neu zu prüfen${gesamt > offen ? `, zusammen mit den früheren ${gesamt} offen` : ""}. Die neuen stehen unten zuerst.`, art: "halt" } : gesamt ? { text: `Sieb Nr. ${s} ist durchgelaufen: nichts Neues zu prüfen, ${gesamt} von früher noch offen.`, art: "halt" } : { text: `Sieb Nr. ${s} ist durchgelaufen: alles sicher.` }); }

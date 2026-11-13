@@ -1,3 +1,4 @@
+import { innenKurz } from "../lib/innen.ts";
 import { ausZiehen } from "./quellen.ts";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Archive, Check, Download, File, FileImage, FileText, FolderOpen, FolderTree, HelpCircle, History, ListChecks, Mail, Pencil, Eye, RotateCcw, Search, Share2, Trash2, Upload, ShieldAlert, Smartphone, Undo2 } from "lucide-react";
@@ -32,9 +33,12 @@ function DateiSymbol({ d }: { d: Datei }) {
   return <File size={18} className="ico"/>;
 }
 
+const AEHNLICH_WORT: Record<NonNullable<Datei["aehnlich"]>["art"], string> = { fassung: "ältere Fassung", inhalt: "gleicher Text", beleg: "gleicher Beleg", foto: "gleiches Foto", name: "gleicher Name" };
+
 function Zustand({ d }: { d: Datei }) {
   if (d.auffaellig) return <span className="badge warn">gesperrt</span>;
   if (d.doppeltVon) return <span className="badge">doppelt</span>;
+  if (d.aehnlich) return <span className="badge pruefen" title={d.aehnlich.grund} data-aehnlich={d.aehnlich.art}>{AEHNLICH_WORT[d.aehnlich.art]}</span>;
   if (d.archivnummer) return <span className="badge gut">{d.archivnummer}</span>;
   if (offenBei(d)) return <span className="badge pruefen">bitte prüfen</span>;
   if (d.stufe >= 5) return <span className="badge gut">fertig</span>;
@@ -57,7 +61,7 @@ export function OrdnerSeite({ z, gehe }: P) {
   const nativ = nativerOrdner(), pc = ordnerWahlMoeglich();
   const [ziehtDrueber, setZiehtDrueber] = useState(false);
   const zahlen = useMemo(() => ({
-    gesamt: z.dateien.length, auff: z.dateien.filter((d) => d.auffaellig).length, dopp: z.dateien.filter((d) => d.doppeltVon).length,
+    gesamt: z.dateien.length, auff: z.dateien.filter((d) => d.auffaellig).length, dopp: z.dateien.filter((d) => d.doppeltVon).length, aehnl: z.dateien.filter((d) => d.aehnlich).length,
     offen: z.dateien.filter(offenBei).length, fertig: z.dateien.filter((d) => d.stufe >= 5 && !offenBei(d) && !gesperrt(d)).length,
   }), [z.dateien]);
   return <>
@@ -107,6 +111,7 @@ export function OrdnerSeite({ z, gehe }: P) {
         {zahlen.offen > 0 && <span className="chip" data-zahl="offen">{zahlen.offen} bitte prüfen</span>}
         {zahlen.auff > 0 && <span className="chip" data-zahl="auffaellig">{zahlen.auff} gesperrt</span>}
         {zahlen.dopp > 0 && <span className="chip" data-zahl="doppelt">{zahlen.dopp} doppelt</span>}
+        {zahlen.aehnl > 0 && <span className="chip" data-zahl="aehnlich" title="ältere Fassungen, gleicher Text, gleicher Beleg, gleiches Foto oder gleicher Name – markiert, nicht entfernt">{zahlen.aehnl} ähnlich</span>}
       </div>
       <div className="button-row" style={{ marginTop: 12 }}>
         <button type="button" className="button primary" onClick={() => gehe("sortieren")}><ListChecks size={18}/>Weiter sortieren</button>
@@ -234,6 +239,8 @@ function Steckbrief({ z, d }: { z: AppZustand; d: Datei }) {
       <dt>Datei</dt><dd>{d.artText || "–"} · {Math.max(1, Math.round(d.groesse / 1024))} KB</dd>
       {d.auffaellig && <><dt>Gesperrt</dt><dd className="grund" style={{ color: "var(--red)" }}>{d.auffaellig}</dd></>}
       {d.doppeltVon && <><dt>Doppelt von</dt><dd>{d.doppeltVon}</dd></>}
+      {d.aehnlich && <><dt>Ähnlich</dt><dd className="grund" data-aehnlich-grund>{d.aehnlich.grund}</dd></>}
+      {d.innen && innenKurz(d.innen) && <><dt>Aus der Datei</dt><dd data-innen>{innenKurz(d.innen)}</dd></>}
       {zeile("Art", f.schriftstueck)}{zeile("Bereich", f.kategorie)}{zeile("Absender", f.absender)}{zeile("Betrifft", f.betrifft)}
       {zeile("Datum", f.datum, f.datum && deutsch(f.datum.wert))}{zeile("Frist", f.frist, f.frist && `${deutsch(f.frist.wert)} · ${dringlichkeit(f.frist.wert, heute())}`)}{zeile("Betrag", f.betrag)}
       {f.nummern?.length ? <><dt>Nummern</dt><dd>{f.nummern.map((n) => <span key={n.art + n.wert} className="chip" style={{ marginRight: 4 }}>{n.art}: {n.wert}</span>)}</dd></> : null}

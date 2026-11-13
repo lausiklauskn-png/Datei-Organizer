@@ -1,4 +1,6 @@
-import type { Datei } from "./typen.ts";
+import type { Datei, DateiArt } from "./typen.ts";
+import { innenAusBefunden, type Befund } from "./innen.ts";
+import { aehnlicheFinden } from "./aehnlich.ts";
 import { erkenneArt, sha256Hex } from "./dateiart.ts";
 import { leseExif } from "./exif.ts";
 import { leseEml } from "./eml.ts";
@@ -13,12 +15,15 @@ export type PdfLeser = (bytes: Uint8Array) => Promise<{ kopf: string; voll: stri
 export type Eingabe = { pfad: string; name: string; geaendert: number; bytes: Uint8Array };
 /** Texterkennung für Fotos und Scans (im Browser Tesseract aus dem Workflow-PDF-Klon, in den Proben tesseract.js). Ohne sie bleibt ein Bild ohne Text. */
 export type BildLeser = (bytes: Uint8Array) => Promise<string>;
+/** Prüfkern des Auslieferungsprüfers (byte-gleich, src/public/vendor/pruefkern/): liest Merkmale aus dem Datei-Innern und den Text von
+ *  Excel/PowerPoint. Eingespritzt wie PdfLeser – der Kern bleibt rein. Ohne ihn fehlen nur diese Merkmale. */
+export type KernLeser = (name: string, bytes: Uint8Array, art: DateiArt) => Promise<{ befunde?: Befund[]; text?: string | null } | null>;
 
 const MAX_TEXT_BYTES = 30 * 1024 * 1024;
 /** Systemdateien und Synchronisierungsreste, die nie ein Dokument sind (Windows, OneDrive, macOS, Office-Sperrdateien). */
 export const ueberspringen = (name: string) => /^(organizer-index\.json|desktop\.ini|thumbs\.db|\.ds_store|icon\r?)$/i.test(name) || name.startsWith(".") || name.startsWith("~$");
 
-export async function einlesen(e: Eingabe, pdfLesen: PdfLeser, tiefe = 0, bildLesen?: BildLeser): Promise<Datei[]> {
+export async function einlesen(e: Eingabe, pdfLesen: PdfLeser, tiefe = 0, bildLesen?: BildLeser, kern?: KernLeser): Promise<Datei[]> {
   const art = erkenneArt(e.name, e.bytes.slice(0, 600));
   const d: Datei = { pfad: e.pfad, name: e.name, groesse: e.bytes.length, geaendert: e.geaendert, art: art.art, artText: art.artText, auffaellig: art.auffaellig, stufe: 1, felder: {} };
   // Leere Dateien bekommen keinen Fingerabdruck: sie wären sonst alle „doppelt“ zueinander.
@@ -30,6 +35,9 @@ export async function einlesen(e: Eingabe, pdfLesen: PdfLeser, tiefe = 0, bildLe
     return aus;
   }
   if (d.auffaellig || e.bytes.length > MAX_TEXT_BYTES) { d.textQuelle = "keiner"; return aus; }
+  // Merkmale aus dem Datei-Innern: auch wenn kein Text lesbar ist, bleiben Autor, Programm, Titel, Erstelldatum (Klaus 13.11.: „aus dem Code heraus“).
+  const k = kern && /^(pdf|office)$/.test(art.art || "") ? await kern(e.name, e.bytes, art.art as DateiArt).catch(() => null) : null;
+  if (k) { const innen = innenAusBefunden(k.befunde); if (innen) d.innen = innen; }
   try {
     if (art.art === "pdf") {
       const t = await pdfLesen(e.bytes);
@@ -44,10 +52,14 @@ export async function einlesen(e: Eingabe, pdfLesen: PdfLeser, tiefe = 0, bildLe
     } else if (art.art === "email" && /\.eml$/i.test(e.name)) {
       const m = leseEml(new TextDecoder("utf-8").decode(e.bytes));
       d.email = m.meta; d.volltext = `${m.meta.betreff || ""}\n\n${m.text}`.trim(); d.kopfText = d.volltext.slice(0, 1500); d.textQuelle = "email";
-      if (tiefe < 3) for (const a of m.anhaenge) aus.push(...await einlesen({ pfad: `${e.pfad} › ${a.name}`, name: a.name, geaendert: e.geaendert, bytes: a.daten }, pdfLesen, tiefe + 1, bildLesen));
+      if (tiefe < 3) for (const a of m.anhaenge) aus.push(...await einlesen({ pfad: `${e.pfad} › ${a.name}`, name: a.name, geaendert: e.geaendert, bytes: a.daten }, pdfLesen, tiefe + 1, bildLesen, kern));
     } else if (art.art === "office" && /\.(docx|odt)$/i.test(e.name)) {
       const t = await officeText(e.bytes, e.name);
       d.volltext = t; d.kopfText = t.slice(0, 1500); d.textQuelle = t ? "office" : "keiner";
+    } else if (art.art === "office" && k?.text && k.text.trim()) {
+      // Excel, PowerPoint und andere Office-Dateien: Text aus dem Prüfkern
+      const t = k.text.trim();
+      d.volltext = t; d.kopfText = t.slice(0, 1500); d.textQuelle = "office";
     } else if (art.art === "text") {
       const t = new TextDecoder("utf-8").decode(e.bytes.slice(0, 2_000_000));
       d.volltext = t; d.kopfText = t.slice(0, 1500); d.textQuelle = "text";
@@ -66,8 +78,9 @@ export function doppelteMarkieren(dateien: Datei[]): Datei[] {
   // Original = die ohne „Kopie“/„(2)“ im Namen; sonst die ältere (Änderungszeiten sind nach Kopieren oder Auschecken unzuverlässig)
   const kopie = (d: Datei) => /kopie|copy|\(\d+\)|-(desktop|laptop|pc|tablet|handy|[a-z]+-pc)-[a-z0-9]+(?=\.\w+$)/i.test(d.name) ? 1 : 0;
   for (const d of [...dateien].sort((a, b) => kopie(a) - kopie(b) || a.geaendert - b.geaendert || a.pfad.localeCompare(b.pfad, "de"))) if (d.sha256 && !erste.has(d.sha256)) erste.set(d.sha256, d.pfad);
-  return dateien.map((d) => {
+  // Danach Ähnliches markieren (Fassungen, gleicher Text, gleicher Beleg, gleiches Foto, Namenskonflikt) – nur markiert, nicht entfernt.
+  return aehnlicheFinden(dateien.map((d) => {
     const e = d.sha256 ? erste.get(d.sha256) : undefined;
     return e && e !== d.pfad ? { ...d, doppeltVon: e } : { ...d, doppeltVon: undefined };
-  });
+  }));
 }

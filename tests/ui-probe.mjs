@@ -179,11 +179,29 @@ try {
     await page.evaluate(() => { const dt = new DataTransfer(); dt.items.add(new File(["Stadtwerke Muster GmbH\nRechnung Nr. 77\nBetrag 50,00 EUR"], "hineingezogen-rechnung.txt", { type: "text/plain" })); dt.items.add(new File(["Notiz eins"], "hineingezogen-notiz.txt", { type: "text/plain" })); document.querySelector("[data-ablage]").dispatchEvent(new DragEvent("drop", { dataTransfer: dt, bubbles: true, cancelable: true })); });
     await page.waitForFunction((v) => Number(((document.querySelector("[data-ordner-pill]")?.textContent || "").match(/· (\d+)/) || [])[1] || 0) === v + 2, vorher, { timeout: 15000 }).catch(() => {});
     soll("Drag and Drop fügt hinzu, der Bestand bleibt", vorher > 0 && await zahl() === vorher + 2, `${vorher} → ${await zahl()}`);
+    // Texterkennung in der App (Klaus 13.11.): ein Foto mit Text wird gelesen – mit den gepinnten Sprachdaten aus src/public/vendor/.
+    // Dazu „ältere Fassung“: dieselbe Notiz als „(2)“ mit anderem Inhalt wird markiert, nicht entfernt.
+    const davor = await zahl();
+    await page.evaluate(async () => {
+      const c = document.createElement("canvas"); c.width = 1400; c.height = 600; const g = c.getContext("2d");
+      g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height); g.fillStyle = "#000"; g.font = "bold 54px Arial";
+      ["Stadtwerke Musterstadt GmbH", "Rechnung Nummer 4711", "Betrag zahlbar bis 15.12.2026"].forEach((z, i) => g.fillText(z, 60, 140 + i * 130));
+      const png = await new Promise((ok) => c.toBlob(ok, "image/png"));
+      const dt = new DataTransfer(); dt.items.add(new File([png], "hineingezogen-foto-rechnung.png", { type: "image/png" }));
+      dt.items.add(new File(["Notiz eins, jetzt mit Nachtrag"], "hineingezogen-notiz (2).txt", { type: "text/plain" }));
+      document.querySelector("[data-ablage]").dispatchEvent(new DragEvent("drop", { dataTransfer: dt, bubbles: true, cancelable: true }));
+    });
+    await page.waitForFunction((v) => Number(((document.querySelector("[data-ordner-pill]")?.textContent || "").match(/· (\d+)/) || [])[1] || 0) === v + 2, davor, { timeout: 120000 }).catch(() => {});
+    await page.waitForTimeout(900);
+    const gespeichert = await page.evaluate(() => new Promise((ok) => { const r = indexedDB.open("DateiOrganizer1", 1); r.onsuccess = () => { const q = r.result.transaction("kv").objectStore("kv").get("zustand"); q.onsuccess = () => ok(q.result); }; r.onerror = () => ok(null); }));
+    const foto = gespeichert?.dateien?.find((d) => d.name === "hineingezogen-foto-rechnung.png"), notiz = gespeichert?.dateien?.find((d) => /^hineingezogen-notiz( \(2\))?\.txt$/.test(d.name) && d.aehnlich);
+    soll("Texterkennung in der App liest ein Foto mit Text", foto?.textQuelle === "ocr" && /Rechnung/i.test(foto?.volltext || ""), `${foto?.textQuelle} ${JSON.stringify((foto?.volltext || "").slice(0, 80))}`);
+    soll("Ältere Fassung wird als „ähnlich“ markiert, nicht entfernt", !!notiz?.aehnlich && notiz.aehnlich.art === "fassung" && /hineingezogen-notiz/.test(notiz.aehnlich.zu) && await page.locator("[data-zahl=aehnlich]").count() === 1, JSON.stringify(notiz?.aehnlich));
     await page.goto(basis + "#finden"); await page.locator("[data-suche]").fill("hineingezogen-notiz"); await page.waitForTimeout(300);
     await page.locator("[data-datei]").first().click();
     soll("Steckbrief hat Ansehen, Teilen und Entfernen", await page.locator("[data-steckbrief] [data-original]").count() === 1 && await page.locator("[data-steckbrief] [data-teilen]").count() === 1 && await page.locator("[data-steckbrief] [data-entfernen]").count() === 1);
     await page.locator("[data-steckbrief] [data-entfernen]").click(); await page.waitForTimeout(300);
-    soll("Entfernen nimmt genau diese eine Datei aus der Liste", await zahl() === vorher + 1, `${await zahl()}`);
+    soll("Entfernen nimmt genau diese eine Datei aus der Liste", await zahl() === vorher + 3, `${await zahl()}`);
     await page.locator("[data-suche]").fill("hineingezogen"); await page.waitForTimeout(300);
     await page.locator("[data-entfernen-liste]").click(); await page.waitForTimeout(300);
     soll("„Entfernen“ über der Liste nimmt alle Treffer heraus", await zahl() === vorher, `${await zahl()}`);

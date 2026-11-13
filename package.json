@@ -1,7 +1,7 @@
 {
   "name": "datei-organizer",
   "private": true,
-  "version": "0.3.3",
+  "version": "0.3.4",
   "type": "module",
   "description": "Dateien in einen Ordner legen – der Datei-Organizer sortiert sie Sieb für Sieb und zeigt sie als Baum.",
   "engines": {
@@ -11,7 +11,7 @@
     "dev": "vite",
     "probe:kern": "node scripts/run-kern-tests.mjs",
     "typecheck": "tsc --noEmit",
-    "build": "node scripts/run-kern-tests.mjs && node scripts/kern-js.mjs --pruefen && tsc --noEmit && vite build",
+    "build": "node scripts/vendor-nachziehen.mjs --pruefen && node scripts/run-kern-tests.mjs && node scripts/kern-js.mjs --pruefen && tsc --noEmit && vite build",
     "probe:ui": "node tests/ui-probe.mjs"
   },
   "dependencies": {
