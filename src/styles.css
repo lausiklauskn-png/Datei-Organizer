@@ -154,6 +154,9 @@ a { color: var(--teal); }
 /* Prüfliste */
 .pruef-zeile { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 10px; align-items: center; border: 1px solid #ead3a5; border-radius: 11px; padding: 10px 12px; background: #fffaf0; }
 .pruef-zeile + .pruef-zeile { margin-top: 8px; }
+.pruef-zeile.sicher { border-color: #a9d8c2; background: #eefaf4; }
+.pruef-zeile.sicher strong { color: #176548; }
+.badge.gut { color: #176548; background: #dff5ea; }
 .pruef-zeile strong { overflow-wrap: anywhere; }
 .pruef-aktionen { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; justify-content: flex-end; }
 .pruef-aktionen select { padding: 6px 8px; border-radius: 9px; border: 1px solid var(--line); background: white; max-width: 220px; }

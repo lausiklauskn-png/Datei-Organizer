@@ -2,7 +2,7 @@ import { ausZiehen } from "./quellen.ts";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Archive, Check, Download, File, FileImage, FileText, FolderOpen, FolderTree, HelpCircle, History, ListChecks, Mail, Pencil, Eye, RotateCcw, Search, Share2, Trash2, Upload, ShieldAlert, Smartphone, Undo2 } from "lucide-react";
 import type { Datei, FeldName } from "../lib/typen.ts";
-import { STUFEN, offeneFelder, gesperrt } from "../lib/siebe.ts";
+import { STUFEN, offeneFelder, gesperrt, istUnsicher } from "../lib/siebe.ts";
 import { SICHTEN, baum, dateienUnter, suche, type BaumKnoten } from "../lib/sichten.ts";
 import { KATEGORIEN, FOTOS, UNKLAR } from "../lib/kategorien.ts";
 import { SCHRIFTSTUECKE, dringlichkeit } from "../lib/erkennen.ts";
@@ -117,7 +117,16 @@ export function OrdnerSeite({ z, gehe }: P) {
 }
 
 // ---------------- Sortieren ----------------
-function PruefZeile({ z, d }: { z: AppZustand; d: Datei }) {
+function SicherZeile({ z, d }: { z: AppZustand; d: Datei }) {
+  const [auge, setAuge] = useState(false);
+  return <div className="pruef-zeile sicher" data-sicher={d.pfad}>
+    <div><strong><Check size={15} style={{ verticalAlign: "-2px", marginRight: 6 }}/>{d.name}</strong><span className="grund">{kurzfassung(d)}</span></div>
+    <div className="pruef-aktionen"><button type="button" className="button klein" aria-pressed={auge} aria-label={`${d.name} ansehen`} onClick={() => setAuge(!auge)}><Eye size={15}/></button></div>
+    {auge && <div style={{ gridColumn: "1 / -1" }}><Steckbrief z={z} d={d}/></div>}
+  </div>;
+}
+
+function PruefZeile({ z, d, neu }: { z: AppZustand; d: Datei; neu?: number }) {
   const felder = offeneFelder(d) as FeldName[];
   const [feld, setFeld] = useState<FeldName>(felder[0]);
   const [aendern, setAendern] = useState(false);
@@ -128,7 +137,7 @@ function PruefZeile({ z, d }: { z: AppZustand; d: Datei }) {
   const w = d.felder[feld];
   const liste = AUSWAHL[feld];
   return <div className="pruef-zeile" data-pruef={d.pfad}>
-    <div><strong>{d.name}</strong>
+    <div><strong>{d.name}{neu ? <span className="badge pruefen" style={{ marginLeft: 8 }} data-neu-marke>neu in Sieb {neu}</span> : null}</strong>
       <span className="grund">{FELD_NAMEN[feld]}: <b>{w?.wert || "–"}</b> · {w?.grund || "nicht erkannt"}</span>
       {felder.length > 1 && <span className="grund">Noch offen: {felder.map((f) => FELD_NAMEN[f as FeldName]).join(", ")}</span>}
     </div>
@@ -149,8 +158,14 @@ function PruefZeile({ z, d }: { z: AppZustand; d: Datei }) {
 }
 
 export function SortierenSeite({ z, gehe }: P) {
-  const offen = useMemo(() => z.dateien.filter(offenBei), [z.dateien]);
+  // Zuerst, was im letzten Sieb neu hängen blieb (Marke „neu in Sieb N“), dann das Ältere.
+  const neuOffen = (d: Datei) => istUnsicher(d, z.stufe);
+  const offen = useMemo(() => { const l = z.dateien.filter(offenBei); return [...l.filter(neuOffen), ...l.filter((d) => !neuOffen(d))]; }, [z.dateien, z.stufe]);
+  const neuZahl = useMemo(() => offen.filter(neuOffen).length, [offen, z.stufe]);
+  const sicher = useMemo(() => z.dateien.filter((d) => !offenBei(d) && !gesperrt(d)), [z.dateien]);
+  const liegen = z.dateien.length - offen.length - sicher.length;
   const [alle, setAlle] = useState(false);
+  const [alleSicher, setAlleSicher] = useState(false);
   if (!z.dateien.length) return <><Seitentitel symbol={<ListChecks size={24}/>} titel="Sortieren"/><section className="card"><p>Noch kein Ordner gelesen.</p><button type="button" className="button primary" onClick={() => gehe("ordner")}><FolderOpen size={18}/>Ordner wählen</button></section></>;
   const sichtbar = alle ? offen : offen.slice(0, 15);
   return <>
@@ -171,11 +186,19 @@ export function SortierenSeite({ z, gehe }: P) {
       <Meldung z={z} gehe={gehe}/>
     </section>
     <section className="card" data-pruefliste>
-      <div className="card-heading"><h2>Bitte prüfen <span className="badge pruefen">{offen.length}</span></h2>
+      <div className="card-heading"><h2>Bitte prüfen <span className="badge pruefen">{offen.length}</span>{neuZahl > 0 && neuZahl < offen.length && <span className="leise" style={{ marginLeft: 8, fontWeight: 400 }} data-neu-zahl>davon {neuZahl} neu aus Sieb {z.stufe}</span>}</h2>
         <Info titel="Prüfen" punkte={["„Stimmt“ bestätigt den Vorschlag.", "„Ändern“ setzt einen eigenen Wert.", "Beides merkt sich der Organizer und lernt daraus.", "Rückgängig unter „Verlauf“."]}/></div>
       {offen.length === 0 ? <p className="leise" data-nichts-offen>Nichts zu prüfen{z.stufe >= 5 ? " – alles sortiert." : "."}</p>
-        : <>{sichtbar.map((d) => <PruefZeile key={d.pfad} z={z} d={d}/>)}
+        : <>{sichtbar.map((d) => <PruefZeile key={d.pfad} z={z} d={d} neu={neuOffen(d) && neuZahl < offen.length ? z.stufe : 0}/>)}
           {offen.length > sichtbar.length && <button type="button" className="text-link" style={{ marginTop: 10 }} onClick={() => setAlle(true)}>Alle {offen.length} zeigen</button>}</>}
+    </section>
+    <section className="card" data-sicherliste>
+      <div className="card-heading"><h2>{z.stufe >= 5 ? "Fertig" : "Sicher bis hierher"} <span className="badge gut">{sicher.length}</span></h2>
+        <Info titel="Grün" punkte={["Hier steht, was durch alle bisherigen Siebe gefallen ist: nichts mehr zu prüfen.", "Nach dem letzten Sieb heißt das: fertig sortiert.", "Das Auge zeigt die Datei; dort lässt sie sich auch ändern, teilen oder entfernen."]}/></div>
+      {sicher.length === 0 ? <p className="leise">Noch nichts.</p>
+        : <>{(alleSicher ? sicher : sicher.slice(0, 8)).map((d) => <SicherZeile key={d.pfad} z={z} d={d}/>)}
+          {sicher.length > 8 && !alleSicher && <button type="button" className="text-link" style={{ marginTop: 10 }} onClick={() => setAlleSicher(true)}>Alle {sicher.length} zeigen</button>}</>}
+      {liegen > 0 && <p className="leise" style={{ marginTop: 10 }}>{liegen} gesperrt oder doppelt – sie bleiben liegen und werden nicht weitergegeben.</p>}
     </section>
     {z.stufe >= 5 && offen.length === 0 && <section className="card"><div className="button-row"><button type="button" className="button primary" onClick={() => gehe("akte")}><Archive size={18}/>Weiter zur Familienakte</button><button type="button" className="button" onClick={() => gehe("finden")}><FolderTree size={18}/>Ansehen</button></div></section>}
   </>;
