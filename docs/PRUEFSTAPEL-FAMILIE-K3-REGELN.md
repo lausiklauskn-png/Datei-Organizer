@@ -74,4 +74,4 @@ Neuer Kern = Commit `f98a400` (Datei-Organizer). Gelernt nur an verbrauchten Sta
 - **Wortmodell** (`lib/wortmodell-daten.ts`, `scripts/briefmodell-abstimmen.mjs --verbraucht …`, je Klasse höchstens 250 Beispiele):
   lernt zusätzlich an den sechs verbrauchten Stapeln (Soll = Mehrheit).
 - **Abstimmung, kein Nachweis:** an den verbrauchten Stapeln Frist 851 → 881 von 937 (falsch und sicher 35 → 21); Wortmodell reihum
-  je Stapel ausgelassen: Art 615 → 650 von 887, Bereich 634 → 647. Eigene Kernprobe 119 grün.
+  je Stapel ausgelassen: Art 615 → 650 von 887, Bereich 639 → 647. Eigene Kernprobe 119 grün.
