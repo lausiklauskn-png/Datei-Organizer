@@ -149,6 +149,9 @@ try {
   console.log("Gemerkt nach Neuladen");
   await page.waitForTimeout(800);
   await page.reload();
+  // Der Bestand kommt nach dem Neuladen erst aus dem Gerätespeicher: auf die Anzeige warten (Bedingung, keine feste Zeit),
+  // dann prüfen. Vorher las die Probe sofort und war in der CI rot, sobald das Laden etwas länger brauchte.
+  await page.waitForFunction((n) => (document.querySelector("[data-ordner-pill]")?.textContent || "").includes(String(n)), gesamt, { timeout: 15000 }).catch(() => {});
   soll("Ordner und Dateien bleiben nach Neuladen", (await page.locator("[data-ordner-pill]").innerText()).includes(String(gesamt)));
   await page.goto(basis + "#akte");
   soll("Archivnummern bleiben", (await page.locator("[data-archivnummern] .chip").first().innerText()).startsWith(String(bereit)));
