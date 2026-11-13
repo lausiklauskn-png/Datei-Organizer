@@ -1,0 +1,238 @@
+<title>Ergebnis-Überblick Sortier-Kern</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Aufbau: Kacheln oben springen zum Ergebnis; Tipp auf die Überschrift eines Ergebnisses springt zurück. */
+:root{--grund:#f5f7f6;--flaeche:#ffffff;--text:#16211f;--leise:#5b6b68;--linie:#d7dedc;--akzent:#0d6b63;--gut:#1f8a4c;--mittel:#b7791f;--schwach:#b3372f;--balken:#e3e9e7;
+  --schrift:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--grund:#101615;--flaeche:#182120;--text:#e8efed;--leise:#9db0ac;--linie:#2c3937;--akzent:#4fc3b7;--gut:#5fd08a;--mittel:#e0a94a;--schwach:#f0776d;--balken:#26312f;color-scheme:dark}}
+:root[data-theme="dark"]{--grund:#101615;--flaeche:#182120;--text:#e8efed;--leise:#9db0ac;--linie:#2c3937;--akzent:#4fc3b7;--gut:#5fd08a;--mittel:#e0a94a;--schwach:#f0776d;--balken:#26312f;color-scheme:dark}
+body{background:var(--grund);color:var(--text);font-family:var(--schrift);font-size:15px;line-height:1.45;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.rahmen{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+h1{font-size:1.5rem;margin:0;text-wrap:balance}
+h2{font-size:1.05rem;margin:0}
+p{margin:0}
+.leise{color:var(--leise);font-size:.88rem}
+.kacheln{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.kachel{display:flex;flex-direction:column;gap:4px;text-align:left;background:var(--flaeche);border:1px solid var(--linie);border-radius:8px;padding:10px 12px;color:inherit;font:inherit;cursor:pointer;text-decoration:none;min-width:0}
+.kachel:hover,.kachel:focus-visible{border-color:var(--akzent);outline:none}
+.kachel b{font-size:1.35rem;font-variant-numeric:tabular-nums;color:var(--akzent)}
+.kachel span{font-size:.82rem;color:var(--leise)}
+section{background:var(--flaeche);border:1px solid var(--linie);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;scroll-margin-top:12px;min-width:0}
+.kopf{display:flex;justify-content:space-between;align-items:baseline;gap:10px;background:none;border:0;padding:0;color:inherit;font:inherit;cursor:pointer;text-align:left;width:100%}
+.kopf:focus-visible{outline:2px solid var(--akzent);outline-offset:3px}
+.kopf i{font-style:normal;font-size:.8rem;color:var(--akzent);white-space:nowrap}
+.tab{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:.9rem}
+th,td{padding:5px 8px;border-bottom:1px solid var(--linie);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left;white-space:normal}
+th{font-weight:600;color:var(--leise);font-size:.8rem}
+.b{display:inline-block;width:64px;height:7px;background:var(--balken);border-radius:4px;vertical-align:middle;margin-left:6px;overflow:hidden}
+.b u{display:block;height:100%;background:var(--akzent)}
+.g{color:var(--gut);font-weight:600}.m{color:var(--mittel);font-weight:600}.s{color:var(--schwach);font-weight:600}
+ul,ol{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:4px}
+.marke{display:inline-block;font-size:.72rem;border:1px solid var(--linie);border-radius:999px;padding:1px 8px;color:var(--leise);margin-left:6px}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
+
+<div class="rahmen">
+<header id="oben">
+  <h1>Ergebnis-Überblick: Sortier-Kern und Lauf „Vermieterin“</h1>
+  <p class="leise">Stand 13.11.2026 · alle Unterlagen erfunden · Soll = Mehrheit von drei Einordnern (Autor, Claude-Agent, Codex), 2026 vorläufig zwei · Kachel tippen springt zum Ergebnis, Überschrift tippen springt zurück</p>
+</header>
+
+<nav class="kacheln" aria-label="Ergebnisse">
+  <a class="kachel" href="#kern"><b>57→87 %</b><span>Kern alt → neu, Bereich</span></a>
+  <a class="kachel" href="#fa"><b>51→86 %</b><span>Familienakte Frist, mit Kern</span></a>
+  <a class="kachel" href="#fristen"><b>63→83 %</b><span>Frist bis Erinnerung</span></a>
+  <a class="kachel" href="#v25"><b>80 %</b><span>Vermieterin 2025, Bereich</span></a>
+  <a class="kachel" href="#v26"><b>70→76</b><span>2026 mit Gemerktem (von 91)</span></a>
+  <a class="kachel" href="#blp"><b>53→75 %</b><span>BookLedgerPro Konto</span></a>
+  <a class="kachel" href="#bank"><b>84 %</b><span>Kontoauszug gescannt lesbar</span></a>
+  <a class="kachel" href="#ocr"><b>1,9 s</b><span>Texterkennung je Seite</span></a>
+  <a class="kachel" href="#pb"><b>13/22</b><span>Private Brain Pro, Art</span></a>
+  <a class="kachel" href="#codex"><b>0,84–0,99</b><span>Einigkeit mit Codex (Kappa)</span></a>
+  <a class="kachel" href="#stand"><b>Stand</b><span>ausgegeben / Entwurf</span></a>
+  <a class="kachel" href="#empfehlung"><b>Weiter</b><span>Empfehlung</span></a>
+</nav>
+
+<section id="kurz">
+  <h2>Kurz</h2>
+  <ul>
+    <li>Der neue Kern ist an vier fremden Stapeln in allen Feldern gesichert besser.</li>
+    <li>In der Familienakte bringt er den Bereich von 38–57 % auf 77–87 %, die Frist von 51 % auf 86 %.</li>
+    <li>Die Texterkennung kostet kaum Treffer; schwach sind Art des Schreibens, Konto bei Vermietung, Kontoauszug als PDF.</li>
+    <li>Einfaches Merken „Absender → Bereich“ ist im Folgejahr nicht gesichert besser.</li>
+  </ul>
+</section>
+
+<section id="kern">
+  <button class="kopf" type="button"><h2>Datei-Organizer: Kern alt → neu</h2><i>↑ Überblick</i></button>
+  <div class="tab"><table>
+    <tr><th>Feld</th><th>Blindtest 2</th><th>A Gegend</th><th>B Lebenslagen</th><th>H Schwerbeh.</th></tr>
+    <tr><td>Bereich</td><td>72 → <span class="g">87</span></td><td>57 → <span class="g">81</span></td><td>61 → <span class="m">76</span></td><td>67 → <span class="m">77</span></td></tr>
+    <tr><td>Art</td><td>64 → <span class="g">83</span></td><td>55 → <span class="g">81</span></td><td>53 → <span class="g">81</span></td><td>48 → <span class="m">73</span></td></tr>
+    <tr><td>Absender</td><td>72 → <span class="g">95</span></td><td>67 → <span class="g">93</span></td><td>74 → <span class="g">94</span></td><td>71 → <span class="g">93</span></td></tr>
+    <tr><td>Person</td><td>61 → <span class="g">92</span></td><td>62 → <span class="g">90</span></td><td>54 → <span class="m">72</span></td><td>67 → <span class="g">89</span></td></tr>
+    <tr><td>Frist</td><td>50 → <span class="g">91</span></td><td>61 → <span class="g">89</span></td><td>58 → <span class="g">91</span></td><td>62 → <span class="g">99</span></td></tr>
+  </table></div>
+  <p class="leise">Prozent richtig, je 150 Schriftstücke, alle Unterschiede gesichert.</p>
+</section>
+
+<section id="fa">
+  <button class="kopf" type="button"><h2>Familienakte: bisher → mit Kern <span class="marke">eingebaut, nicht ausgegeben</span></h2><i>↑ Überblick</i></button>
+  <div class="tab"><table>
+    <tr><th>Bereich richtig</th><th>Verm. 2025</th><th>2026</th><th>Blindtest 2</th><th>A</th><th>B</th><th>H</th></tr>
+    <tr><td>bisher</td><td>51/93</td><td>52/91</td><td>73/150</td><td>60/150</td><td>57/150</td><td>69/150</td></tr>
+    <tr><td>mit Kern</td><td class="g">74</td><td class="g">70</td><td class="g">130</td><td class="g">121</td><td class="g">114</td><td class="g">115</td></tr>
+  </table></div>
+  <div class="tab"><table>
+    <tr><th>Frist (288 mit, 498 ohne)</th><th>richtig</th><th>fälschlich eine</th></tr>
+    <tr><td>bisher</td><td>147 = 51 %</td><td>30</td></tr>
+    <tr><td>mit Kern</td><td class="g">247 = 86 %</td><td>35</td></tr>
+  </table></div>
+  <p class="leise">Dateiname allein richtig: 175 von 344.</p>
+</section>
+
+<section id="fristen">
+  <button class="kopf" type="button"><h2>Fristen: vom Scan bis zur geplanten Erinnerung</h2><i>↑ Überblick</i></button>
+  <div class="tab"><table>
+    <tr><th>Vermieterin, gescannt</th><th>bisher</th><th>mit Kern</th></tr>
+    <tr><td>2025 (40 Fristen)</td><td>25 = 63 %</td><td class="g">33 = 83 %</td></tr>
+    <tr><td>2026 (41 Fristen)</td><td>26 = 63 %</td><td class="g">32 = 78 %</td></tr>
+    <tr><td>fälschlich eine Frist 2025 / 2026</td><td>5/53 · 5/52</td><td class="m">10/53 · 7/52</td></tr>
+  </table></div>
+  <p class="leise">Glocke am Gerät: nicht gemessen.</p>
+</section>
+
+<section id="v25">
+  <button class="kopf" type="button"><h2>Vermieterin 2025 <span class="marke">drei Einordner</span></h2><i>↑ Überblick</i></button>
+  <div class="tab"><table>
+    <tr><th>Was</th><th>Text</th><th>gescannt</th></tr>
+    <tr><td>Organizer Bereich</td><td>80 %<span class="b"><u style="width:80%"></u></span></td><td>80 %<span class="b"><u style="width:80%"></u></span></td></tr>
+    <tr><td>Organizer Art</td><td>81 %<span class="b"><u style="width:81%"></u></span></td><td>83 %<span class="b"><u style="width:83%"></u></span></td></tr>
+    <tr><td>Organizer Absender</td><td>87 %<span class="b"><u style="width:87%"></u></span></td><td>84 %<span class="b"><u style="width:84%"></u></span></td></tr>
+    <tr><td>Organizer Frist</td><td>82 %<span class="b"><u style="width:82%"></u></span></td><td>82 %<span class="b"><u style="width:82%"></u></span></td></tr>
+    <tr><td>BookLedgerPro Betrag</td><td>84 %<span class="b"><u style="width:84%"></u></span></td><td>82 %<span class="b"><u style="width:82%"></u></span></td></tr>
+    <tr><td>BookLedgerPro Datum</td><td>96 %<span class="b"><u style="width:96%"></u></span></td><td>91 %<span class="b"><u style="width:91%"></u></span></td></tr>
+    <tr><td>BookLedgerPro Steuersatz</td><td>100 %<span class="b"><u style="width:100%"></u></span></td><td>100 %<span class="b"><u style="width:100%"></u></span></td></tr>
+    <tr><td>BookLedgerPro Konto</td><td class="s">62 %<span class="b"><u style="width:62%"></u></span></td><td class="s">62 %<span class="b"><u style="width:62%"></u></span></td></tr>
+  </table></div>
+  <p class="leise">93 Schriftstücke, 45 Belege. Person nicht wertbar (ein Haushaltsmitglied).</p>
+</section>
+
+<section id="v26">
+  <button class="kopf" type="button"><h2>Vermieterin 2026 <span class="marke">vorläufig, zwei Einordner</span></h2><i>↑ Überblick</i></button>
+  <div class="tab"><table>
+    <tr><th>Was</th><th>Text</th><th>gescannt</th></tr>
+    <tr><td>Organizer Bereich</td><td>77 %</td><td>76 %</td></tr>
+    <tr><td>Organizer Art</td><td class="s">68 %</td><td class="s">68 %</td></tr>
+    <tr><td>Organizer Absender</td><td class="g">98 %</td><td class="m">79 %</td></tr>
+    <tr><td>Organizer Frist</td><td>84 %</td><td>83 %</td></tr>
+  </table></div>
+  <div class="tab"><table>
+    <tr><th>Mit Gemerktem aus 2025</th><th>ohne</th><th>mit</th><th>besser / schlechter</th><th>gesichert</th></tr>
+    <tr><td>Bereich (Text)</td><td>70/91</td><td>76/91</td><td>11 / 5</td><td class="m">nein</td></tr>
+    <tr><td>Bereich (gescannt)</td><td>69/91</td><td>76/91</td><td>11 / 4</td><td class="m">nein</td></tr>
+    <tr><td>Konto der Belege</td><td>25/36</td><td>26/36</td><td>3 / 2</td><td class="m">nein</td></tr>
+    <tr><td>Umsätze ohne Beleg, falsch zugeordnet</td><td>18/133</td><td>18/133</td><td>–</td><td class="m">nein</td></tr>
+  </table></div>
+</section>
+
+<section id="blp">
+  <button class="kopf" type="button"><h2>BookLedgerPro: Belegerkennung <span class="marke">0.1.15 ausgegeben</span></h2><i>↑ Überblick</i></button>
+  <div class="tab"><table>
+    <tr><th>Feld (Betriebsbelege, drei Einordner)</th><th>vorher</th><th>jetzt</th></tr>
+    <tr><td>Konto, ohne Firmennamen</td><td>53 %</td><td class="g">75 %</td></tr>
+    <tr><td>Konto, mit Firmennamen</td><td>66 %</td><td class="g">79 %</td></tr>
+    <tr><td>Datum</td><td>73 %</td><td class="g">97 %</td></tr>
+    <tr><td>Steuersatz</td><td>66 %</td><td class="g">96 %</td></tr>
+    <tr><td>Konto, Belege eines anderen Systems</td><td>–</td><td class="s">58–60 %</td></tr>
+    <tr><td>Konto, Privatvermietung</td><td>–</td><td class="s">62 %</td></tr>
+    <tr><td>Aussteller: BookLedgerPro / Kern</td><td>44 %</td><td>84 % (Kern)</td></tr>
+  </table></div>
+</section>
+
+<section id="bank">
+  <button class="kopf" type="button"><h2>Kontoauszüge</h2><i>↑ Überblick</i></button>
+  <div class="tab"><table>
+    <tr><th>Was</th><th>2025</th><th>2026</th></tr>
+    <tr><td>Umsatz nach dem Scannen vollständig lesbar</td><td>187/223 = 84 %</td><td>203/240 = 85 %</td></tr>
+    <tr><td>Rechnungsnummer lesbar</td><td>43/43</td><td>49/52</td></tr>
+    <tr><td>Auszug als PDF einlesen</td><td class="s">kann keine App</td><td class="s">kann keine App</td></tr>
+    <tr><td>Als Bankdatei (MT940): Umsatz → Beleg richtig</td><td class="g">51/51</td><td>23/33 (vorläufig)</td></tr>
+    <tr><td>Umsatz ohne Beleg, fälschlich zugeordnet</td><td class="m">22/171</td><td class="m">18/133</td></tr>
+    <tr><td>Rechnungsnummer vom Beleg lesen</td><td class="s">kann BookLedgerPro nicht</td><td class="s">–</td></tr>
+  </table></div>
+</section>
+
+<section id="ocr">
+  <button class="kopf" type="button"><h2>Texterkennung und Zeit</h2><i>↑ Überblick</i></button>
+  <div class="tab"><table>
+    <tr><th>Was</th><th>Wert</th></tr>
+    <tr><td>Wortfehler Schriftstücke · Belege · Auszüge (2025)</td><td>4,6 % · 7,8 % · 4,5 %</td></tr>
+    <tr><td>Texterkennung je Seite</td><td>rund 1,9 s</td></tr>
+    <tr><td>1000 Seiten</td><td>rund 32 min</td></tr>
+    <tr><td>Sortieren, Beleg lesen, Abgleich je Stück</td><td>unter 10 ms</td></tr>
+  </table></div>
+  <p class="leise">Rechner der Sitzung (4 Kerne); Tablet nicht gemessen.</p>
+</section>
+
+<section id="pb">
+  <button class="kopf" type="button"><h2>Private Brain Pro</h2><i>↑ Überblick</i></button>
+  <div class="tab"><table>
+    <tr><th>Was</th><th>2025</th><th>2026</th></tr>
+    <tr><td>Rechnung / Vertrag / Angebot richtig</td><td>13/22</td><td>15/19</td></tr>
+    <tr><td>andere Art fälschlich als eine der drei</td><td>17/71</td><td>15/73</td></tr>
+    <tr><td>nur „Dokument“ (Dateityp)</td><td>56/93</td><td>–</td></tr>
+  </table></div>
+  <p class="leise">Kennt Dokumentarten, keine Fächer. Bedeutungssuche nicht gemessen.</p>
+</section>
+
+<section id="codex">
+  <button class="kopf" type="button"><h2>Zusammenarbeit mit Codex</h2><i>↑ Überblick</i></button>
+  <div class="tab"><table>
+    <tr><th>Was</th><th>Wert</th></tr>
+    <tr><td>Aufträge über den Briefkasten, geliefert</td><td>000–009 (010 offen)</td></tr>
+    <tr><td>Einigkeit der drei Einordner, Briefe (Kappa je Feld)</td><td>0,84–0,99</td></tr>
+    <tr><td>Einigkeit Vermieterin 2025: Bereich · Art · Absender · Frist</td><td>0,92 · 0,96 · 0,89 · 0,92</td></tr>
+    <tr><td>Einigkeit beim Konto der Betriebsbelege</td><td>0,95</td></tr>
+    <tr><td>Kreuztest Konto: Claude-System an eigenen / an Codex-Belegen</td><td>79 % / <span class="s">60 %</span></td></tr>
+    <tr><td>Kreuztest Konto: Codex-System an eigenen / an Claude-Belegen</td><td>72 % / <span class="s">32 %</span></td></tr>
+    <tr><td>Mindestens eines der beiden Systeme richtig (Codex-Belege)</td><td>107/120</td></tr>
+  </table></div>
+  <p class="leise">Jedes System ist an den Unterlagen des anderen deutlich schwächer.</p>
+</section>
+
+<section id="stand">
+  <button class="kopf" type="button"><h2>Stand</h2><i>↑ Überblick</i></button>
+  <div class="tab"><table>
+    <tr><th>App</th><th>Stand</th></tr>
+    <tr><td>Datei-Organizer 0.2.0</td><td class="g">ausgeliefert (Web-App)</td></tr>
+    <tr><td>BookLedgerPro 0.1.15, Basic nachgezogen</td><td class="g">ausgegeben</td></tr>
+    <tr><td>Familienakte mit Kern</td><td class="m">Entwurf, nicht ausgegeben</td></tr>
+    <tr><td>Private Brain Pro, Workflow PDF Pro</td><td>unverändert</td></tr>
+    <tr><td>Nicht gemessen</td><td>echte Unterlagen · Geräte · Suche über die Knoten</td></tr>
+  </table></div>
+</section>
+
+<section id="empfehlung">
+  <button class="kopf" type="button"><h2>Empfehlung: Stück für Stück</h2><i>↑ Überblick</i></button>
+  <ol>
+    <li><b>Familienakte mit dem Kern ausgeben</b> (nächste Fassung 2.28.66), danach am Gerät prüfen.</li>
+    <li>Jahr 2026 mit Codex abschließen; ein frischer Stapel nach dem Einbau (anderer Lebenslauf).</li>
+    <li>Fristen: „falsch und sicher“ senken – jede verpasste oder falsche Frist einzeln durchgehen.</li>
+    <li>Absender und Titel der Familienakte aus dem Kern (87 % gegen 35 %).</li>
+    <li>Art des Schreibens nachschärfen (2026 nur 68 %).</li>
+    <li>BookLedgerPro: Konten für Privatvermietung, Kontoauszug als PDF lesen, Rechnungsnummer lesen; Aussteller aus dem Kern.</li>
+    <li>Merken nach Sache statt nur nach Absender – erst als Vorschau.</li>
+    <li>Calculate und Workflow Needs in die Prüfreihe aufnehmen.</li>
+    <li>Kleine Stichprobe echter Unterlagen auf dem eigenen Gerät – nur Zahlen verlassen das Gerät.</li>
+  </ol>
+</section>
+</div>
+
+<script>
+// Überschrift eines Ergebnisses antippen: zurück zum Überblick.
+document.querySelectorAll(".kopf").forEach(function (k) { k.addEventListener("click", function () { document.getElementById("oben").scrollIntoView({ behavior: "smooth" }); }); });
+document.querySelectorAll(".kachel").forEach(function (a) { a.addEventListener("click", function (e) { var z = document.querySelector(a.getAttribute("href")); if (z) { e.preventDefault(); z.scrollIntoView({ behavior: "smooth" }); } }); });
+</script>
