@@ -20,6 +20,15 @@ und sichtbare Änderungen an Needs, die laut Brief erst als Vorschau zu Klaus ge
 - **In Needs behoben:** Vorname im Klartext trotz „verdeckt: ja“, unerklärte Summe, missverständlicher Kopf `repo`, unerklärte
   Grenzlinie bei Muss; neue Proben VERDECKT, SUMME, SCHLÜSSIG (je gegengeprüft).
 
+## Nachtrag (Klaus 13.11., später): alle Repos als Beispiele
+
+Workflow-Needs PR #35 (gemergt): 20 Beispiele im Register. Neu der **Pro-Verbund gesamt** (die vier Pro-Apps als ein Auftrag, Ist =
+Summe, 517,9 h) und je ein Beispiel für Mein Rezeptbuch, Mein Mixarium, Mixarium-Seite, Workflow Calculate, Kim-sync,
+Workfloh-Seite, Datei-Organizer, Workflow Needs, PWA Toolpoint; die vier Pro-Apps bleiben einzeln. Mitarbeiter-Sterne (Rollen,
+keine Namen, erfunden) an allen neuen und den vier Pro-Beispielen. Kosten: Needs → Tabellen → „Eigene Aufträge: Schätzung und Ist“.
+Dabei behoben: Namensteile des Ansprechpartners blockierten den Bauauftrag, wenn sie in anderen Wörtern steckten („Beispiel“ in
+„Beispielwert“) – jetzt Ersetzen als ganzes Wort. ⚠ Die neun neuen Beispiele sind nicht rückwärts geprüft (nur Selbsttest).
+
 ## Was liegt wo
 
 | | |
