@@ -29,13 +29,13 @@ Alle Downloads anonym geladen, SHA-256 gleich der Prüfsumme am Release. Nichts 
 | BookLedgerPro | 0.1.16 (Aussteller), 0.1.17 (Rechnungsnummer an), 0.1.18 (Update-Fähnchen) | 0.1.18 `77641dd9…3d013c` | eigener Server | Basic 0.1.18 (#52) |
 | Private Brain Pro | 1.0.49 (Update-Fähnchen) | `f4a11906…400dbb` | `29d4ba7a…b4ee1` | Pages |
 | Workflow PDF | 1.1.10 (Update-Fähnchen) | – | – | Pages (#144) |
-| Workflow PDF Pro | 1.0.17 (Update-Fähnchen) | WPP_ANDROID | `ef535738…b48833` | – |
+| Workflow PDF Pro | 1.0.17 (Update-Fähnchen) | `f2755593…ed0118b` | `ef535738…b48833` | – |
 
-Nachweise: BookLedgerPro `docs/PULS.md` (#473), Private Brain Pro `docs/VEROEFFENTLICHUNG-1.0.49.md` (#137), Familienakte #177.
+Nachweise: BookLedgerPro `docs/PULS.md` (#473), Private Brain Pro `docs/VEROEFFENTLICHUNG-1.0.49.md` (#137), Familienakte #177, Workflow PDF Pro `docs/VEROEFFENTLICHUNG-1.0.17.json` (#73). Zwei Release-Proben brauchten einen zweiten Anlauf (BookLedgerPro: Emulator am Deckblatt; Workflow PDF Pro: Gerät pixel_c in der Zeitgrenze), Code jeweils unverändert.
 
 ## Stundennachweis
 
-Erste Spur 13:52 UTC (Klon Datei-Organizer), letzte Spur ca. 17:30 UTC – Obergrenze **3 h 38 min** über alle Repos (Zeitraum gemessen,
+Erste Spur 13:52 UTC (Klon Datei-Organizer), letzte Spur 18:16 UTC (Nachweis Workflow PDF Pro 1.0.17) – Obergrenze **4 h 24 min** über alle Repos (Zeitraum gemessen,
 Anwesenheit Klaus' Auskunft, Pausen nicht abgezogen). Forschungseintrag KimHub #460.
 
 ## Startauftrag zum Einfügen
