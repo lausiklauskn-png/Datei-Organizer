@@ -3,8 +3,8 @@
  * höchstens organizer-index.json (und nur, wo der Ordner das erlaubt).
  *
  * 1 Ordner am PC (Chrome/Edge): Ordnerwahl des Browsers, lesen und schreiben.
- * 2 Familienakte Pro (Android/Windows): der Ordnerzugriff der App (FamilyFolders, Android-Ordnerwahl, auch SD-Karte).
- *   So kommt der Organizer an „SD-Karte › Datei-Organizer“. Am Gerät noch ungeprüft.
+ * 2 Datei-Organizer Pro bzw. Familienakte Pro (Android): der Ordnerzugriff der App (Plugin „FamilyFolders“, Android-Ordnerwahl,
+ *   auch SD-Karte; in Datei-Organizer Pro android/…/DoOrdnerPlugin.java mit denselben Aufrufen). Am Gerät noch ungeprüft.
  * 3 Dateien oder Ordner wählen (jeder Browser, auch am Handy): nur lesen, der Index wird heruntergeladen.
  * 4 Testordner: die erfundenen Testdaten aus dem Repo.
  */
@@ -66,7 +66,7 @@ export async function erlaubnisPruefen(h: DirHandle): Promise<boolean> {
 }
 
 // ---------- 2 Familienakte Pro: nativer Ordnerzugriff ----------
-type Eintrag = { name: string; art: "datei" | "ordner"; groesse: number };
+type Eintrag = { name: string; art: "datei" | "ordner"; groesse: number; geaendert?: number };
 type OrdnerPlugin = {
   ordnerWaehlen(a: { titel?: string }): Promise<{ token?: string; name?: string; cancelled?: boolean }>;
   ordnerListe(a: { token: string; pfad: string }): Promise<{ eintraege: Eintrag[] }>;
@@ -105,7 +105,7 @@ export async function nativWaehlen(): Promise<Quelle | null> {
           if (UEBERSPRINGEN(e.name)) continue;
           const pp = pfad ? `${pfad}/${e.name}` : e.name;
           if (e.art === "ordner") await lauf(pp, tiefe + 1);
-          else aus.push({ pfad: pp, name: e.name, geaendert: 0, lesen: () => lesen(pp, e.groesse) });
+          else aus.push({ pfad: pp, name: e.name, geaendert: typeof e.geaendert === "number" ? e.geaendert : 0, lesen: () => lesen(pp, e.groesse) });
         }
       };
       await lauf("", 0);

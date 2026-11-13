@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Archive, FolderOpen, FolderTree, HelpCircle, History, ListChecks, Map as KarteSymbol, RefreshCw, Search } from "lucide-react";
+import { Archive, FolderOpen, FolderTree, HelpCircle, History, ListChecks, Download, Map as KarteSymbol, RefreshCw, Search } from "lucide-react";
 import type { Datei, FeldName, Korrektur, Lernregel } from "../lib/typen.ts";
 import { einlesen, doppelteMarkieren } from "../lib/einlesen.ts";
 import { aehnlicheFinden } from "../lib/aehnlich.ts";
@@ -15,8 +15,9 @@ import { ausHandle, erlaubnisPruefen, herunterladen, type Quelle, type QuellDate
 import { laden, loeschen, ordnerHolen, ordnerMerken, speichern } from "./zustand.ts";
 import { OrdnerSeite, SortierenSeite, FindenSeite, VerlaufSeite, AkteSeite, HilfeSeite } from "./seiten.tsx";
 import { LandkarteSeite } from "./landkarte.tsx";
+import { APP_NAME, direktLaden, istNativ, nativeUpdates, stillPruefen } from "./nativ.ts";
 
-export const FASSUNG = "0.3.4";
+export const FASSUNG = "0.4.0";
 // Ladeanzeige: „suchen“ = Ordner wird durchgesehen (Zahl noch unbekannt), „lesen“ = Datei für Datei, „stand“ = gemerkter Stand beim Start.
 export type Fortschritt = { phase: "stand" | "suchen" | "lesen"; fertig: number; gesamt: number; name?: string };
 const luft = () => new Promise<void>((r) => setTimeout(r)); // dem Browser Zeit zum Zeichnen geben
@@ -274,9 +275,11 @@ async function aktualisieren(laeuft: boolean) {
 
 // Update-Fähnchen: fragt beim Start, beim Zurückholen der App und stündlich nach version.json (liegt neben der Seite, nie aus dem Vorrat).
 // Steht dort eine andere Fassung als diese, erscheint das Fähnchen neben der Fassungsnummer – ein Tipp aktualisiert.
+// In der App (Datei-Organizer Pro) fragt stattdessen useNativesUpdate den eigenen Update-Server.
 function useNeueFassung() {
   const [neu, setNeu] = useState("");
   useEffect(() => {
+    if (istNativ()) return;
     let weg = false;
     const pruefen = async () => {
       if (navigator.onLine === false) return;
@@ -295,9 +298,37 @@ function useNeueFassung() {
   return neu;
 }
 
+// Update-Fähnchen der App (Datei-Organizer Pro): still beim Start, beim Zurückholen, höchstens stündlich (src/nativ.ts).
+// Tipp auf Fähnchen oder Fassung lädt direkt und öffnet Androids Installieren-Fenster; aktuell → kurze Meldung; ohne Netz → still.
+function useNativesUpdate() {
+  const api = useMemo(() => nativeUpdates(), []);
+  const [neu, setNeu] = useState("");
+  const [prozent, setProzent] = useState<number | null>(null);
+  const [hinweis, setHinweis] = useState("");
+  useEffect(() => {
+    if (!api) return;
+    let weg = false;
+    const still = async () => { const v = await stillPruefen(api, FASSUNG); if (!weg && v !== null) setNeu(v); };
+    const start = setTimeout(() => void still(), 2500);
+    const sicht = () => { if (document.visibilityState === "visible") void still(); };
+    document.addEventListener("visibilitychange", sicht);
+    const takt = setInterval(still, 60 * 60 * 1000);
+    return () => { weg = true; clearTimeout(start); document.removeEventListener("visibilitychange", sicht); clearInterval(takt); };
+  }, [api]);
+  useEffect(() => { if (!hinweis) return; const t = setTimeout(() => setHinweis(""), 4500); return () => clearTimeout(t); }, [hinweis]);
+  const laden = useCallback(async () => {
+    if (!api || prozent !== null) return;
+    setProzent(0);
+    try { const satz = await direktLaden(api, FASSUNG, setProzent); if (satz) setHinweis(satz); if (/^Aktuelle Fassung/.test(satz)) setNeu(""); }
+    finally { setProzent(null); }
+  }, [api, prozent]);
+  return { nativ: !!api, neu, prozent, hinweis, laden };
+}
+
 export function App() {
   const z = useOrganizer();
   const neueFassung = useNeueFassung();
+  const upd = useNativesUpdate();
   const [seite, setSeite] = useState<SeitenId>(seiteAusHash);
   useEffect(() => { const f = () => setSeite(seiteAusHash()); window.addEventListener("hashchange", f); return () => window.removeEventListener("hashchange", f); }, []);
   const gehe = useCallback((s: SeitenId) => { location.hash = s; setSeite(s); window.scrollTo({ top: 0 }); }, []);
@@ -308,11 +339,13 @@ export function App() {
   return <div className="app-shell">
     <header className="site-header">
       <div className="masthead">
-        <button type="button" className="site-brand" onClick={() => gehe("ordner")} aria-label="Datei-Organizer – zum Ordner">
+        <button type="button" className="site-brand" onClick={() => gehe("ordner")} aria-label={`${APP_NAME} – zum Ordner`}>
           <span className="brand-symbol"><FolderTree size={24}/></span>
-          <span><strong>Datei-Organizer</strong><small>Fassung {FASSUNG} · vorsortiert für die Familienakte</small></span>
+          <span><strong data-app-name>{APP_NAME}</strong><small>Fassung {FASSUNG} · vorsortiert für die Familienakte</small></span>
         </button>
         <div className="header-actions">
+          {upd.nativ && upd.neu && <button type="button" className="update-fahne" data-update-fahne data-nativ title={`Update ${upd.neu} steht bereit. Antippen lädt und installiert.`} onClick={() => void upd.laden()}><Download size={14}/>{upd.prozent !== null ? `Lädt ${upd.prozent} %` : `Update ${upd.neu}`}</button>}
+          {upd.nativ && <button type="button" className="fassung-knopf" data-fassung-knopf title="Fassung – antippen sucht ein Update und installiert es" onClick={() => void upd.laden()}>{upd.prozent !== null && !upd.neu ? `${upd.prozent} %` : FASSUNG}</button>}
           {neueFassung && <button type="button" className="update-fahne" data-update-fahne title={`Fassung ${neueFassung} steht bereit. Tippen aktualisiert; die Sortierung bleibt gemerkt.`} onClick={() => void aktualisieren(!!z.fortschritt && z.fortschritt.phase !== "stand")}><RefreshCw size={14}/>Update {neueFassung}</button>}
           <span className={`ordner-pill ${z.ordnerName ? "verbunden" : ""}`} data-ordner-pill title={z.ordnerName || "Kein Ordner gewählt"}>{z.fortschritt && z.fortschritt.phase !== "stand" ? "Wird geladen …" : z.ordnerName ? `${z.ordnerName} · ${z.dateien.length}` : "Kein Ordner"}</span>
           <button type="button" className="info-knopf" aria-label="Aktualisieren" title="Aktualisieren: App neu laden (neueste Fassung). Die Sortierung bleibt gemerkt." data-aktualisieren onClick={() => void aktualisieren(!!z.fortschritt && z.fortschritt.phase !== "stand")}><RefreshCw size={18}/></button>
@@ -327,6 +360,7 @@ export function App() {
       </nav>
       <Ladebalken f={z.fortschritt} oben/>
     </header>
+    {upd.hinweis && <div className="update-meldung" role="status" data-update-meldung>{upd.hinweis}</div>}
     <main className="site-main" id="inhalt">
       {seite === "ordner" && <OrdnerSeite {...props}/>}
       {seite === "sortieren" && <SortierenSeite {...props}/>}
@@ -338,13 +372,13 @@ export function App() {
     </main>
     <footer className="site-footer">
       <div className="footer-inner">
-        <div className="footer-brand-row"><div><strong>DATEI-ORGANIZER</strong><span>Ein Ordner rein, sortiert heraus – für die Familienakte.</span></div><span>Alles bleibt auf diesem Gerät.</span></div>
+        <div className="footer-brand-row"><div><strong>{APP_NAME.toUpperCase()}</strong><span>Ein Ordner rein, sortiert heraus – für die Familienakte.</span></div><span>Alles bleibt auf diesem Gerät.</span></div>
         <div className="footer-directory">
           <section><h2>Arbeiten</h2><ul>{SEITEN.slice(0, 3).map((s) => <li key={s.id}><button type="button" onClick={() => gehe(s.id)}>{s.name}</button></li>)}</ul></section>
           <section><h2>Weitergeben</h2><ul><li><button type="button" onClick={() => gehe("akte")}>An die Familienakte</button></li><li><button type="button" onClick={() => gehe("verlauf")}>Verlauf und Gelerntes</button></li></ul></section>
           <section><h2>Rechtliches</h2><ul><li><a href="./datenschutz.html">Impressum &amp; Datenschutz</a></li><li><button type="button" onClick={() => gehe("hilfe")}>Hilfe</button></li></ul></section>
         </div>
-        <div className="footer-meta"><span>Family-Projekt · Datei-Organizer {FASSUNG}</span><span>Originale werden nie verändert.</span></div>
+        <div className="footer-meta"><span>Family-Projekt · {APP_NAME} {FASSUNG}</span><span>Originale werden nie verändert.</span></div>
       </div>
     </footer>
   </div>;

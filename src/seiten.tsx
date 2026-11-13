@@ -74,7 +74,7 @@ export function OrdnerSeite({ z, gehe }: P) {
     <section className="card" data-ordner-wahl>
       <div className="card-heading"><h2>{z.ordnerName ? `Ordner: ${z.ordnerName}` : "Ordner wählen"}</h2>
         <Info titel="Welcher Weg?" punkte={[
-          "Handy/Tablet mit Familienakte Pro: „Ordner auf dem Gerät“ – auch SD-Karte.",
+          "Handy/Tablet mit Datei-Organizer Pro oder Familienakte Pro: „Ordner auf dem Gerät“ – auch SD-Karte.",
           "PC mit Chrome oder Edge: „Ordner am PC“ – lesen und Sortierung zurückschreiben.",
           "Jeder Browser: „Dateien wählen“ – nur lesen, die Sortierung wird heruntergeladen.",
           "„Testordner“: 101 erfundene Dateien zum Ausprobieren.",

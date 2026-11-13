@@ -262,6 +262,42 @@ try {
     { const t = await page.locator("[data-ordner-pill]").innerText(); soll("… und bleibt nach dem Neuladen leer", t.includes("Kein Ordner"), t); }
   } else soll("Knopf „Organizer leeren“ steht auf der Seite Familienakte", false);
   { const l = (await page.evaluate(() => sessionStorage.getItem("probe-lade") || "")).split(" "); soll("Ladebalken im Kopf lief beim Einlesen (durchsehen, dann Datei für Datei)", l.includes("suchen") && l.includes("lesen"), JSON.stringify([...new Set(l)])); }
+  soll("Web-App heißt „Datei-Organizer Basic“ (Kopf, Seitentitel), ohne Fassungs-Knopf der App", (await page.locator("[data-app-name]").innerText()) === "Datei-Organizer Basic" && (await page.title()) === "Datei-Organizer Basic" && await page.locator("[data-fassung-knopf]").count() === 0);
+  // Datei-Organizer Pro (Android-App) gestellt: Capacitor-Brücke mit Update-Plugin DoUpdates. Kein echtes Android, kein echter Server.
+  {
+    const nctx = await browser.newContext({ viewport: { width: 400, height: 800 } });
+    await nctx.addInitScript(() => {
+      const aufrufe = (window.__updAufrufe = []);
+      const stand = (window.__updStand = { neu: "9.9.9", fehler: "" });
+      window.Capacitor = { isNativePlatform: () => true, Plugins: { DoUpdates: {
+        pruefen: async () => { aufrufe.push("pruefen"); if (stand.fehler) throw Object.assign(new Error(stand.fehler), { code: stand.fehler }); return stand.neu ? { neu: stand.neu, installiert: "0.4.0", groesse: 1000 } : { aktuell: true, version: "0.4.0", installiert: "0.4.0" }; },
+        installieren: async () => { aufrufe.push("installieren"); return { gestartet: true }; },
+        addListener: async (_n, f) => { setTimeout(() => f({ geladen: 500, groesse: 1000 })); return { remove: async () => {} }; },
+      } } };
+    });
+    const np = await nctx.newPage();
+    const nfehler = []; np.on("pageerror", (e) => nfehler.push(String(e)));
+    await np.goto(basis + "#hilfe");
+    soll("App heißt „Datei-Organizer Pro“ (Kopf, Seitentitel, Fuß)", (await np.locator("[data-app-name]").innerText()) === "Datei-Organizer Pro" && (await np.title()) === "Datei-Organizer Pro" && (await np.locator(".footer-meta").innerText()).includes("Datei-Organizer Pro"));
+    soll("App: kein Service Worker angemeldet", await np.evaluate(async () => !(await navigator.serviceWorker?.getRegistration())));
+    await np.waitForSelector("[data-update-fahne][data-nativ]", { timeout: 6000 }).catch(() => {});
+    soll("App: still geprüft, Fähnchen „Update 9.9.9“ erscheint von selbst", ((await np.locator("[data-update-fahne]").innerText().catch(() => "")) || "").includes("9.9.9"));
+    soll("App: version.json wird nicht gefragt (nur der eigene Update-Server)", !(await np.evaluate(() => performance.getEntriesByType("resource").some((e) => e.name.includes("version.json")))));
+    await np.evaluate(() => { window.__updAufrufe.length = 0; });
+    await np.locator("[data-update-fahne]").click(); await np.waitForTimeout(300);
+    soll("App: Tipp auf das Fähnchen prüft und installiert direkt", JSON.stringify(await np.evaluate(() => window.__updAufrufe)) === JSON.stringify(["pruefen", "installieren"]));
+    await np.evaluate(() => { window.__updStand.neu = ""; window.__updAufrufe.length = 0; });
+    await np.locator("[data-fassung-knopf]").click();
+    await np.waitForSelector("[data-update-meldung]", { timeout: 3000 }).catch(() => {});
+    soll("App: Tipp auf die Fassung, aktuell → kurze Meldung, nichts installiert", ((await np.locator("[data-update-meldung]").innerText().catch(() => "")) || "").includes("Aktuelle Fassung 0.4.0") && !(await np.evaluate(() => window.__updAufrufe.includes("installieren"))));
+    await np.evaluate(() => { window.__updStand.fehler = "UPDATE_NICHT_EINGERICHTET"; });
+    await np.waitForTimeout(4800);
+    await np.locator("[data-fassung-knopf]").click();
+    await np.waitForSelector("[data-update-meldung]", { timeout: 3000 }).catch(() => {});
+    soll("App ohne Update-Schlüssel: Tipp sagt „noch nicht eingerichtet“", ((await np.locator("[data-update-meldung]").innerText().catch(() => "")) || "").includes("noch nicht eingerichtet"));
+    soll("App: keine Fehler in der Seite", nfehler.length === 0, nfehler.slice(0, 3).join(" | "));
+    await nctx.close();
+  }
   soll("Keine Fehler in der Konsole", fehler.length === 0, fehler.slice(0, 3).join(" | "));
 } finally {
   await browser.close(); server.close();
