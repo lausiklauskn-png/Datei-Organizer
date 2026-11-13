@@ -116,3 +116,46 @@ nicht“; Private Brain Pro und Workflow PDF Pro (als App) sind in dieser Sitzun
   zugesicherter Wert. Gemessen wird auf dem Rechner der Sitzung (4 Kerne); ein Tablet oder Handy ist langsamer, der Faktor ist nicht
   gemessen. Erste Orientierung an 30 verbrauchten Briefen (eine Seite je Brief): Texterkennung rund 1,5 s je Seite, Sortieren im
   Datei-Organizer rund 5 ms je Brief.
+
+## Ergebnis Jahr 2025 – vorläufig, zwei Einordner (13.11.2026, je einmal gemessen)
+
+Soll = wo Stapel-Autor und zweiter Claude-Agent übereinstimmen; Codex (Auftrag 009) steht aus. Stapel: 93 Schriftstücke, 45 Belege,
+12 Kontoauszüge mit 223 Umsätzen. Gescannt: 150 Stücke auf 162 Seiten, 39 als Handyfoto. Zahlen: `ergebnisse/vermieterin-*.json`,
+erkannter Text: `pruefstapel-vermieterin-ocr/`.
+
+**Abweichung vom Auftrag:** Die Kontoauszüge hat der Stapel-Autor per Skript aus einer von Hand geschriebenen Umsatzliste gesetzt
+(einheitliches Druckbild). **Werkzeugfehler:** `messen-bank.mjs` brach beim ersten Aufruf an einem Umsatz ohne Gegenpartei ab
+(Fehler im Prüfwerkzeug, vor jeder Ausgabe); berichtigt und einmal gemessen.
+
+| Was | Text | gescannt |
+| --- | --- | --- |
+| Texterkennung, Wortfehler | – | Schriftstücke 4,6 % · Belege 7,8 % · Kontoauszüge 4,5 % (Zeichenfehler gesamt 2,6 %) |
+| Datei-Organizer Bereich | 74/90 = 82 % (73–89) | 74/90 = 82 % |
+| Datei-Organizer Schriftstück | 74/90 = 82 % | 76/90 = 84 % |
+| Datei-Organizer Absender | 74/80 = 93 % | 71/80 = 89 % |
+| Datei-Organizer Frist | 75/90 = 83 % (falsch und sicher 8) | 75/90 = 83 % (8) |
+| Familienakte heute: Bereich · Absender | 13/90 = 14 % · 34/90 = 38 % | 13/90 = 14 % · 32/90 = 36 % |
+| BookLedgerPro Betrag | 38/45 = 84 % | 37/45 = 82 % |
+| BookLedgerPro Datum | 43/45 = 96 % | 41/45 = 91 % |
+| BookLedgerPro Steuersatz | 38/41 = 93 % | 38/41 = 93 % |
+| BookLedgerPro Richtung | 41/45 = 91 % | 41/45 = 91 % |
+| BookLedgerPro Konto (Regeln + Wortmodell, mit Namen) | 27/45 = 60 %; wo beide Einordner einig 24/37 = 65 % | 27/45 · 24/37 |
+| Kontoauszug: Umsatz vollständig lesbar (Tag, Betrag, Gegenpartei, Zweck) | 223/223 (Kontrolle des Prüfwerkzeugs) | 187/223 = 84 % (78–88); Tag und Betrag 215/223, Zweck 195/223, Rechnungsnummer 43/43 |
+
+Kein Unterschied Text gegen gescannt ist gesichert (alle Felder innerhalb der Spannen).
+
+**Person:** 47/47, aber ohne Aussagekraft – der Haushalt hat eine Person; die Einordner sind sich hier uneins, wann ein Mieter als
+Person gilt (Kappa 0,35). **Einigkeit der zwei Einordner:** Bereich, Schriftstück, Frist je 90/93, Absender 80/93, Konto 37/45.
+
+**Kontoauszüge in BookLedgerPro:** Einen Auszug als PDF oder Bild liest die App nicht (nur MT940/CAMT). Dieselben Umsätze als MT940
+gesetzt: 223/223 gelesen, Saldo in 12/12 Auszügen stimmig. Zahlungsabgleich gegen die 45 Belege als offene Posten (22 Umsätze
+strittig zwischen den Einordnern, nicht gewertet): Umsatz mit genau einem Beleg 49/49 richtig; eine Zahlung für zwei Rechnungen 1/1;
+von 151 Umsätzen ohne Beleg bekamen 20 fälschlich einen (wiederkehrende Zahlungen gleichen Betrags – Abschlag, Hausmeister, Telefon,
+Kontoentgelt – treffen den einen Beleg eines anderen Monats). Im Prüflauf bleiben alle Posten offen; in der App wäre ein ausgeglichener
+Posten weg, die Zahl ist darum eine Obergrenze. Rechnungsnummer vom Beleg: liest BookLedgerPro nicht.
+
+**Zeit (Rechner der Sitzung, 4 Kerne):** Texterkennung 313 s für 162 Seiten = rund 1,9 s je Seite → 1000 Seiten rund 32 Minuten.
+Sortieren, Belegleser und Zahlungsabgleich zusammen unter 10 ms je Stück.
+
+**Noch nicht gemessen:** Fristen bis Kalender und Glocke in der Familienakte, Private Brain Pro, Suche über die Knoten, dritter
+Einordner, Ende-zu-Ende-Zahl.

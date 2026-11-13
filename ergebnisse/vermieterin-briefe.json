@@ -1,0 +1,68 @@
+{
+ "ordner": [
+  "pruefstapel-vermieterin"
+ ],
+ "felder": {
+  "bereich": {
+   "neu": {
+    "ok": 74,
+    "n": 90,
+    "spanne": [
+     0.7305591926397842,
+     0.8875035854884658
+    ],
+    "falschSicher": 10,
+    "offen": 6,
+    "mitZweitfach": 75
+   }
+  },
+  "schriftstueck": {
+   "neu": {
+    "ok": 74,
+    "n": 90,
+    "spanne": [
+     0.7305591926397842,
+     0.8875035854884658
+    ],
+    "falschSicher": 7,
+    "offen": 9
+   }
+  },
+  "absender": {
+   "neu": {
+    "ok": 74,
+    "n": 80,
+    "spanne": [
+     0.8458779990261992,
+     0.9651752251489122
+    ],
+    "falschSicher": 3,
+    "offen": 3
+   }
+  },
+  "person": {
+   "neu": {
+    "ok": 47,
+    "n": 47,
+    "spanne": [
+     0.9244398288016114,
+     1
+    ],
+    "falschSicher": 0,
+    "offen": 0
+   }
+  },
+  "frist": {
+   "neu": {
+    "ok": 75,
+    "n": 90,
+    "spanne": [
+     0.7430592627681392,
+     0.8963160249507403
+    ],
+    "falschSicher": 8,
+    "offen": 7
+   }
+  }
+ }
+}

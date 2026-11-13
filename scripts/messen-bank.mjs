@@ -36,7 +36,7 @@ function lesbar(ordner) {
       n++;
       const tag = u.buchung.slice(8, 10) + "." + u.buchung.slice(5, 7) + ".", b = betragText(u.betrag);
       const z = zeilen.some((l) => l.includes(tag) && l.replace(/\s/g, "").includes(b)); // Tag und Betrag auf derselben Zeile
-      const g = f.includes(fest(u.gegenpartei)), w = f.includes(fest(u.zweck));
+      const g = f.includes(fest(u.gegenpartei || "")), w = f.includes(fest(u.zweck || ""));
       zeile += z; gegen += g; zweck += w; alle += z && g && w;
       for (const r of u.rechnungsnummern) { renrN++; renr += f.includes(fest(r)) || w; }
     }
@@ -58,7 +58,7 @@ if (existsSync(join(BLP, "src/domain/bankimport.js"))) {
   for (const a of soll.auszuege) {
     const iban = soll.konto.iban.replace(/\s/g, "");
     const zeilen = [":20:STARTUMS", `:25:${iban}`, ":28C:1/1", `:60F:${cent(a.saldoAlt) < 0 ? "D" : "C"}${yy(a.umsaetze[0].buchung)}EUR${mt(cent(a.saldoAlt))}`];
-    for (const u of a.umsaetze) { const c = cent(u.betrag); zeilen.push(`:61:${yy(u.wert)}${yy(u.buchung).slice(2)}${c < 0 ? "D" : "C"}${mt(c)}NTRFNONREF`, `:86:166?00${u.art.toUpperCase()}?20${u.zweck.slice(0, 27)}?21${u.zweck.slice(27, 54)}?22${u.zweck.slice(54, 81)}?32${u.gegenpartei.slice(0, 27)}?33${u.gegenpartei.slice(27, 54)}`); }
+    for (const u0 of a.umsaetze) { const u = { ...u0, zweck: u0.zweck || "", gegenpartei: u0.gegenpartei || "" }, c = cent(u.betrag); zeilen.push(`:61:${yy(u.wert)}${yy(u.buchung).slice(2)}${c < 0 ? "D" : "C"}${mt(c)}NTRFNONREF`, `:86:166?00${u.art.toUpperCase()}?20${u.zweck.slice(0, 27)}?21${u.zweck.slice(27, 54)}?22${u.zweck.slice(54, 81)}?32${u.gegenpartei.slice(0, 27)}?33${u.gegenpartei.slice(27, 54)}`); }
     zeilen.push(`:62F:${cent(a.saldoNeu) < 0 ? "D" : "C"}${yy(a.umsaetze.at(-1).buchung)}EUR${mt(cent(a.saldoNeu))}`, "-");
     const p = parseBankauszug(zeilen.join("\n")); gelesen += p.umsaetze.length; saldoOk += pruefeBankauszug(p).ok ? 1 : 0;
     a.umsaetze.forEach((u, i) => {
