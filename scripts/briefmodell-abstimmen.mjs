@@ -17,12 +17,15 @@ function lade(o, mehrheit) {
   return e.map((x) => ({ gruppe: o, bereich: mh(x, "bereich", "kategorie"), art: mh(x, "schriftstueck"), zweit: x.zweitfach || null, merkmale: merkmale(readFileSync(join(o, x.datei), "utf8"), eig) }));
 }
 const LO = join(W, "lehrdaten-briefe"), ordner = readdirSync(LO).map((u) => join(LO, u)).filter((u) => existsSync(join(u, "ERWARTUNG.json")));
-const lehr = ordner.flatMap((o) => lade(o)), alt = lade(join(W, "pruefstapel-unabhaengig"), true);
+// --verbraucht a,b,…: weitere verbrauchte Stapel (Soll = Mehrheit aus drei Einordnern) lernen mit; --ohne x lässt einen davon aus
+// (reihum ausgelassen messen, Punkt 5 der Empfehlung 13.11.2026). Ohne die Schalter bleibt alles wie bisher.
+const verbraucht = (arg("--verbraucht", "") || "").split(",").filter(Boolean).filter((v) => v !== arg("--ohne", "")).map((v) => join(W, v));
+const lehr = ordner.flatMap((o) => lade(o)), alt = [join(W, "pruefstapel-unabhaengig"), ...verbraucht].filter((v) => !v.endsWith("/" + arg("--ohne", "-"))).flatMap((v) => lade(v, true));
 // Eigene Generator-Daten (andere Machart, 10 Haushalte): nur für die Art, je Haushalt höchstens 60, fest ausgewählt. Für den Bereich
 // nicht, weil der Generator älter ist als die Fachregel.
 const gen = readFileSync(join(W, "ergebnisse/trainingsdaten.jsonl"), "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l)).filter((x) => x.text.length > 50 && x.soll.schriftstueck && x.soll.schriftstueck !== "Foto");
 const jeH = {}; const genBel = gen.filter((x, i) => i % 7 === 0 && (jeH[x.haushalt] = (jeH[x.haushalt] || 0) + 1) <= 60).map((x) => ({ gruppe: "gen-" + x.haushalt, bereich: null, art: x.soll.schriftstueck, zweit: null, merkmale: merkmale(x.text, "") }));
-const OPT = { minGruppen: Number(arg("--minGruppen", 2)), proKlasse: Number(arg("--proKlasse", 400)) };
+const OPT = { minGruppen: Number(arg("--minGruppen", 2)), proKlasse: Number(arg("--proKlasse", 250)) };
 const lerne = (bel0, feld) => trainiere((feld === "art" ? [...bel0, ...genBel] : bel0).filter((b) => b[feld]).map((b) => ({ gruppe: b.gruppe, konto: b[feld], merkmale: b.merkmale })), OPT);
 for (const feld of ["bereich", "art"]) {
   let ok = 0, n = 0; const stufen = [0, 1, 2, 3, 5].map((s) => ({ s, n: 0, ok: 0 }));
@@ -35,7 +38,7 @@ for (const feld of ["bereich", "art"]) {
 if (arg("--aus")) {
   const alle = [...lehr, ...alt], mb = lerne(alle, "bereich"), ma = lerne(alle, "art");
   const quelle = createHash("sha256").update(JSON.stringify(alle.map((b) => [b.bereich, b.art, b.merkmale.length]))).digest("hex").slice(0, 12);
-  writeFileSync(join(W, arg("--aus")), `// Erzeugt von scripts/briefmodell-abstimmen.mjs aus lehrdaten-briefe/ und pruefstapel-unabhaengig/ (${alle.length} Schriftstücke). Nicht von Hand ändern.\nexport const WORTMODELL_QUELLE = "${quelle}";\nexport const WORTMODELL_BEREICH = ${JSON.stringify(mb)};\nexport const WORTMODELL_ART = ${JSON.stringify(ma)};\n`);
+  writeFileSync(join(W, arg("--aus")), `// Erzeugt von scripts/briefmodell-abstimmen.mjs aus lehrdaten-briefe/ und verbrauchten Stapeln (${["pruefstapel-unabhaengig", ...verbraucht.map((v) => v.split("/").pop())].join(", ")}; ${alle.length} Schriftstücke). Nicht von Hand ändern.\nexport const WORTMODELL_QUELLE = "${quelle}";\nexport const WORTMODELL_BEREICH = ${JSON.stringify(mb)};\nexport const WORTMODELL_ART = ${JSON.stringify(ma)};\n`);
   console.log("geschrieben:", arg("--aus"), Math.round((JSON.stringify(mb).length + JSON.stringify(ma).length) / 1024), "KB");
 }
 
