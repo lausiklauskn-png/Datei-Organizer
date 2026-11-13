@@ -170,6 +170,21 @@ try {
   await page.goto(basis + "datenschutz.html");
   soll("Impressum & Datenschutz erreichbar", (await page.locator("h1").innerText()).includes("Impressum"));
 
+  await page.setViewportSize({ width: 1280, height: 900 }); await page.goto(basis + "#ordner"); await page.waitForTimeout(400);
+  { const zahl = async () => Number(((await page.locator("[data-ordner-pill]").innerText()).match(/· (\d+)/) || [])[1] || 0);
+    const vorher = await zahl();
+    await page.evaluate(() => { const dt = new DataTransfer(); dt.items.add(new File(["Stadtwerke Muster GmbH\nRechnung Nr. 77\nBetrag 50,00 EUR"], "hineingezogen-rechnung.txt", { type: "text/plain" })); dt.items.add(new File(["Notiz eins"], "hineingezogen-notiz.txt", { type: "text/plain" })); document.querySelector("[data-ablage]").dispatchEvent(new DragEvent("drop", { dataTransfer: dt, bubbles: true, cancelable: true })); });
+    await page.waitForFunction((v) => Number(((document.querySelector("[data-ordner-pill]")?.textContent || "").match(/· (\d+)/) || [])[1] || 0) === v + 2, vorher, { timeout: 15000 }).catch(() => {});
+    soll("Drag and Drop fügt hinzu, der Bestand bleibt", vorher > 0 && await zahl() === vorher + 2, `${vorher} → ${await zahl()}`);
+    await page.goto(basis + "#finden"); await page.locator("[data-suche]").fill("hineingezogen-notiz"); await page.waitForTimeout(300);
+    await page.locator("[data-datei]").first().click();
+    soll("Steckbrief hat Ansehen, Teilen und Entfernen", await page.locator("[data-steckbrief] [data-original]").count() === 1 && await page.locator("[data-steckbrief] [data-teilen]").count() === 1 && await page.locator("[data-steckbrief] [data-entfernen]").count() === 1);
+    await page.locator("[data-steckbrief] [data-entfernen]").click(); await page.waitForTimeout(300);
+    soll("Entfernen nimmt genau diese eine Datei aus der Liste", await zahl() === vorher + 1, `${await zahl()}`);
+    await page.locator("[data-suche]").fill("hineingezogen"); await page.waitForTimeout(300);
+    await page.locator("[data-entfernen-liste]").click(); await page.waitForTimeout(300);
+    soll("„Entfernen“ über der Liste nimmt alle Treffer heraus", await zahl() === vorher, `${await zahl()}`);
+  }
   await page.setViewportSize({ width: 1280, height: 900 }); await page.goto(basis + "#akte"); await page.waitForTimeout(300);
   soll("Kein Update-Fähnchen, solange die Fassung aktuell ist", await page.locator("[data-update-fahne]").count() === 0);
   { const v = JSON.parse(await (await page.request.get(basis + "version.json")).text()); const kopf = await page.locator(".site-brand small").innerText(); soll("version.json nennt dieselbe Fassung wie der Kopf", kopf.includes("Fassung " + v.fassung), `${v.fassung} / ${kopf}`); }

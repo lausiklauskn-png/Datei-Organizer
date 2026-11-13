@@ -1,5 +1,6 @@
+import { ausZiehen } from "./quellen.ts";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Archive, Check, Download, File, FileImage, FileText, FolderOpen, FolderTree, HelpCircle, History, ListChecks, Mail, Pencil, RotateCcw, Search, Trash2, ShieldAlert, Smartphone, Undo2 } from "lucide-react";
+import { Archive, Check, Download, File, FileImage, FileText, FolderOpen, FolderTree, HelpCircle, History, ListChecks, Mail, Pencil, Eye, RotateCcw, Search, Share2, Trash2, Upload, ShieldAlert, Smartphone, Undo2 } from "lucide-react";
 import type { Datei, FeldName } from "../lib/typen.ts";
 import { STUFEN, offeneFelder, gesperrt } from "../lib/siebe.ts";
 import { SICHTEN, baum, dateienUnter, suche, type BaumKnoten } from "../lib/sichten.ts";
@@ -54,6 +55,7 @@ export function OrdnerSeite({ z, gehe }: P) {
   const [laeuft, setLaeuft] = useState(false);
   const los = async (f: () => Promise<unknown>) => { setLaeuft(true); try { await f(); } catch (e) { z.setMeldung({ text: (e as Error).message, art: "fehler" }); } finally { setLaeuft(false); } };
   const nativ = nativerOrdner(), pc = ordnerWahlMoeglich();
+  const [ziehtDrueber, setZiehtDrueber] = useState(false);
   const zahlen = useMemo(() => ({
     gesamt: z.dateien.length, auff: z.dateien.filter((d) => d.auffaellig).length, dopp: z.dateien.filter((d) => d.doppeltVon).length,
     offen: z.dateien.filter(offenBei).length, fertig: z.dateien.filter((d) => d.stufe >= 5 && !offenBei(d) && !gesperrt(d)).length,
@@ -85,6 +87,17 @@ export function OrdnerSeite({ z, gehe }: P) {
       <Ladebalken f={z.fortschritt}/>
       <Meldung z={z} gehe={gehe}/>
     </section>
+    <section className={`card ablage ${ziehtDrueber ? "drueber" : ""}`} data-ablage
+      onDragOver={(e) => { e.preventDefault(); setZiehtDrueber(true); }} onDragLeave={() => setZiehtDrueber(false)}
+      onDrop={(e) => { e.preventDefault(); setZiehtDrueber(false); const dt = e.dataTransfer; void los(async () => { const q = await ausZiehen(dt); if (q) await z.einlesenAus(q, z.dateien.length > 0); else z.setMeldung({ text: "Darin war keine Datei.", art: "halt" }); }); }}>
+      <div className="card-heading"><h2>Dateien einfügen per Drag and Drop</h2><Info titel="Hineinziehen" punkte={[
+        "Dateien oder ganze Ordner hierher ziehen und loslassen.",
+        "Sie kommen zu dem dazu, was schon im Organizer ist – nichts wird überschrieben.",
+        "Liegt derselbe Inhalt schon da, wird das Stück als doppelt angezeigt.",
+        "Die Originale bleiben, wo sie sind.",
+      ]}/></div>
+      <div className="ablage-feld"><Upload size={22}/><span>{ziehtDrueber ? "Loslassen zum Einfügen" : "Dateien oder Ordner hierher ziehen"}</span></div>
+    </section>
     {zahlen.gesamt > 0 && <section className="card" data-ueberblick>
       <div className="card-heading"><h2>Überblick</h2><button type="button" className="text-link" onClick={() => { if (confirm("Sortierung in diesem Browser vergessen? Die Originale im Ordner bleiben.")) void z.neuBeginnen(); }}><RotateCcw size={15}/>Neu beginnen</button><button type="button" className="text-link" onClick={() => { if (confirm(LEEREN_FRAGE)) void z.leeren(); }} data-leeren-ordner><Trash2 size={15}/>Leeren</button></div>
       <Ablaufbild label="Stand der Siebe" schritte={STUFEN.map((s): Schritt => ({ titel: s.name, unter: s.kurz, art: s.nr < z.stufe ? "gut" : s.nr === z.stufe ? "hervor" : "aus" }))}/>
@@ -110,6 +123,7 @@ function PruefZeile({ z, d }: { z: AppZustand; d: Datei }) {
   const [aendern, setAendern] = useState(false);
   const [wert, setWert] = useState("");
   useEffect(() => { if (!felder.includes(feld)) setFeld(felder[0]); }, [felder.join(), feld]);
+  const [auge, setAuge] = useState(false);
   if (!feld) return null;
   const w = d.felder[feld];
   const liste = AUSWAHL[feld];
@@ -119,6 +133,7 @@ function PruefZeile({ z, d }: { z: AppZustand; d: Datei }) {
       {felder.length > 1 && <span className="grund">Noch offen: {felder.map((f) => FELD_NAMEN[f as FeldName]).join(", ")}</span>}
     </div>
     <div className="pruef-aktionen">
+      <button type="button" className="button klein" aria-pressed={auge} aria-label={`${d.name} ansehen`} title="Ansehen, teilen oder entfernen" onClick={() => setAuge(!auge)} data-auge><Eye size={15}/></button>
       {!aendern ? <>
         {w?.wert && <button type="button" className="button klein" onClick={() => z.aendern(d.pfad, feld, w.wert)} data-stimmt><Check size={15}/>Stimmt</button>}
         <button type="button" className="button klein" onClick={() => { setWert(w?.wert || ""); setAendern(true); }} data-korrigieren><Pencil size={15}/>Ändern</button>
@@ -129,6 +144,7 @@ function PruefZeile({ z, d }: { z: AppZustand; d: Datei }) {
         <button type="button" className="button klein" onClick={() => setAendern(false)}>Abbrechen</button>
       </>}
     </div>
+    {auge && <div style={{ gridColumn: "1 / -1" }}><Steckbrief z={z} d={d}/></div>}
   </div>;
 }
 
@@ -168,7 +184,8 @@ export function SortierenSeite({ z, gehe }: P) {
 // ---------------- Finden ----------------
 function Steckbrief({ z, d }: { z: AppZustand; d: Datei }) {
   const [bild, setBild] = useState<string | null>(null);
-  useEffect(() => { setBild(null); }, [d.pfad]);
+  const [gross, setGross] = useState(false);
+  useEffect(() => { setBild(null); setGross(false); }, [d.pfad]);
   const f = d.felder;
   const zeile = (name: string, w?: { wert: string; sicher: boolean; grund: string; quelle: string }, anzeige?: string) => w ? <><dt>{name}</dt><dd><span className="feld-wert">{anzeige ?? w.wert}{w.quelle === "du" ? <span className="badge du">von dir</span> : w.quelle === "gelernt" ? <span className="badge du">gelernt</span> : !w.sicher ? <span className="badge pruefen">unsicher</span> : null}</span><span className="grund">{w.grund}</span></dd></> : null;
   const oeffnen = async (anzeigen: boolean) => {
@@ -177,6 +194,14 @@ function Steckbrief({ z, d }: { z: AppZustand; d: Datei }) {
     const url = URL.createObjectURL(d.art === "bild" ? new Blob([b], { type: "image/jpeg" }) : d.art === "pdf" ? new Blob([b], { type: "application/pdf" }) : b);
     if (anzeigen && d.art === "bild") { setBild(url); return; }
     window.open(url, "_blank", "noopener"); setTimeout(() => URL.revokeObjectURL(url), 60000);
+  };
+  const teilen = async () => {
+    const b = await z.original(d.pfad);
+    if (!b) { z.setMeldung({ text: "Original nur nach dem Einlesen in dieser Sitzung erreichbar. Ordner neu wählen.", art: "halt" }); return; }
+    const datei = new globalThis.File([b], d.name);
+    const nav = navigator as Navigator & { canShare?: (x: { files: File[] }) => boolean };
+    try { if (nav.canShare?.({ files: [datei] })) { await nav.share({ files: [datei], title: d.name }); return; } } catch (e) { if ((e as Error).name === "AbortError") return; }
+    const url = URL.createObjectURL(datei), a = document.createElement("a"); a.href = url; a.download = d.name; a.click(); setTimeout(() => URL.revokeObjectURL(url), 60000);
   };
   return <section className="card steckbrief" data-steckbrief={d.pfad}>
     <div className="titel-zeile"><DateiSymbol d={d}/><h2 style={{ overflowWrap: "anywhere" }}>{d.name}</h2><Zustand d={d}/></div>
@@ -193,10 +218,12 @@ function Steckbrief({ z, d }: { z: AppZustand; d: Datei }) {
       {d.email && <><dt>Mail</dt><dd>{d.email.betreff}{d.email.anhaenge.length ? ` · ${d.email.anhaenge.length} Anhang/Anhänge` : ""}</dd></>}
     </dl>
     <div className="button-row" style={{ marginTop: 12 }}>
-      {!d.auffaellig && <button type="button" className="button klein" onClick={() => oeffnen(true)} data-original>Original ansehen</button>}
+      {!d.auffaellig && <button type="button" className="button klein" onClick={() => oeffnen(true)} data-original><Eye size={15}/>Ansehen</button>}
+      {!d.auffaellig && <button type="button" className="button klein" onClick={teilen} data-teilen><Share2 size={15}/>Teilen</button>}
+      <button type="button" className="button klein" onClick={() => { if (confirm(`„${d.name}“ aus dem Organizer nehmen? Das Original bleibt unverändert.`)) z.entfernen([d.pfad]); }} data-entfernen><Trash2 size={15}/>Entfernen</button>
       <Info titel="Original" punkte={["Öffnet die Datei aus dem Ordner. Sie wird nicht verändert.", "Gesperrte Dateien öffnet der Organizer nicht."]}/>
     </div>
-    {bild && <img src={bild} alt={`Foto ${d.name}`} className="vorschau-bild"/>}
+    {bild && <img src={bild} alt={`Foto ${d.name}`} className={`vorschau-bild ${gross ? "gross" : ""}`} onClick={() => setGross(!gross)} title={gross ? "Tippen: kleiner" : "Tippen: größer"}/>}
     {d.volltext && <details style={{ marginTop: 10 }}><summary className="leise">Erkannter Text</summary><pre style={{ whiteSpace: "pre-wrap", fontSize: ".8rem", maxHeight: 260, overflow: "auto" }}>{d.volltext.slice(0, 3000)}</pre></details>}
   </section>;
 }
@@ -228,7 +255,7 @@ export function FindenSeite({ z, gehe }: P) {
       <section className="card"><OrdnerBaum wurzel={wurzel} gewaehlt={knoten?.id || "alle"} waehlen={(k) => { setKnoten(k); setFrage(""); }} label={`Baum: ${sicht.name}`}/></section>
       <div style={{ display: "grid", gap: 16, minWidth: 0 }}>
         <section className="card" data-liste>
-          <div className="card-heading"><h2>{frage.trim() ? `Treffer für „${frage.trim()}“` : (knoten?.titel || "Alle Dateien")}</h2><span className="badge">{liste.length}</span></div>
+          <div className="card-heading"><h2>{frage.trim() ? `Treffer für „${frage.trim()}“` : (knoten?.titel || "Alle Dateien")}</h2><span style={{ display: "inline-flex", gap: 10, alignItems: "center" }}>{liste.length > 0 && <button type="button" className="text-link" onClick={() => { const was = frage.trim() ? `${liste.length} Treffer` : knoten ? `„${knoten.titel}“ (${liste.length})` : `Alle ${liste.length} Dateien`; if (confirm(`${was} aus dem Organizer nehmen? Die Originale bleiben unverändert.`)) z.entfernen(liste.map((d) => d.pfad), was); }} data-entfernen-liste><Trash2 size={15}/>Entfernen</button>}<span className="badge">{liste.length}</span></span></div>
           <ul className="dateiliste">{liste.slice(0, 200).map((d) => <li key={d.pfad}><button type="button" className="datei-zeile" aria-current={gewaehlt === d.pfad} onClick={() => setGewaehlt(d.pfad)} data-datei={d.pfad}>
             <DateiSymbol d={d}/><span><strong>{d.felder.absender?.wert && d.felder.schriftstueck?.wert ? `${d.felder.schriftstueck.wert} · ${d.felder.absender.wert}` : d.name}</strong><small>{d.pfad}{d.felder.datum ? ` · ${deutsch(d.felder.datum.wert)}` : ""}</small></span><Zustand d={d}/>
           </button></li>)}</ul>

@@ -13,7 +13,7 @@ import { ausHandle, erlaubnisPruefen, herunterladen, type Quelle, type QuellDate
 import { laden, loeschen, ordnerHolen, ordnerMerken, speichern } from "./zustand.ts";
 import { OrdnerSeite, SortierenSeite, FindenSeite, VerlaufSeite, AkteSeite, HilfeSeite } from "./seiten.tsx";
 
-export const FASSUNG = "0.3.1";
+export const FASSUNG = "0.3.2";
 // Ladeanzeige: „suchen“ = Ordner wird durchgesehen (Zahl noch unbekannt), „lesen“ = Datei für Datei, „stand“ = gemerkter Stand beim Start.
 export type Fortschritt = { phase: "stand" | "suchen" | "lesen"; fertig: number; gesamt: number; name?: string };
 const luft = () => new Promise<void>((r) => setTimeout(r)); // dem Browser Zeit zum Zeichnen geben
@@ -56,7 +56,7 @@ function useOrganizer() {
     return () => clearTimeout(t);
   }, [geladen, dateien, stufe, verlauf, regeln, ordnerName, quelleArt]);
 
-  const einlesenAus = useCallback(async (q: Quelle) => {
+  const einlesenAus = useCallback(async (q: Quelle, dazu = false) => {
     setMeldung({ text: `Lese „${q.name}“ …` });
     setFortschritt({ phase: "suchen", fertig: 0, gesamt: 0, name: q.name }); await luft();
     let liste: QuellDatei[];
@@ -64,7 +64,7 @@ function useOrganizer() {
     if (!liste.length) { setFortschritt(null); setMeldung({ text: `In „${q.name}“ liegen keine lesbaren Dateien. Die Anzeige ist unverändert.`, art: "halt" }); return; }
     const lesePdf = await pdfLeser();
     const neu: Datei[] = [];
-    originale.current.clear();
+    if (!dazu) originale.current.clear();
     setFortschritt({ phase: "lesen", fertig: 0, gesamt: liste.length });
     let gezeichnet = performance.now();
     for (const [i, qd] of liste.entries()) {
@@ -79,6 +79,20 @@ function useOrganizer() {
       }
     }
     setFortschritt({ phase: "lesen", fertig: liste.length, gesamt: liste.length }); await luft();
+    if (dazu) {
+      // Hinzufügen (Drag and Drop): Vorhandenes bleibt; gleiche Pfade werden ersetzt, gleiche Inhalte als doppelt markiert.
+      // Neue Stücke laufen durch dieselben Siebe wie der Bestand.
+      let frisch = neu;
+      for (let s = 2; s <= stufe; s++) frisch = frisch.map((x) => siebe(x, s, regeln));
+      const pfade = new Set(frisch.map((d) => d.pfad));
+      let alle = doppelteMarkieren([...dateien.filter((d) => !pfade.has(d.pfad)).map((d) => ({ ...d, doppeltVon: undefined })), ...frisch]);
+      if (stufe >= 4) alle = absenderVereinheitlichen(alle);
+      stapel.current = [];
+      setDateien(alle); setFortschritt(null); if (!ordnerName) { setOrdnerName(q.name); setQuelleArt(q.art); if (!stufe) setStufe(1); }
+      const dopp = alle.filter((d) => pfade.has(d.pfad) && d.doppeltVon).length;
+      setMeldung({ text: `${frisch.length} Dateien hinzugefügt – jetzt ${alle.length} im Eingang${dopp ? ` · ${dopp} davon doppelt (gleicher Inhalt liegt schon da)` : ""}.`, art: dopp ? "halt" : undefined });
+      return;
+    }
     let fertig = doppelteMarkieren(neu);
     // Vorhandenen Index übernehmen: Archivnummern, Bestätigtes, Regeln, Verlauf (Nummern ändern sich nie)
     let ausIndex = 0;
@@ -106,7 +120,7 @@ function useOrganizer() {
     setQuelle(q); setOrdnerName(q.name); setQuelleArt(q.art); setDateien(fertig); setStufe(1); setRegeln(alteRegeln); setVerlauf(alterVerlauf); setFortschritt(null);
     const auff = fertig.filter((d) => d.auffaellig).length, dopp = fertig.filter((d) => d.doppeltVon).length;
     setMeldung({ text: `${fertig.length} Dateien im Eingang · Sieb 1 fertig: ${auff} auffällig, ${dopp} doppelt${ausIndex ? ` · ${ausIndex} aus dem gespeicherten Index wiedererkannt` : ""}.`, art: auff ? "halt" : undefined });
-  }, []);
+  }, [dateien, stufe, regeln, ordnerName]);
 
   const pcOrdnerWieder = useCallback(async () => {
     const h = await ordnerHolen();
@@ -213,7 +227,18 @@ function useOrganizer() {
     setMeldung({ text: `Organizer geleert: ${n} Dateien aus der Liste genommen. Die Originale und der Ordner sind unverändert${regeln.length ? `; ${regeln.length} gelernte Regeln bleiben` : ""}.` });
   }, [dateien.length, regeln.length]);
 
-  return { dateien, stufe, verlauf, regeln, ordnerName, quelleArt, quelle, meldung, setMeldung, fortschritt, einlesenAus, pcOrdnerWieder, naechstes, zurueck, aendern, rueckgaengig, nummern, indexSichern, indexText, original, neuBeginnen, leeren, ordnerMerken, kannZurueck: () => stapel.current.length > 0 };
+  // Einzelne Dateien oder einen ganzen Ordner aus dem Organizer nehmen. Nur die Liste ändert sich – die Originale bleiben, wo sie sind.
+  const entfernen = useCallback((pfade: string[], was?: string) => {
+    const weg = new Set(pfade);
+    const bleibt = dateien.filter((d) => !weg.has(d.pfad) && !weg.has(d.pfad.split(" › ")[0]));
+    const n = dateien.length - bleibt.length;
+    if (!n) return;
+    stapel.current.push(dateien);
+    setDateien(doppelteMarkieren(bleibt.map((d) => ({ ...d, doppeltVon: undefined }))));
+    setMeldung({ text: `${was || (n === 1 ? "1 Datei" : `${n} Dateien`)} aus dem Organizer genommen. ${n === 1 ? "Das Original ist" : "Die Originale sind"} unverändert. „Zurück“ auf der Seite Sortieren holt sie wieder.` });
+  }, [dateien]);
+
+  return { dateien, stufe, verlauf, regeln, ordnerName, quelleArt, quelle, meldung, setMeldung, fortschritt, einlesenAus, pcOrdnerWieder, naechstes, zurueck, aendern, rueckgaengig, nummern, indexSichern, indexText, original, neuBeginnen, leeren, entfernen, ordnerMerken, kannZurueck: () => stapel.current.length > 0 };
 }
 
 async function einlesenTeile(bytes: Uint8Array, pfad: string) {

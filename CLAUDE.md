@@ -9,7 +9,15 @@ oder Altbestand kommen in **einen** Ordner; der Organizer sortiert sie Klick fü
 Nummern → Absender → Inhalt) und zeigt sie als Baum nach vielen Gesichtspunkten. Zuerst für die Familienakte gemacht: der Ordner
 wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). Plan und alle Entscheidungen: `docs/PLAN.md`.
 
-## Stand (13.11.2026 spät, Fassung 0.3.1)
+## Stand (13.11.2026 spät, Fassung 0.3.2)
+
+- **0.3.2 (Klaus 13.11.):** Block „Dateien einfügen per Drag and Drop“ (Dateien und ganze Ordner, `ausZiehen` in `src/quellen.ts`; kommt zum
+  Bestand **dazu**, gleiche Inhalte werden als doppelt markiert, `einlesenAus(q, true)`), **Entfernen** einzelner Dateien (Steckbrief) und ganzer
+  Ordner/Treffer (Seite Finden, „Entfernen“ über der Liste; `entfernen` – nur die Liste, Originale unberührt, „Zurück“ holt sie wieder),
+  **Auge** an jeder Prüfzeile (Steckbrief mit Ansehen/vergrößern, Teilen, Entfernen). UI-Probe 54.
+  Noch offen: umbenennen, verschieben per Drag and Drop; Familienakte: Blöcke hinzufügen, Doppelte zusammenführen (Index-Übernahme dort nicht gebaut).
+
+## Stand (13.11.2026, Fassung 0.3.1)
 
 - **Ladebalken und Aktualisieren (Klaus 13.11.: „sofort veröffentlichen“):** Ladeanzeige oben im Kopf auf jeder Seite und in der Ordner-Karte
   (`Ladebalken` in `src/app.tsx`: gemerkter Stand · Ordner wird durchgesehen (laufender Streifen) · Datei für Datei mit Prozent und Dateiname);
