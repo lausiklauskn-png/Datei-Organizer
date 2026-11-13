@@ -24,7 +24,7 @@
    "nurKern": 14
   }
  },
- "ordner": "pruefstapel-vermieterin-ocr/belege",
+ "ordner": "/tmp/claude-0/-home-user/60903395-d850-557c-93be-429a97e424d9/scratchpad/vm-blp/s-ocr",
  "belege": 45,
  "felder": {
   "betrag": {
@@ -36,8 +36,8 @@
    "ok": 41
   },
   "ust": {
-   "n": 41,
-   "ok": 38
+   "n": 40,
+   "ok": 40
   },
   "richtung": {
    "n": 45,
@@ -45,7 +45,7 @@
   },
   "konto": {
    "n": 45,
-   "ok": 25
+   "ok": 26
   }
  },
  "wilson": {
@@ -58,31 +58,27 @@
    0.9648894518657969
   ],
   "ust": [
-   0.8057225998278872,
-   0.9748026267474359
+   0.9123754607496077,
+   1
   ],
   "richtung": [
    0.792661488316343,
    0.9648894518657969
   ],
   "konto": [
-   0.4117588341636533,
-   0.6906129145096089
+   0.433005327959445,
+   0.7103151201831219
   ]
  },
- "uebereinstimmung": {
-  "n": 45,
-  "gleich": 0.8222222222222222,
-  "kappa": 0.7945205479452054
- },
+ "uebereinstimmung": null,
  "kontoEinig": {
-  "n": 37,
-  "ok": 20
+  "n": 0,
+  "ok": 0
  },
  "verwechslung": {
   "4250→4980": 2,
   "4260→4260": 9,
-  "4980→4980": 2,
+  "4980→4980": 3,
   "4240→4240": 3,
   "4260→4980": 2,
   "8400→4210": 1,
@@ -102,7 +98,6 @@
   "4945→4945": 1,
   "4670→4945": 1,
   "4970→4120": 1,
-  "4380→4980": 1,
   "4630→3300": 1,
   "4920→4920": 1,
   "4260→3400": 1,
@@ -236,34 +231,16 @@
    "soll": "2025-01-02"
   },
   {
-   "datei": "Stellplatz Woelk 2025.txt",
-   "feld": "ust",
-   "ist": null,
-   "soll": 0
-  },
-  {
    "datei": "Nachforderung NK Brandtner.txt",
    "feld": "betrag",
    "ist": 247041,
    "soll": "190,41"
   },
   {
-   "datei": "Nachforderung NK Brandtner.txt",
-   "feld": "ust",
-   "ist": null,
-   "soll": 0
-  },
-  {
    "datei": "Gutschrift NK Scholten.txt",
    "feld": "betrag",
    "ist": 180000,
    "soll": "63,29"
-  },
-  {
-   "datei": "Gutschrift NK Scholten.txt",
-   "feld": "ust",
-   "ist": null,
-   "soll": 0
   },
   {
    "datei": "Gutschrift NK Scholten.txt",
@@ -294,12 +271,6 @@
    "feld": "konto",
    "ist": "4120",
    "soll": "4970"
-  },
-  {
-   "datei": "Sperrmuell Gebuehr.txt",
-   "feld": "konto",
-   "ist": "4980",
-   "soll": "4380"
   },
   {
    "datei": "bluetenzauber 30.09.txt",

@@ -1,20 +1,20 @@
 {
  "text": "/home/user/datei-organizer/pruefstapel-vermieterin-ocr",
- "mitSollFrist": 39,
- "ohneSollFrist": 51,
- "strittig": 3,
+ "mitSollFrist": 40,
+ "ohneSollFrist": 53,
+ "strittig": 0,
  "familienakte": {
-  "fristRichtig": "25/39 = 64.1 % (48–77)",
+  "fristRichtig": "25/40 = 62.5 % (47–76)",
   "falschesDatum": 1,
-  "keineErkannt": 13,
-  "faelschlichEineFrist": "5/51",
-  "erinnerungGeplant": "25/39 = 64.1 % (48–77)"
+  "keineErkannt": 14,
+  "faelschlichEineFrist": "5/53",
+  "erinnerungGeplant": "25/40 = 62.5 % (47–76)"
  },
  "kern": {
-  "fristRichtig": "32/39 = 82.1 % (67–91)",
+  "fristRichtig": "33/40 = 82.5 % (68–91)",
   "falschesDatum": 3,
   "keineErkannt": 4,
-  "faelschlichEineFrist": "8/51"
+  "faelschlichEineFrist": "10/53"
  },
  "verloren": [
   "2025-01-15 Brinkmeier Winterdienst.txt: Soll 2025-01-29, Familienakte keine, Kern 2025-01-29",
@@ -30,6 +30,7 @@
   "Telvia Glasfaser Auftragsbestaetigung.txt: Soll 2025-10-28, Familienakte keine, Kern 2025-10-28",
   "Aushang Ablesung Oktober.txt: Soll 2025-10-16, Familienakte keine, Kern 2025-10-16",
   "Zaehlerwechsel Wasser.txt: Soll 2025-11-04, Familienakte keine, Kern keine",
+  "Landfrauen Adventsfahrt.txt: Soll 2025-11-21, Familienakte keine, Kern 2025-11-21",
   "LStHV Termin Januar.txt: Soll 2026-01-13, Familienakte keine, Kern 2026-01-13"
  ]
 }

@@ -181,3 +181,34 @@ erst nach Bestätigung an – im Lauf gilt „bestätigt, wie vorgeschlagen“. 
 nur mit der Art des Solls, für die drei gemeinsamen Arten: Rechnung, Vertrag, Angebot richtig 13/21; von 69 Stücken anderer Art
 fälschlich als eine der drei 17. 56 von 93 Stücken fallen auf „Dokument“ (nur Dateityp). Text und gescannt gleich.
 Bedeutungssuche und Einordnen dort: nicht gemessen (Modell in dieser Umgebung nicht ladbar).
+
+## Ergebnis Jahr 2025 – mit drei Einordnern (13.11.2026)
+
+Codex (GPT-6) hat Auftrag 009 geliefert (Form geprüft: 93 Schriftstücke, 45 Belege, 12 Auszüge mit 223 Umsätzen, alle Listenwerte
+gültig; unverändert übernommen). Soll = Mehrheit aus Stapel-Autor, Claude-Agent und Codex. Die Apps wurden nicht neu gemessen, nur
+gegen das neue Soll ausgewertet. Diese Tabelle ersetzt die vorläufigen Zahlen oben.
+
+Einigkeit (Fleiss' Kappa): Bereich 0,92 · Schriftstück 0,96 · Absender 0,89 · Frist 0,92 · Person 0,22 (nicht tragfähig: ein
+Ein-Personen-Haushalt, uneins, wann ein Mieter als Person gilt). Belege einstimmig: Betrag 45/45, Datum 45/45, Richtung 43/45,
+Steuersatz 40/45, Konto 34/45. Kein Schriftstück, kein Beleg und kein Umsatz ohne Mehrheit (Person: 4).
+
+| Was | Text | gescannt |
+| --- | --- | --- |
+| Datei-Organizer Bereich | 74/93 = 80 % (70–87), falsch und sicher 13 | 74/93 = 80 %, 13 |
+| Datei-Organizer Schriftstück | 75/93 = 81 % (71–87), 7 | 77/93 = 83 %, 7 |
+| Datei-Organizer Absender | 81/93 = 87 % (79–92), 8 | 78/93 = 84 %, 11 |
+| Datei-Organizer Frist (alle Stücke) | 76/93 = 82 % (73–88), 9 | 76/93 = 82 %, 9 |
+| Familienakte heute: Bereich · Absender | 13/93 = 14 % · 33/93 = 35 % | 13/93 = 14 % · 31/93 = 33 % |
+| BookLedgerPro Betrag | 38/45 = 84 % | 37/45 = 82 % |
+| BookLedgerPro Datum | 43/45 = 96 % | 41/45 = 91 % |
+| BookLedgerPro Steuersatz | 40/40 = 100 % | 40/40 |
+| BookLedgerPro Richtung | 41/45 = 91 % | 41/45 |
+| BookLedgerPro Konto: Regeln · Regeln + Wortmodell (mit Namen) | 26/45 = 58 % · 28/45 = 62 % | 26/45 · 28/45 |
+| Fristen: Familienakte richtig und Erinnerung geplant | 25/40 = 63 % (47–76); keine erkannt 14, falsches Datum 1, fälschlich 5/53 | gleich |
+| Fristen: Kern des Datei-Organizers | 33/40 = 83 % (68–91); keine 4, falsches Datum 3, fälschlich 10/53 | gleich |
+| Private Brain Pro: Rechnung/Vertrag/Angebot richtig · andere fälschlich so | 13/22 · 17/71 | gleich |
+| Kontoauszug gescannt: Umsatz vollständig lesbar | – | 187/223 = 84 % (unverändert, hängt nicht am Soll) |
+| BookLedgerPro Zahlungsabgleich (MT940): ein Beleg · zwei Belege · ohne Beleg fälschlich zugeordnet | 51/51 · 1/1 · 22/171 | – |
+
+**Ende-zu-Ende heute:** 25 von 40 Fristen (63 %) vom gescannten Stück bis zur geplanten Erinnerung in der Familienakte.
+Der Stapel ist damit verbraucht.
