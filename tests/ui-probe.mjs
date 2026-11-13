@@ -179,14 +179,71 @@ try {
     await page.evaluate(() => { const dt = new DataTransfer(); dt.items.add(new File(["Stadtwerke Muster GmbH\nRechnung Nr. 77\nBetrag 50,00 EUR"], "hineingezogen-rechnung.txt", { type: "text/plain" })); dt.items.add(new File(["Notiz eins"], "hineingezogen-notiz.txt", { type: "text/plain" })); document.querySelector("[data-ablage]").dispatchEvent(new DragEvent("drop", { dataTransfer: dt, bubbles: true, cancelable: true })); });
     await page.waitForFunction((v) => Number(((document.querySelector("[data-ordner-pill]")?.textContent || "").match(/· (\d+)/) || [])[1] || 0) === v + 2, vorher, { timeout: 15000 }).catch(() => {});
     soll("Drag and Drop fügt hinzu, der Bestand bleibt", vorher > 0 && await zahl() === vorher + 2, `${vorher} → ${await zahl()}`);
+    // Texterkennung in der App (Klaus 13.11.): ein Foto mit Text wird gelesen – mit den gepinnten Sprachdaten aus src/public/vendor/.
+    // Dazu „ältere Fassung“: dieselbe Notiz als „(2)“ mit anderem Inhalt wird markiert, nicht entfernt.
+    const davor = await zahl();
+    await page.evaluate(async () => {
+      const c = document.createElement("canvas"); c.width = 1400; c.height = 600; const g = c.getContext("2d");
+      g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height); g.fillStyle = "#000"; g.font = "bold 54px Arial";
+      ["Stadtwerke Musterstadt GmbH", "Rechnung Nummer 4711", "Betrag zahlbar bis 15.12.2026"].forEach((z, i) => g.fillText(z, 60, 140 + i * 130));
+      const png = await new Promise((ok) => c.toBlob(ok, "image/png"));
+      const dt = new DataTransfer(); dt.items.add(new File([png], "hineingezogen-foto-rechnung.png", { type: "image/png" }));
+      dt.items.add(new File(["Notiz eins, jetzt mit Nachtrag"], "hineingezogen-notiz (2).txt", { type: "text/plain" }));
+      document.querySelector("[data-ablage]").dispatchEvent(new DragEvent("drop", { dataTransfer: dt, bubbles: true, cancelable: true }));
+    });
+    await page.waitForFunction((v) => Number(((document.querySelector("[data-ordner-pill]")?.textContent || "").match(/· (\d+)/) || [])[1] || 0) === v + 2, davor, { timeout: 120000 }).catch(() => {});
+    await page.waitForTimeout(900);
+    const gespeichert = await page.evaluate(() => new Promise((ok) => { const r = indexedDB.open("DateiOrganizer1", 1); r.onsuccess = () => { const q = r.result.transaction("kv").objectStore("kv").get("zustand"); q.onsuccess = () => ok(q.result); }; r.onerror = () => ok(null); }));
+    const foto = gespeichert?.dateien?.find((d) => d.name === "hineingezogen-foto-rechnung.png"), notiz = gespeichert?.dateien?.find((d) => /^hineingezogen-notiz( \(2\))?\.txt$/.test(d.name) && d.aehnlich);
+    soll("Texterkennung in der App liest ein Foto mit Text", foto?.textQuelle === "ocr" && /Rechnung/i.test(foto?.volltext || ""), `${foto?.textQuelle} ${JSON.stringify((foto?.volltext || "").slice(0, 80))}`);
+    soll("Ältere Fassung wird als „ähnlich“ markiert, nicht entfernt", !!notiz?.aehnlich && notiz.aehnlich.art === "fassung" && /hineingezogen-notiz/.test(notiz.aehnlich.zu) && await page.locator("[data-zahl=aehnlich]").count() === 1, JSON.stringify(notiz?.aehnlich));
     await page.goto(basis + "#finden"); await page.locator("[data-suche]").fill("hineingezogen-notiz"); await page.waitForTimeout(300);
     await page.locator("[data-datei]").first().click();
     soll("Steckbrief hat Ansehen, Teilen und Entfernen", await page.locator("[data-steckbrief] [data-original]").count() === 1 && await page.locator("[data-steckbrief] [data-teilen]").count() === 1 && await page.locator("[data-steckbrief] [data-entfernen]").count() === 1);
     await page.locator("[data-steckbrief] [data-entfernen]").click(); await page.waitForTimeout(300);
-    soll("Entfernen nimmt genau diese eine Datei aus der Liste", await zahl() === vorher + 1, `${await zahl()}`);
+    soll("Entfernen nimmt genau diese eine Datei aus der Liste", await zahl() === vorher + 3, `${await zahl()}`);
     await page.locator("[data-suche]").fill("hineingezogen"); await page.waitForTimeout(300);
     await page.locator("[data-entfernen-liste]").click(); await page.waitForTimeout(300);
     soll("„Entfernen“ über der Liste nimmt alle Treffer heraus", await zahl() === vorher, `${await zahl()}`);
+  }
+  // ---------- Landkarte und Dashboard (Klaus 13.11.): Kästen sind Links, an jeder Datei Auge, Stift, Papierkorb ----------
+  {
+    await page.setViewportSize({ width: 1280, height: 900 }); await page.goto(basis + "#ordner"); await page.waitForTimeout(300);
+    await page.locator("[data-landkarte-knopf]").click(); await page.waitForTimeout(300);
+    const gesamt = Number(await page.locator("[data-kachel=gesamt] b").innerText());
+    soll("Landkarten-Knopf im Kopf öffnet das Dashboard mit allen Dateien", gesamt > 0 && await page.locator("[data-kachel]").count() === 6, String(gesamt));
+    await page.locator("[data-kachel=offen]").click(); await page.waitForTimeout(200);
+    soll("Kasten „von dir zu entscheiden“ führt zum Prüfen", (await page.evaluate(() => location.hash)) === "#sortieren");
+    await page.goto(basis + "#landkarte"); await page.waitForTimeout(300);
+    const bereich = page.locator("[data-bereich]").first(), name = await bereich.getAttribute("data-bereich"), n = Number(await bereich.locator(".n").innerText());
+    await bereich.click(); await page.waitForTimeout(400);
+    const titel = await page.locator("[data-liste] .card-heading h2").innerText(), inListe = Number(await page.locator("[data-liste] .card-heading .badge").innerText());
+    soll("Bereich im Dashboard führt in genau diesen Ordner im Baum", (await page.evaluate(() => location.hash)) === "#finden" && titel === name && inListe === n, `${name} ${n} / ${titel} ${inListe}`);
+    const eintrag = page.locator("[data-liste] .datei-eintrag").first();
+    soll("Jede Datei in der Liste hat Auge, Stift und Papierkorb", await eintrag.locator("[data-auge]").count() === 1 && await eintrag.locator("[data-stift]").count() === 1 && await eintrag.locator("[data-papierkorb]").count() === 1);
+    await eintrag.locator("[data-stift]").click();
+    const wahl = eintrag.locator("[data-feld-aendern] [data-wert]");
+    const neu = await wahl.evaluate((e, alt) => [...e.options].map((o) => o.value).find((v) => v && v !== alt), name);
+    await wahl.selectOption(neu); await eintrag.locator("[data-feld-aendern] [data-uebernehmen]").click(); await page.waitForTimeout(400);
+    soll("Stift: Bereich einer schon eingeordneten Datei von Hand ändern – sie verlässt diesen Ordner", Number(await page.locator("[data-liste] .card-heading .badge").innerText()) === n - 1, `${neu}`);
+    await page.locator("[data-nav=verlauf]").click(); await page.waitForTimeout(200);
+    soll("… und die Änderung steht im Verlauf", (await page.locator("main").innerText()).includes(neu));
+    await page.goto(basis + "#landkarte"); await page.waitForTimeout(300);
+    await page.locator("[data-kachel=sicher]").click(); await page.waitForTimeout(400);
+    const vorP = Number(await page.locator("[data-liste] .card-heading .badge").innerText());
+    soll("Kasten „eingeordnet – nachprüfen“ zeigt die eingeordneten Dateien", (await page.locator("[data-liste] .card-heading h2").innerText()) === "In Ordnung" && vorP > 0);
+    await page.locator("[data-liste] .datei-eintrag").first().locator("[data-papierkorb]").click(); await page.waitForTimeout(400);
+    soll("Papierkorb nimmt die Datei aus dem Organizer", Number(await page.locator("[data-liste] .card-heading .badge").innerText()) === vorP - 1);
+    await page.goto(basis + "#landkarte"); await page.waitForTimeout(300);
+    await page.locator("[data-reiter=organizer]").click();
+    const rahmen = page.frameLocator("[data-karte=organizer]");
+    await rahmen.locator(".kasten").first().waitFor({ timeout: 10000 }).catch(() => {});
+    soll("Landkarte Organizer im Rahmen: Kästen da, eigener Titel und Reiter ausgeblendet", await rahmen.locator(".kasten").count() > 10 && !(await rahmen.locator(".kopf").isVisible()));
+    await rahmen.locator("#o_index").click();
+    soll("Kasten antippen zeigt, woher und wohin", /Kommt von:[\s\S]*Geht zu:/.test(await rahmen.locator("#tafel").innerText()));
+    await page.locator("[data-reiter=familienakte]").click();
+    await page.frameLocator("[data-karte=familienakte]").locator("#f_tresor").waitFor({ timeout: 10000 }).catch(() => {});
+    soll("Landkarte Familienakte im Rahmen", await page.frameLocator("[data-karte=familienakte]").locator("#f_tresor").count() === 1);
   }
   await page.setViewportSize({ width: 1280, height: 900 }); await page.goto(basis + "#akte"); await page.waitForTimeout(300);
   soll("Kein Update-Fähnchen, solange die Fassung aktuell ist", await page.locator("[data-update-fahne]").count() === 0);

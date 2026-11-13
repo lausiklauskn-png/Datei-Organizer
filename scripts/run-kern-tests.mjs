@@ -18,6 +18,10 @@ import { SICHTEN, baum, dateienUnter, suche } from "../lib/sichten.ts";
 import { organizerIndex, indexLesen, steckbrief } from "../lib/index-format.ts";
 import { KATEGORIEN } from "../lib/kategorien.ts";
 import { archivnummernVergeben, offeneFuerNummer } from "../lib/archivnummer.ts";
+import { aehnlicheFinden, namensStamm, textFingerabdruck, gleicheGroesse } from "../lib/aehnlich.ts";
+import { innenAusBefunden, innenKurz } from "../lib/innen.ts";
+import { pdfKennung } from "../lib/pdfkennung.ts";
+import { createRequire } from "node:module";
 
 const WURZEL = join(dirname(fileURLToPath(import.meta.url)), "..");
 let gruen = 0, rot = 0;
@@ -159,6 +163,71 @@ soll("Absender ≥ 90 %", quote.absender.richtig / quote.absender.gesamt >= 0.9,
 soll("Kategorie ≥ 85 %", quote.kategorie.richtig / quote.kategorie.gesamt >= 0.85, `${quote.kategorie.richtig}/${quote.kategorie.gesamt}`);
 soll("höchstens 3 Fehler, die als „sicher“ gelten (Art)", quote.schriftstueck.falschSicher <= 3, String(quote.schriftstueck.falschSicher));
 
+
+// ---------- Ähnliche Dateien (Klaus 13.11.: Doppelungen über den gleichen Inhalt hinaus) ----------
+{
+  const D = (pfad, x = {}) => ({ pfad, name: pfad.split("/").pop(), groesse: 100, geaendert: 1, stufe: 1, felder: {}, sha256: pfad, ...x });
+  soll("Stamm: „Kopie von“, „(2)“, „_v3“, „_final“ fallen weg", ["Kopie von Angebot Müller.docx", "Angebot Müller (2).docx", "Angebot_Müller_v3.docx", "Angebot Müller final.docx"].every((n) => namensStamm(n) === "angebot müller"), ["Kopie von Angebot Müller.docx", "Angebot_Müller_v3.docx"].map(namensStamm).join(" | "));
+  const text = "Sehr geehrte Damen und Herren, anbei erhalten Sie das Angebot für die Sanierung des Daches. ".repeat(4);
+  const r = aehnlicheFinden([
+    D("A/Angebot Dach.docx", { geaendert: 5, volltext: text }), D("B/Angebot Dach.pdf", { geaendert: 9, volltext: text.replace(/  /g, " ") }),
+    D("A/Plan.dwg", { geaendert: 1 }), D("A/Plan_v2.dwg", { geaendert: 2 }),
+    D("A/rg1.pdf", { felder: { absender: { wert: "Muster GmbH" }, schriftstueck: { wert: "Rechnung" }, nummern: [{ art: "Rechnungsnummer", wert: "R-4711" }] } }),
+    D("B/rg1-scan.pdf", { geaendert: 3, felder: { absender: { wert: "muster gmbh" }, schriftstueck: { wert: "Rechnung" }, nummern: [{ art: "Rechnungsnummer", wert: "R-4711" }] } }),
+    D("A/IMG_1.jpg", { bild: { aufnahme: "2026-05-01T10:00:00", modell: "S21" } }), D("A/IMG_1_klein.jpg", { geaendert: 2, bild: { aufnahme: "2026-05-01T10:00:00", modell: "S21" } }),
+    D("A/notizen.txt"), D("B/notizen.txt", { geaendert: 2 }),
+    D("A/rechnung.pdf"), D("C/brief.pdf"),
+    D("X/gleich.pdf", { sha256: "s1" }), D("Y/gleich.pdf", { sha256: "s1", doppeltVon: "X/gleich.pdf" }), D("Z/gleich.pdf", { sha256: "s2", geaendert: 7 }),
+  ]);
+  const a = (p) => r.find((d) => d.pfad === p).aehnlich;
+  soll("gleicher Text, andere Datei → „inhalt“ zur neueren", a("A/Angebot Dach.docx")?.art === "inhalt" && a("A/Angebot Dach.docx").zu === "B/Angebot Dach.pdf" && !a("B/Angebot Dach.pdf"), JSON.stringify(a("A/Angebot Dach.docx")));
+  soll("Plan.dwg ist ältere Fassung von Plan_v2.dwg (auch ohne lesbaren Text)", a("A/Plan.dwg")?.art === "fassung" && !a("A/Plan_v2.dwg"), JSON.stringify(a("A/Plan.dwg")));
+  soll("gleicher Absender + gleiche Rechnungsnummer → „beleg“", a("A/rg1.pdf")?.art === "beleg", JSON.stringify(a("A/rg1.pdf")));
+  soll("gleiche Aufnahme, andere Größe → „foto“", a("A/IMG_1.jpg")?.art === "foto");
+  soll("gleicher Name in anderem Ordner, anderer Inhalt → „name“", a("A/notizen.txt")?.art === "name");
+  soll("Unverwandtes bleibt unmarkiert", !a("A/rechnung.pdf") && !a("C/brief.pdf"));
+  soll("Exakte Doppelung bleibt bei doppeltVon, nicht zusätzlich „ähnlich“", !a("Y/gleich.pdf") && a("X/gleich.pdf")?.art === "name" && a("X/gleich.pdf").zu === "Z/gleich.pdf", JSON.stringify([a("X/gleich.pdf"), a("Y/gleich.pdf")]));
+  soll("Kurzer Text gibt keinen Text-Fingerabdruck (kein Fehlalarm bei Einzeilern)", textFingerabdruck("Rechnung 12") === undefined && !!textFingerabdruck(text));
+  soll("Größe zuerst: nur gleich große Dateien sind Kandidaten", gleicheGroesse([{ groesse: 10 }, { groesse: 10 }, { groesse: 11 }, { groesse: 0 }, { groesse: 0 }]).length === 1);
+  soll("Neu laufen lassen entfernt veraltete Marken", !aehnlicheFinden([{ ...D("A/x.txt"), aehnlich: { art: "name", zu: "B/x.txt", grund: "" } }])[0].aehnlich);
+}
+
+// ---------- Merkmale aus dem Datei-Innern: Prüfkern des Auslieferungsprüfers (byte-gleich, src/public/vendor/) ----------
+{
+  const i = innenAusBefunden([{ kennung: "PDF-METADATEN", satz: "Author: Muster GmbH" }, { kennung: "PDF-METADATEN", satz: "Creator: Microsoft® Word 2019" }, { kennung: "PDF-METADATEN", satz: "Title: Angebot 4711" }, { kennung: "PDF-METADATEN", satz: "xmp:CreateDate: 2025-03-04T10:12:00+01:00" }, { kennung: "PDF-ALTFASSUNG", satz: "frühere Fassung" }]);
+  soll("Befunde → Autor, Programm, Titel, Erstelldatum, Befundliste", i?.autor === "Muster GmbH" && i.programm === "Microsoft® Word 2019" && i.titel === "Angebot 4711" && i.erstellt === "2025-03-04" && i.befunde.includes("PDF-ALTFASSUNG"), JSON.stringify(i));
+  soll("Kurzsatz für die Anzeige", innenKurz(i) === "Muster GmbH · „Angebot 4711“ · Microsoft® Word 2019 · erstellt 04.03.2025", innenKurz(i));
+  soll("Unbekanntes wird nicht geraten", innenAusBefunden([{ kennung: "PDF-METADATEN", satz: "Seltsam ohne Doppelpunkt" }])?.autor === undefined && innenAusBefunden([]) === undefined);
+  const req = createRequire(import.meta.url);
+  const V = join(WURZEL, "src/public/vendor/pruefkern");
+  req(join(V, "pruefer-formate.js")); req(join(V, "pruefer-anhang.js"));
+  const PF = globalThis.PrueferFormate, PA = globalThis.PrueferAnhang;
+  const kern = async (name, bytes, art) => art === "pdf" ? { befunde: (await PF.pruefePdf(bytes, [])).stellen.map((x) => ({ kennung: x.kennung, satz: x.satz.replace(/ \([^()]*\)$/, "") })) }
+    : await PA.pruefe(name, bytes).then((r) => ({ befunde: r.befunde, text: r.text }));
+  // PDF mit Infofeldern: Autor/Programm/Titel stehen im Inneren, auch ohne lesbaren Seitentext
+  const roh = new TextDecoder("latin1").decode(textPdf([["Angebot"]]));
+  const mitInfo = new TextEncoder().encode(roh.replace("trailer", "9 0 obj\n<< /Author (Muster GmbH) /Creator (Writer) /Title (Angebot 4711) >>\nendobj\ntrailer"));
+  const pdfjsNode = await import("pdfjs-dist/legacy/build/pdf.mjs");
+  const pdfLesen = (b) => pdfTextLesen(pdfjsNode, b);
+  const [p1] = await einlesen({ pfad: "a.pdf", name: "a.pdf", geaendert: 1, bytes: mitInfo }, pdfLesen, 0, undefined, kern);
+  soll("Echter Prüfkern: PDF-Infofelder landen im Steckbrief", p1.innen?.autor === "Muster GmbH" && p1.innen?.titel === "Angebot 4711" && p1.innen?.programm === "Writer", JSON.stringify(p1.innen));
+  // Excel (XLSX): Text kommt aus dem Prüfkern – der Organizer las bisher nur Word/ODT
+  const crc = (b) => { let c = ~0; for (const x of b) { c ^= x; for (let k = 0; k < 8; k++) c = (c >>> 1) ^ (0xedb88320 & -(c & 1)); } return ~c >>> 0; };
+  const zip = (eintraege) => { const teile = [], zentral = []; let off = 0; const enc = new TextEncoder();
+    for (const [n, inhalt] of eintraege) { const name = enc.encode(n), d = enc.encode(inhalt), c = crc(d);
+      const k = new DataView(new ArrayBuffer(30)); k.setUint32(0, 0x04034b50, true); k.setUint16(4, 20, true); k.setUint32(14, c, true); k.setUint32(18, d.length, true); k.setUint32(22, d.length, true); k.setUint16(26, name.length, true);
+      const z = new DataView(new ArrayBuffer(46)); z.setUint32(0, 0x02014b50, true); z.setUint16(4, 20, true); z.setUint16(6, 20, true); z.setUint32(16, c, true); z.setUint32(20, d.length, true); z.setUint32(24, d.length, true); z.setUint16(28, name.length, true); z.setUint32(42, off, true);
+      teile.push(new Uint8Array(k.buffer), name, d); zentral.push(new Uint8Array(z.buffer), name); off += 30 + name.length + d.length; }
+    const groesse = zentral.reduce((s, x) => s + x.length, 0), e = new DataView(new ArrayBuffer(22)); e.setUint32(0, 0x06054b50, true); e.setUint16(8, eintraege.length, true); e.setUint16(10, eintraege.length, true); e.setUint32(12, groesse, true); e.setUint32(16, off, true);
+    const alle = [...teile, ...zentral, new Uint8Array(e.buffer)], out = new Uint8Array(alle.reduce((s, x) => s + x.length, 0)); let o = 0; for (const x of alle) { out.set(x, o); o += x.length; } return out; };
+  const xlsx = zip([["[Content_Types].xml", '<?xml version="1.0"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"/>'], ["xl/workbook.xml", "<workbook/>"],
+    ["xl/sharedStrings.xml", '<sst><si><t>Stundenliste Baustelle Lindenstraße</t></si><si><t>Kunde Muster GmbH</t></si></sst>'], ["xl/worksheets/sheet1.xml", "<worksheet><sheetData/></worksheet>"]]);
+  const [x1] = await einlesen({ pfad: "liste.xlsx", name: "liste.xlsx", geaendert: 1, bytes: xlsx }, pdfLesen, 0, undefined, kern);
+  soll("Echter Prüfkern: Text aus Excel wird gelesen", x1.textQuelle === "office" && /Lindenstraße/.test(x1.volltext || ""), `${x1.textQuelle} ${JSON.stringify((x1.volltext || "").slice(0, 80))}`);
+  const [x0] = await einlesen({ pfad: "liste.xlsx", name: "liste.xlsx", geaendert: 1, bytes: xlsx }, pdfLesen);
+  soll("Ohne Prüfkern bleibt Excel ohne Text (wie bisher)", x0.textQuelle === "keiner" && !x0.innen);
+}
+
 // ---------- Lernen ----------
 const schule = dateien.find((d) => d.name === "Dokument(4).pdf");
 soll("Schul-Brief: Absender erkannt", /Schule am Beispielpark/.test(schule?.felder.absender?.wert || ""), schule?.felder.absender?.wert);
@@ -248,6 +317,30 @@ if (existsSync(fa)) {
   const hund = "Tierarztpraxis am Mühlbach\nRechnung für die Impfung und Wurmkur Ihres Hundes Bello, Behandlung vom 3. Mai. Bitte überweisen Sie den Betrag.";
   soll("Wortmodell: echter Bereich kommt aus der Liste", KATEGORIEN.includes(bereichMitModell(undefined, hund)?.wert ?? "Korrespondenz"));
   soll("Wortmodell: Vorhersage nennt Abstand und Zweites", (() => { const v = vorhersage(WORTMODELL_ART, merkmale("Letzte Mahnung: Trotz unserer Zahlungserinnerung ist der offene Betrag nicht eingegangen. Mahngebühr und Verzugszinsen kommen hinzu.")); return v?.wert === "Mahnung" && v.abstand > 0 && !!v.zweites; })());
+}
+
+// ---------- PDF-Kennung zur Herkunft (Klaus 13.11.: „liest der Prüfkern bisher nicht“) ----------
+{
+  const enc = (s) => new TextEncoder().encode(s);
+  const A = "1A2B3C4D5E6F708192A3B4C5D6E7F801", B1 = "00112233445566778899AABBCCDDEEFF", B2 = "FFEEDDCCBBAA99887766554433221100";
+  const pdf = (id1, id2, extra = "") => enc(`%PDF-1.7\n1 0 obj << /Type /Catalog >> endobj\n${extra}trailer\n<< /Size 2 /Root 1 0 R /ID [ <${id1}> <${id2}> ] >>\nstartxref\n9\n%%EOF\n`);
+  const k = pdfKennung(pdf(A, B1));
+  soll("Trailer /ID → Herkunft und Fassung, klein geschrieben", k?.herkunft === A.toLowerCase() && k.fassung === B1.toLowerCase(), JSON.stringify(k));
+  const inkr = enc(new TextDecoder().decode(pdf(A, B1)) + `2 0 obj << >> endobj\ntrailer\n<< /Size 3 /Root 1 0 R /Prev 9 /ID [<${A}><${B2}>] >>\n%%EOF\n`);
+  soll("Nach inkrementellem Speichern gilt das letzte Paar", pdfKennung(inkr)?.fassung === B2.toLowerCase(), JSON.stringify(pdfKennung(inkr)));
+  soll("Querverweis-Strom (/Type /XRef) mit /ID wird gelesen", pdfKennung(enc(`%PDF-1.5\n5 0 obj << /Type /XRef /Size 6 /ID [<${A}> <${B1}>] /Length 0 >> stream\nendstream endobj\nstartxref\n9\n%%EOF`))?.herkunft === A.toLowerCase());
+  const lin = enc(`%PDF-1.6\n1 0 obj << /Linearized 1 >> endobj\ntrailer << /ID [<${A}><${B1}>] >>\n` + " ".repeat(70 * 1024) + "%%EOF");
+  soll("Linearisierte PDF: Kennung am Anfang", pdfKennung(lin)?.herkunft === A.toLowerCase());
+  soll("Ohne /ID, mit Nullen oder zu kurz: keine Kennung", !pdfKennung(enc("%PDF-1.4\ntrailer << /Size 1 >>\n%%EOF")) && !pdfKennung(pdf("0".repeat(32), B1)) && !pdfKennung(pdf("ABCD", B1)) && !pdfKennung(enc(`kein pdf /ID [<${A}><${B1}>]`)));
+  const D = (pfad, id, x = {}) => ({ pfad, name: pfad.split("/").pop(), groesse: 100, geaendert: 1, stufe: 1, felder: {}, sha256: pfad, innen: { befunde: [], pdfKennung: { herkunft: id, fassung: pfad } }, ...x });
+  const r = aehnlicheFinden([D("A/Mietvertrag.pdf", "aa".repeat(16)), D("B/Scan 0042.pdf", "aa".repeat(16), { geaendert: 5 }), D("C/fremd.pdf", "bb".repeat(16))]);
+  const m = (p) => r.find((d) => d.pfad === p).aehnlich;
+  soll("Gleiche PDF-Kennung, anderer Name und Inhalt → „fassung“ zur neueren", m("A/Mietvertrag.pdf")?.art === "fassung" && m("A/Mietvertrag.pdf").zu === "B/Scan 0042.pdf" && /PDF-Kennung/.test(m("A/Mietvertrag.pdf").grund) && !m("C/fremd.pdf"), JSON.stringify(m("A/Mietvertrag.pdf")));
+  const fest = aehnlicheFinden(Array.from({ length: 21 }, (_, i) => D(`S/scan${i}.pdf`, "cc".repeat(16), { geaendert: i })));
+  soll("Feste Kennung eines Geräts (mehr als 20 Dateien) sagt nichts – keine Marke", fest.every((d) => !d.aehnlich));
+  soll("Kurzsatz nennt die PDF-Kennung", /PDF-Kennung 1a2b3c4d…/.test(innenKurz({ befunde: [], pdfKennung: k })));
+  const [e] = await einlesen({ pfad: "x/k.pdf", name: "k.pdf", geaendert: 1, bytes: pdf(A, B1) }, async () => ({ kopf: "", voll: "" }));
+  soll("Einlesen setzt die Kennung auch ohne Prüfkern", e.innen?.pdfKennung?.herkunft === A.toLowerCase(), JSON.stringify(e.innen));
 }
 
 console.log(`Kern: ${gruen} grün · ${rot} ROT`);

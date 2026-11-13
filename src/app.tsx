@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Archive, FolderOpen, FolderTree, HelpCircle, History, ListChecks, RefreshCw, Search } from "lucide-react";
+import { Archive, FolderOpen, FolderTree, HelpCircle, History, ListChecks, Map as KarteSymbol, RefreshCw, Search } from "lucide-react";
 import type { Datei, FeldName, Korrektur, Lernregel } from "../lib/typen.ts";
 import { einlesen, doppelteMarkieren } from "../lib/einlesen.ts";
+import { aehnlicheFinden } from "../lib/aehnlich.ts";
+import { bildLeser, kernLeser } from "./vendor.ts";
 import { leseEml } from "../lib/eml.ts";
 import { siebe, istUnsicher, offeneFelder } from "../lib/siebe.ts";
 import { absenderVereinheitlichen } from "../lib/abgleich.ts";
@@ -12,12 +14,15 @@ import { pdfLeser } from "./pdf.ts";
 import { ausHandle, erlaubnisPruefen, herunterladen, type Quelle, type QuellDatei } from "./quellen.ts";
 import { laden, loeschen, ordnerHolen, ordnerMerken, speichern } from "./zustand.ts";
 import { OrdnerSeite, SortierenSeite, FindenSeite, VerlaufSeite, AkteSeite, HilfeSeite } from "./seiten.tsx";
+import { LandkarteSeite } from "./landkarte.tsx";
 
-export const FASSUNG = "0.3.3";
+export const FASSUNG = "0.3.4";
 // Ladeanzeige: „suchen“ = Ordner wird durchgesehen (Zahl noch unbekannt), „lesen“ = Datei für Datei, „stand“ = gemerkter Stand beim Start.
 export type Fortschritt = { phase: "stand" | "suchen" | "lesen"; fertig: number; gesamt: number; name?: string };
 const luft = () => new Promise<void>((r) => setTimeout(r)); // dem Browser Zeit zum Zeichnen geben
-export type SeitenId = "ordner" | "sortieren" | "finden" | "verlauf" | "akte" | "hilfe";
+export type SeitenId = "ordner" | "sortieren" | "finden" | "verlauf" | "akte" | "hilfe" | "landkarte";
+/** Sprungziel für „Finden“: eine Sicht und darin ein Ordner (Titel im Baum). Kommt vom Dashboard. */
+export type FindenZiel = { sicht: string; knoten?: string; nr: number } | null;
 export type Meldung = { text: string; art?: "halt" | "fehler" } | null;
 export const heute = () => new Date().toISOString().slice(0, 10);
 
@@ -26,7 +31,7 @@ const SEITEN: Array<{ id: SeitenId; name: string; symbol: typeof FolderOpen }> =
   { id: "finden", name: "Finden", symbol: FolderTree }, { id: "verlauf", name: "Verlauf", symbol: History },
   { id: "akte", name: "Familienakte", symbol: Archive }, { id: "hilfe", name: "Hilfe", symbol: HelpCircle },
 ];
-const seiteAusHash = (): SeitenId => { const h = location.hash.replace("#", ""); return (SEITEN.some((s) => s.id === h) ? h : "ordner") as SeitenId; };
+const seiteAusHash = (): SeitenId => { const h = location.hash.replace("#", ""); return (SEITEN.some((s) => s.id === h) || h === "landkarte" ? h : "ordner") as SeitenId; };
 
 export type AppZustand = ReturnType<typeof useOrganizer>;
 
@@ -62,7 +67,7 @@ function useOrganizer() {
     let liste: QuellDatei[];
     try { liste = await q.dateien(); } catch (e) { setFortschritt(null); setMeldung({ text: `Ordner „${q.name}“ nicht lesbar: ${(e as Error).message}. Die Anzeige ist unverändert.`, art: "fehler" }); return; }
     if (!liste.length) { setFortschritt(null); setMeldung({ text: `In „${q.name}“ liegen keine lesbaren Dateien. Die Anzeige ist unverändert.`, art: "halt" }); return; }
-    const lesePdf = await pdfLeser();
+    const lesePdf = await pdfLeser(bildLeser);
     const neu: Datei[] = [];
     if (!dazu) originale.current.clear();
     setFortschritt({ phase: "lesen", fertig: 0, gesamt: liste.length });
@@ -71,7 +76,7 @@ function useOrganizer() {
       if (performance.now() - gezeichnet > 80) { setFortschritt({ phase: "lesen", fertig: i, gesamt: liste.length, name: qd.name }); await luft(); gezeichnet = performance.now(); }
       try {
         const bytes = await qd.lesen();
-        const teile = await einlesen({ pfad: qd.pfad, name: qd.name, geaendert: qd.geaendert, bytes }, lesePdf);
+        const teile = await einlesen({ pfad: qd.pfad, name: qd.name, geaendert: qd.geaendert, bytes }, lesePdf, 0, bildLeser, kernLeser);
         originale.current.set(qd.pfad, qd);
         neu.push(...teile);
       } catch (e) {
@@ -137,6 +142,8 @@ function useOrganizer() {
       s++;
       d = d.map((x) => siebe(x, s, regeln));
       if (s >= 4) d = absenderVereinheitlichen(d);
+      // Nach jedem Sieb neu: gleicher Beleg wird erst mit Absender und Nummer sichtbar.
+      d = aehnlicheFinden(d);
       const offen = d.filter((x) => istUnsicher(x, s)).length;
       if (bis !== undefined && offen) { setDateien(d); setStufe(s); setMeldung({ text: `Halt bei Sieb ${s}: ${offen} ${offen === 1 ? "Datei" : "Dateien"} bitte prüfen. Danach geht es weiter.`, art: "halt" }); return; }
       if (bis === undefined) { const gesamt = d.filter((x) => offeneFelder(x).length > 0).length; setMeldung(offen ? { text: `Sieb Nr. ${s} ist durchgelaufen: ${offen} neu zu prüfen${gesamt > offen ? `, zusammen mit den früheren ${gesamt} offen` : ""}. Die neuen stehen unten zuerst.`, art: "halt" } : gesamt ? { text: `Sieb Nr. ${s} ist durchgelaufen: nichts Neues zu prüfen, ${gesamt} von früher noch offen.`, art: "halt" } : { text: `Sieb Nr. ${s} ist durchgelaufen: alles sicher.` }); }
@@ -295,7 +302,9 @@ export function App() {
   useEffect(() => { const f = () => setSeite(seiteAusHash()); window.addEventListener("hashchange", f); return () => window.removeEventListener("hashchange", f); }, []);
   const gehe = useCallback((s: SeitenId) => { location.hash = s; setSeite(s); window.scrollTo({ top: 0 }); }, []);
   const offen = useMemo(() => z.dateien.filter((d) => offeneFelder(d).length > 0).length, [z.dateien]);
-  const props = { z, gehe };
+  const [ziel, setZiel] = useState<FindenZiel>(null);
+  const oeffne = useCallback((sicht: string, knoten?: string) => { setZiel({ sicht, knoten, nr: Date.now() }); gehe("finden"); }, [gehe]);
+  const props = { z, gehe, oeffne, ziel };
   return <div className="app-shell">
     <header className="site-header">
       <div className="masthead">
@@ -307,6 +316,7 @@ export function App() {
           {neueFassung && <button type="button" className="update-fahne" data-update-fahne title={`Fassung ${neueFassung} steht bereit. Tippen aktualisiert; die Sortierung bleibt gemerkt.`} onClick={() => void aktualisieren(!!z.fortschritt && z.fortschritt.phase !== "stand")}><RefreshCw size={14}/>Update {neueFassung}</button>}
           <span className={`ordner-pill ${z.ordnerName ? "verbunden" : ""}`} data-ordner-pill title={z.ordnerName || "Kein Ordner gewählt"}>{z.fortschritt && z.fortschritt.phase !== "stand" ? "Wird geladen …" : z.ordnerName ? `${z.ordnerName} · ${z.dateien.length}` : "Kein Ordner"}</span>
           <button type="button" className="info-knopf" aria-label="Aktualisieren" title="Aktualisieren: App neu laden (neueste Fassung). Die Sortierung bleibt gemerkt." data-aktualisieren onClick={() => void aktualisieren(!!z.fortschritt && z.fortschritt.phase !== "stand")}><RefreshCw size={18}/></button>
+          <button type="button" className={`info-knopf ${seite === "landkarte" ? "aktiv" : ""}`} aria-label="Landkarte und Dashboard" title="Landkarte und Dashboard: was sortiert wurde, wohin es geht, wie die App arbeitet" onClick={() => gehe("landkarte")} data-landkarte-knopf><KarteSymbol size={18}/></button>
           <button type="button" className="info-knopf" aria-label="Suchen" onClick={() => gehe("finden")}><Search size={18}/></button>
         </div>
       </div>
@@ -324,6 +334,7 @@ export function App() {
       {seite === "verlauf" && <VerlaufSeite {...props}/>}
       {seite === "akte" && <AkteSeite {...props}/>}
       {seite === "hilfe" && <HilfeSeite {...props}/>}
+      {seite === "landkarte" && <LandkarteSeite {...props}/>}
     </main>
     <footer className="site-footer">
       <div className="footer-inner">
