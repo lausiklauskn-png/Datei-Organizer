@@ -23,3 +23,7 @@ Gebaut wird aus 1, 3, 4, 5 erst nach einer Vorschau mit Klaus' Ja je Punkt (sich
    (Fingerabdruck): gleicher Name doppelt vergeben, gleiche Datei unter anderem Namen – Doppelungen fliegen raus (aus der Sicht, nicht
    von der Platte). Kann eine Datei nicht gelesen werden, wird sie über ihren Code erkannt (Dateisignatur, Fingerabdruck, Größe, Datum)
    und so eingeordnet. Das ist Reduktion: die Menge schrumpft, bevor geordnet wird.
+8. **Mit dem Auslieferungsprüfer kombinieren (Klaus, Nachtrag):** Dessen Prüfkern liest Dokumente von innen (Dateikopf, PDF-Metadaten,
+   innere Ströme). Aus diesem Code heraus Zuordnung, Sortierung und Erkennung: z. B. gleiche PDF-/ID = gleiche Herkunft, Ersteller/Firma
+   aus den Office-Metadaten, echtes Erstellungsdatum statt Dateidatum, Message-ID bei Mails. Der Prüfkern ist im Plan schon als
+   byte-gleicher Baustein vorgesehen (`docs/PLAN.md`), keine zweite Fassung.
