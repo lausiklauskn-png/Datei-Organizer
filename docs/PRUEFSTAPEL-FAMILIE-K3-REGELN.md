@@ -62,3 +62,16 @@ mit Codex nachgerechnet – das Messen selbst (Ausgaben der Apps) geschieht trot
 ## Grenzen
 
 Ein erfundener Haushalt, von einem KI-Agenten geschrieben; gesetzte Seiten sind keine echten Scans; nichts am Gerät.
+
+## Eingefroren (13.11.2026, bevor der Stapel gelesen wird)
+
+Neuer Kern = Commit `f98a400` (Datei-Organizer). Gelernt nur an verbrauchten Stapeln:
+- **Fristen** (`lib/erkennen.ts`): Ende eines Zeitraums, Zinsbindung, Beitragszahlungs- und Leistungsdauer, Stichtag, Angebotsbindung
+  („halten uns bis“), Werbung („nur bis“, „bei Abschluss bis“) und Skonto-Tage sind keine Frist; Tage vor dem Briefdatum und mehr als
+  18 Monate danach auch nicht (nur bei sicher erkanntem Briefdatum); bei mehreren Fristen gilt dann die nächste; „Fälligkeiten: 1. Rate …
+  am“, „Zahlungstermine:“, „Zahlungsziel 14 Tage (…)“, nachgestellte Verneinung des Lastschriftmandats; Termine mit „Datum:“, „Aufnahmetag
+  ist …“, „– bitte um 7:00 Uhr“. **Briefdatum** (`erkenneDatum`): „den …“/„vom …“ nur als Ortszeile, sonst eine Datumszeile für sich.
+- **Wortmodell** (`lib/wortmodell-daten.ts`, `scripts/briefmodell-abstimmen.mjs --verbraucht …`, je Klasse höchstens 250 Beispiele):
+  lernt zusätzlich an den sechs verbrauchten Stapeln (Soll = Mehrheit).
+- **Abstimmung, kein Nachweis:** an den verbrauchten Stapeln Frist 851 → 881 von 937 (falsch und sicher 35 → 21); Wortmodell reihum
+  je Stapel ausgelassen: Art 615 → 650 von 887, Bereich 634 → 647. Eigene Kernprobe 119 grün.
