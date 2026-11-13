@@ -7,7 +7,9 @@
    NEEDS=/pfad/zu/Workflow-Needs (Vorgabe: ../../../Workflow-Needs neben diesem Repo).
    bedarf.json: { titel, kunde:{firma,ansprechpartner,mail,…}, weitereNamen, bereiche:{ "1":[text|{text,…}], … } }
      Bereich 3: {text, anzahl} · Bereich 6: {text, prio: muss|soll|kann, nutzen:{stundenMonat, euroMonat, text}} ·
-     Bereich 18: {text, wer, bis}
+     Bereich 18: {text, wer, bis} · Bereich 6 zusätzlich handeln: vorschlagen|selbst|egal (seit Runde 2)
+   Runde 2 (Needs mit Rahmen, 2026-11-13): rahmen:{geraete:[ids], offline:id, eigene:[ids], eigeneText, datenort:[ids], sicherung:[ids],
+     budgetEuro}, nicht:[text] — Ids siehe `node needs-lauf.mjs fragebogen`.
    umfang.json: { kundenStundenwertCent?, bausteine:[{katalog|null, name, groesse: klein|mittel|gross|null, deckt:[B-nn], faktoren?:[]}] } */
 import { createRequire } from "node:module";
 import { readFileSync, writeFileSync } from "node:fs";
@@ -19,7 +21,7 @@ const NEEDS = resolve(process.env.NEEDS || join(HIER, "../../../Workflow-Needs")
 const require = createRequire(import.meta.url);
 const still = console.log; console.log = () => {};
 for (const f of ["modules/25_pseudonym.js", "assets/kern/geld.js", "assets/daten/bausteine.js", "assets/daten/markt.js",
-  "assets/kern/bedarf.js", "assets/kern/rechnen.js", "assets/kern/fassungen.js", "assets/kern/bauauftrag.js"]) require(join(NEEDS, f));
+  "assets/kern/bedarf.js", "assets/kern/rahmen.js", "assets/kern/rechnen.js", "assets/kern/fassungen.js", "assets/kern/bauauftrag.js"]) require(join(NEEDS, f));
 console.log = still;
 const WN = globalThis.WN, P = globalThis.SbkimPseudonym;
 const EINST = { satzCent: 8000, ust: { modus: "regel", satz: 19 }, zeitraum: 24 };
@@ -41,13 +43,44 @@ function vorgangAus(bedarf) {
         e.prio = ["muss", "soll", "kann"].includes(o.prio) ? o.prio : "";
         const n = o.nutzen || {};
         e.nutzen = { stundenMonat: n.stundenMonat ?? null, euroMonat: n.euroMonat ?? null, text: n.text || "" };
+        if (o.handeln && WN.HANDELN.some((w) => w.id === o.handeln)) e.handeln = o.handeln;
       }
     }
   }
+  if (bedarf.rahmen && WN.rahmen) {
+    const r = bedarf.rahmen;
+    for (const k of WN.RAHMEN_FELDER) for (const id of [].concat(r[k] || [])) WN.rahmen.umschalten(p, k, id);
+    if (r.eigeneText) WN.rahmen.sicher(p).eigeneText = r.eigeneText;
+    if (r.budgetEuro != null) WN.rahmen.sicher(p).budgetEuro = Number(r.budgetEuro) || null;
+  }
+  for (const t of bedarf.nicht || []) WN.rahmen.nichtNeu(v, p, typeof t === "string" ? t : t.text);
   return v;
 }
 
+/* Fragebogen aus dem Code von Needs: die 18 Bereiche mit Chips und die Rahmen-Fragen mit ihren Ids. */
+function fragebogen() {
+  const L = ["# Fragebogen Workflow Needs (aus dem Code erzeugt)", "", WN.DEFINITION.de, "", "Kette: " + WN.DEFINITION.kette.de, ""];
+  for (const b of WN.BEREICHE) {
+    L.push(`## Bereich ${b.nr}: ${b.name.de}` + (b.chips.length ? ` (Vorschläge: ${b.chips.map((c) => c.de).join(", ")})` : ""));
+    if (b.nr === 6) L.push("Je Bedarf: Priorität muss|soll|kann, Nutzen (gesparte Stunden/Monat, €/Monat, in Worten), handeln: " + WN.HANDELN.map((w) => `${w.id} (${w.name.de})`).join(" | "));
+    if (b.nr === 8) L.push("Jeder Eintrag beginnt mit „Das System muss …“.");
+    if (b.nr === 16 || b.nr === 17) L.push("(Sicht auf die Bedarfe aus Bereich 6, keine eigenen Einträge)");
+    for (const k of WN.RAHMEN_FELDER) if (WN.RAHMEN[k].bereich === b.nr) {
+      const d = WN.RAHMEN[k];
+      L.push(`- Rahmen \`${k}\` – ${d.frage.de} (${d.mehrfach ? "mehrere" : "eine"}): ` + d.wahl.map((w) => `${w.id} = ${w.name.de}`).join(" · ") + (k === "eigene" ? " · dazu Freitext eigeneText" : ""));
+    }
+    if (b.nr === 15) L.push("- Rahmen `budgetEuro` – Budget-Rahmen gesamt in € (nur intern) · `nicht` – Liste: was die Lösung ausdrücklich NICHT tun soll");
+    L.push("");
+  }
+  return L.join("\n");
+}
+function katalog() {
+  return ["# Baustein-Katalog Workflow Needs (aus dem Code)", "", ...WN.BAUSTEINE.map((b) => `- \`${b.id}\` ${b.name.de} — Vorlage: ${b.vorlage || "–"}, Spannen h klein ${b.spannen.klein.join("–")} · mittel ${b.spannen.mittel.join("–")} · groß ${b.spannen.gross.join("–")}`),
+    "", "Faktoren: " + WN.FAKTOREN.map((f) => `\`${f.id}\` ${f.name.de} ×${f.mal}`).join(" · "), ""].join("\n");
+}
+
 const [art, a1, a2, a3] = process.argv.slice(2);
+if (art === "fragebogen") { process.stdout.write(fragebogen() + "\n" + katalog()); process.exit(0); }
 const bedarf = JSON.parse(readFileSync(a1, "utf8"));
 const v = vorgangAus(bedarf);
 const f = v.fassungen[0];
@@ -56,6 +89,7 @@ if (art === "liste") {
     const e = x.e;
     process.stdout.write(`${e.id} [Bereich ${x.nr} ${WN.BEREICHE[x.nr - 1].name.de}] ${e.text}${e.prio ? " (" + e.prio + ")" : ""}\n`);
   }
+  for (const n of (WN.rahmen ? WN.rahmen.nicht(f.protokoll) : [])) process.stdout.write(`${n.id} [nicht gewünscht] ${n.text}\n`);
   process.stdout.write(`Ausgefüllt: ${WN.bedarf.fortschritt(f.protokoll)} von 18 Bereichen\n`);
 } else if (art === "auftrag") {
   const umfang = JSON.parse(readFileSync(a2, "utf8"));
