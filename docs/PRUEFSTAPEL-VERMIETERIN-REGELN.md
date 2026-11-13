@@ -228,3 +228,35 @@ Der Stapel ist damit verbraucht.
   Konto 28 → 41 von 45, Umsätze ohne Beleg fälschlich zugeordnet 22 → 20 von 171.
 - Der Stapel-Autor 2026 bekommt nur Stammdaten (Haushalt, Mieter, Namen der Absender und Vertragspartner, Konto, übliche Beträge
   2025), die Listen und die Fachregel – keine Lösungen, keine Apps, nicht das Gemerkte.
+
+## Ergebnis Jahr 2026 – vorläufig, zwei Einordner (13.11.2026, je einmal gemessen)
+
+Stapel: 94 Schriftstücke, 45 Belege, 12 Kontoauszüge mit 240 Umsätzen; 11 von 54 Absendern und 7 von 31 Ausstellern neu.
+Abweichung vom Auftrag: 44 % der Schriftstücke mit Frist statt der Hälfte. Gescannt: 151 Stücke, Wortfehler 4,7 %; Texterkennung
+259 s. Soll = wo Stapel-Autor und Claude-Agent übereinstimmen; Codex (Auftrag 010) steht aus. Zahlen: `ergebnisse/vermieterin-2026-*.json`.
+Alle Aufrufe in `scripts/lauf-vermieterin.sh`.
+
+| Was | Text | gescannt |
+| --- | --- | --- |
+| Datei-Organizer Bereich | 70/91 = 77 % | 69/91 = 76 % |
+| Datei-Organizer Schriftstück | 63/92 = 68 % (falsch und sicher 21) | 63/92 = 68 % |
+| Datei-Organizer Absender | 82/84 = 98 % | 66/84 = 79 % (falsch und sicher 12) |
+| Datei-Organizer Frist | 78/93 = 84 % | 77/93 = 83 % |
+| Fristen: Familienakte richtig und Erinnerung geplant | 26/41 = 63 % | 26/41 = 63 % |
+| Fristen: Kern des Datei-Organizers | 33/41 = 80 % | 32/41 = 78 % |
+| Private Brain Pro: Rechnung/Vertrag/Angebot · andere fälschlich so | 15/19 · 15/73 | gleich |
+| Kontoauszug gescannt: Umsatz vollständig lesbar · Rechnungsnummer | – | 203/240 = 85 % · 49/52 |
+| Zahlungsabgleich (73 Umsätze strittig): ein Beleg · ohne Beleg fälschlich | 23/33 · 18/133 | – |
+
+**Mit dem aus 2025 Gemerkten (die Frage „wird es beim zweiten Mal besser?“):**
+
+| Was | ohne | mit Gemerktem | besser / schlechter | gesichert? |
+| --- | --- | --- | --- | --- |
+| Bereich (Text) | 70/91 | 76/91 | 11 / 5 | nein (p = 0,21) |
+| Bereich (gescannt) | 69/91 | 76/91 | 11 / 4 | nein (p = 0,12) |
+| Konto der Belege | 25/36 | 26/36 | 3 / 2 | nein (p = 1,0) |
+| Umsätze ohne Beleg fälschlich zugeordnet | 18/133 | 18/133 | – | kein Unterschied |
+
+Vorläufiger Befund: Das einfache Merken „Absender → Bereich“ hilft in der Tendenz, ist aber nicht gesichert und verschlechtert
+einzelne Stücke – derselbe Absender schreibt zu verschiedenen Sachen (Fachregel: die Sache entscheidet, nicht der Absender).
+Beim Konto und bei den Kontoauszügen bringt es nichts Messbares. Endgültig erst mit dem dritten Einordner.
