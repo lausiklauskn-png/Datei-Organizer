@@ -1,4 +1,4 @@
-# Runde 2 – Ergebnis (14.11.2026)
+# Runde 2 – Ergebnis (13.11.2026)
 
 Regeln vorab: `REGELN.md` (Grenze ≥ 80 % der Kern-Merkmale, kein Kern-Merkmal verkehrt, zwei Bewerter, strengere Wertung zählt).
 Zahlen: `ERGEBNIS.json`, nachrechenbar mit `node ../werkzeug/auswertung-runde2.mjs`.

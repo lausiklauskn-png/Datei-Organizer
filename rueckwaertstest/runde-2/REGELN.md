@@ -1,4 +1,4 @@
-# Runde 2 – Regeln, vorab festgelegt (14.11.2026, vor dem ersten Kunden)
+# Runde 2 – Regeln, vorab festgelegt (13.11.2026, vor dem ersten Kunden)
 
 Auftrag Klaus 13.11. (Vorschau Needs, Punkt N1, Anmerkung): statt Kunden aus den eigenen Apps **sieben reale, gewinnbringend
 verkaufbare Tool-Ideen** mit Alleinstellungsmerkmal; dafür ein Analyse-Agent mit zehn Berufs-Agenten (darunter KI-Kompetenz-Beratung
