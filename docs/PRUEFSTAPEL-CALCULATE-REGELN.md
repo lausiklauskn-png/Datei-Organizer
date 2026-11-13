@@ -31,3 +31,22 @@ Einmal gemessen, danach verbraucht.
 ## Grenzen
 
 Erfunden, von einem KI-Agenten geschrieben; kein Gerät. Erster Stand, kein Alt-gegen-Neu-Vergleich.
+
+## Ergebnis (13.11.2026, einmal gemessen, zwei Einordner: Stapel-Autor und Claude-Agent)
+
+Workflow Calculate `c6b8dd9`, `WC.anfrage.lesen` mit Startkatalog + Laser-Gebiet, ohne Kundenliste (`scripts/messen-anfragen.mjs`,
+Zahlen `ergebnisse/anfragen-calculate.json`). Codex nicht beteiligt – Ergebnis gilt als „zwei Einordner“.
+
+| Feld | richtig | Anmerkung |
+| --- | --- | --- |
+| Kundennummer | 44/44 = 100 % (92–100) | 16 strittig (Schreibweise „K-2207“ gegen „2207“) |
+| Maße (B × H) | 55/60 = 92 % (82–96) | |
+| Farbenzahl | 55/60 = 92 % (82–96) | |
+| Produktart erkannt | 87/98 = 89 % (81–94) | 26 Vorlagen fälschlich dazu erkannt |
+| E-Mail des Absenders | 45/60 = 75 % (63–84) | Gesprächsnotizen ohne Kopf |
+| Menge je Produkt | 43/97 = 44 % (35–54) | Zahlwörter, „ca.“, Staffeln |
+| Absender (Name) | 13/57 = 23 % (14–35) | Calculate liest den Namen nur aus der Kopfzeile „Von“ |
+
+Schwächen: Menge und Absendername; fälschlich erkannte Vorlagen (eine Anfrage nennt „Tasse“, erkannt werden Tasse und mehrere
+Gravurartikel). Workflow Needs: liest aus Dokumenten nichts – nicht gemessen. Der Stapel ist verbraucht; Verbesserungen an Calculate
+(Absender aus Signatur und Grußzeile – der Sortier-Kern kann das –, Zahlwörter) brauchen einen neuen Stapel.
