@@ -159,3 +159,25 @@ Sortieren, Belegleser und Zahlungsabgleich zusammen unter 10 ms je Stück.
 
 **Noch nicht gemessen:** Fristen bis Kalender und Glocke in der Familienakte, Private Brain Pro, Suche über die Knoten, dritter
 Einordner, Ende-zu-Ende-Zahl.
+
+### Nachtrag zum Ergebnis 2025: Fristenkette und Private Brain Pro (13.11.2026, je einmal gemessen, zwei Einordner)
+
+**Fristen bis zur Glocke.** 39 Schriftstücke mit Soll-Frist, 51 ohne, 3 strittig. Text und gescannt ergeben dieselben Zahlen.
+Zahlen: `ergebnisse/vermieterin-fristkette*.json` (dort jede verlorene Frist einzeln).
+
+| Glied | Familienakte heute (`erkenneFristen`) | Kern des Datei-Organizers |
+| --- | --- | --- |
+| Frist mit richtigem Datum | 25/39 = 64 % (48–77) | 32/39 = 82 % (67–91) |
+| falsches Datum | 1 | 3 |
+| keine Frist erkannt | 13 | 4 |
+| fälschlich eine Frist (von 51 ohne) | 5 | 8 |
+| Erinnerung vor dem Fälligkeitstag geplant (`glockenZeiten`, Vorgabe 7 Tage und 1 Tag) | 25/39 = 64 % | nicht angeschlossen |
+
+**Ende-zu-Ende heute:** 25 von 39 Fristen (64 %) kommen vom gescannten Stück bis zur geplanten Erinnerung durch; jede richtig
+erkannte Frist bekommt ihre Erinnerung, verloren gehen sie alle beim Erkennen. Dabei gilt: Die Familienakte legt eine erkannte Frist
+erst nach Bestätigung an – im Lauf gilt „bestätigt, wie vorgeschlagen“. Ob das Gerät läutet: nicht gemessen.
+
+**Private Brain Pro** (`suggestCategory`, unverändert aus `index.html` gelesen) kennt Dokumentarten, keine Ablagefächer. Verglichen
+nur mit der Art des Solls, für die drei gemeinsamen Arten: Rechnung, Vertrag, Angebot richtig 13/21; von 69 Stücken anderer Art
+fälschlich als eine der drei 17. 56 von 93 Stücken fallen auf „Dokument“ (nur Dateityp). Text und gescannt gleich.
+Bedeutungssuche und Einordnen dort: nicht gemessen (Modell in dieser Umgebung nicht ladbar).
