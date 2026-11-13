@@ -20,7 +20,33 @@ Alle Zahlen mit drei Einordnern (Codex hat 011 und 012 am 13.11. abgegeben, quit
 
 ## Ausgaben
 
-(wird am Ende ergänzt)
+Alle Downloads anonym geladen, SHA-256 gleich der Prüfsumme am Release. Nichts davon am Gerät geprüft.
+
+| App | Fassung | Android | Windows | Web |
+| --- | --- | --- | --- | --- |
+| Datei-Organizer | 0.3.1 → 0.3.3 (Ladebalken, Aktualisieren, Update-Fähnchen, Leeren, Entfernen, Drag and Drop, grüne Liste) | – | – | Pages auf `8fbc424` |
+| Familienakte | 2.28.67 (Absender aus dem Kern) | `3db7e2db…f26d0` | `5b4070f1…81b9d` | Pages; Nachweis `docs/VEROEFFENTLICHUNG-2.28.67.json` dort |
+| BookLedgerPro | 0.1.16 (Aussteller), 0.1.17 (Rechnungsnummer an), 0.1.18 (Update-Fähnchen) | 0.1.18 `77641dd9…3d013c` | eigener Server | Basic 0.1.18 (#52) |
+| Private Brain Pro | 1.0.49 (Update-Fähnchen) | `f4a11906…400dbb` | `29d4ba7a…b4ee1` | Pages |
+| Workflow PDF | 1.1.10 (Update-Fähnchen) | – | – | Pages (#144) |
+| Workflow PDF Pro | 1.0.17 (Update-Fähnchen) | `f2755593…ed0118b` | `ef535738…b48833` | – |
+
+Nachweise: BookLedgerPro `docs/PULS.md` (#473), Private Brain Pro `docs/VEROEFFENTLICHUNG-1.0.49.md` (#137), Familienakte #177, Workflow PDF Pro `docs/VEROEFFENTLICHUNG-1.0.17.json` (#73). Zwei Release-Proben brauchten einen zweiten Anlauf (BookLedgerPro: Emulator am Deckblatt; Workflow PDF Pro: Gerät pixel_c in der Zeitgrenze), Code jeweils unverändert.
+
+## Stundennachweis
+
+Erste Spur 13:52 UTC (Klon Datei-Organizer), letzte Spur 18:16 UTC (Nachweis Workflow PDF Pro 1.0.17) – Obergrenze **4 h 24 min** über alle Repos (Zeitraum gemessen,
+Anwesenheit Klaus' Auskunft, Pausen nicht abgezogen). Forschungseintrag KimHub #460.
+
+## Startauftrag zum Einfügen
+
+```
+Repo Datei-Organizer: docs/BRIEF_SITZUNG_2026-11-14_NEEDS-RUECKWAERTSTEST.md zuerst lesen und dem Startauftrag dort folgen
+(Rückwärtstest der Bedarfsanalyse an Familienakte, BookLedgerPro, Workflow PDF Pro, Private Brain Pro; nichts an den Apps ändern).
+Danach offen: Familienakte-Übernahme aus dem Datei-Organizer (Vorschau zuerst), Umbeschriften/Verschieben im Organizer,
+Gerätetest aller Ausgaben vom 13.11. Nächste freie Fassungen: Familienakte 2.28.68, BookLedgerPro 0.1.19, Private Brain Pro 1.0.50,
+Workflow PDF Pro 1.0.18, Workflow PDF 1.1.11, Datei-Organizer 0.3.4.
+```
 
 ## Offen
 

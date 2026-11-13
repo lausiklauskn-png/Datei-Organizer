@@ -126,3 +126,10 @@ Frist 0,84–0,91; höchstens ein Schriftstück je Feld ohne Mehrheit.
 Was die Zahlen nicht zeigen: echte Unterlagen (nicht gemessen), Fotos und Texterkennung (nur Text), Schreiber eines anderen
 Systems (Runde D steht aus). Schwächen: Bereich und Schriftstück bei besonderen Lebenslagen und Schwerbehinderung (73–77 %), Person
 bei Lebenslagen (72 %); beim Bereich in Runde H ist „falsch und sicher“ nicht gesunken. Die vier Stapel sind damit verbraucht.
+
+## Nachtrag 13.11.2026 abends: dritter Einordner verändert zwei Urteile
+
+Mit Codex als drittem Einordner (Aufträge 011, 012) wurden „Familie mit drei Kindern“ und „Vermieter 2“ neu gegen das Mehrheits-Soll
+gerechnet (`ergebnisse/*-drei.json`). Zwei Urteile kippten: Bereich der Familienakte nicht mehr gesichert (77 → 83 %, p = 0,06), Rechnungsnummer
+BookLedgerPro jetzt unter der Grenze (2 % falsch statt vorläufig 5,6 %). Lehre: **vorläufige Zahlen mit zwei Einordnern nicht ausgeben** – erst
+mit dem dritten entscheiden. Ausgaben danach siehe `docs/BRIEF_ABSCHLUSS_2026-11-13_PUNKTE-3-9.md`.
