@@ -32,14 +32,23 @@ if (modus === "lernen") {
   const eindeutig = (o) => Object.fromEntries(Object.entries(o).map(([k, l]) => [k, haeufigster(l)]).filter(([, h]) => h.n * 3 >= h.von * 2).map(([k, h]) => [k, h.w]));
   const u = lese(join(S, "bank/UMSAETZE.json")), q = [u, ...["ZWEITER-BANK.json", "DRITTER-BANK.json"].map((n) => join(S, "bank", n)).filter(existsSync).map(lese)], mit = {}, ohne = {};
   for (const a of u.auszuege) for (const x of a.umsaetze) { const st = mehrheit(q.map((e) => JSON.stringify([...(e.auszuege.find((y) => y.datei === a.datei)?.umsaetze.find((y) => y.nr === x.nr)?.stuecke || [])].sort()))); const g = fest(x.gegenpartei); if (!g || st === undefined) continue; (JSON.parse(st).some((s) => s.startsWith("belege/")) ? mit : ohne)[g] = 1; }
-  const gemerkt = { quelle: a1, absenderBereich: eindeutig(proAbs), ausstellerKonto: eindeutig(proAus), gegenparteiOhneBeleg: Object.keys(ohne).filter((g) => !mit[g]) };
+  // Punkt 7 (13.11.2026): nach Sache merken – Absender UND Vorschlag des Kerns → Bereich, den der Nutzer gewählt hat; dazu nur die
+  // Absender, deren Schriftstücke alle in einem Bereich lagen (sonst entscheidet die Sache, nicht der Absender).
+  const sache = {}, proAbsAlle = {};
+  for (const [d, b] of bereich) { const a = fest(absender.get(d)); if (!a || !b) continue; const k = (await kern(S, d)).bereich || "";
+    ((sache[a] ||= {})[k] ||= []).push(b); (proAbsAlle[a] ||= []).push(b); }
+  const sacheBereich = Object.fromEntries(Object.entries(sache).map(([a, o]) => [a, Object.fromEntries(Object.entries(o).map(([k, l]) => [k, haeufigster(l)]).filter(([, h]) => h.n * 3 >= h.von * 2).map(([k, h]) => [k, h.w]))]));
+  const absenderEinig = Object.fromEntries(Object.entries(proAbsAlle).filter(([, l]) => new Set(l).size === 1).map(([a, l]) => [a, l[0]]));
+  const gemerkt = { quelle: a1, sacheBereich, absenderEinig, absenderBereich: eindeutig(proAbs), ausstellerKonto: eindeutig(proAus), gegenparteiOhneBeleg: Object.keys(ohne).filter((g) => !mit[g]) };
   writeFileSync(resolve(a2), JSON.stringify(gemerkt, null, 1));
   console.log(`gemerkt: ${Object.keys(gemerkt.absenderBereich).length} Absender → Bereich, ${Object.keys(gemerkt.ausstellerKonto).length} Aussteller → Konto, ${gemerkt.gegenparteiOhneBeleg.length} Gegenparteien ohne Beleg`);
 } else if (modus === "messen") {
   const S = resolve(a1), T = resolve(a2), M = lese(resolve(a3)), BLP = resolve(arg("--blp", "../bookledgerpro")), aus = { stapel: a1, text: a2, gemerkt: a3 };
   const paar = (zeilen) => { const n = zeilen.length, o = zeilen.filter((z) => z.ohne).length, m = zeilen.filter((z) => z.mit).length, b = zeilen.filter((z) => z.mit && !z.ohne).length, c = zeilen.filter((z) => !z.mit && z.ohne).length; return { n, ohne: `${o}/${n}`, mit: `${m}/${n}`, spanneOhne: wilson(o, n), spanneMit: wilson(m, n), besserDurchMerken: b, schlechterDurchMerken: c, p: +mcnemar(b, c).toFixed(4), gemerktGegriffen: zeilen.filter((z) => z.griff).length }; };
   // Schriftstücke: Bereich
-  { const sb = soll(S, "kategorie", "bereich"), z = []; for (const [d, b] of sb) { if (b === undefined) continue; const k = await kern(T, d), g = finde(M.absenderBereich, k.absender); z.push({ ohne: k.bereich === b, mit: (g || k.bereich) === b, griff: !!g }); } aus.bereich = paar(z); }
+  { const sb = soll(S, "kategorie", "bereich"), z = []; for (const [d, b] of sb) { if (b === undefined) continue; const k = await kern(T, d), g = finde(M.absenderBereich, k.absender); z.push({ ohne: k.bereich === b, mit: (g || k.bereich) === b, griff: !!g });
+    if (M.sacheBereich) { const t = finde(M.sacheBereich, k.absender), gs = (t && t[k.bereich || ""]) || finde(M.absenderEinig, k.absender); (aus._sache ||= []).push({ ohne: k.bereich === b, mit: (gs || k.bereich) === b, griff: !!gs }); } }
+    aus.bereich = paar(z); if (aus._sache) { aus.bereichNachSache = paar(aus._sache); delete aus._sache; } }
   // Belege: Konto (BookLedgerPro Regeln + Wortmodell; Aussteller aus dem Kern des Datei-Organizers)
   if (existsSync(join(BLP, "src/ai/kontoModell.js"))) { const { kontoVorschlag } = await import(join(BLP, "src/ai/kontoModell.js")); const name = lese(join(S, "HAUSHALTE.json")).haushalte[0].personen.map((p) => `${p.vorname} ${p.name}`)[0];
     const sk = soll(join(S, "belege"), "konto"), z = []; for (const [d, k] of sk) { if (k === undefined) continue; const kk = await kern(join(T, "belege"), d), ist = String((await kontoVorschlag(kk.text, { eigenerName: name })).konto), g = finde(M.ausstellerKonto, kk.absender); z.push({ ohne: ist === k, mit: (g || ist) === k, griff: !!g }); } aus.konto = paar(z);

@@ -256,7 +256,7 @@ export function VerlaufSeite({ z }: P) {
       </section>
       <section className="card" data-regeln>
         <div className="card-heading"><h2>Gelernt</h2><span className="badge du">{z.regeln.length}</span></div>
-        {z.regeln.length === 0 ? <p className="leise">Noch keine Regel.</p> : <ul className="verlauf-liste">{z.regeln.map((r) => <li key={r.wenn.absender + r.feld}><span>Absender „{r.wenn.absender}“ → {FELD_NAMEN[r.feld]} „{r.dann}“</span><span className="leise">{r.anzahl}×</span></li>)}</ul>}
+        {z.regeln.length === 0 ? <p className="leise">Noch keine Regel.</p> : <ul className="verlauf-liste">{z.regeln.map((r) => <li key={r.wenn.absender + r.feld + (r.wenn.sache || "")}><span>Absender „{r.wenn.absender}“{r.wenn.sache ? <> bei Vorschlag „{r.wenn.sache}“</> : null} → {FELD_NAMEN[r.feld]} „{r.dann}“</span><span className="leise">{r.anzahl}×</span></li>)}</ul>}
       </section>
     </div>
   </>;

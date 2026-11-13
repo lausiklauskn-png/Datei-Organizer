@@ -13,7 +13,7 @@ import { siebe, istUnsicher } from "../lib/siebe.ts";
 import { einlesen, doppelteMarkieren } from "../lib/einlesen.ts";
 import { pdfTextLesen } from "../lib/pdf-text.ts";
 import { textPdf } from "../lib/test-pdf.ts";
-import { lernen, korrigieren, regelnAufAlle } from "../lib/lernen.ts";
+import { lernen, korrigieren, regelnAufAlle, lernregelAnwenden } from "../lib/lernen.ts";
 import { SICHTEN, baum, dateienUnter, suche } from "../lib/sichten.ts";
 import { organizerIndex, indexLesen, steckbrief } from "../lib/index-format.ts";
 import { KATEGORIEN } from "../lib/kategorien.ts";
@@ -164,7 +164,16 @@ const schule = dateien.find((d) => d.name === "Dokument(4).pdf");
 soll("Schul-Brief: Absender erkannt", /Schule am Beispielpark/.test(schule?.felder.absender?.wert || ""), schule?.felder.absender?.wert);
 const korr = korrigieren(schule, "kategorie", "Familie & persönliche Dokumente");
 const regeln = lernen([], korr, { zeit: "", pfad: schule.pfad, feld: "kategorie", von: schule.felder.kategorie?.wert || "", zu: "Familie & persönliche Dokumente" });
-soll("Regel gelernt", regeln.length === 1 && regeln[0].dann === "Familie & persönliche Dokumente");
+soll("Regel gelernt (nach Absender, dazu nach Sache)", regeln.filter((r) => !r.wenn.sache).length === 1 && regeln.length <= 2 && regeln.every((r) => r.dann === "Familie & persönliche Dokumente"));
+{ // Punkt 7: dieselbe Firma, zwei Sachen – die Sach-Regel greift nur bei ihrem Vorschlag, die Absender-Regel nur ohne Widerspruch
+  const d = (k) => ({ pfad: k, name: k, groesse: 1, geaendert: 0, stufe: 5, felder: { absender: { wert: "Stadtwerke Beispiel", sicher: true, grund: "", quelle: "regel" }, kategorie: { wert: k, sicher: false, grund: "", quelle: "regel" } } });
+  let r = lernen([], d("Energie & Versorgung"), { zeit: "", pfad: "a", feld: "kategorie", von: "Energie & Versorgung", zu: "Energie & Versorgung" });
+  r = lernen(r, d("Haus & Wohnung"), { zeit: "", pfad: "b", feld: "kategorie", von: "Haus & Wohnung", zu: "Haus & Wohnung" });
+  r = lernen(r, d("Energie & Versorgung"), { zeit: "", pfad: "c", feld: "kategorie", von: "Energie & Versorgung", zu: "Haus & Wohnung" });
+  const strom = d("Energie & Versorgung"), wasser = d("Haus & Wohnung"); for (const x of r) { lernregelAnwenden(strom, x); lernregelAnwenden(wasser, x); }
+  soll("Merken nach Sache: Absender mit zwei Sachen folgt der Sach-Regel", wasser.felder.kategorie.wert === "Haus & Wohnung" && /wenn „Haus & Wohnung“ vorgeschlagen war/.test(wasser.felder.kategorie.grund || "Haus & Wohnung"), JSON.stringify(wasser.felder.kategorie));
+  soll("Merken nach Sache: widersprüchliche Absender-Regel wirkt nicht allein", r.some((x) => !x.wenn.sache && Object.keys(x.stimmen || {}).length > 1));
+}
 const nachher = regelnAufAlle(dateien.map((d) => d.pfad === schule.pfad ? korr : d), regeln);
 const elternabend = nachher.find((d) => d.name === "Einladung_Elternabend.pdf");
 soll("Gelerntes wirkt auf denselben Absender", elternabend?.felder.kategorie?.quelle === "gelernt" || elternabend?.felder.kategorie?.wert === "Familie & persönliche Dokumente", JSON.stringify(elternabend?.felder.kategorie));
