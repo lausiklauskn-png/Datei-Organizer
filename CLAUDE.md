@@ -15,7 +15,10 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   (`Ladebalken` in `src/app.tsx`: gemerkter Stand · Ordner wird durchgesehen (laufender Streifen) · Datei für Datei mit Prozent und Dateiname);
   Knopf „Aktualisieren“ (⟳) im Kopf holt die neueste Fassung und lädt neu, die Sortierung bleibt gemerkt. Leere Auswahl bei „Ordner hochladen“
   sagt jetzt, dass nichts übergeben wurde. Der Worker löscht nur noch eigene Vorräte (`datei-organizer-v…`, vorher alle am gemeinsamen Ursprung).
-  UI-Probe 45. Klaus' Befund „Ordner hochladen lädt scheinbar den Testordner“ im Test-Browser nicht nachstellbar (Upload lädt den gewählten Ordner);
+  **Update-Fähnchen** neben der Fassung (`useNeueFassung`, fragt `version.json` – bei jeder Fassung mit erhöhen, die UI-Probe vergleicht),
+  **„Organizer leeren“** (Seite Familienakte und Überblick; Liste und Verlauf weg, Gelerntes bleibt, Originale unberührt). UI-Probe 50.
+  Offen (Klaus 13.11., nächste Fassung): einzelne Dateien/Ordner entfernen mit Auge-Ansicht, umbenennen/teilen/verschieben, Block „Dateien
+  einfügen per Drag and Drop“; in der Familienakte Blöcke hinzufügen statt überschreiben, Doppelte anzeigen und zusammenführen. Klaus' Befund „Ordner hochladen lädt scheinbar den Testordner“ im Test-Browser nicht nachstellbar (Upload lädt den gewählten Ordner);
   am Tablet offen. Codex 011/012 übernommen, Zahlen mit drei Einordnern in den Regeldateien.
 
 ## Stand (13.11.2026 abends, Fassung 0.3.0)

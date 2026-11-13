@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Archive, Check, Download, File, FileImage, FileText, FolderOpen, FolderTree, HelpCircle, History, ListChecks, Mail, Pencil, RotateCcw, Search, ShieldAlert, Smartphone, Undo2 } from "lucide-react";
+import { Archive, Check, Download, File, FileImage, FileText, FolderOpen, FolderTree, HelpCircle, History, ListChecks, Mail, Pencil, RotateCcw, Search, Trash2, ShieldAlert, Smartphone, Undo2 } from "lucide-react";
 import type { Datei, FeldName } from "../lib/typen.ts";
 import { STUFEN, offeneFelder, gesperrt } from "../lib/siebe.ts";
 import { SICHTEN, baum, dateienUnter, suche, type BaumKnoten } from "../lib/sichten.ts";
@@ -86,7 +86,7 @@ export function OrdnerSeite({ z, gehe }: P) {
       <Meldung z={z} gehe={gehe}/>
     </section>
     {zahlen.gesamt > 0 && <section className="card" data-ueberblick>
-      <div className="card-heading"><h2>Überblick</h2><button type="button" className="text-link" onClick={() => { if (confirm("Sortierung in diesem Browser vergessen? Die Originale im Ordner bleiben.")) void z.neuBeginnen(); }}><RotateCcw size={15}/>Neu beginnen</button></div>
+      <div className="card-heading"><h2>Überblick</h2><button type="button" className="text-link" onClick={() => { if (confirm("Sortierung in diesem Browser vergessen? Die Originale im Ordner bleiben.")) void z.neuBeginnen(); }}><RotateCcw size={15}/>Neu beginnen</button><button type="button" className="text-link" onClick={() => { if (confirm(LEEREN_FRAGE)) void z.leeren(); }} data-leeren-ordner><Trash2 size={15}/>Leeren</button></div>
       <Ablaufbild label="Stand der Siebe" schritte={STUFEN.map((s): Schritt => ({ titel: s.name, unter: s.kurz, art: s.nr < z.stufe ? "gut" : s.nr === z.stufe ? "hervor" : "aus" }))}/>
       <div className="chips" style={{ marginTop: 12 }}>
         <span className="chip" data-zahl="gesamt">{zahlen.gesamt} Dateien</span>
@@ -316,7 +316,26 @@ export function AkteSeite({ z, gehe }: P) {
       </div>
       <Meldung z={z} gehe={gehe}/>
     </section>
+    <LeerenKarte z={z} gehe={gehe}/>
   </>;
+}
+
+// Nach dem Weitergeben: den Organizer leeren. Die Originale bleiben, wo sie sind.
+const LEEREN_FRAGE = "Organizer leeren? Die Liste der Dateien und der Verlauf in diesem Browser werden entfernt. Die Originale und der Ordner bleiben unverändert, nichts wird gelöscht. Vorher „Sortierung speichern“, falls die Familienakte sie noch braucht.";
+function LeerenKarte({ z, gehe }: { z: AppZustand; gehe: (s: SeitenId) => void }) {
+  if (!z.dateien.length) return null;
+  return <section className="card" data-leeren>
+    <div className="card-heading"><h2>Organizer leeren</h2><Info titel="Was „Leeren“ tut" punkte={[
+      "Nimmt alle Dateien aus der Liste dieses Organizers – für den nächsten Ordner.",
+      "Die Originale werden nicht verändert und nicht gelöscht. Auch der Ordner und die gespeicherte Sortierung darin bleiben.",
+      "Was der Organizer aus deinen Korrekturen gelernt hat, bleibt.",
+      "Vorher die Sortierung speichern, wenn die Familienakte sie noch braucht.",
+    ]}/></div>
+    <p className="leise">Fertig sortiert und weitergegeben? Dann kann die Liste hier weg. Die Originale bleiben, wo sie sind.</p>
+    <div className="button-row" style={{ marginTop: 12 }}>
+      <button type="button" className="button" onClick={() => { if (confirm(LEEREN_FRAGE)) { void z.leeren(); gehe("ordner"); } }} data-leeren-knopf><Trash2 size={18}/>Organizer leeren ({z.dateien.length})</button>
+    </div>
+  </section>;
 }
 
 // ---------------- Hilfe ----------------

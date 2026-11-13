@@ -6,6 +6,7 @@ self.addEventListener("activate", (e) => { e.waitUntil(caches.keys().then((k) =>
 self.addEventListener("fetch", (e) => {
   const u = new URL(e.request.url);
   if (e.request.method !== "GET" || u.origin !== location.origin || !u.pathname.startsWith(new URL("./", self.registration.scope).pathname)) return;
+  if (u.pathname.endsWith("/version.json")) return; // Update-Fähnchen fragt immer das Netz, nie den Vorrat
   // Seite: erst Netz (neue Fassung), sonst Vorrat. Gebaute Dateien (Name mit Prüfsumme): erst Vorrat.
   if (e.request.mode === "navigate") {
     e.respondWith(fetch(e.request).then((r) => { const k = r.clone(); caches.open(VORRAT).then((c) => c.put("./index.html", k)); return r; }).catch(() => caches.match("./index.html")));

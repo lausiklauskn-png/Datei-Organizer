@@ -170,6 +170,22 @@ try {
   await page.goto(basis + "datenschutz.html");
   soll("Impressum & Datenschutz erreichbar", (await page.locator("h1").innerText()).includes("Impressum"));
 
+  await page.setViewportSize({ width: 1280, height: 900 }); await page.goto(basis + "#akte"); await page.waitForTimeout(300);
+  soll("Kein Update-Fähnchen, solange die Fassung aktuell ist", await page.locator("[data-update-fahne]").count() === 0);
+  { const v = JSON.parse(await (await page.request.get(basis + "version.json")).text()); const kopf = await page.locator(".site-brand small").innerText(); soll("version.json nennt dieselbe Fassung wie der Kopf", kopf.includes("Fassung " + v.fassung), `${v.fassung} / ${kopf}`); }
+  await page.route("**/version.json*", (r) => r.fulfill({ contentType: "application/json", body: JSON.stringify({ fassung: "9.9.9" }) }));
+  await page.evaluate(() => document.dispatchEvent(new Event("visibilitychange")));
+  await page.waitForSelector("[data-update-fahne]", { timeout: 5000 }).catch(() => {});
+  soll("Neue Fassung auf dem Server: Fähnchen „Update 9.9.9“ erscheint von selbst neben der Fassung", ((await page.locator("[data-update-fahne]").innerText().catch(() => "")) || "").includes("9.9.9"));
+  await page.unroute("**/version.json*");
+  if (await page.locator("[data-leeren-knopf]").count()) {
+    await page.locator("[data-leeren-knopf]").click();
+    await page.waitForFunction(() => document.querySelector("[data-ordner-pill]")?.textContent?.includes("Kein Ordner"), null, { timeout: 5000 }).catch(() => {});
+    soll("„Organizer leeren“: Liste leer, Meldung nennt die unveränderten Originale", (await page.locator("[data-ordner-pill]").innerText()).includes("Kein Ordner") && /Originale und der Ordner sind unverändert/.test(await page.locator("[data-ordner-wahl]").innerText()));
+    await page.waitForTimeout(600); await page.reload();
+    await page.waitForTimeout(600);
+    { const t = await page.locator("[data-ordner-pill]").innerText(); soll("… und bleibt nach dem Neuladen leer", t.includes("Kein Ordner"), t); }
+  } else soll("Knopf „Organizer leeren“ steht auf der Seite Familienakte", false);
   { const l = (await page.evaluate(() => sessionStorage.getItem("probe-lade") || "")).split(" "); soll("Ladebalken im Kopf lief beim Einlesen (durchsehen, dann Datei für Datei)", l.includes("suchen") && l.includes("lesen"), JSON.stringify([...new Set(l)])); }
   soll("Keine Fehler in der Konsole", fehler.length === 0, fehler.slice(0, 3).join(" | "));
 } finally {

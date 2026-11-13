@@ -204,7 +204,16 @@ function useOrganizer() {
     setDateien([]); setStufe(0); setVerlauf([]); setRegeln([]); setOrdnerName(""); setQuelleArt(""); setQuelle(null); setMeldung({ text: "Alles zurückgesetzt. Die Originale im Ordner sind unverändert." });
   }, []);
 
-  return { dateien, stufe, verlauf, regeln, ordnerName, quelleArt, quelle, meldung, setMeldung, fortschritt, einlesenAus, pcOrdnerWieder, naechstes, zurueck, aendern, rueckgaengig, nummern, indexSichern, indexText, original, neuBeginnen, ordnerMerken, kannZurueck: () => stapel.current.length > 0 };
+  // Leeren nach dem Weitergeben: Dateiliste, Verlauf und gemerkter Ordner weg; Gelerntes (Regeln) bleibt. Der Organizer liest nur –
+  // an den Originalen und am Ordner selbst wird nichts geändert oder gelöscht (auch die Index-Datei im Ordner bleibt).
+  const leeren = useCallback(async () => {
+    const n = dateien.length;
+    await loeschen(); stapel.current = []; originale.current.clear();
+    setDateien([]); setStufe(0); setVerlauf([]); setOrdnerName(""); setQuelleArt(""); setQuelle(null);
+    setMeldung({ text: `Organizer geleert: ${n} Dateien aus der Liste genommen. Die Originale und der Ordner sind unverändert${regeln.length ? `; ${regeln.length} gelernte Regeln bleiben` : ""}.` });
+  }, [dateien.length, regeln.length]);
+
+  return { dateien, stufe, verlauf, regeln, ordnerName, quelleArt, quelle, meldung, setMeldung, fortschritt, einlesenAus, pcOrdnerWieder, naechstes, zurueck, aendern, rueckgaengig, nummern, indexSichern, indexText, original, neuBeginnen, leeren, ordnerMerken, kannZurueck: () => stapel.current.length > 0 };
 }
 
 async function einlesenTeile(bytes: Uint8Array, pfad: string) {
@@ -231,8 +240,32 @@ async function aktualisieren(laeuft: boolean) {
   location.reload();
 }
 
+// Update-Fähnchen: fragt beim Start, beim Zurückholen der App und stündlich nach version.json (liegt neben der Seite, nie aus dem Vorrat).
+// Steht dort eine andere Fassung als diese, erscheint das Fähnchen neben der Fassungsnummer – ein Tipp aktualisiert.
+function useNeueFassung() {
+  const [neu, setNeu] = useState("");
+  useEffect(() => {
+    let weg = false;
+    const pruefen = async () => {
+      if (navigator.onLine === false) return;
+      try {
+        const r = await fetch(`./version.json?t=${Date.now()}`, { cache: "no-store" });
+        const f = r.ok ? String((await r.json()).fassung || "") : "";
+        if (!weg && /^\d+\.\d+\.\d+$/.test(f)) setNeu(f !== FASSUNG ? f : "");
+      } catch { /* ohne Netz: kein Fähnchen */ }
+    };
+    void pruefen();
+    const sicht = () => { if (document.visibilityState === "visible") void pruefen(); };
+    document.addEventListener("visibilitychange", sicht);
+    const takt = setInterval(pruefen, 60 * 60 * 1000);
+    return () => { weg = true; document.removeEventListener("visibilitychange", sicht); clearInterval(takt); };
+  }, []);
+  return neu;
+}
+
 export function App() {
   const z = useOrganizer();
+  const neueFassung = useNeueFassung();
   const [seite, setSeite] = useState<SeitenId>(seiteAusHash);
   useEffect(() => { const f = () => setSeite(seiteAusHash()); window.addEventListener("hashchange", f); return () => window.removeEventListener("hashchange", f); }, []);
   const gehe = useCallback((s: SeitenId) => { location.hash = s; setSeite(s); window.scrollTo({ top: 0 }); }, []);
@@ -246,6 +279,7 @@ export function App() {
           <span><strong>Datei-Organizer</strong><small>Fassung {FASSUNG} · vorsortiert für die Familienakte</small></span>
         </button>
         <div className="header-actions">
+          {neueFassung && <button type="button" className="update-fahne" data-update-fahne title={`Fassung ${neueFassung} steht bereit. Tippen aktualisiert; die Sortierung bleibt gemerkt.`} onClick={() => void aktualisieren(!!z.fortschritt && z.fortschritt.phase !== "stand")}><RefreshCw size={14}/>Update {neueFassung}</button>}
           <span className={`ordner-pill ${z.ordnerName ? "verbunden" : ""}`} data-ordner-pill title={z.ordnerName || "Kein Ordner gewählt"}>{z.fortschritt && z.fortschritt.phase !== "stand" ? "Wird geladen …" : z.ordnerName ? `${z.ordnerName} · ${z.dateien.length}` : "Kein Ordner"}</span>
           <button type="button" className="info-knopf" aria-label="Aktualisieren" title="Aktualisieren: App neu laden (neueste Fassung). Die Sortierung bleibt gemerkt." data-aktualisieren onClick={() => void aktualisieren(!!z.fortschritt && z.fortschritt.phase !== "stand")}><RefreshCw size={18}/></button>
           <button type="button" className="info-knopf" aria-label="Suchen" onClick={() => gehe("finden")}><Search size={18}/></button>
