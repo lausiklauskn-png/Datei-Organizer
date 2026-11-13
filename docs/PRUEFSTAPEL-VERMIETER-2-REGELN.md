@@ -51,3 +51,12 @@ höchstens 5 % falsch, sonst bleibt das Feld leer. BookLedger Basic wird über `
 ## Grenzen
 
 Ein erfundener Haushalt, von einem KI-Agenten geschrieben; gesetzte Seiten sind keine echten Scans; nichts am Gerät.
+
+## Eingefroren (13.11.2026, bevor der Stapel gelesen oder gemessen wird)
+
+BookLedgerPro neu = Commit `136c2f5` (Zweig `claude/aussteller-aus-kern`): (a) Kontoregeln für Hausdienste, Rohr- und Notdienst,
+Schornsteinfeger, Fenster, Rauchmelder, Grundeigentümerverein, Wärmemessdienst; (b) `src/domain/auszugText.js` mit Saldo-Gegenrechnung,
+eingehängt in `parseBankauszug`; (c) Rechnungsnummer in `extractFromText`; (d) Aussteller aus dem Sortier-Kern (`src/vendor/sortierkern/`,
+Pin @ Datei-Organizer `4fa3f9d`). Gelernt nur an den verbrauchten Vermieterin-Stapeln. Abstimmwerte (kein Nachweis): Konto Regeln
+an Vermieterin 49 → 62 von 90 (Mehrheit), übrige Belegstapel 327 → 329 von 480; Auszug Text 463/463 richtig, gescannt 451/463,
+falsch ohne Warnung 0; Rechnungsnummer 58 richtig, 5 falsch von 60; Aussteller 44 % → 84–96 %.
