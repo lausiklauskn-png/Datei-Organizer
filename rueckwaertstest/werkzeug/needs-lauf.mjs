@@ -69,7 +69,7 @@ function fragebogen() {
       const d = WN.RAHMEN[k];
       L.push(`- Rahmen \`${k}\` – ${d.frage.de} (${d.mehrfach ? "mehrere" : "eine"}): ` + d.wahl.map((w) => `${w.id} = ${w.name.de}`).join(" · ") + (k === "eigene" ? " · dazu Freitext eigeneText" : ""));
     }
-    if (b.nr === 15) L.push("- Rahmen `budgetEuro` – Budget-Rahmen gesamt in € (nur intern) · `nicht` – Liste: was die Lösung ausdrücklich NICHT tun soll");
+    if (b.nr === 15) L.push("- Rahmen `budgetEuro` – einmalig gesamt in €, `budgetMonatEuro` – Rate je Monat, `budgetMonate` – Laufzeit, `budgetWartung` – Wartung in der Rate (alles nur intern) · `nicht` – Liste: was die Lösung ausdrücklich NICHT tun soll");
     L.push("");
   }
   return L.join("\n");

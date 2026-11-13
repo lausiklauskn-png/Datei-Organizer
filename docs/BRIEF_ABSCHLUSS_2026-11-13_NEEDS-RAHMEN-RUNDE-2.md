@@ -19,9 +19,19 @@ Auftrag: Startauftrag aus `BRIEF_SITZUNG_2026-11-14_NEEDS-RUECKWAERTSTEST.md`. D
   Nebenkosten-Prüfer (Vermieterseite), Belegjäger (Steuerkanzlei ↔ Mandant), Prüfbereit ambulant (Pflege-Qualitätsprüfung),
   Wareneinsatz-Wächter (Restaurant). Die Bauaufträge `runde-2/I<n>/bauauftrag.md` sind die Startaufträge für echte Tools.
 
+## Nachtrag (Klaus, später am 13.11.)
+
+- **Workflow Needs #37 (gemergt):** Budget auch als Monatsrate mit Laufzeit und Haken „Wartung in der Rate“, Frage „Abgleich zwischen
+  Geräten“ mit Katalog-Baustein `abgleich`, Frage „Wo darf eine KI laufen?“ (keine · Gerät · Dienst · beides, Nutzer wählt), Hinweise im Umfang.
+  kern 545 · browser 205 · Gegenprobe 7/7.
+- **Seite „Sieben Tool-Ideen“** https://claude.ai/artifact/4RZzhhF43RxYJMjcSjopnr (Kopie `rueckwaertstest/runde-2/SIEBEN-TOOLS.html`): je Tool
+  Szene, Ablauf, Gründe, Vor-/Nachteile, warum es das noch nicht gibt, Antworten auf Klaus' Einwände; Anlagenpass mit zwei Ersatzideen
+  (Datencheck & Freigabe, Fördermappe Heizung – beide nicht durch Needs gelaufen). Empfehlung: KI-Schleuse + KI-Kompetenz-Mappe als Paar,
+  dann Nebenkosten-Prüfer, dann Datencheck & Freigabe.
+
 ## Offen
 
-- Needs-Befunde aus Runde 2 (Budget je Monat, Baustein „Abgleich zwischen Geräten“, Ort der KI) – erst Vorschau, Klaus' Ja je Punkt.
+- Klaus' Wahl, welche Idee zuerst ein echtes Tool wird; Ersatzideen für den Anlagenpass bei Bedarf durch Needs schicken.
 - Welche der sieben Ideen zuerst als echtes Tool? (Klaus entscheidet; Marktzahlen sind Schätzungen aus kurzer Netzrecherche.)
 - Die sieben Ideen als Beispiele in Needs eintragen (Register) – nicht gemacht.
 - Weiter offen aus dem Vorbrief: Familienakte-Übernahme aus dem Organizer (Vorschau), Umbeschriften/Verschieben im Organizer,
