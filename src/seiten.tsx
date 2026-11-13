@@ -12,13 +12,13 @@ import { stichprobe, anteilText } from "../lib/stichprobe.ts";
 import { deutsch, kurzfassung, INDEX_DATEI } from "../lib/index-format.ts";
 import { Ablaufbild, FesterBaum, Info, OrdnerBaum, Seitentitel, type Schritt } from "./ui.tsx";
 import { ausAuswahl, nativWaehlen, nativerOrdner, ordnerWaehlen, ordnerWahlMoeglich, testOrdner } from "./quellen.ts";
-import { heute, Ladebalken, type AppZustand, type SeitenId } from "./app.tsx";
+import { heute, Ladebalken, type AppZustand, type FindenZiel, type SeitenId } from "./app.tsx";
 
-type P = { z: AppZustand; gehe: (s: SeitenId) => void };
+export type P = { z: AppZustand; gehe: (s: SeitenId) => void; oeffne?: (sicht: string, knoten?: string) => void; ziel?: FindenZiel };
 
-const FELD_NAMEN: Record<FeldName, string> = { schriftstueck: "Art", kategorie: "Bereich", absender: "Absender", betrifft: "Betrifft", datum: "Datum", frist: "Frist" };
-const AUSWAHL: Partial<Record<FeldName, string[]>> = { kategorie: [...KATEGORIEN, FOTOS, UNKLAR], schriftstueck: [...SCHRIFTSTUECKE] };
-const offenBei = (d: Datei) => offeneFelder(d).length > 0;
+export const FELD_NAMEN: Record<FeldName, string> = { schriftstueck: "Art", kategorie: "Bereich", absender: "Absender", betrifft: "Betrifft", datum: "Datum", frist: "Frist" };
+export const AUSWAHL: Partial<Record<FeldName, string[]>> = { kategorie: [...KATEGORIEN, FOTOS, UNKLAR], schriftstueck: [...SCHRIFTSTUECKE] };
+export const offenBei = (d: Datei) => offeneFelder(d).length > 0;
 
 function Meldung({ z }: P) {
   if (!z.meldung) return null;
@@ -124,10 +124,37 @@ export function OrdnerSeite({ z, gehe }: P) {
 // ---------------- Sortieren ----------------
 function SicherZeile({ z, d }: { z: AppZustand; d: Datei }) {
   const [auge, setAuge] = useState(false);
+  const [stift, setStift] = useState(false);
   return <div className="pruef-zeile sicher" data-sicher={d.pfad}>
     <div><strong><Check size={15} style={{ verticalAlign: "-2px", marginRight: 6 }}/>{d.name}</strong><span className="grund">{kurzfassung(d)}</span></div>
-    <div className="pruef-aktionen"><button type="button" className="button klein" aria-pressed={auge} aria-label={`${d.name} ansehen`} onClick={() => setAuge(!auge)}><Eye size={15}/></button></div>
+    <DateiAktionen z={z} d={d} auge={auge} setAuge={setAuge} stift={stift} setStift={setStift}/>
+    {stift && <div style={{ gridColumn: "1 / -1" }}><FeldAendern z={z} d={d} fertig={() => setStift(false)}/></div>}
     {auge && <div style={{ gridColumn: "1 / -1" }}><Steckbrief z={z} d={d}/></div>}
+  </div>;
+}
+
+/** Auge (ansehen), Stift (von Hand ändern), Papierkorb (aus dem Organizer nehmen) – an jeder Datei gleich (Klaus 13.11.). */
+export function DateiAktionen({ z, d, auge, setAuge, stift, setStift }: { z: AppZustand; d: Datei; auge: boolean; setAuge: (b: boolean) => void; stift: boolean; setStift: (b: boolean) => void }) {
+  return <div className="pruef-aktionen">
+    <button type="button" className="button klein" aria-pressed={auge} aria-label={`${d.name} ansehen`} title="Ansehen" onClick={() => setAuge(!auge)} data-auge><Eye size={15}/></button>
+    <button type="button" className="button klein" aria-pressed={stift} aria-label={`${d.name} ändern`} title="Von Hand ändern: Art, Bereich, Absender, Betrifft, Datum, Frist" onClick={() => setStift(!stift)} data-stift><Pencil size={15}/></button>
+    <button type="button" className="button klein" aria-label={`${d.name} entfernen`} title="Aus dem Organizer nehmen (Original bleibt)" onClick={() => { if (confirm(`„${d.name}“ aus dem Organizer nehmen? Das Original bleibt unverändert.`)) z.entfernen([d.pfad]); }} data-papierkorb><Trash2 size={15}/></button>
+  </div>;
+}
+
+/** Jedes Feld von Hand ändern – auch was die App schon sicher eingeordnet hat. Geht durch z.aendern: Verlauf, Rückgängig, Lernen. */
+export function FeldAendern({ z, d, fertig }: { z: AppZustand; d: Datei; fertig: () => void }) {
+  const FELDER: FeldName[] = ["kategorie", "schriftstueck", "absender", "betrifft", "datum", "frist"];
+  const [feld, setFeld] = useState<FeldName>("kategorie");
+  const [wert, setWert] = useState(d.felder.kategorie?.wert || "");
+  const liste = AUSWAHL[feld];
+  const waehle = (f: FeldName) => { setFeld(f); setWert(d.felder[f]?.wert || ""); };
+  return <div className="feld-aendern" data-feld-aendern={d.pfad}>
+    <select value={feld} onChange={(e) => waehle(e.target.value as FeldName)} aria-label="Welches Feld" data-feld-wahl>{FELDER.map((f) => <option key={f} value={f}>{FELD_NAMEN[f]}{d.felder[f]?.wert ? `: ${d.felder[f]!.wert}` : ""}</option>)}</select>
+    {liste ? <select value={wert} onChange={(e) => setWert(e.target.value)} aria-label={FELD_NAMEN[feld]} data-wert>{!liste.includes(wert) && <option value={wert}>{wert || "–"}</option>}{liste.map((k) => <option key={k}>{k}</option>)}</select>
+      : <input value={wert} onChange={(e) => setWert(e.target.value)} aria-label={FELD_NAMEN[feld]} type={feld === "datum" || feld === "frist" ? "date" : "text"} data-wert/>}
+    <button type="button" className="button klein primary" disabled={!wert.trim() || wert.trim() === (d.felder[feld]?.wert || "")} onClick={() => { z.aendern(d.pfad, feld, wert.trim()); fertig(); }} data-uebernehmen>Übernehmen</button>
+    <button type="button" className="button klein" onClick={fertig}>Abbrechen</button>
   </div>;
 }
 
@@ -150,7 +177,7 @@ function PruefZeile({ z, d, neu }: { z: AppZustand; d: Datei; neu?: number }) {
       <button type="button" className="button klein" aria-pressed={auge} aria-label={`${d.name} ansehen`} title="Ansehen, teilen oder entfernen" onClick={() => setAuge(!auge)} data-auge><Eye size={15}/></button>
       {!aendern ? <>
         {w?.wert && <button type="button" className="button klein" onClick={() => z.aendern(d.pfad, feld, w.wert)} data-stimmt><Check size={15}/>Stimmt</button>}
-        <button type="button" className="button klein" onClick={() => { setWert(w?.wert || ""); setAendern(true); }} data-korrigieren><Pencil size={15}/>Ändern</button>
+        <button type="button" className="button klein" onClick={() => { setWert(w?.wert || ""); setAendern(true); }} aria-label="Ändern" title="Von Hand ändern" data-korrigieren><Pencil size={15}/></button>
       </> : <>
         {liste ? <select value={wert} onChange={(e) => setWert(e.target.value)} aria-label={FELD_NAMEN[feld]} data-wert>{!liste.includes(wert) && <option value={wert}>{wert || "–"}</option>}{liste.map((k) => <option key={k}>{k}</option>)}</select>
           : <input value={wert} onChange={(e) => setWert(e.target.value)} aria-label={FELD_NAMEN[feld]} type={feld === "datum" || feld === "frist" ? "date" : "text"} data-wert style={{ padding: "6px 8px", borderRadius: 9, border: "1px solid var(--line)" }}/>}
@@ -212,6 +239,7 @@ export function SortierenSeite({ z, gehe }: P) {
 // ---------------- Finden ----------------
 function Steckbrief({ z, d }: { z: AppZustand; d: Datei }) {
   const [bild, setBild] = useState<string | null>(null);
+  const [stift, setStift] = useState(false);
   const [gross, setGross] = useState(false);
   useEffect(() => { setBild(null); setGross(false); }, [d.pfad]);
   const f = d.felder;
@@ -248,17 +276,19 @@ function Steckbrief({ z, d }: { z: AppZustand; d: Datei }) {
       {d.email && <><dt>Mail</dt><dd>{d.email.betreff}{d.email.anhaenge.length ? ` · ${d.email.anhaenge.length} Anhang/Anhänge` : ""}</dd></>}
     </dl>
     <div className="button-row" style={{ marginTop: 12 }}>
-      {!d.auffaellig && <button type="button" className="button klein" onClick={() => oeffnen(true)} data-original><Eye size={15}/>Ansehen</button>}
+      {!d.auffaellig && <button type="button" className="button klein" aria-label="Ansehen" title="Ansehen" onClick={() => oeffnen(true)} data-original><Eye size={15}/></button>}
       {!d.auffaellig && <button type="button" className="button klein" onClick={teilen} data-teilen><Share2 size={15}/>Teilen</button>}
-      <button type="button" className="button klein" onClick={() => { if (confirm(`„${d.name}“ aus dem Organizer nehmen? Das Original bleibt unverändert.`)) z.entfernen([d.pfad]); }} data-entfernen><Trash2 size={15}/>Entfernen</button>
+      <button type="button" className="button klein" aria-pressed={stift} aria-label="Von Hand ändern" title="Von Hand ändern" onClick={() => setStift(!stift)} data-steckbrief-stift><Pencil size={15}/></button>
+      <button type="button" className="button klein" onClick={() => { if (confirm(`„${d.name}“ aus dem Organizer nehmen? Das Original bleibt unverändert.`)) z.entfernen([d.pfad]); }} aria-label="Entfernen" title="Aus dem Organizer nehmen (Original bleibt)" data-entfernen><Trash2 size={15}/></button>
       <Info titel="Original" punkte={["Öffnet die Datei aus dem Ordner. Sie wird nicht verändert.", "Gesperrte Dateien öffnet der Organizer nicht."]}/>
     </div>
+    {stift && <div style={{ marginTop: 10 }}><FeldAendern z={z} d={d} fertig={() => setStift(false)}/></div>}
     {bild && <img src={bild} alt={`Foto ${d.name}`} className={`vorschau-bild ${gross ? "gross" : ""}`} onClick={() => setGross(!gross)} title={gross ? "Tippen: kleiner" : "Tippen: größer"}/>}
     {d.volltext && <details style={{ marginTop: 10 }}><summary className="leise">Erkannter Text</summary><pre style={{ whiteSpace: "pre-wrap", fontSize: ".8rem", maxHeight: 260, overflow: "auto" }}>{d.volltext.slice(0, 3000)}</pre></details>}
   </section>;
 }
 
-export function FindenSeite({ z, gehe }: P) {
+export function FindenSeite({ z, gehe, ziel }: P) {
   const moeglich = SICHTEN.filter((s) => s.ab <= Math.max(z.stufe, 0));
   const [sichtId, setSichtId] = useState("ordnung");
   const sicht = moeglich.find((s) => s.id === sichtId) || [...moeglich].sort((a, b) => b.ab - a.ab)[0] || SICHTEN[SICHTEN.length - 1];
@@ -268,12 +298,29 @@ export function FindenSeite({ z, gehe }: P) {
   const wurzel = useMemo(() => baum(z.dateien, sicht, heute()), [z.dateien, sicht]);
   useEffect(() => { setKnoten(null); }, [sicht.id]);
   const nachPfad = useMemo(() => new Map(z.dateien.map((d) => [d.pfad, d])), [z.dateien]);
+  // Der gewählte Ordner wird bei jeder Änderung aus dem neuen Baum geholt (sonst zeigte die Liste nach „Stift“ noch den alten Stand).
+  const aktuell = useMemo(() => {
+    if (!knoten) return null;
+    const finde = (k: BaumKnoten): BaumKnoten | null => { if (k.id === knoten.id) return k; for (const c of k.kinder) { const t = finde(c); if (t) return t; } return null; };
+    return finde(wurzel) || { ...knoten, anzahl: 0, kinder: [], dateien: [] };
+  }, [knoten, wurzel]);
   const liste = useMemo(() => {
     if (frage.trim()) return suche(z.dateien, frage);
-    const k = knoten || wurzel;
+    const k = aktuell || wurzel;
     return dateienUnter(k).map((p) => nachPfad.get(p)!).filter(Boolean);
-  }, [frage, knoten, wurzel, z.dateien, nachPfad]);
+  }, [frage, aktuell, wurzel, z.dateien, nachPfad]);
   const datei = gewaehlt ? nachPfad.get(gewaehlt) : undefined;
+  const [stiftBei, setStiftBei] = useState("");
+  // Sprung vom Dashboard: Sicht wählen, dann den Ordner im Baum (Titel, erste passende Ebene).
+  const angewandt = useRef(0);
+  useEffect(() => { if (ziel && ziel.nr !== angewandt.current && moeglich.some((s) => s.id === ziel.sicht)) setSichtId(ziel.sicht); }, [ziel]);
+  useEffect(() => {
+    if (!ziel || ziel.nr === angewandt.current || sicht.id !== ziel.sicht) return;
+    angewandt.current = ziel.nr; setFrage("");
+    if (!ziel.knoten) { setKnoten(null); return; }
+    const suchen = (k: BaumKnoten): BaumKnoten | null => { for (const c of k.kinder) if (c.titel === ziel.knoten) return c; for (const c of k.kinder) { const t = suchen(c); if (t) return t; } return null; };
+    setKnoten(suchen(wurzel));
+  }, [ziel, sicht.id, wurzel]);
   if (!z.dateien.length) return <><Seitentitel symbol={<FolderTree size={24}/>} titel="Finden"/><section className="card"><p>Noch kein Ordner gelesen.</p><button type="button" className="button primary" onClick={() => gehe("ordner")}><FolderOpen size={18}/>Ordner wählen</button></section></>;
   return <>
     <Seitentitel symbol={<FolderTree size={24}/>} titel="Finden" info={<Info titel="Sichten" punkte={["Ein Ordner, viele Bäume: nach Bereich, Absender, Person, Datum, Frist, Nummer …", "Die Dateien liegen dabei nicht doppelt – der Baum ist nur eine Ansicht.", "Weitere Sichten erscheinen, sobald das passende Sieb gelaufen ist."]}/>}/>
@@ -285,10 +332,11 @@ export function FindenSeite({ z, gehe }: P) {
       <section className="card"><OrdnerBaum wurzel={wurzel} gewaehlt={knoten?.id || "alle"} waehlen={(k) => { setKnoten(k); setFrage(""); }} label={`Baum: ${sicht.name}`}/></section>
       <div style={{ display: "grid", gap: 16, minWidth: 0 }}>
         <section className="card" data-liste>
-          <div className="card-heading"><h2>{frage.trim() ? `Treffer für „${frage.trim()}“` : (knoten?.titel || "Alle Dateien")}</h2><span style={{ display: "inline-flex", gap: 10, alignItems: "center" }}>{liste.length > 0 && <button type="button" className="text-link" onClick={() => { const was = frage.trim() ? `${liste.length} Treffer` : knoten ? `„${knoten.titel}“ (${liste.length})` : `Alle ${liste.length} Dateien`; if (confirm(`${was} aus dem Organizer nehmen? Die Originale bleiben unverändert.`)) z.entfernen(liste.map((d) => d.pfad), was); }} data-entfernen-liste><Trash2 size={15}/>Entfernen</button>}<span className="badge">{liste.length}</span></span></div>
-          <ul className="dateiliste">{liste.slice(0, 200).map((d) => <li key={d.pfad}><button type="button" className="datei-zeile" aria-current={gewaehlt === d.pfad} onClick={() => setGewaehlt(d.pfad)} data-datei={d.pfad}>
+          <div className="card-heading"><h2>{frage.trim() ? `Treffer für „${frage.trim()}“` : (knoten?.titel || "Alle Dateien")}</h2><span style={{ display: "inline-flex", gap: 10, alignItems: "center" }}>{liste.length > 0 && <button type="button" className="text-link" onClick={() => { const was = frage.trim() ? `${liste.length} Treffer` : knoten ? `„${knoten.titel}“ (${liste.length})` : `Alle ${liste.length} Dateien`; if (confirm(`${was} aus dem Organizer nehmen? Die Originale bleiben unverändert.`)) z.entfernen(liste.map((d) => d.pfad), was); }} aria-label="Alle in dieser Liste entfernen" title="Alle in dieser Liste aus dem Organizer nehmen (Originale bleiben)" data-entfernen-liste><Trash2 size={15}/></button>}<span className="badge">{liste.length}</span></span></div>
+          <ul className="dateiliste">{liste.slice(0, 200).map((d) => <li key={d.pfad} className="datei-eintrag"><div className="datei-zeile-mit"><button type="button" className="datei-zeile" aria-current={gewaehlt === d.pfad} onClick={() => setGewaehlt(d.pfad)} data-datei={d.pfad}>
             <DateiSymbol d={d}/><span><strong>{d.felder.absender?.wert && d.felder.schriftstueck?.wert ? `${d.felder.schriftstueck.wert} · ${d.felder.absender.wert}` : d.name}</strong><small>{d.pfad}{d.felder.datum ? ` · ${deutsch(d.felder.datum.wert)}` : ""}</small></span><Zustand d={d}/>
-          </button></li>)}</ul>
+          </button><DateiAktionen z={z} d={d} auge={gewaehlt === d.pfad} setAuge={(b) => setGewaehlt(b ? d.pfad : "")} stift={stiftBei === d.pfad} setStift={(b) => setStiftBei(b ? d.pfad : "")}/></div>
+            {stiftBei === d.pfad && <FeldAendern z={z} d={d} fertig={() => setStiftBei("")}/>}</li>)}</ul>
           {liste.length > 200 && <p className="leise">Erste 200 von {liste.length}. Suche genauer.</p>}
           {liste.length === 0 && <p className="leise">Nichts gefunden.</p>}
         </section>

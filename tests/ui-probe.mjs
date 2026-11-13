@@ -206,6 +206,45 @@ try {
     await page.locator("[data-entfernen-liste]").click(); await page.waitForTimeout(300);
     soll("„Entfernen“ über der Liste nimmt alle Treffer heraus", await zahl() === vorher, `${await zahl()}`);
   }
+  // ---------- Landkarte und Dashboard (Klaus 13.11.): Kästen sind Links, an jeder Datei Auge, Stift, Papierkorb ----------
+  {
+    await page.setViewportSize({ width: 1280, height: 900 }); await page.goto(basis + "#ordner"); await page.waitForTimeout(300);
+    await page.locator("[data-landkarte-knopf]").click(); await page.waitForTimeout(300);
+    const gesamt = Number(await page.locator("[data-kachel=gesamt] b").innerText());
+    soll("Landkarten-Knopf im Kopf öffnet das Dashboard mit allen Dateien", gesamt > 0 && await page.locator("[data-kachel]").count() === 6, String(gesamt));
+    await page.locator("[data-kachel=offen]").click(); await page.waitForTimeout(200);
+    soll("Kasten „von dir zu entscheiden“ führt zum Prüfen", (await page.evaluate(() => location.hash)) === "#sortieren");
+    await page.goto(basis + "#landkarte"); await page.waitForTimeout(300);
+    const bereich = page.locator("[data-bereich]").first(), name = await bereich.getAttribute("data-bereich"), n = Number(await bereich.locator(".n").innerText());
+    await bereich.click(); await page.waitForTimeout(400);
+    const titel = await page.locator("[data-liste] .card-heading h2").innerText(), inListe = Number(await page.locator("[data-liste] .card-heading .badge").innerText());
+    soll("Bereich im Dashboard führt in genau diesen Ordner im Baum", (await page.evaluate(() => location.hash)) === "#finden" && titel === name && inListe === n, `${name} ${n} / ${titel} ${inListe}`);
+    const eintrag = page.locator("[data-liste] .datei-eintrag").first();
+    soll("Jede Datei in der Liste hat Auge, Stift und Papierkorb", await eintrag.locator("[data-auge]").count() === 1 && await eintrag.locator("[data-stift]").count() === 1 && await eintrag.locator("[data-papierkorb]").count() === 1);
+    await eintrag.locator("[data-stift]").click();
+    const wahl = eintrag.locator("[data-feld-aendern] [data-wert]");
+    const neu = await wahl.evaluate((e, alt) => [...e.options].map((o) => o.value).find((v) => v && v !== alt), name);
+    await wahl.selectOption(neu); await eintrag.locator("[data-feld-aendern] [data-uebernehmen]").click(); await page.waitForTimeout(400);
+    soll("Stift: Bereich einer schon eingeordneten Datei von Hand ändern – sie verlässt diesen Ordner", Number(await page.locator("[data-liste] .card-heading .badge").innerText()) === n - 1, `${neu}`);
+    await page.locator("[data-nav=verlauf]").click(); await page.waitForTimeout(200);
+    soll("… und die Änderung steht im Verlauf", (await page.locator("main").innerText()).includes(neu));
+    await page.goto(basis + "#landkarte"); await page.waitForTimeout(300);
+    await page.locator("[data-kachel=sicher]").click(); await page.waitForTimeout(400);
+    const vorP = Number(await page.locator("[data-liste] .card-heading .badge").innerText());
+    soll("Kasten „eingeordnet – nachprüfen“ zeigt die eingeordneten Dateien", (await page.locator("[data-liste] .card-heading h2").innerText()) === "In Ordnung" && vorP > 0);
+    await page.locator("[data-liste] .datei-eintrag").first().locator("[data-papierkorb]").click(); await page.waitForTimeout(400);
+    soll("Papierkorb nimmt die Datei aus dem Organizer", Number(await page.locator("[data-liste] .card-heading .badge").innerText()) === vorP - 1);
+    await page.goto(basis + "#landkarte"); await page.waitForTimeout(300);
+    await page.locator("[data-reiter=organizer]").click();
+    const rahmen = page.frameLocator("[data-karte=organizer]");
+    await rahmen.locator(".kasten").first().waitFor({ timeout: 10000 }).catch(() => {});
+    soll("Landkarte Organizer im Rahmen: Kästen da, eigener Titel und Reiter ausgeblendet", await rahmen.locator(".kasten").count() > 10 && !(await rahmen.locator(".kopf").isVisible()));
+    await rahmen.locator("#o_index").click();
+    soll("Kasten antippen zeigt, woher und wohin", /Kommt von:[\s\S]*Geht zu:/.test(await rahmen.locator("#tafel").innerText()));
+    await page.locator("[data-reiter=familienakte]").click();
+    await page.frameLocator("[data-karte=familienakte]").locator("#f_tresor").waitFor({ timeout: 10000 }).catch(() => {});
+    soll("Landkarte Familienakte im Rahmen", await page.frameLocator("[data-karte=familienakte]").locator("#f_tresor").count() === 1);
+  }
   await page.setViewportSize({ width: 1280, height: 900 }); await page.goto(basis + "#akte"); await page.waitForTimeout(300);
   soll("Kein Update-Fähnchen, solange die Fassung aktuell ist", await page.locator("[data-update-fahne]").count() === 0);
   { const v = JSON.parse(await (await page.request.get(basis + "version.json")).text()); const kopf = await page.locator(".site-brand small").innerText(); soll("version.json nennt dieselbe Fassung wie der Kopf", kopf.includes("Fassung " + v.fassung), `${v.fassung} / ${kopf}`); }

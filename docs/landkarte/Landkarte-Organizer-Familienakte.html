@@ -15,6 +15,7 @@
 :root[data-theme="dark"]{--bg:#11161c;--fl:#1a222b;--fg:#e6ecf2;--mut:#9aa7b4;--rand:#2c3845;--blau:#5ea2f0;--lila:#a98bea;--grau:#7d8996;--petrol:#3fb7bb;--gelb:#e0a64a;--rot:#ef7a6d;--gruen:#5cc28a;
   --woher:#16273a;--arbeit:#1f2238;--speicher:#13302e;--wohin:#33281a;color-scheme:dark}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{background:var(--bg);color:var(--fg);font-family:var(--t-text);font-size:14px;line-height:1.45;margin:0}
 .wrap{max-width:1240px;margin:0 auto;padding-block:16px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 h1{font-family:var(--t-anz);font-size:1.45rem;margin:0;text-wrap:balance}
@@ -145,6 +146,7 @@ const KARTEN = {
       ["o_aehnlich",2,"Ähnliche","Fassung, gleicher Text, Beleg, Foto, Name","bau","Nur markiert, nie entfernt."],
       ["o_pruefen",2,"Du prüfst","nur Unsicheres, Klick für Klick","fertig","Deine Wahl im Browser-Speicher, mit Rückgängig."],
       ["o_lernen",2,"Lernt","aus deinen Korrekturen","fertig","Gelerntes im Browser-Speicher, nie im Internet."],
+      ["o_dash",2,"Dashboard","Zahlen je Durchgang, führt zur Stelle","bau","In der App unter „Landkarte“; Stift, Auge, Papierkorb an jeder Datei."],
       ["o_browser",3,"Browser-Speicher","Steckbriefe, Text, Gelerntes, Verlauf","fertig","IndexedDB „DateiOrganizer1“ – nur auf diesem Gerät, in diesem Browser."],
       ["o_orig",3,"Originale","unverändert im Ordner","fertig","Dein Ordner. Der Organizer löscht und verschiebt nichts."],
       ["o_index",3,"organizer-index.json","Vorschläge zum Mitnehmen","fertig","Im gewählten Ordner, neben den Dateien."],
@@ -155,7 +157,7 @@ const KARTEN = {
     faeden: [["o_ordner","o_art"],["o_hoch","o_art"],["o_sd","o_art","bau"],["o_mail","o_art"],["o_menge","o_art","geplant"],
       ["o_art","o_text"],["o_art","o_ocr","bau"],["o_art","o_innen","bau"],["o_art","o_doppelt"],
       ["o_text","o_siebe"],["o_ocr","o_siebe","bau"],["o_innen","o_aehnlich","bau"],["o_text","o_aehnlich","bau"],
-      ["o_siebe","o_pruefen"],["o_pruefen","o_lernen"],["o_siebe","o_browser"],["o_pruefen","o_browser"],["o_lernen","o_browser"],
+      ["o_siebe","o_pruefen"],["o_pruefen","o_lernen"],["o_siebe","o_dash","bau"],["o_dash","o_pruefen","bau"],["o_siebe","o_browser"],["o_pruefen","o_browser"],["o_lernen","o_browser"],
       ["o_doppelt","o_browser"],["o_aehnlich","o_browser","bau"],["o_ordner","o_orig"],["o_browser","o_index"],
       ["o_index","o_fa","geplant"],["o_index","o_ki","geplant"],["o_pruefen","o_lehrer","geplant"]],
     fragen: [
@@ -302,5 +304,7 @@ addEventListener("resize", () => requestAnimationFrame(faeden));
 addEventListener("hashchange", () => { const h = location.hash.slice(1); if (h in KARTEN || h === "dashboard") zeigen(h); });
 document.addEventListener("click", e => { for (const d of document.querySelectorAll("details.frage[open]")) if (!d.contains(e.target)) d.open = false; });
 if (document.fonts?.ready) document.fonts.ready.then(() => requestAnimationFrame(faeden));
+// In der App eingebettet (?eingebettet): Reiter und Titel macht die App selbst, das Dashboard dort ist live.
+if (new URLSearchParams(location.search).has("eingebettet")) { document.querySelector(".kopf").hidden = true; }
 const start = location.hash.slice(1); zeigen(start in KARTEN || start === "dashboard" ? start : "organizer");
 </script>

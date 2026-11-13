@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Archive, FolderOpen, FolderTree, HelpCircle, History, ListChecks, RefreshCw, Search } from "lucide-react";
+import { Archive, FolderOpen, FolderTree, HelpCircle, History, ListChecks, Map as KarteSymbol, RefreshCw, Search } from "lucide-react";
 import type { Datei, FeldName, Korrektur, Lernregel } from "../lib/typen.ts";
 import { einlesen, doppelteMarkieren } from "../lib/einlesen.ts";
 import { aehnlicheFinden } from "../lib/aehnlich.ts";
@@ -14,12 +14,15 @@ import { pdfLeser } from "./pdf.ts";
 import { ausHandle, erlaubnisPruefen, herunterladen, type Quelle, type QuellDatei } from "./quellen.ts";
 import { laden, loeschen, ordnerHolen, ordnerMerken, speichern } from "./zustand.ts";
 import { OrdnerSeite, SortierenSeite, FindenSeite, VerlaufSeite, AkteSeite, HilfeSeite } from "./seiten.tsx";
+import { LandkarteSeite } from "./landkarte.tsx";
 
 export const FASSUNG = "0.3.4";
 // Ladeanzeige: „suchen“ = Ordner wird durchgesehen (Zahl noch unbekannt), „lesen“ = Datei für Datei, „stand“ = gemerkter Stand beim Start.
 export type Fortschritt = { phase: "stand" | "suchen" | "lesen"; fertig: number; gesamt: number; name?: string };
 const luft = () => new Promise<void>((r) => setTimeout(r)); // dem Browser Zeit zum Zeichnen geben
-export type SeitenId = "ordner" | "sortieren" | "finden" | "verlauf" | "akte" | "hilfe";
+export type SeitenId = "ordner" | "sortieren" | "finden" | "verlauf" | "akte" | "hilfe" | "landkarte";
+/** Sprungziel für „Finden“: eine Sicht und darin ein Ordner (Titel im Baum). Kommt vom Dashboard. */
+export type FindenZiel = { sicht: string; knoten?: string; nr: number } | null;
 export type Meldung = { text: string; art?: "halt" | "fehler" } | null;
 export const heute = () => new Date().toISOString().slice(0, 10);
 
@@ -28,7 +31,7 @@ const SEITEN: Array<{ id: SeitenId; name: string; symbol: typeof FolderOpen }> =
   { id: "finden", name: "Finden", symbol: FolderTree }, { id: "verlauf", name: "Verlauf", symbol: History },
   { id: "akte", name: "Familienakte", symbol: Archive }, { id: "hilfe", name: "Hilfe", symbol: HelpCircle },
 ];
-const seiteAusHash = (): SeitenId => { const h = location.hash.replace("#", ""); return (SEITEN.some((s) => s.id === h) ? h : "ordner") as SeitenId; };
+const seiteAusHash = (): SeitenId => { const h = location.hash.replace("#", ""); return (SEITEN.some((s) => s.id === h) || h === "landkarte" ? h : "ordner") as SeitenId; };
 
 export type AppZustand = ReturnType<typeof useOrganizer>;
 
@@ -299,7 +302,9 @@ export function App() {
   useEffect(() => { const f = () => setSeite(seiteAusHash()); window.addEventListener("hashchange", f); return () => window.removeEventListener("hashchange", f); }, []);
   const gehe = useCallback((s: SeitenId) => { location.hash = s; setSeite(s); window.scrollTo({ top: 0 }); }, []);
   const offen = useMemo(() => z.dateien.filter((d) => offeneFelder(d).length > 0).length, [z.dateien]);
-  const props = { z, gehe };
+  const [ziel, setZiel] = useState<FindenZiel>(null);
+  const oeffne = useCallback((sicht: string, knoten?: string) => { setZiel({ sicht, knoten, nr: Date.now() }); gehe("finden"); }, [gehe]);
+  const props = { z, gehe, oeffne, ziel };
   return <div className="app-shell">
     <header className="site-header">
       <div className="masthead">
@@ -311,6 +316,7 @@ export function App() {
           {neueFassung && <button type="button" className="update-fahne" data-update-fahne title={`Fassung ${neueFassung} steht bereit. Tippen aktualisiert; die Sortierung bleibt gemerkt.`} onClick={() => void aktualisieren(!!z.fortschritt && z.fortschritt.phase !== "stand")}><RefreshCw size={14}/>Update {neueFassung}</button>}
           <span className={`ordner-pill ${z.ordnerName ? "verbunden" : ""}`} data-ordner-pill title={z.ordnerName || "Kein Ordner gewählt"}>{z.fortschritt && z.fortschritt.phase !== "stand" ? "Wird geladen …" : z.ordnerName ? `${z.ordnerName} · ${z.dateien.length}` : "Kein Ordner"}</span>
           <button type="button" className="info-knopf" aria-label="Aktualisieren" title="Aktualisieren: App neu laden (neueste Fassung). Die Sortierung bleibt gemerkt." data-aktualisieren onClick={() => void aktualisieren(!!z.fortschritt && z.fortschritt.phase !== "stand")}><RefreshCw size={18}/></button>
+          <button type="button" className={`info-knopf ${seite === "landkarte" ? "aktiv" : ""}`} aria-label="Landkarte und Dashboard" title="Landkarte und Dashboard: was sortiert wurde, wohin es geht, wie die App arbeitet" onClick={() => gehe("landkarte")} data-landkarte-knopf><KarteSymbol size={18}/></button>
           <button type="button" className="info-knopf" aria-label="Suchen" onClick={() => gehe("finden")}><Search size={18}/></button>
         </div>
       </div>
@@ -328,6 +334,7 @@ export function App() {
       {seite === "verlauf" && <VerlaufSeite {...props}/>}
       {seite === "akte" && <AkteSeite {...props}/>}
       {seite === "hilfe" && <HilfeSeite {...props}/>}
+      {seite === "landkarte" && <LandkarteSeite {...props}/>}
     </main>
     <footer className="site-footer">
       <div className="footer-inner">

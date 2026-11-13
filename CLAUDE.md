@@ -11,6 +11,13 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
 
 ## Stand (13.11.2026 nachts, Fassung 0.3.4, nicht veröffentlicht)
 
+- **Landkarte und Dashboard in der App (Klaus 13.11.: „Landkarte ist okay … mit dem Landkarten-Button wie bei der Familienakte“):** Knopf
+  (Kartensymbol) im Kopf → Seite `#landkarte` (`src/landkarte.tsx`): Dashboard live aus der Liste – jeder Kasten ist ein Link (zu entscheiden →
+  Sortieren, eingeordnet/doppelt/gesperrt/Bereich/Format → der passende Ordner im Baum, `oeffne(sicht, knoten)`); Landkarten im Rahmen aus
+  `src/public/landkarte.html`, erzeugt von `scripts/landkarte-bauen.mjs` aus `docs/landkarte/…` (= Artefakt; im Bau geprüft). **Auge, Stift,
+  Papierkorb** nur als Strichsymbol an jeder Datei (Finden, grüne Liste, Steckbrief); Stift ändert jedes Feld auch nachträglich (`FeldAendern`).
+  Behoben: Finden zeigte nach einer Änderung den alten Ordnerinhalt; der Worker legte jede Nebenseite als index.html in den Vorrat (v9).
+
 - **PDF-Kennung und Abgleich (Klaus 13.11.):** `lib/pdfkennung.ts` liest das /ID-Paar aus dem Trailer (erste = Herkunft); gleiche Herkunft bei
   anderem Inhalt → „ähnlich: fassung“ (über 20 Dateien mit derselben Kennung = feste Gerätekennung, übergangen). Eigener Code, Prüfkern
   unverändert. **Abgleich** in beide Richtungen: `docs/ABGLEICH.md`, Prüfung `node scripts/abgleich.mjs`.
