@@ -61,7 +61,7 @@ mit einem anderen Maß:
 | Knoten | Was nach diesen Regeln nachgewiesen ist | Offen |
 | --- | --- | --- |
 | BookLedgerPro und BookLedger Basic (byte-gleich nachgezogen, Stand Pro `2a3d653`) | Kontoregeln (Stapel 2), Datum und Steuersatz (Stapel 3), Wortmodell (Stapel 4) – je drei Einordner | Kreuztest mit Lehrdaten eines anderen Systems (Auftrag 002), echte Stichprobe; native Pro-Apps erst mit neuer Fassung |
-| Datei-Organizer | erster Blindtest Briefe mit **einem** Einordner (Bereich 51–65 %, Absender 54 %); Soll seither von vier Einordnern geprüft, alle fünf Felder tragen: Schriftstück 0,98, Frist 0,93, Person 0,92, Absender 0,91, Bereich 0,90 (Kappa); beim Bereich 24 von 150 nicht einstimmig, keiner ohne Mehrheit. **Berichtigung 12.11.:** zuerst stand hier Bereich 0,80 – der Vergleich hatte die 21 Fächer des Stapel-Autors nicht auf die 18 Fächer der Einordner abgebildet. | Kern liegt weit unter den Einordnern → verbessern (dieser Stapel ist verbraucht), feste Regel für die überschneidenden Fächer, Nachweis an neuem Stapel |
+| Datei-Organizer | **Kern `7ac9d4f` an vier fremden Stapeln in allen fünf Feldern gesichert besser als `fe55b5f`** (siehe „Ergebnis“ unten); davor: erster Blindtest Briefe mit **einem** Einordner (Bereich 51–65 %, Absender 54 %); Soll seither von vier Einordnern geprüft, alle fünf Felder tragen: Schriftstück 0,98, Frist 0,93, Person 0,92, Absender 0,91, Bereich 0,90 (Kappa); beim Bereich 24 von 150 nicht einstimmig, keiner ohne Mehrheit. **Berichtigung 12.11.:** zuerst stand hier Bereich 0,80 – der Vergleich hatte die 21 Fächer des Stapel-Autors nicht auf die 18 Fächer der Einordner abgebildet. | Kern liegt weit unter den Einordnern → verbessern (dieser Stapel ist verbraucht), feste Regel für die überschneidenden Fächer, Nachweis an neuem Stapel |
 | Familienakte Pro und Basic (ein Repo, derselbe Kern) | Vergleich am selben Briefstapel mit einem Einordner (Bereich 28–36 %, Absender 36 %) | Übernahme des Kerns erst nach Nachweis; Messung mit gefüllter Akte |
 | Private Brain Pro und Basic | nichts gemessen; ob Basic denselben Code trägt, ist nicht nachgesehen | Dokumentart-Vorschlag gegen denselben Briefstapel |
 | Suche über die Knoten | nichts gemessen (Proben bisher nur mit gestellter Hülle und gestelltem Modell) | Suchprüfstapel nach Regel 11–14, intern und extern |
@@ -102,3 +102,27 @@ erwachsen und fallen aus dem Kindergeld, ziehen aus, beginnen Ausbildung oder St
 Steuernummern. Der Stapel für Runde C umfasst deshalb mehrere Jahre derselben Familien; geprüft wird auch, ob die Person stimmt,
 wenn sich die Rolle ändert (Kind → eigener Vertragspartner), und ob ein Schriftstück dem richtigen Haushalt zugeordnet bleibt.
 Noch nicht vergeben.
+
+## Ergebnis: zweiter Blindtest Briefe und Runden A, B, H (13.11.2026, je einmal gemessen)
+
+Alter Kern `fe55b5f` gegen neuen Kern `7ac9d4f`, Soll = Mehrheit aus Stapel-Autor, Claude-Agent und Codex (GPT-6). Je Stapel 150
+Schriftstücke; Person nur, wo das Soll eine nennt. Alle Unterschiede gesichert (McNemar, p < 0,05; bis auf den Bereich in Runde H
+alle p < 0,001). Zahlen: `ergebnisse/briefe-{2,a,b,h}-kern.json`, Übereinstimmung der Einordner: `ergebnisse/briefe-{2,a,b,h}-einordner.json`.
+
+| Feld | Blindtest 2 | A (andere Gegend) | B (Lebenslagen) | H (Schwerbehinderung) |
+| --- | --- | --- | --- | --- |
+| Bereich | 72,0 → 86,7 % | 56,7 → 80,7 % | 61,3 → 76,0 % | 67,3 → 76,7 % |
+| Schriftstück | 64,0 → 82,7 % | 54,7 → 81,3 % | 53,3 → 80,7 % | 48,0 → 72,7 % |
+| Absender | 72,0 → 95,3 % | 66,7 → 93,3 % | 74,0 → 94,0 % | 71,3 → 92,7 % |
+| Person | 60,9 → 92,2 % | 62,3 → 90,4 % | 53,8 → 72,3 % | 66,9 → 88,7 % |
+| Frist | 50,0 → 91,3 % | 61,3 → 88,7 % | 58,0 → 90,7 % | 62,0 → 98,7 % |
+
+„Falsch und als sicher ausgegeben“ (alt → neu, je 150): Bereich 15→10, 22→14, 15→13, 17→19; Schriftstück 18→11, 17→16, 23→11, 27→24;
+Absender 31→1, 37→5, 33→5, 33→6; Frist 56→2, 41→4, 43→7, 35→1.
+
+Einigkeit der drei Einordner (Fleiss' Kappa): Bereich 0,94–0,99, Schriftstück 0,94–0,98, Absender 0,97–0,99, Person 0,90–0,98,
+Frist 0,84–0,91; höchstens ein Schriftstück je Feld ohne Mehrheit.
+
+Was die Zahlen nicht zeigen: echte Unterlagen (nicht gemessen), Fotos und Texterkennung (nur Text), Schreiber eines anderen
+Systems (Runde D steht aus). Schwächen: Bereich und Schriftstück bei besonderen Lebenslagen und Schwerbehinderung (73–77 %), Person
+bei Lebenslagen (72 %); beim Bereich in Runde H ist „falsch und sicher“ nicht gesunken. Die vier Stapel sind damit verbraucht.
