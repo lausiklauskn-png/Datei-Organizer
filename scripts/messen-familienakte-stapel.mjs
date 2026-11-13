@@ -14,19 +14,19 @@ const lese = (p) => JSON.parse(readFileSync(p, "utf8"));
 const q = ["ERWARTUNG.json", "ZWEITER.json", "DRITTER.json"].filter((f) => existsSync(join(S, f))).map((f) => new Map(lese(join(S, f)).dateien.map((x) => [x.datei, x])));
 const mehr = (datei, feld) => { const v = q.map((m) => { const x = m.get(datei); return x ? (feld === "bereich" ? x.bereich ?? x.kategorie : x[feld]) ?? "" : undefined; }).filter((v) => v !== undefined); const z = {}; v.forEach((x) => z[x] = (z[x] || 0) + 1); const t = Object.entries(z).find(([, n]) => n >= 2); return q.length === 1 ? v[0] : t ? t[0] : null; };
 const norm = (s) => String(s || "").toLowerCase().replace(/\b(gmbh|ag|kg|e\.?\s?v|gbr|ohg|mbh|co|eg|se|ug)\b/g, "").replace(/[^a-z0-9äöüß]/g, "");
-const z = { n: 0, bereich: [0, 0], absender: [0, 0], titelMitAbsender: 0, titel: 0 }; const fehler = [];
+const z = { n: 0, bereich: [0, 0], absender: [0, 0], titelMitAbsender: 0, titel: 0 }; const fehler = [], je = {};
 for (const datei of q[0].keys()) {
   const text = readFileSync(join(T, datei), "utf8"); z.n++;
   const kopf0 = B.lesen(text.split(/\r?\n/).slice(0, 400)); const kopf = mitKernAbsender ? mitKernAbsender(kopf0, text) : kopf0;
   const brief = briefAngaben(kopf), titel = briefTitel(kopf);
   const name = datei.replace(/\.txt$/, ".pdf");
   const plan = buildDocumentIntakePlan({ file: { name, size: text.length, type: "application/pdf", lastModified: 0, textHint: text, titleHint: titel || undefined, brief }, source: "file-picker", documents: [], records: [] });
-  const sb = mehr(datei, "bereich"); if (sb) { z.bereich[1]++; if (plan.lifeArea === sb) z.bereich[0]++; }
+  const sb = mehr(datei, "bereich"); if (sb) { z.bereich[1]++; if (plan.lifeArea === sb) z.bereich[0]++; (je[datei] ||= {}).bereich = plan.lifeArea === sb; }
   const sa = mehr(datei, "absender");
-  if (sa) { z.absender[1]++; const a = brief?.absender; const ok = !!a && (norm(a).includes(norm(sa)) || norm(sa).includes(norm(a))) && norm(a).length > 2; if (ok) z.absender[0]++; else fehler.push(`${datei}: „${a || "–"}“ statt „${sa}“`);
+  if (sa) { z.absender[1]++; const a = brief?.absender; const ok = !!a && (norm(a).includes(norm(sa)) || norm(sa).includes(norm(a))) && norm(a).length > 2; (je[datei] ||= {}).absender = ok; if (ok) z.absender[0]++; else fehler.push(`${datei}: „${a || "–"}“ statt „${sa}“`);
     if (titel) { z.titel++; if (ok) z.titelMitAbsender++; } }
 }
 const p = ([a, b]) => `${a}/${b} = ${(100 * a / b).toFixed(1)} %`;
 console.log(`${S.split("/").pop()}${T !== S ? " (" + T.split("/").pop() + ")" : ""} · Familienakte ${FA.split("/").pop()}: Bereich ${p(z.bereich)} · Absender ${p(z.absender)} · Titel vorgeschlagen ${z.titel}, davon mit richtigem Absender ${z.titelMitAbsender}`);
-if (arg("--json")) writeFileSync(arg("--json"), JSON.stringify({ stapel: S, text: T, fa: FA, ...z, fehler }, null, 1) + "\n");
+if (arg("--json")) writeFileSync(arg("--json"), JSON.stringify({ stapel: S, text: T, fa: FA, ...z, fehler, je }, null, 1) + "\n");
 if (process.argv.includes("--fehler")) fehler.forEach((f) => console.log("  " + f));
