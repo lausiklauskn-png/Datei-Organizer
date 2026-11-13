@@ -19,7 +19,9 @@ export type BildMeta = {
 };
 
 /** Merkmale aus dem Inneren einer Datei, gelesen vom Prüfkern des Auslieferungsprüfers (PDF-Metadaten, XMP) – auch wenn kein Text lesbar ist. */
-export type Innen = { autor?: string; programm?: string; erzeuger?: string; titel?: string; betreff?: string; erstellt?: string; befunde: string[] };
+export type Innen = { autor?: string; programm?: string; erzeuger?: string; titel?: string; betreff?: string; erstellt?: string; befunde: string[];
+  /** PDF-Kennung (Trailer /ID): erste = Herkunft, bleibt beim Weiterspeichern gleich; zweite = diese Fassung. */
+  pdfKennung?: { herkunft: string; fassung: string } };
 
 /** Ähnliche Datei (kein exakt gleicher Inhalt): ältere Fassung, gleicher Text, gleicher Beleg, gleiches Foto, gleicher Name. */
 export type Aehnlich = { art: "fassung" | "inhalt" | "beleg" | "foto" | "name"; zu: string; grund: string };

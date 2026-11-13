@@ -6,6 +6,7 @@ import type { Datei, Aehnlich } from "./typen.ts";
  * Exakt gleiche Dateien (gleicher Fingerabdruck) markiert weiter doppelteMarkieren und nimmt sie aus der Sicht.
  * Hier werden nur MARKIERT, nie entfernt – ähnlich ist nicht gleich:
  *   fassung – gleicher Name ohne Kopie-/Versionszusatz („Kopie von“, „(2)“, „_v2“, „_final“, „neu“), anderer Inhalt
+ *   herkunft – gleiche PDF-Kennung (Trailer /ID), anderer Inhalt: aus derselben Datei entstanden (Art „fassung“)
  *   inhalt  – gleicher Text, andere Datei (neu gespeichert, gedruckt und wieder eingescannt, als PDF und als Word)
  *   beleg   – gleicher Absender und gleiche Rechnungs-, Vertrags- oder Kundennummer im selben Schriftstück-Typ
  *   foto    – gleiche Aufnahme (Zeitpunkt und Kamera), andere Größe oder Bearbeitung
@@ -56,6 +57,11 @@ export function aehnlicheFinden(dateien: Datei[]): Datei[] {
   };
   // Reihenfolge = Stärke des Hinweises: gleicher Text vor gleichem Beleg vor Fassung vor Foto vor bloßem Namen.
   for (const g of gruppen((d) => textFingerabdruck(d.volltext))) markiere(g, "inhalt", (z) => `gleicher Text wie „${z.name}“, aber andere Datei (neu gespeichert, gescannt oder anderes Format)`);
+  // Gleiche PDF-Kennung: aus derselben Datei entstanden. Teilen mehr als 20 Dateien eine Kennung, vergibt das Programm sie fest
+  // (manche Scanner und Druckertreiber) – dann sagt sie nichts über die Herkunft und wird übergangen.
+  for (const g of gruppen((d) => d.innen?.pdfKennung?.herkunft)) {
+    if (g.length <= 20) markiere(g, "fassung", (z) => `gleiche PDF-Kennung wie „${z.name}“ – aus derselben Datei entstanden (andere Fassung oder neu gespeichert)`);
+  }
   for (const g of gruppen((d) => {
     const a = d.felder.absender?.wert, art = d.felder.schriftstueck?.wert, n = d.felder.nummern?.find((x) => BELEGNUMMER.test(x.art));
     return a && n ? `${a.toLowerCase()}|${art || ""}|${n.art}|${n.wert.replace(/\s/g, "")}` : undefined;

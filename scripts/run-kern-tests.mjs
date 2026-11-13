@@ -20,6 +20,7 @@ import { KATEGORIEN } from "../lib/kategorien.ts";
 import { archivnummernVergeben, offeneFuerNummer } from "../lib/archivnummer.ts";
 import { aehnlicheFinden, namensStamm, textFingerabdruck, gleicheGroesse } from "../lib/aehnlich.ts";
 import { innenAusBefunden, innenKurz } from "../lib/innen.ts";
+import { pdfKennung } from "../lib/pdfkennung.ts";
 import { createRequire } from "node:module";
 
 const WURZEL = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -316,6 +317,30 @@ if (existsSync(fa)) {
   const hund = "Tierarztpraxis am Mühlbach\nRechnung für die Impfung und Wurmkur Ihres Hundes Bello, Behandlung vom 3. Mai. Bitte überweisen Sie den Betrag.";
   soll("Wortmodell: echter Bereich kommt aus der Liste", KATEGORIEN.includes(bereichMitModell(undefined, hund)?.wert ?? "Korrespondenz"));
   soll("Wortmodell: Vorhersage nennt Abstand und Zweites", (() => { const v = vorhersage(WORTMODELL_ART, merkmale("Letzte Mahnung: Trotz unserer Zahlungserinnerung ist der offene Betrag nicht eingegangen. Mahngebühr und Verzugszinsen kommen hinzu.")); return v?.wert === "Mahnung" && v.abstand > 0 && !!v.zweites; })());
+}
+
+// ---------- PDF-Kennung zur Herkunft (Klaus 13.11.: „liest der Prüfkern bisher nicht“) ----------
+{
+  const enc = (s) => new TextEncoder().encode(s);
+  const A = "1A2B3C4D5E6F708192A3B4C5D6E7F801", B1 = "00112233445566778899AABBCCDDEEFF", B2 = "FFEEDDCCBBAA99887766554433221100";
+  const pdf = (id1, id2, extra = "") => enc(`%PDF-1.7\n1 0 obj << /Type /Catalog >> endobj\n${extra}trailer\n<< /Size 2 /Root 1 0 R /ID [ <${id1}> <${id2}> ] >>\nstartxref\n9\n%%EOF\n`);
+  const k = pdfKennung(pdf(A, B1));
+  soll("Trailer /ID → Herkunft und Fassung, klein geschrieben", k?.herkunft === A.toLowerCase() && k.fassung === B1.toLowerCase(), JSON.stringify(k));
+  const inkr = enc(new TextDecoder().decode(pdf(A, B1)) + `2 0 obj << >> endobj\ntrailer\n<< /Size 3 /Root 1 0 R /Prev 9 /ID [<${A}><${B2}>] >>\n%%EOF\n`);
+  soll("Nach inkrementellem Speichern gilt das letzte Paar", pdfKennung(inkr)?.fassung === B2.toLowerCase(), JSON.stringify(pdfKennung(inkr)));
+  soll("Querverweis-Strom (/Type /XRef) mit /ID wird gelesen", pdfKennung(enc(`%PDF-1.5\n5 0 obj << /Type /XRef /Size 6 /ID [<${A}> <${B1}>] /Length 0 >> stream\nendstream endobj\nstartxref\n9\n%%EOF`))?.herkunft === A.toLowerCase());
+  const lin = enc(`%PDF-1.6\n1 0 obj << /Linearized 1 >> endobj\ntrailer << /ID [<${A}><${B1}>] >>\n` + " ".repeat(70 * 1024) + "%%EOF");
+  soll("Linearisierte PDF: Kennung am Anfang", pdfKennung(lin)?.herkunft === A.toLowerCase());
+  soll("Ohne /ID, mit Nullen oder zu kurz: keine Kennung", !pdfKennung(enc("%PDF-1.4\ntrailer << /Size 1 >>\n%%EOF")) && !pdfKennung(pdf("0".repeat(32), B1)) && !pdfKennung(pdf("ABCD", B1)) && !pdfKennung(enc(`kein pdf /ID [<${A}><${B1}>]`)));
+  const D = (pfad, id, x = {}) => ({ pfad, name: pfad.split("/").pop(), groesse: 100, geaendert: 1, stufe: 1, felder: {}, sha256: pfad, innen: { befunde: [], pdfKennung: { herkunft: id, fassung: pfad } }, ...x });
+  const r = aehnlicheFinden([D("A/Mietvertrag.pdf", "aa".repeat(16)), D("B/Scan 0042.pdf", "aa".repeat(16), { geaendert: 5 }), D("C/fremd.pdf", "bb".repeat(16))]);
+  const m = (p) => r.find((d) => d.pfad === p).aehnlich;
+  soll("Gleiche PDF-Kennung, anderer Name und Inhalt → „fassung“ zur neueren", m("A/Mietvertrag.pdf")?.art === "fassung" && m("A/Mietvertrag.pdf").zu === "B/Scan 0042.pdf" && /PDF-Kennung/.test(m("A/Mietvertrag.pdf").grund) && !m("C/fremd.pdf"), JSON.stringify(m("A/Mietvertrag.pdf")));
+  const fest = aehnlicheFinden(Array.from({ length: 21 }, (_, i) => D(`S/scan${i}.pdf`, "cc".repeat(16), { geaendert: i })));
+  soll("Feste Kennung eines Geräts (mehr als 20 Dateien) sagt nichts – keine Marke", fest.every((d) => !d.aehnlich));
+  soll("Kurzsatz nennt die PDF-Kennung", /PDF-Kennung 1a2b3c4d…/.test(innenKurz({ befunde: [], pdfKennung: k })));
+  const [e] = await einlesen({ pfad: "x/k.pdf", name: "k.pdf", geaendert: 1, bytes: pdf(A, B1) }, async () => ({ kopf: "", voll: "" }));
+  soll("Einlesen setzt die Kennung auch ohne Prüfkern", e.innen?.pdfKennung?.herkunft === A.toLowerCase(), JSON.stringify(e.innen));
 }
 
 console.log(`Kern: ${gruen} grün · ${rot} ROT`);

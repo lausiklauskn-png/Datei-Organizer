@@ -1,5 +1,6 @@
 import type { Datei, DateiArt } from "./typen.ts";
 import { innenAusBefunden, type Befund } from "./innen.ts";
+import { pdfKennung } from "./pdfkennung.ts";
 import { aehnlicheFinden } from "./aehnlich.ts";
 import { erkenneArt, sha256Hex } from "./dateiart.ts";
 import { leseExif } from "./exif.ts";
@@ -38,6 +39,8 @@ export async function einlesen(e: Eingabe, pdfLesen: PdfLeser, tiefe = 0, bildLe
   // Merkmale aus dem Datei-Innern: auch wenn kein Text lesbar ist, bleiben Autor, Programm, Titel, Erstelldatum (Klaus 13.11.: „aus dem Code heraus“).
   const k = kern && /^(pdf|office)$/.test(art.art || "") ? await kern(e.name, e.bytes, art.art as DateiArt).catch(() => null) : null;
   if (k) { const innen = innenAusBefunden(k.befunde); if (innen) d.innen = innen; }
+  // PDF-Kennung zur Herkunft: eigener Leser, unabhängig vom Prüfkern (der liest sie nicht).
+  if (art.art === "pdf") { const id = pdfKennung(e.bytes); if (id) d.innen = { ...(d.innen || { befunde: [] }), pdfKennung: id }; }
   try {
     if (art.art === "pdf") {
       const t = await pdfLesen(e.bytes);

@@ -36,5 +36,5 @@ export function innenAusBefunden(befunde: Befund[] | undefined): Innen | undefin
 export function innenKurz(i: Innen | undefined): string {
   if (!i) return "";
   const de = (iso: string) => iso.split("-").reverse().join(".");
-  return [i.autor, i.titel && `„${i.titel}“`, i.programm || i.erzeuger, i.erstellt && `erstellt ${de(i.erstellt)}`].filter(Boolean).join(" · ");
+  return [i.autor, i.titel && `„${i.titel}“`, i.programm || i.erzeuger, i.erstellt && `erstellt ${de(i.erstellt)}`, i.pdfKennung && `PDF-Kennung ${i.pdfKennung.herkunft.slice(0, 8)}…`].filter(Boolean).join(" · ");
 }

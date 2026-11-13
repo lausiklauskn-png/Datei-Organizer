@@ -40,6 +40,9 @@ function aehnlicheFinden(dateien) {
     for (const d of g) if (d !== zu && !marke.has(d.pfad)) marke.set(d.pfad, { art, zu: zu.pfad, grund: grund(zu) });
   };
   for (const g of gruppen((d) => textFingerabdruck(d.volltext))) markiere(g, "inhalt", (z) => `gleicher Text wie \u201E${z.name}\u201C, aber andere Datei (neu gespeichert, gescannt oder anderes Format)`);
+  for (const g of gruppen((d) => d.innen?.pdfKennung?.herkunft)) {
+    if (g.length <= 20) markiere(g, "fassung", (z) => `gleiche PDF-Kennung wie \u201E${z.name}\u201C \u2013 aus derselben Datei entstanden (andere Fassung oder neu gespeichert)`);
+  }
   for (const g of gruppen((d) => {
     const a = d.felder.absender?.wert, art = d.felder.schriftstueck?.wert, n = d.felder.nummern?.find((x) => BELEGNUMMER.test(x.art));
     return a && n ? `${a.toLowerCase()}|${art || ""}|${n.art}|${n.wert.replace(/\s/g, "")}` : void 0;

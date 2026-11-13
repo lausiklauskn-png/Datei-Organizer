@@ -33,7 +33,7 @@ function innenAusBefunden(befunde) {
 function innenKurz(i) {
   if (!i) return "";
   const de = (iso) => iso.split("-").reverse().join(".");
-  return [i.autor, i.titel && `\u201E${i.titel}\u201C`, i.programm || i.erzeuger, i.erstellt && `erstellt ${de(i.erstellt)}`].filter(Boolean).join(" \xB7 ");
+  return [i.autor, i.titel && `\u201E${i.titel}\u201C`, i.programm || i.erzeuger, i.erstellt && `erstellt ${de(i.erstellt)}`, i.pdfKennung && `PDF-Kennung ${i.pdfKennung.herkunft.slice(0, 8)}\u2026`].filter(Boolean).join(" \xB7 ");
 }
 export {
   innenAusBefunden,

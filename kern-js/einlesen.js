@@ -1,5 +1,6 @@
 // Erzeugt aus Datei-Organizer lib/einlesen.ts (scripts/kern-js.mjs). Nicht von Hand ändern.
 import { innenAusBefunden } from "./innen.js";
+import { pdfKennung } from "./pdfkennung.js";
 import { aehnlicheFinden } from "./aehnlich.js";
 import { erkenneArt, sha256Hex } from "./dateiart.js";
 import { leseExif } from "./exif.js";
@@ -25,6 +26,10 @@ async function einlesen(e, pdfLesen, tiefe = 0, bildLesen, kern) {
   if (k) {
     const innen = innenAusBefunden(k.befunde);
     if (innen) d.innen = innen;
+  }
+  if (art.art === "pdf") {
+    const id = pdfKennung(e.bytes);
+    if (id) d.innen = { ...d.innen || { befunde: [] }, pdfKennung: id };
   }
   try {
     if (art.art === "pdf") {
