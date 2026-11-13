@@ -27,3 +27,6 @@ Gebaut wird aus 1, 3, 4, 5 erst nach einer Vorschau mit Klaus' Ja je Punkt (sich
    innere Ströme). Aus diesem Code heraus Zuordnung, Sortierung und Erkennung: z. B. gleiche PDF-/ID = gleiche Herkunft, Ersteller/Firma
    aus den Office-Metadaten, echtes Erstellungsdatum statt Dateidatum, Message-ID bei Mails. Der Prüfkern ist im Plan schon als
    byte-gleicher Baustein vorgesehen (`docs/PLAN.md`), keine zweite Fassung.
+9. **Prüfkern ausbauen (Klaus, Nachtrag):** Den Auslieferungsprüfer so erweitern, dass er Formate liest, die heute nicht lesbar sind
+   (z. B. Office-Dateien, Outlook-Mails, Archive, Bildformate), damit der Organizer sie erkennen, zuordnen und Doppelungen finden kann.
+   Ausbau im Repo des Auslieferungsprüfers, dann byte-gleich mit Pin in Organizer und Familienakte nachziehen.
