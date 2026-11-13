@@ -1,8 +1,8 @@
 // Offline-Vorrat des Datei-Organizers: nur die App selbst, nie Nutzerdateien.
 // Neue Fassung = neue Nummer; alte Vorräte werden beim Aktivieren entfernt.
-const VORRAT = "datei-organizer-v4";
+const VORRAT = "datei-organizer-v5";
 self.addEventListener("install", (e) => { e.waitUntil(caches.open(VORRAT).then((c) => c.addAll(["./", "./index.html", "./manifest.webmanifest", "./favicon.svg", "./icon-192.png", "./icon-512.png", "./datenschutz.html"])).then(() => self.skipWaiting())); });
-self.addEventListener("activate", (e) => { e.waitUntil(caches.keys().then((k) => Promise.all(k.filter((n) => n !== VORRAT).map((n) => caches.delete(n)))).then(() => self.clients.claim())); });
+self.addEventListener("activate", (e) => { e.waitUntil(caches.keys().then((k) => Promise.all(k.filter((n) => n.startsWith("datei-organizer-v") && n !== VORRAT).map((n) => caches.delete(n)))).then(() => self.clients.claim())); });
 self.addEventListener("fetch", (e) => {
   const u = new URL(e.request.url);
   if (e.request.method !== "GET" || u.origin !== location.origin || !u.pathname.startsWith(new URL("./", self.registration.scope).pathname)) return;

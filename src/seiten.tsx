@@ -10,7 +10,7 @@ import { stichprobe, anteilText } from "../lib/stichprobe.ts";
 import { deutsch, kurzfassung, INDEX_DATEI } from "../lib/index-format.ts";
 import { Ablaufbild, FesterBaum, Info, OrdnerBaum, Seitentitel, type Schritt } from "./ui.tsx";
 import { ausAuswahl, nativWaehlen, nativerOrdner, ordnerWaehlen, ordnerWahlMoeglich, testOrdner } from "./quellen.ts";
-import { heute, type AppZustand, type SeitenId } from "./app.tsx";
+import { heute, Ladebalken, type AppZustand, type SeitenId } from "./app.tsx";
 
 type P = { z: AppZustand; gehe: (s: SeitenId) => void };
 
@@ -80,10 +80,9 @@ export function OrdnerSeite({ z, gehe }: P) {
         <button type="button" className="button" disabled={laeuft} onClick={() => dateiWahl.current?.click()}><File size={18}/>Dateien wählen</button>
         <button type="button" className="button" disabled={laeuft} onClick={() => los(() => z.einlesenAus(testOrdner()))} data-testordner><Archive size={18}/>Testordner</button>
       </div>
-      <input ref={dateiWahl} type="file" multiple hidden onChange={(e) => { const l = e.target.files; if (l?.length) void los(() => z.einlesenAus(ausAuswahl(l, "Ausgewählte Dateien"))); e.target.value = ""; }}/>
-      <input ref={ordnerWahl} type="file" multiple hidden {...{ webkitdirectory: "" }} onChange={(e) => { const l = e.target.files; if (l?.length) { const n = (l[0] as File & { webkitRelativePath?: string }).webkitRelativePath?.split("/")[0] || "Ordner"; void los(() => z.einlesenAus(ausAuswahl(l, n))); } e.target.value = ""; }}/>
-      {z.fortschritt && <div className="fortschritt" role="progressbar" aria-valuemin={0} aria-valuemax={z.fortschritt.gesamt} aria-valuenow={z.fortschritt.fertig} aria-label="Einlesen"><span style={{ width: `${(100 * z.fortschritt.fertig) / z.fortschritt.gesamt}%` }}/></div>}
-      {z.fortschritt && <p className="leise">{z.fortschritt.fertig} von {z.fortschritt.gesamt} gelesen …</p>}
+      <input ref={dateiWahl} type="file" multiple hidden onChange={(e) => { const l = e.target.files; if (l?.length) void los(() => z.einlesenAus(ausAuswahl(l, "Ausgewählte Dateien"))); else z.setMeldung({ text: `Der Browser hat keine Dateien übergeben${z.ordnerName ? ` – angezeigt wird weiter „${z.ordnerName}“` : ""}. Bitte „Ordner am PC“ oder „Dateien wählen“ nehmen.`, art: "halt" }); e.target.value = ""; }}/>
+      <input ref={ordnerWahl} type="file" multiple hidden {...{ webkitdirectory: "" }} onChange={(e) => { const l = e.target.files; if (l?.length) { const n = (l[0] as File & { webkitRelativePath?: string }).webkitRelativePath?.split("/")[0] || "Ordner"; void los(() => z.einlesenAus(ausAuswahl(l, n))); } else z.setMeldung({ text: `Der Browser hat keine Dateien übergeben${z.ordnerName ? ` – angezeigt wird weiter „${z.ordnerName}“` : ""}. Bitte „Ordner am PC“ oder „Dateien wählen“ nehmen.`, art: "halt" }); e.target.value = ""; }}/>
+      <Ladebalken f={z.fortschritt}/>
       <Meldung z={z} gehe={gehe}/>
     </section>
     {zahlen.gesamt > 0 && <section className="card" data-ueberblick>

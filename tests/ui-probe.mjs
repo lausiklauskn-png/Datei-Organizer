@@ -31,6 +31,7 @@ const browser = await chromium.launch();
 try {
   const ctx = await browser.newContext({ acceptDownloads: true, viewport: { width: 1280, height: 900 } });
   const page = await ctx.newPage();
+  await page.addInitScript(() => { addEventListener("DOMContentLoaded", () => new MutationObserver(() => { const e = document.querySelector(".site-header [data-ladeanzeige]"); if (e) sessionStorage.setItem("probe-lade", (sessionStorage.getItem("probe-lade") || "") + " " + e.getAttribute("data-ladeanzeige")); }).observe(document.documentElement, { subtree: true, childList: true, attributes: true })); });
   const fehler = [];
   page.on("pageerror", (e) => fehler.push(String(e)));
   page.on("console", (m) => { if (m.type() === "error") fehler.push(m.text()); });
@@ -40,6 +41,7 @@ try {
   await page.goto(basis);
   soll("Kopf, Navigation und Fuß stehen da", await page.locator(".site-header .main-navigation [data-nav]").count() === 6 && await page.locator(".site-footer").isVisible());
   soll("Ohne Ordner: „Kein Ordner“", (await page.locator("[data-ordner-pill]").innerText()).includes("Kein Ordner"));
+  soll("Knopf „Aktualisieren“ steht oben im Kopf", await page.locator(".site-header [data-aktualisieren]").isVisible());
   await page.locator(".page-title .info-knopf").click();
   soll("Fragezeichen öffnet den Hinweis mit dem SD-Baum", await page.locator("[data-info-fenster]").isVisible() && (await page.locator("[data-info-fenster]").innerText()).includes("Datei-Organizer"));
   await page.keyboard.press("Escape");
@@ -168,6 +170,7 @@ try {
   await page.goto(basis + "datenschutz.html");
   soll("Impressum & Datenschutz erreichbar", (await page.locator("h1").innerText()).includes("Impressum"));
 
+  { const l = (await page.evaluate(() => sessionStorage.getItem("probe-lade") || "")).split(" "); soll("Ladebalken im Kopf lief beim Einlesen (durchsehen, dann Datei für Datei)", l.includes("suchen") && l.includes("lesen"), JSON.stringify([...new Set(l)])); }
   soll("Keine Fehler in der Konsole", fehler.length === 0, fehler.slice(0, 3).join(" | "));
 } finally {
   await browser.close(); server.close();

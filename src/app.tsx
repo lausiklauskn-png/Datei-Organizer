@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Archive, FolderOpen, FolderTree, HelpCircle, History, ListChecks, Search } from "lucide-react";
+import { Archive, FolderOpen, FolderTree, HelpCircle, History, ListChecks, RefreshCw, Search } from "lucide-react";
 import type { Datei, FeldName, Korrektur, Lernregel } from "../lib/typen.ts";
 import { einlesen, doppelteMarkieren } from "../lib/einlesen.ts";
 import { leseEml } from "../lib/eml.ts";
@@ -13,7 +13,10 @@ import { ausHandle, erlaubnisPruefen, herunterladen, type Quelle, type QuellDate
 import { laden, loeschen, ordnerHolen, ordnerMerken, speichern } from "./zustand.ts";
 import { OrdnerSeite, SortierenSeite, FindenSeite, VerlaufSeite, AkteSeite, HilfeSeite } from "./seiten.tsx";
 
-export const FASSUNG = "0.3.0";
+export const FASSUNG = "0.3.1";
+// Ladeanzeige: „suchen“ = Ordner wird durchgesehen (Zahl noch unbekannt), „lesen“ = Datei für Datei, „stand“ = gemerkter Stand beim Start.
+export type Fortschritt = { phase: "stand" | "suchen" | "lesen"; fertig: number; gesamt: number; name?: string };
+const luft = () => new Promise<void>((r) => setTimeout(r)); // dem Browser Zeit zum Zeichnen geben
 export type SeitenId = "ordner" | "sortieren" | "finden" | "verlauf" | "akte" | "hilfe";
 export type Meldung = { text: string; art?: "halt" | "fehler" } | null;
 export const heute = () => new Date().toISOString().slice(0, 10);
@@ -36,7 +39,7 @@ function useOrganizer() {
   const [quelleArt, setQuelleArt] = useState("");
   const [quelle, setQuelle] = useState<Quelle | null>(null);
   const [meldung, setMeldung] = useState<Meldung>(null);
-  const [fortschritt, setFortschritt] = useState<{ fertig: number; gesamt: number } | null>(null);
+  const [fortschritt, setFortschritt] = useState<Fortschritt | null>({ phase: "stand", fertig: 0, gesamt: 0 });
   const [geladen, setGeladen] = useState(false);
   const stapel = useRef<Datei[][]>([]);
   const originale = useRef(new Map<string, QuellDatei | { blob: Uint8Array }>());
@@ -45,7 +48,7 @@ function useOrganizer() {
   useEffect(() => { (async () => {
     const z = await laden();
     if (z) { setDateien(z.dateien); setStufe(z.stufe); setVerlauf(z.verlauf); setRegeln(z.regeln); setOrdnerName(z.ordnerName); setQuelleArt(z.quelle); }
-    setGeladen(true);
+    setGeladen(true); setFortschritt((f) => (f?.phase === "stand" ? null : f));
   })(); }, []);
   useEffect(() => {
     if (!geladen) return;
@@ -55,14 +58,17 @@ function useOrganizer() {
 
   const einlesenAus = useCallback(async (q: Quelle) => {
     setMeldung({ text: `Lese „${q.name}“ …` });
+    setFortschritt({ phase: "suchen", fertig: 0, gesamt: 0, name: q.name }); await luft();
     let liste: QuellDatei[];
-    try { liste = await q.dateien(); } catch (e) { setMeldung({ text: `Ordner nicht lesbar: ${(e as Error).message}`, art: "fehler" }); return; }
-    if (!liste.length) { setMeldung({ text: "Im Ordner liegen keine Dateien.", art: "halt" }); return; }
+    try { liste = await q.dateien(); } catch (e) { setFortschritt(null); setMeldung({ text: `Ordner „${q.name}“ nicht lesbar: ${(e as Error).message}. Die Anzeige ist unverändert.`, art: "fehler" }); return; }
+    if (!liste.length) { setFortschritt(null); setMeldung({ text: `In „${q.name}“ liegen keine lesbaren Dateien. Die Anzeige ist unverändert.`, art: "halt" }); return; }
     const lesePdf = await pdfLeser();
     const neu: Datei[] = [];
     originale.current.clear();
-    setFortschritt({ fertig: 0, gesamt: liste.length });
+    setFortschritt({ phase: "lesen", fertig: 0, gesamt: liste.length });
+    let gezeichnet = performance.now();
     for (const [i, qd] of liste.entries()) {
+      if (performance.now() - gezeichnet > 80) { setFortschritt({ phase: "lesen", fertig: i, gesamt: liste.length, name: qd.name }); await luft(); gezeichnet = performance.now(); }
       try {
         const bytes = await qd.lesen();
         const teile = await einlesen({ pfad: qd.pfad, name: qd.name, geaendert: qd.geaendert, bytes }, lesePdf);
@@ -71,8 +77,8 @@ function useOrganizer() {
       } catch (e) {
         neu.push({ pfad: qd.pfad, name: qd.name, groesse: 0, geaendert: qd.geaendert, stufe: 1, felder: { schriftstueck: { wert: "Unklar", sicher: false, grund: `nicht lesbar: ${(e as Error).message}`, quelle: "regel" } } });
       }
-      setFortschritt({ fertig: i + 1, gesamt: liste.length });
     }
+    setFortschritt({ phase: "lesen", fertig: liste.length, gesamt: liste.length }); await luft();
     let fertig = doppelteMarkieren(neu);
     // Vorhandenen Index übernehmen: Archivnummern, Bestätigtes, Regeln, Verlauf (Nummern ändern sich nie)
     let ausIndex = 0;
@@ -206,6 +212,25 @@ async function einlesenTeile(bytes: Uint8Array, pfad: string) {
   return m.anhaenge.map((a) => ({ pfad: `${pfad} › ${a.name}`, daten: a.daten }));
 }
 
+// Ladebalken: oben im Kopf (auf jeder Seite sichtbar) und in der Ordner-Karte. Ohne bekannte Zahl läuft ein Streifen.
+export function Ladebalken({ f, oben }: { f: Fortschritt | null; oben?: boolean }) {
+  if (!f) return null;
+  const offen = f.phase !== "lesen" || !f.gesamt, pz = offen ? 0 : Math.round((100 * f.fertig) / f.gesamt);
+  const text = f.phase === "stand" ? "Gemerkte Sortierung wird geladen …" : f.phase === "suchen" ? `Ordner${f.name ? ` „${f.name}“` : ""} wird durchgesehen …` : `${f.fertig} von ${f.gesamt} Dateien gelesen · ${pz} %`;
+  return <div className={`ladeanzeige ${oben ? "oben" : ""}`} data-ladeanzeige={f.phase}>
+    <div className={`fortschritt ${offen ? "offen" : ""}`} role="progressbar" aria-label="Laden" {...(offen ? {} : { "aria-valuemin": 0, "aria-valuemax": f.gesamt, "aria-valuenow": f.fertig })}><span style={offen ? undefined : { width: `${pz}%` }}/></div>
+    <p className="leise" aria-live="polite"><span>{text}</span>{f.phase === "lesen" && f.name && <span className="lade-name">{f.name}</span>}</p>
+  </div>;
+}
+
+// Aktualisieren: neueste Fassung holen (Service-Worker fragen), dann neu laden. Die Sortierung liegt gemerkt im Browser.
+async function aktualisieren(laeuft: boolean) {
+  if (laeuft && !confirm("Das Einlesen läuft noch. Trotzdem neu laden? Der Ordner muss danach noch einmal gewählt werden.")) return;
+  await new Promise((r) => setTimeout(r, 450)); // gemerkten Stand noch wegschreiben lassen
+  try { const r = await navigator.serviceWorker?.getRegistration(); await r?.update(); } catch { /* ohne Netz: nur neu laden */ }
+  location.reload();
+}
+
 export function App() {
   const z = useOrganizer();
   const [seite, setSeite] = useState<SeitenId>(seiteAusHash);
@@ -221,7 +246,8 @@ export function App() {
           <span><strong>Datei-Organizer</strong><small>Fassung {FASSUNG} · vorsortiert für die Familienakte</small></span>
         </button>
         <div className="header-actions">
-          <span className={`ordner-pill ${z.ordnerName ? "verbunden" : ""}`} data-ordner-pill title={z.ordnerName || "Kein Ordner gewählt"}>{z.ordnerName ? `${z.ordnerName} · ${z.dateien.length}` : "Kein Ordner"}</span>
+          <span className={`ordner-pill ${z.ordnerName ? "verbunden" : ""}`} data-ordner-pill title={z.ordnerName || "Kein Ordner gewählt"}>{z.fortschritt && z.fortschritt.phase !== "stand" ? "Wird geladen …" : z.ordnerName ? `${z.ordnerName} · ${z.dateien.length}` : "Kein Ordner"}</span>
+          <button type="button" className="info-knopf" aria-label="Aktualisieren" title="Aktualisieren: App neu laden (neueste Fassung). Die Sortierung bleibt gemerkt." data-aktualisieren onClick={() => void aktualisieren(!!z.fortschritt && z.fortschritt.phase !== "stand")}><RefreshCw size={18}/></button>
           <button type="button" className="info-knopf" aria-label="Suchen" onClick={() => gehe("finden")}><Search size={18}/></button>
         </div>
       </div>
@@ -230,6 +256,7 @@ export function App() {
           <s.symbol size={16}/>{s.name}{s.id === "sortieren" && offen > 0 && <span className="zahl" aria-label={`${offen} bitte prüfen`}>{offen}</span>}
         </button>)}
       </nav>
+      <Ladebalken f={z.fortschritt} oben/>
     </header>
     <main className="site-main" id="inhalt">
       {seite === "ordner" && <OrdnerSeite {...props}/>}

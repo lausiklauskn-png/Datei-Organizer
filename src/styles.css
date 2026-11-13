@@ -61,6 +61,14 @@ a { color: var(--teal); }
 @media (max-width: 860px) { .raster-2 { grid-template-columns: minmax(0,1fr); } }
 .fortschritt { height: 8px; border-radius: 999px; background: var(--blue-soft); overflow: hidden; margin-top: 10px; }
 .fortschritt > span { display: block; height: 100%; background: var(--teal); transition: width .2s; }
+.fortschritt.offen > span { width: 35%; animation: lade-lauf 1.1s ease-in-out infinite alternate; }
+@keyframes lade-lauf { from { transform: translateX(-10%); } to { transform: translateX(196%); } }
+@media (prefers-reduced-motion: reduce) { .fortschritt.offen > span { animation: none; width: 100%; opacity: .5; } }
+.ladeanzeige .leise { display: flex; gap: 10px; justify-content: space-between; margin: 6px 0 0; }
+.ladeanzeige .lade-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 55%; }
+.ladeanzeige.oben { padding: 0 16px 8px; }
+.ladeanzeige.oben .fortschritt { margin-top: 0; height: 6px; }
+.ladeanzeige.oben .leise { font-size: .76rem; }
 
 /* „?“ wie in der Familienakte */
 .info { position: relative; display: inline-flex; flex: 0 0 auto; }
