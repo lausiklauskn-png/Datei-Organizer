@@ -31,6 +31,7 @@ const browser = await chromium.launch();
 try {
   const ctx = await browser.newContext({ acceptDownloads: true, viewport: { width: 1280, height: 900 } });
   const page = await ctx.newPage();
+  await page.addInitScript(() => { addEventListener("DOMContentLoaded", () => new MutationObserver(() => { const e = document.querySelector(".site-header [data-ladeanzeige]"); if (e) sessionStorage.setItem("probe-lade", (sessionStorage.getItem("probe-lade") || "") + " " + e.getAttribute("data-ladeanzeige")); }).observe(document.documentElement, { subtree: true, childList: true, attributes: true })); });
   const fehler = [];
   page.on("pageerror", (e) => fehler.push(String(e)));
   page.on("console", (m) => { if (m.type() === "error") fehler.push(m.text()); });
@@ -40,6 +41,7 @@ try {
   await page.goto(basis);
   soll("Kopf, Navigation und Fuß stehen da", await page.locator(".site-header .main-navigation [data-nav]").count() === 6 && await page.locator(".site-footer").isVisible());
   soll("Ohne Ordner: „Kein Ordner“", (await page.locator("[data-ordner-pill]").innerText()).includes("Kein Ordner"));
+  soll("Knopf „Aktualisieren“ steht oben im Kopf", await page.locator(".site-header [data-aktualisieren]").isVisible());
   await page.locator(".page-title .info-knopf").click();
   soll("Fragezeichen öffnet den Hinweis mit dem SD-Baum", await page.locator("[data-info-fenster]").isVisible() && (await page.locator("[data-info-fenster]").innerText()).includes("Datei-Organizer"));
   await page.keyboard.press("Escape");
@@ -168,6 +170,38 @@ try {
   await page.goto(basis + "datenschutz.html");
   soll("Impressum & Datenschutz erreichbar", (await page.locator("h1").innerText()).includes("Impressum"));
 
+  await page.setViewportSize({ width: 1280, height: 900 }); await page.goto(basis + "#ordner"); await page.waitForTimeout(400);
+  { const zahl = async () => Number(((await page.locator("[data-ordner-pill]").innerText()).match(/· (\d+)/) || [])[1] || 0);
+    const vorher = await zahl();
+    await page.evaluate(() => { const dt = new DataTransfer(); dt.items.add(new File(["Stadtwerke Muster GmbH\nRechnung Nr. 77\nBetrag 50,00 EUR"], "hineingezogen-rechnung.txt", { type: "text/plain" })); dt.items.add(new File(["Notiz eins"], "hineingezogen-notiz.txt", { type: "text/plain" })); document.querySelector("[data-ablage]").dispatchEvent(new DragEvent("drop", { dataTransfer: dt, bubbles: true, cancelable: true })); });
+    await page.waitForFunction((v) => Number(((document.querySelector("[data-ordner-pill]")?.textContent || "").match(/· (\d+)/) || [])[1] || 0) === v + 2, vorher, { timeout: 15000 }).catch(() => {});
+    soll("Drag and Drop fügt hinzu, der Bestand bleibt", vorher > 0 && await zahl() === vorher + 2, `${vorher} → ${await zahl()}`);
+    await page.goto(basis + "#finden"); await page.locator("[data-suche]").fill("hineingezogen-notiz"); await page.waitForTimeout(300);
+    await page.locator("[data-datei]").first().click();
+    soll("Steckbrief hat Ansehen, Teilen und Entfernen", await page.locator("[data-steckbrief] [data-original]").count() === 1 && await page.locator("[data-steckbrief] [data-teilen]").count() === 1 && await page.locator("[data-steckbrief] [data-entfernen]").count() === 1);
+    await page.locator("[data-steckbrief] [data-entfernen]").click(); await page.waitForTimeout(300);
+    soll("Entfernen nimmt genau diese eine Datei aus der Liste", await zahl() === vorher + 1, `${await zahl()}`);
+    await page.locator("[data-suche]").fill("hineingezogen"); await page.waitForTimeout(300);
+    await page.locator("[data-entfernen-liste]").click(); await page.waitForTimeout(300);
+    soll("„Entfernen“ über der Liste nimmt alle Treffer heraus", await zahl() === vorher, `${await zahl()}`);
+  }
+  await page.setViewportSize({ width: 1280, height: 900 }); await page.goto(basis + "#akte"); await page.waitForTimeout(300);
+  soll("Kein Update-Fähnchen, solange die Fassung aktuell ist", await page.locator("[data-update-fahne]").count() === 0);
+  { const v = JSON.parse(await (await page.request.get(basis + "version.json")).text()); const kopf = await page.locator(".site-brand small").innerText(); soll("version.json nennt dieselbe Fassung wie der Kopf", kopf.includes("Fassung " + v.fassung), `${v.fassung} / ${kopf}`); }
+  await page.route("**/version.json*", (r) => r.fulfill({ contentType: "application/json", body: JSON.stringify({ fassung: "9.9.9" }) }));
+  await page.evaluate(() => document.dispatchEvent(new Event("visibilitychange")));
+  await page.waitForSelector("[data-update-fahne]", { timeout: 5000 }).catch(() => {});
+  soll("Neue Fassung auf dem Server: Fähnchen „Update 9.9.9“ erscheint von selbst neben der Fassung", ((await page.locator("[data-update-fahne]").innerText().catch(() => "")) || "").includes("9.9.9"));
+  await page.unroute("**/version.json*");
+  if (await page.locator("[data-leeren-knopf]").count()) {
+    await page.locator("[data-leeren-knopf]").click();
+    await page.waitForFunction(() => document.querySelector("[data-ordner-pill]")?.textContent?.includes("Kein Ordner"), null, { timeout: 5000 }).catch(() => {});
+    soll("„Organizer leeren“: Liste leer, Meldung nennt die unveränderten Originale", (await page.locator("[data-ordner-pill]").innerText()).includes("Kein Ordner") && /Originale und der Ordner sind unverändert/.test(await page.locator("[data-ordner-wahl]").innerText()));
+    await page.waitForTimeout(600); await page.reload();
+    await page.waitForTimeout(600);
+    { const t = await page.locator("[data-ordner-pill]").innerText(); soll("… und bleibt nach dem Neuladen leer", t.includes("Kein Ordner"), t); }
+  } else soll("Knopf „Organizer leeren“ steht auf der Seite Familienakte", false);
+  { const l = (await page.evaluate(() => sessionStorage.getItem("probe-lade") || "")).split(" "); soll("Ladebalken im Kopf lief beim Einlesen (durchsehen, dann Datei für Datei)", l.includes("suchen") && l.includes("lesen"), JSON.stringify([...new Set(l)])); }
   soll("Keine Fehler in der Konsole", fehler.length === 0, fehler.slice(0, 3).join(" | "));
 } finally {
   await browser.close(); server.close();

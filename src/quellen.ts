@@ -139,6 +139,32 @@ export function ausAuswahl(liste: FileList | File[], name: string): Quelle {
   };
 }
 
+// ---------- 3b Hineingezogen (Drag and Drop): Dateien und ganze Ordner ----------
+type ZiehEintrag = { isFile: boolean; isDirectory: boolean; name: string; fullPath: string; file?: (ok: (f: File) => void, nein: (e: unknown) => void) => void; createReader?: () => { readEntries: (ok: (l: ZiehEintrag[]) => void, nein: (e: unknown) => void) => void } };
+export async function ausZiehen(dt: DataTransfer): Promise<Quelle | null> {
+  const wurzeln = [...dt.items].filter((i) => i.kind === "file").map((i) => (i as unknown as { webkitGetAsEntry?: () => ZiehEintrag | null }).webkitGetAsEntry?.() || null) as (ZiehEintrag | null)[];
+  const lose = [...dt.files];
+  const gefunden: { pfad: string; datei: File }[] = [];
+  const lauf = async (e: ZiehEintrag): Promise<void> => {
+    if (e.isFile && e.file) { const f = await new Promise<File>((ok, nein) => e.file!(ok, nein)); gefunden.push({ pfad: e.fullPath.replace(/^\//, ""), datei: f }); return; }
+    if (e.isDirectory && e.createReader) {
+      const leser = e.createReader();
+      for (;;) { const teil = await new Promise<ZiehEintrag[]>((ok, nein) => leser.readEntries(ok, nein)); if (!teil.length) break; for (const k of teil) await lauf(k); }
+    }
+  };
+  if (wurzeln.some(Boolean)) { for (const w of wurzeln) if (w) await lauf(w); }
+  else for (const f of lose) gefunden.push({ pfad: f.name, datei: f });
+  if (!gefunden.length) return null;
+  const ordner = wurzeln.filter((w) => w?.isDirectory);
+  const name = ordner.length === 1 && wurzeln.length === 1 ? ordner[0]!.name : "Hineingezogene Dateien";
+  return {
+    art: "auswahl", name,
+    async dateien() {
+      return gefunden.filter((g) => !UEBERSPRINGEN(g.datei.name)).map((g) => ({ pfad: g.pfad, name: g.datei.name, geaendert: g.datei.lastModified, lesen: async () => new Uint8Array(await g.datei.arrayBuffer()) })).sort((a, b) => a.pfad.localeCompare(b.pfad, "de"));
+    },
+  };
+}
+
 // ---------- 4 Testordner ----------
 export function testOrdner(vorgabe?: string): Quelle {
   // Im Repo liegt der Testordner neben app/ (../testdaten/), in einer Vorschau neben der Seite (./testdaten/).

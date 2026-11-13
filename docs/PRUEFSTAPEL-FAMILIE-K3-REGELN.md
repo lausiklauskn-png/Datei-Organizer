@@ -96,3 +96,21 @@ Stapeln tragen am fremden Stapel nicht (Art: das Wortmodell aus den verbrauchten
 er in der Familienakte den Bereich gesichert verbessert und bei Fristen nichts verschlechtert; die Art nutzt die Familienakte nicht.
 Private Brain Pro mit Art aus dem Kern (Zuordnung vor der Messung festgelegt): Rechnung/Vertrag/Angebot 31/40 → 36/40, andere fälschlich
 19/101 → 20/101 – nicht gesichert, nicht eingebaut.
+
+## Nachgerechnet mit drei Einordnern (13.11.2026, Codex Auftrag 011)
+
+Dieselben eingefrorenen Stände (Kern `534cc08` gegen `f98a400`, Familienakte 2.28.66 gegen `bc7494d`), Soll = Mehrheit aus drei
+Einordnern; die Ausgaben der Apps sind dieselben, nur das Soll ist neu. Kappa Bereich 0,96; ohne Mehrheit 0 Stücke.
+Zahlen: `ergebnisse/familie-k3-*-drei.json`.
+
+| Feld | alt | neu | gesichert? |
+| --- | --- | --- | --- |
+| Kern Bereich | 122/150 | 129/150 (gescannt 128) | nein (p = 0,19) |
+| Kern Art (Punkt 5) | 128/149 | 124/149 (gescannt 130 → 124) | nein – eher schlechter |
+| Kern Frist (Punkt 3) | 130/150, falsch und sicher 6 | 132/150, falsch und sicher 3 | nein (p = 0,63) |
+| Familienakte Absender (Punkt 4) | 67/150 = 45 % | 146/150 = 97 % (gescannt 69 → 143) | **ja**, p < 0,001 |
+| Familienakte Bereich | 116/150 = 77 % | 125/150 = 83 % (gescannt 124) | **nein** (p = 0,06; vorläufig 0,03) |
+| Familienakte Frist bis Erinnerung | 54/70, falsches Datum 5, fälschlich 4/80 | 55/70, 2, 3/80 | nein |
+
+Befund bleibt: Punkt 4 nachgewiesen. Der Bereich der Familienakte ist mit drei Einordnern **nicht mehr gesichert** besser (nur noch
+Richtung); die Ausgabe 2.28.67 stützt sich auf den Absender und richtet beim Bereich keinen Schaden an (14 besser, 5 schlechter).

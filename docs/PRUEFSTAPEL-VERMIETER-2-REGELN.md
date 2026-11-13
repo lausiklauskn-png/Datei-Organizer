@@ -76,3 +76,17 @@ Zahlen: `ergebnisse/vermieter-2-*.json`.
 
 Schwächen: Gegenpartei bei Barabhebung und Entgelt; Texterkennung verliest Beträge („790,00“ statt „700,00“); Kontoregeln bei
 Privatvermietung bleiben bei rund 45 % – das SKR03-Konto für Mieterlöse fehlt in der Liste (Autor 8120, Claude-Agent 8400).
+
+## Nachgerechnet mit drei Einordnern (13.11.2026, Codex Auftrag 012)
+
+BookLedgerPro `d08c071` gegen `136c2f5`, Soll = Mehrheit aus drei Einordnern (Konto: Kappa 0,76, 2 von 50 strittig).
+
+| Teil | Ergebnis | Entscheidung |
+| --- | --- | --- |
+| (a) Konto | 22/48 → 24/48, nicht gesichert | unverändert nicht ausgegeben |
+| (b) Auszug | Wahrheit ist der Auszugstext – unverändert 89,2 % | unverändert hinter dem Schalter |
+| (c) Rechnungsnummer | **34 richtig, 1 falsch, 8 leer von 50 (2 % falsch)**; gescannt gleich | **Grenze erfüllt → ab Werk an (BookLedgerPro 0.1.17)** |
+| (d) Aussteller | 46/50 alt = neu | unverändert ausgegeben |
+
+Die vorläufige Zahl (5,6 % falsch) lag knapp über der Grenze, weil zwei Einordner bei zwei Nummern uneins mit dem Autor waren; Codex
+stimmte dort mit dem Claude-Agenten. Das ist die Wirkung, für die die Mehrheit vorab festgelegt wurde – keine nachträgliche Wahl.
