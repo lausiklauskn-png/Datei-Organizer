@@ -30,3 +30,9 @@ würden, aber nicht können.“* Beispiel Jens: ein Werkzeug, das selbst gepfleg
 
 Agenten recherchieren kurz im Netz, sprechen mit niemandem. Der Kritiker ist ebenfalls ein KI-Agent. Belege sind oft Anbieter- oder
 Verbandszahlen.
+
+## Leitsatz (Klaus, nachgereicht vor dem ersten Agenten)
+
+*„KI kann verlieren durch die Maximierung, aber nicht durch die Reduktion. Durch die Reduktion könnte sie gewinnen. Siehe Gehirn.“*
+Gesucht sind Werkzeuge, die wie ein Gehirn filtern, vergessen und nur das Nötige nach vorn holen – nicht solche, die mehr Möglichkeiten,
+Knöpfe und Daten anbieten.
