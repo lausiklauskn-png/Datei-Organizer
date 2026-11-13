@@ -260,3 +260,33 @@ Alle Aufrufe in `scripts/lauf-vermieterin.sh`.
 Vorläufiger Befund: Das einfache Merken „Absender → Bereich“ hilft in der Tendenz, ist aber nicht gesichert und verschlechtert
 einzelne Stücke – derselbe Absender schreibt zu verschiedenen Sachen (Fachregel: die Sache entscheidet, nicht der Absender).
 Beim Konto und bei den Kontoauszügen bringt es nichts Messbares. Endgültig erst mit dem dritten Einordner.
+
+## Einbau in die Familienakte (Klaus 13.11.2026: „wenn es sinnvoll ist, mach es“)
+
+Frage: Soll der Kern jetzt schon in die Familienakte und die anderen Apps? Geprüft an sechs Stapeln, an denen der Kern eingefroren
+gemessen wurde (Vermieterin 2025 und 2026, Blindtest 2, Runden A, B, H; zusammen 784 Schriftstücke mit Mehrheit, 288 mit Frist).
+Die Familienakte war dabei unverändert; die Stücke wurden ihr als PDF-Namen mit gelesenem Text und Briefkopf gegeben, wie in der App.
+
+**Berichtigung:** Die „14 %“ für die Familienakte weiter oben stammen aus einem Vergleich mit Textdateien (`.txt`); dort liest der
+Eingang nur einen kurzen Hinweis. Als PDF liegt die Familienakte bei 55–57 % (Vermieterin) – die 14 % waren zu hart.
+
+| Bereich richtig | Vermieterin 2025 | 2026 | Blindtest 2 | A | B | H |
+| --- | --- | --- | --- | --- | --- | --- |
+| Familienakte bisher | 51/93 | 52/91 | 73/150 | 60/150 | 57/150 | 69/150 |
+| Kern nur, wenn der Dateiname nichts sagt | 71 | 59 | 102 | 95 | 92 | 96 |
+| Kern immer, wenn Text da ist (eingebaut) | 74 | 70 | 130 | 121 | 114 | 115 |
+
+Der Dateiname allein „sagt etwas“ bei 344 Stücken und liegt dabei 175-mal richtig (51 %). Darum ersetzt der Einbau für Stücke mit
+gelesenem Text die Regel „Dateiname zuerst“ (31.10./01.11.); Klaus ist darauf ausdrücklich hingewiesen.
+
+**Frist** (288 mit, 498 ohne): Familienakte bisher 147 richtig (51 %), fälschlich 30; Kern 247 (86 %), fälschlich 35; McNemar
+p < 0,001 (nur Kern richtig 108, nur Familienakte 8). Beide hintereinander: 251 richtig, aber fälschlich 59 – darum der Kern allein.
+
+**Eingebaut** (Familienakte PR #174, `7c97bb0`, nicht veröffentlicht): `lib/sortierkern/` byte-gleich @ `534cc08` mit Pin,
+`lib/sortier-vorschlag.ts`; ab 200 Zeichen Text Bereich und Frist aus dem Kern. Kontrolle nach dem Einbau an denselben Stapeln: die
+Familienakte liefert dieselben Zahlen wie der Kern (Bereich 75/70/130/121/114/115; Frist 247/288, fälschlich 35). Fristenkette
+Vermieterin gescannt: 25/40 → 33/40 (2025), 26/41 → 32/41 (2026) bis zur geplanten Erinnerung.
+
+**Nicht eingebaut:** Absender/Titel (Kern 87 % gegen 35 %, hängt am Titelvorschlag), Zweitfach, eigene Muster. BookLedgerPro: eigene
+Belegleser gleich gut; nur der Aussteller wäre aus dem Kern besser (84 % gegen 44 %) – offen. Private Brain Pro: kennt keine Fächer –
+erst Vorschau. Grenze: alles an erfundenen Stücken; ein frischer Stapel nach dem Einbau steht aus (nächster Lebenslauf).
