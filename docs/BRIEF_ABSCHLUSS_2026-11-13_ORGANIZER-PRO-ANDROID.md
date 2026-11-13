@@ -36,6 +36,13 @@ Folgt auf `BRIEF_ABSCHLUSS_2026-11-13_NEEDS-RAHMEN-RUNDE-2.md`. Danach in dersel
 - **Namen:** Die Web-App heißt jetzt **„Datei-Organizer Basic“**, die App **„Datei-Organizer Pro“** (Klaus: „genauso machen wir das“).
 - Proben: Kern 150, UI 78, nativ 35, JVM 17 – alle grün. Gradle und Lint prüft erst die CI.
 
+## Freibrief (Klaus 13.11., Nacht)
+
+Klaus: „Du hast einen Freibrief für Mergen und gib das bitte auch an die neue Sitzung weiter.“ Eigene geprüfte PRs (CI und Proben
+grün) selbst nach `main` mergen – in allen Repos dieser Arbeit (Datei-Organizer, Familienakte, Workflow PDF Pro, Private Brain Pro,
+BookLedgerPro, Workflow Needs). **Veröffentlichen** (APK/Windows-Ausgaben, Releases) weiter nur mit seinem Wort. In dieser Sitzung danach
+gemergt: Datei-Organizer #14, Workflow PDF Pro #74, Private Brain Pro #138 (Familienakte #178 nach grüner Prüfung).
+
 ## Was Klaus einmalig tun muss (Einzelheiten `docs/ANDROID.md`)
 
 1. **APK-Signatur:**
@@ -66,7 +73,7 @@ Fortsetzung desselben Tages. Erste Spur nach dem letzten Brief gegen 19:15 UTC (
 ```
 Repos: Datei-Organizer (CLAUDE.md, docs/BRIEF_ABSCHLUSS_2026-11-13_ORGANIZER-PRO-ANDROID.md, docs/ANDROID.md zuerst lesen),
 BookLedgerPro (Vorbild: docs/WINDOWS.md, docs/UPDATES-EIGENER-SERVER.md, windows/, .github/workflows/windows*.yml).
-Zweig: der vorgegebene; PR Datei-Organizer #14 (Android 0.4.0) ist Entwurf – CI ansehen, nicht ohne Klaus' Wort mergen.
+Zweig: der vorgegebene. FREIBRIEF (Klaus 13.11.): eigene geprüfte PRs (CI + Proben grün) selbst mergen; veröffentlichen nur mit Klaus' Wort.
 Auftrag: 1. Windows-App „Datei-Organizer Pro“ nach dem Muster von BookLedgerPro bauen (Tauri + Java-Engine, Ordnerzugriff,
 Updates vom eigenen Server family-projekt.de/updates/datei-organizer/ mit Ed25519, Installer, windows.yml/windows-release.yml nur von Hand).
 2. Falls Klaus den öffentlichen Update-Schlüssel gegeben hat: in Android (UpdateFeed.SCHLUESSEL) und Windows eintragen.
