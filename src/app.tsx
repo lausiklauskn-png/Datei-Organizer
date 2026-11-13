@@ -4,6 +4,7 @@ import type { Datei, FeldName, Korrektur, Lernregel } from "../lib/typen.ts";
 import { einlesen, doppelteMarkieren } from "../lib/einlesen.ts";
 import { leseEml } from "../lib/eml.ts";
 import { siebe, istUnsicher, offeneFelder } from "../lib/siebe.ts";
+import { absenderVereinheitlichen } from "../lib/abgleich.ts";
 import { korrigieren as korrigiereDatei, lernen, regelnAufAlle } from "../lib/lernen.ts";
 import { archivnummernVergeben } from "../lib/archivnummer.ts";
 import { indexLesen, organizerIndex, INDEX_DATEI } from "../lib/index-format.ts";
@@ -12,7 +13,7 @@ import { ausHandle, erlaubnisPruefen, herunterladen, type Quelle, type QuellDate
 import { laden, loeschen, ordnerHolen, ordnerMerken, speichern } from "./zustand.ts";
 import { OrdnerSeite, SortierenSeite, FindenSeite, VerlaufSeite, AkteSeite, HilfeSeite } from "./seiten.tsx";
 
-export const FASSUNG = "0.1.0";
+export const FASSUNG = "0.2.0";
 export type SeitenId = "ordner" | "sortieren" | "finden" | "verlauf" | "akte" | "hilfe";
 export type Meldung = { text: string; art?: "halt" | "fehler" } | null;
 export const heute = () => new Date().toISOString().slice(0, 10);
@@ -115,6 +116,7 @@ function useOrganizer() {
       stapel.current.push(d);
       s++;
       d = d.map((x) => siebe(x, s, regeln));
+      if (s >= 4) d = absenderVereinheitlichen(d);
       const offen = d.filter((x) => istUnsicher(x, s)).length;
       if (bis !== undefined && offen) { setDateien(d); setStufe(s); setMeldung({ text: `Halt bei Sieb ${s}: ${offen} ${offen === 1 ? "Datei" : "Dateien"} bitte prüfen. Danach geht es weiter.`, art: "halt" }); return; }
       if (bis === undefined) { setMeldung(offen ? { text: `Sieb ${s} fertig · ${offen} bitte prüfen.`, art: "halt" } : { text: `Sieb ${s} fertig · alles sicher.` }); }

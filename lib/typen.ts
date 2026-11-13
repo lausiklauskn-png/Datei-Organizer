@@ -52,16 +52,18 @@ export type Datei = {
   kopfText?: string;
   /** Ganzer Text – erst Sieb 5. */
   volltext?: string;
-  textQuelle?: "pdf" | "email" | "text" | "office" | "keiner";
+  textQuelle?: "pdf" | "email" | "text" | "office" | "ocr" | "keiner";
   /** Bis zu welchem Sieb die Datei gesiebt ist (0 = nur im Eingang). */
   stufe: number;
   felder: Felder;
   /** Archivnummer (z. B. „A-2026-0007“), erst vergeben, wenn die Reihenfolge steht; ändert sich danach nie. */
   archivnummer?: string;
+  /** Gelesene Gehaltsabrechnung (Zeitraum, Brutto, Netto, Abzüge, Steuer-ID …), nur bei Gehaltsabrechnungen. */
+  gehalt?: import("./gehalt.ts").Gehalt;
   /** Felder, die der Nutzer bestätigt oder korrigiert hat. */
   bestaetigt?: Partial<Record<FeldName, true>>;
 };
 
 export type Korrektur = { zeit: string; pfad: string; feld: FeldName; von: string; zu: string; bestaetigt?: boolean };
 
-export type Lernregel = { wenn: { absender: string }; feld: "kategorie" | "betrifft" | "schriftstueck"; dann: string; anzahl: number };
+export type Lernregel = { wenn: { absender: string }; feld: "kategorie" | "betrifft" | "schriftstueck"; dann: string; anzahl: number; stimmen?: Record<string, number> };
