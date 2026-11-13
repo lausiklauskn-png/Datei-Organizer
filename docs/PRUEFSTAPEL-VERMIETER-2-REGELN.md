@@ -1,0 +1,53 @@
+# Prüfstapel „Vermieter 2“ (Punkt 6, BookLedgerPro) – Regeln, vorab festgelegt (13.11.2026)
+
+Eingecheckt, bevor es den Stapel gibt. Es gelten `docs/PRUEFREGELN-GRUPPE.md` und `docs/PRUEFSTAPEL-BLP-REGELN.md`. Auftrag Klaus 13.11.
+(Brief `docs/BRIEF_SITZUNG_2026-11-13_PUNKTE-3-9.md`, Punkt 6, Freibrief).
+
+## Fragen (je ein Teil, je ein PR in BookLedgerPro)
+
+- **(a) Konto bei Privatvermietung:** Trifft BookLedgerPro das Konto der Belege einer privaten Vermietung gesichert öfter als `d08c071`?
+- **(b) Kontoauszug als Text/PDF → Umsätze:** Neuer Leser „Text eines Auszugs → Umsätze“ (Tag, Betrag, Gegenpartei, Zweck,
+  Rechnungsnummer) mit Saldo-Gegenrechnung; unsichere Zeilen sichtbar, nichts still buchen. Bisher liest das keine App
+  („liest die App nicht“). Gemessen: Anteil vollständig richtig gelesener Umsätze (Tag, Betrag mit Vorzeichen, Gegenpartei), je Auszug
+  ob die Saldoprüfung stimmt, und wie viele falsche Umsätze **ohne** Warnung durchgehen.
+- **(c) Rechnungsnummer im Belegleser:** bisher nicht gelesen; gemessen Anteil richtig, falsch, leer.
+- **(d) Aussteller aus dem Kern:** BookLedgerPro alt gegen BookLedgerPro mit Aussteller aus dem Kern (übersetzte, gepinnte Ausgabe).
+
+## Eingefroren
+
+- **Alt:** BookLedgerPro `d08c071` (0.1.15), Kern `534cc08`.
+- **Neu:** Stand nach dem Lernen; Commit-Kennungen werden hier eingetragen, bevor der Stapel gelesen oder gemessen wird.
+- Lernen nur an verbrauchten Stapeln: `pruefstapel-blp` bis `-blp-4`, `pruefstapel-vermieterin` (2025, 2026) samt Kontoauszügen.
+- Abweichung wie bei `PRUEFSTAPEL-FAMILIE-K3-REGELN.md`: der Stapel entsteht parallel, liegt bis zum Einfrieren ungelesen außerhalb
+  des Repos.
+
+## Stapel `pruefstapel-vermieter-2/`
+
+- Ein Agent ohne Zugang zu Apps, Lehrdaten und früheren Stapeln; er kennt Kontenliste (SKR03-Auszug), Fachregel und diesen Auftrag.
+- Ein anderer privater Vermieter: Ehepaar, beide berufstätig, vermietet ein Zweifamilienhaus im Nachbarort (zwei Wohnungen) und zwei
+  Garagen, keine Umsatzsteuer; eigene Wohnung selbst genutzt. Jahr 2026. Andere Bank (anderer Auszugsaufbau als bisher bekannt
+  ist erlaubt und erwünscht), andere Handwerker, Stadtwerke, Versicherer.
+- **50 Belege** (Text) mit Soll: Konto, Richtung, Betrag, Datum, Steuersatz, Aussteller, Rechnungsnummer.
+- **12 Kontoauszüge** (Text im Aufbau eines Auszugs) mit Soll je Umsatz: Tag, Betrag mit Vorzeichen, Gegenpartei, Art,
+  Rechnungsnummern, zugehöriger Beleg; Anfangs- und Endsaldo je Auszug stimmen.
+- **Gescannt:** Belege und Auszüge gesetzt und durch die Texterkennung des Workflow-PDF-Klons (wie beim Lauf „Vermieterin“).
+
+## Einordner
+
+Stapel-Autor, zweiter Claude-Agent, Codex (Auftrag 012). Soll = Mehrheit je Feld. Für (b) ist der Auszugstext selbst die Wahrheit
+für Tag, Betrag und Gegenpartei (vom Autor gesetzt, Saldo geprüft); dort braucht es keine Mehrheit.
+
+## Gemessen wird, je einmal (Text und gescannt)
+
+Alt gegen neu je Teil, Wilson-Spanne, McNemar (5 %). Für (b) und (c) gibt es kein „alt“ (die App liest es nicht); berichtet wird der
+Stand mit Spanne und die Zahl der falschen Werte ohne Warnung.
+
+## Fertig, wenn
+
+(a), (d): gesichert besser, sonst nicht ausgeben. (b): mindestens 90 % der Umsätze im Text vollständig richtig und keine falschen
+Umsätze ohne Warnung in Auszügen, deren Saldo stimmt; sonst bleibt der Leser hinter einem Schalter. (c): mehr richtig als falsch und
+höchstens 5 % falsch, sonst bleibt das Feld leer. BookLedger Basic wird über `tools/pro-nachziehen.mjs` nachgezogen und mitgemessen.
+
+## Grenzen
+
+Ein erfundener Haushalt, von einem KI-Agenten geschrieben; gesetzte Seiten sind keine echten Scans; nichts am Gerät.

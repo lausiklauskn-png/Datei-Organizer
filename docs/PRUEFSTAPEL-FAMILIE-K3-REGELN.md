@@ -1,0 +1,64 @@
+# Prüfstapel „Familie mit drei Kindern“ (Punkte 3, 4, 5) – Regeln, vorab festgelegt (13.11.2026)
+
+Eingecheckt, bevor es den Stapel gibt. Es gelten `docs/PRUEFREGELN-GRUPPE.md` und `docs/FACHREGEL.md`. Auftrag Klaus 13.11.
+(Brief `docs/BRIEF_SITZUNG_2026-11-13_PUNKTE-3-9.md`, Freibrief): Punkte 3 (Fristen), 4 (Absender und Titel in der Familienakte) und
+5 (Art des Schreibens) an **einem** neuen fremden Stapel prüfen. Zugleich der „frische Stapel nach dem Einbau“ und die erste Familie mit
+drei Kindern.
+
+## Fragen
+
+1. **Punkt 3 – Fristen:** Liefert der verbesserte Kern weniger Fristen, die falsch und als sicher ausgegeben werden (falsches Datum
+   oder Frist, wo das Soll keine hat), ohne dass richtige Fristen verloren gehen? Gemessen am Kern selbst und an der Kette bis zur
+   geplanten Erinnerung in der Familienakte (`scripts/messen-fristkette.mjs`).
+2. **Punkt 5 – Art des Schreibens** (`schriftstueck`): gesichert besser als der alte Kern, und an den verbrauchten Stapeln nicht
+   schlechter (Kontrolle, kein Nachweis).
+3. **Punkt 4 – Absender und Titel in der Familienakte:** Familienakte 2.28.66 (Absender aus dem eigenen Eingang) gegen die Familienakte
+   mit Absender aus dem Kern. Titel wird berichtet (wie oft enthält der vorgeschlagene Titel den Soll-Absender und die Art), nicht gewertet.
+
+## Eingefroren
+
+- **Alt:** Datei-Organizer-Kern `534cc08` (Stand in Familienakte 2.28.66, `a10e96f`), BookLedgerPro `d08c071`.
+- **Neu:** der Stand nach dem Lernen; seine Commit-Kennung wird hier eingetragen, bevor der Stapel gelesen oder gemessen wird.
+- Lernen nur an Lehrdaten und verbrauchten Stapeln: `pruefstapel-unabhaengig`, `-briefe-2/-a/-b/-h`, `pruefstapel-vermieterin` (2025),
+  `pruefstapel-vermieterin-2026` (seit 13.11. mit drei Einordnern ausgewertet), `testdaten-haushalte`. Das Wortmodell wird nur über
+  `scripts/briefmodell-abstimmen.mjs` erzeugt.
+- **Abweichung von „erst einfrieren, dann schreiben“ (offen benannt):** Damit Codex rechtzeitig einordnen kann, schreibt der
+  Stapel-Autor parallel zum Lernen. Der Stapel liegt bis zum Einfrieren **außerhalb des Repos** und wird von der lernenden Sitzung
+  weder gelesen noch ausgewertet; zum Verpacken für die Einordner dient ein Skript, das nur Dateinamen und Kopfzeilen setzt. Der
+  Zweck der Regel (nicht am Prüfstapel abstimmen) bleibt so gewahrt.
+
+## Stapel `pruefstapel-familie-k3/`
+
+- Ein Agent ohne Zugang zu Apps, Kern, Lehrdaten und früheren Stapeln; er kennt nur Fachregel, Bereiche, Arten und diesen Auftrag.
+- Ein Haushalt über ein Jahr (2026): Mutter, verwitwet im Lauf des Jahres (Tod des Mannes, Nachlass, Erbschein, Witwenrente-Antrag,
+  Kündigungen und Umschreibungen), drei Kinder: eines volljährig (Ausbildung oder Studium, eigene Verträge, eigene Steuer-ID, Ende
+  des Kindergelds), eines in der Schule, eines in der Kita. Dazu ein Elternteil der Mutter mit Pflegegrad im selben Ort (eigener
+  Haushalt) – damit die Person nicht immer die Mutter ist.
+- **150 Schriftstücke** als Text, Mischung wie im echten Papierkram eines Jahres; rund die Hälfte mit einer eigenen Frist (zahlen ohne
+  Lastschrift, antworten, Unterlagen einreichen, Termin), darunter bewusst Fristen, die der Haushalt **anderen** setzt, Fristen nur als
+  Wochenzahl („binnen zwei Wochen nach Zugang“), Widerspruchsbelehrungen und Abbuchungstermine (keine Frist).
+- Soll des Autors je Stück: Bereich, Zweitfach, Schriftstück, Absender, Person, Frist (`ERWARTUNG.json`), Haushalte (`HAUSHALTE.json`).
+- **Gescannt** (`pruefstapel-familie-k3-ocr/`): dieselben Stücke gesetzt und durch die Texterkennung des Workflow-PDF-Klons
+  (`scripts/scan-setzen.py`, `scripts/ocr-stapel.mjs`), wie beim Lauf „Vermieterin“.
+
+## Einordner
+
+Stapel-Autor, ein zweiter Claude-Agent (sieht nur Texte und Listen), Codex über den Briefkasten (Auftrag 011). Soll = Mehrheit je
+Feld; ohne Mehrheit strittig, nicht gewertet. Fehlt Codex zum Messzeitpunkt, heißt das Ergebnis „vorläufig, zwei Einordner“ und wird
+mit Codex nachgerechnet – das Messen selbst (Ausgaben der Apps) geschieht trotzdem nur einmal.
+
+## Gemessen wird, je einmal (Text und gescannt)
+
+- Kern alt gegen neu, fünf Felder (`scripts/messen-briefe.mjs --alt`), Wilson-Spanne, McNemar; je Feld „falsch und sicher“.
+- Fristkette: Familienakte 2.28.66 gegen Familienakte mit neuem Kern bis zur geplanten Erinnerung.
+- Absender in der Familienakte alt gegen neu; Titel berichtet.
+
+## Fertig, wenn
+
+- Punkt 3: weniger falsche Fristen (gesamt oder „falsch und sicher“), ohne gesicherten Verlust richtiger Fristen.
+- Punkt 5: Art gesichert besser, an den verbrauchten Stapeln nicht schlechter.
+- Punkt 4: Absender in der Familienakte gesichert besser. Nur was gesichert besser ist, wird ausgegeben; sonst steht es so im Bericht.
+
+## Grenzen
+
+Ein erfundener Haushalt, von einem KI-Agenten geschrieben; gesetzte Seiten sind keine echten Scans; nichts am Gerät.
