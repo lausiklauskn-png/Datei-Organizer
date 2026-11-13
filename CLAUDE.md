@@ -88,4 +88,6 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
 - Bausteine aus Familienakte/Workflow PDF (Briefkopf-Leser, Prüfkern, Modul 25) byte-gleich mit Pin übernehmen, nie nachbauen.
 - Der Sortier-Kern wird **einmal** gebaut und in der Familienakte byte-gleich genutzt – keine zweite Fassung.
 - Forschungseinträge gehören nur nach KimHub, nicht hierher.
-- Kein Merge nach `main` ohne Klaus' Wort; eigener Zweig, Entwurfs-PR.
+- Kein Merge nach `main` ohne Klaus' Wort; eigener Zweig, Entwurfs-PR. **Klaus 13.11. (Rückwärtstest Needs): Freibrief —
+  eigene geprüfte PRs (CI und Proben grün) selbst mergen und den Auftrag selbstständig zu Ende führen; Veröffentlichen weiter nur
+  mit seinem Wort.** Brief: `docs/BRIEF_ABSCHLUSS_2026-11-13_NEEDS-RUECKWAERTSTEST.md`.
