@@ -19,3 +19,7 @@ Seite: https://claude.ai/artifact/KNCi8QwJPWXSVGRfu9nbR3 (Kopie `REDUKTION.html`
    („wer will nicht seine Daten auf seinem eigenen Rechner organisiert haben?“). Ergebnis: `DATEI-ORGANIZER-PRUEFUNG.md`.
 
 Gebaut wird aus 1, 3, 4, 5 erst nach einer Vorschau mit Klaus' Ja je Punkt (sichtbare Änderungen).
+7. **Doppelungen zuerst (Klaus, Nachtrag):** Anhand von Dateigröße und Ordner Doppelungen finden, auch über den Code der Datei
+   (Fingerabdruck): gleicher Name doppelt vergeben, gleiche Datei unter anderem Namen – Doppelungen fliegen raus (aus der Sicht, nicht
+   von der Platte). Kann eine Datei nicht gelesen werden, wird sie über ihren Code erkannt (Dateisignatur, Fingerabdruck, Größe, Datum)
+   und so eingeordnet. Das ist Reduktion: die Menge schrumpft, bevor geordnet wird.
