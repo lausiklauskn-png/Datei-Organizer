@@ -170,6 +170,9 @@ try {
   await page.goto(basis + "datenschutz.html");
   soll("Impressum & Datenschutz erreichbar", (await page.locator("h1").innerText()).includes("Impressum"));
 
+  await page.setViewportSize({ width: 1280, height: 900 }); await page.goto(basis + "#sortieren"); await page.waitForTimeout(400);
+  soll("Sortieren: grüne Liste der sicheren Dateien mit Zahl", await page.locator("[data-sicherliste] [data-sicher]").count() > 0 && /\d+/.test(await page.locator("[data-sicherliste] .badge.gut").innerText()));
+  { const o = await page.locator("[data-pruefliste] [data-pruef]").count(), n = await page.locator("[data-pruefliste] [data-neu-marke]").count(); soll("Prüfliste: neu hängen Gebliebenes steht markiert zuerst (oder es gibt nichts Älteres)", o === 0 || n === 0 || await page.locator("[data-pruefliste] [data-pruef]").first().locator("[data-neu-marke]").count() === 1, `${o} offen, ${n} neu`); }
   await page.setViewportSize({ width: 1280, height: 900 }); await page.goto(basis + "#ordner"); await page.waitForTimeout(400);
   { const zahl = async () => Number(((await page.locator("[data-ordner-pill]").innerText()).match(/· (\d+)/) || [])[1] || 0);
     const vorher = await zahl();

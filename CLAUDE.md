@@ -9,7 +9,13 @@ oder Altbestand kommen in **einen** Ordner; der Organizer sortiert sie Klick fü
 Nummern → Absender → Inhalt) und zeigt sie als Baum nach vielen Gesichtspunkten. Zuerst für die Familienakte gemacht: der Ordner
 wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). Plan und alle Entscheidungen: `docs/PLAN.md`.
 
-## Stand (13.11.2026 spät, Fassung 0.3.2)
+## Stand (13.11.2026 spät, Fassung 0.3.3)
+
+- **0.3.3 (Klaus 13.11., Bild vom Tablet: „6 bitte prüfen“ bei 18 in der Liste, Fertige nicht zu sehen):** Seite Sortieren – die Meldung nennt
+  „N neu zu prüfen, M insgesamt offen“; neu hängen Gebliebenes steht zuerst mit Marke „neu in Sieb N“; eigene grüne Liste „Sicher bis hierher“
+  bzw. „Fertig“ (`SicherZeile`, mit Auge). UI-Probe 56. Brief nächste Sitzung: `docs/BRIEF_SITZUNG_2026-11-14_NEEDS-RUECKWAERTSTEST.md`.
+
+## Stand (13.11.2026, Fassung 0.3.2)
 
 - **0.3.2 (Klaus 13.11.):** Block „Dateien einfügen per Drag and Drop“ (Dateien und ganze Ordner, `ausZiehen` in `src/quellen.ts`; kommt zum
   Bestand **dazu**, gleiche Inhalte werden als doppelt markiert, `einlesenAus(q, true)`), **Entfernen** einzelner Dateien (Steckbrief) und ganzer
