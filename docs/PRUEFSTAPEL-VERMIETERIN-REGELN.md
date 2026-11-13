@@ -105,3 +105,14 @@ wo ein Stück verloren geht:
 **Ende-zu-Ende-Zahl:** Anteil der Soll-Fristen, die vom gescannten Stück bis zur geplanten Erinnerung mit richtigem Datum durchkommen.
 Daneben jede verpasste Frist einzeln mit dem Glied, an dem sie verloren ging. Was ein Werkzeug heute nicht kann, heißt „kann die App
 nicht“; Private Brain Pro und Workflow PDF Pro (als App) sind in dieser Sitzung nicht geklont und werden so benannt, nicht geschätzt.
+
+## Nachtrag 13.11.2026 (Klaus, vor der Messung): Private Brain Pro dabei, Zeit je Dokument
+
+- **Private Brain Pro** (`182e746`) und **Workflow PDF Pro** (`d37701a`) sind dazugeholt (nur lesend). Die deutschen Sprachdaten der
+  Texterkennung in Workflow PDF Pro sind byte-gleich mit denen im Klon der Familienakte. Private Brain Pro wird mit seinem
+  Kategorie-/Zielordner-Vorschlag an denselben Schriftstücken gemessen (Text und gescannt), soweit sich der Vorschlag ohne Gerät
+  aufrufen lässt; sonst „nicht gemessen“.
+- **Zeit:** Je Glied der Kette wird die Zeit je Dokument gemessen und auf 1000 Dokumente hochgerechnet – als Orientierung, nicht als
+  zugesicherter Wert. Gemessen wird auf dem Rechner der Sitzung (4 Kerne); ein Tablet oder Handy ist langsamer, der Faktor ist nicht
+  gemessen. Erste Orientierung an 30 verbrauchten Briefen (eine Seite je Brief): Texterkennung rund 1,5 s je Seite, Sortieren im
+  Datei-Organizer rund 5 ms je Brief.
