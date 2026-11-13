@@ -9,6 +9,21 @@ oder Altbestand kommen in **einen** Ordner; der Organizer sortiert sie Klick fü
 Nummern → Absender → Inhalt) und zeigt sie als Baum nach vielen Gesichtspunkten. Zuerst für die Familienakte gemacht: der Ordner
 wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). Plan und alle Entscheidungen: `docs/PLAN.md`.
 
+## Stand (13.11.2026 nachts, Fassung 0.4.0, Android-App, nicht veröffentlicht)
+
+- **Freibrief zum Mergen (Klaus 13.11. nachts, „auch an die neue Sitzung weitergeben“):** eigene geprüfte PRs (CI und Proben grün) selbst
+  nach `main` mergen, in allen Repos dieser Arbeit. Veröffentlichen (APK, Windows, Releases) weiter nur mit Klaus' Wort.
+
+- **Datei-Organizer Pro für Android (Klaus 13.11.: „die APK-App und die Windows-App mit der Download-Funktion … oder Update-Funktionen“):**
+  Capacitor-Hülle `android/` (Paket `de.familyprojekt.dateiorganizer`, Vorbild BookLedgerPro), Web-Paket aus `app/` über
+  `tools/native/prepare-web.mjs` (ohne `sw.js`, mit Testordner), **Ordner auf dem Gerät** (`DoOrdnerPlugin`, Name `FamilyFolders` wie in
+  der Familienakte), **Updates vom eigenen Server** (`UpdateFeed`/`DoUpdatesPlugin`, Fähnchen und Fassung laden direkt, `src/nativ.ts`),
+  Signieren und Veröffentlichen (`tools/signing/`, `android.yml`, `signing-identity.yml`, `android-release.yml` – nur von Hand).
+  **Namen (Klaus 13.11.):** Web-App „Datei-Organizer Basic“, App „Datei-Organizer Pro“ – festgelegt nur in `src/nativ.ts` (`APP_VARIANTE`);
+  Speicher-Namen nicht umbenennen. Alles Weitere, Proben und **was Klaus einmalig tun muss** (Signier-Freigabe `DO_SIGNING_UNLOCK`,
+  Update-Server, öffentlicher Schlüssel – bis dahin Platzhalter, Updates „nicht eingerichtet“): `docs/ANDROID.md`.
+  ⚠ Kein Android-Bau, kein Gerät in der Sitzung – erst `android.yml` zeigt, ob Gradle/Lint bestehen. Offen: Speichern unter, Teilen an die App, Windows.
+
 ## Stand (13.11.2026 nachts, Fassung 0.3.4, nicht veröffentlicht)
 
 - **Landkarte und Dashboard in der App (Klaus 13.11.: „Landkarte ist okay … mit dem Landkarten-Button wie bei der Familienakte“):** Knopf
@@ -93,7 +108,7 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
 - **Erste Fassung gebaut** (Freibrief Klaus 12.11.): Kern `lib/`, Oberfläche `src/` → gebaut nach `app/` (Pages:
   https://lausiklauskn-png.github.io/Datei-Organizer/ leitet auf `app/` weiter). `app/` nie von Hand ändern: `npm run build`.
 - Testordner `testdaten/Eingang/` (101 erfundene Dateien, `node scripts/testdaten-bauen.mjs`), Erwartung `testdaten/ERWARTUNG.json`.
-- Installierbar als Web-App (PWA): `src/public/sw.js` (Offline-Vorrat nur der App; Nummer `VORRAT` bei jeder Fassung erhöhen),
+- Installierbar als Web-App (PWA, „Datei-Organizer Basic“): `src/public/sw.js` (Offline-Vorrat nur der App; Nummer `VORRAT` bei jeder Fassung erhöhen),
   Symbole `src/public/icon-192.png`/`icon-512.png`.
 - Proben: `npm run build` (Kern + Typen + Bau), `node tests/ui-probe.mjs` (Browser, 43 Prüfungen). CI `.github/workflows/pruefung.yml`.
 - Entschieden: S1–S11 (S8: Archivnummern parallel, fortlaufend erst wenn die Reihenfolge steht). Einzelheiten `docs/PLAN.md`,
