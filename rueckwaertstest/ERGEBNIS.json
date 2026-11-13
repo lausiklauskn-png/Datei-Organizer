@@ -93,6 +93,13 @@
      "Übernahme der Daten aus der alten Web-App",
      "Abgleich mit dem Sortier-Kern (K-14) als eigener Baustein"
     ]
+   },
+   "K2": {
+    "quote": 90,
+    "einig": 95,
+    "bestanden": true,
+    "fehlt": [],
+    "verkehrt": []
    }
   }
  },
@@ -192,6 +199,13 @@
      "Kontoauszug-Einlesen ausdrücklich ausgeschlossen",
      "Jede Buchung trägt Beleg und Zeitstempel unveränderbar (ohne Hash-Kette)"
     ]
+   },
+   "K2": {
+    "quote": 83,
+    "einig": 100,
+    "bestanden": true,
+    "fehlt": [],
+    "verkehrt": []
    }
   }
  },
@@ -294,6 +308,13 @@
      "'Speichern unter' ohne leere Dateien bei Abbruch/Fehler",
      "Mehrbenutzer-Frage (Inhaberin + Mitarbeiterinnen)"
     ]
+   },
+   "K2": {
+    "quote": 71,
+    "einig": 94,
+    "bestanden": false,
+    "fehlt": [],
+    "verkehrt": []
    }
   }
  },
@@ -387,6 +408,13 @@
      "Kaum echte Zusätze; Bildbeschreibung als Teil der Texterkennung gebündelt",
      "Explizite Frage nach Mitarbeitern/Familie als Nutzer"
     ]
+   },
+   "K2": {
+    "quote": 71,
+    "einig": 79,
+    "bestanden": false,
+    "fehlt": [],
+    "verkehrt": []
    }
   }
  }
