@@ -179,6 +179,14 @@ const elternabend = nachher.find((d) => d.name === "Einladung_Elternabend.pdf");
 soll("Gelerntes wirkt auf denselben Absender", elternabend?.felder.kategorie?.quelle === "gelernt" || elternabend?.felder.kategorie?.wert === "Familie & persönliche Dokumente", JSON.stringify(elternabend?.felder.kategorie));
 soll("Korrigiertes Feld bleibt beim erneuten Sieben", siebe({ ...korr, stufe: 2 }, 5).felder.kategorie?.quelle === "du");
 
+// ---------- Stichprobe (Punkt 9) ----------
+{ const { stichprobe, anteilText } = await import("../lib/stichprobe.ts");
+  const v = [{ zeit: "", pfad: "a/geheim.pdf", feld: "kategorie", von: "Versicherungen", zu: "Versicherungen", bestaetigt: true }, { zeit: "", pfad: "a/geheim.pdf", feld: "kategorie", von: "Versicherungen", zu: "Finanzen & Konten" }, { zeit: "", pfad: "b.pdf", feld: "kategorie", von: "Haus & Wohnung", zu: "Energie & Versorgung" }, { zeit: "", pfad: "b.pdf", feld: "absender", von: "X", zu: "X", bestaetigt: true }];
+  const sp = stichprobe(v), txt = JSON.stringify(sp);
+  soll("Stichprobe zählt nur den ersten Vorschlag je Datei und Feld", sp.felder.kategorie.bestaetigt === 1 && sp.felder.kategorie.berichtigt === 1 && sp.felder.absender.bestaetigt === 1 && sp.dateien === 2, txt);
+  soll("Stichprobe enthält keine Namen, Texte oder Dateinamen", !/geheim|Versicherungen|Finanzen|Haus|Energie|"X"|\.pdf/.test(txt), txt);
+  soll("Stichprobe: Anteil mit Spanne", anteilText({ bestaetigt: 31, berichtigt: 9 }) === "31/40 = 78 % (62–88 %)", anteilText({ bestaetigt: 31, berichtigt: 9 })); }
+
 // ---------- Sichten ----------
 const heute = "2026-11-12";
 for (const s of SICHTEN) {

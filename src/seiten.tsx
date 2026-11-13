@@ -6,6 +6,7 @@ import { SICHTEN, baum, dateienUnter, suche, type BaumKnoten } from "../lib/sich
 import { KATEGORIEN, FOTOS, UNKLAR } from "../lib/kategorien.ts";
 import { SCHRIFTSTUECKE, dringlichkeit } from "../lib/erkennen.ts";
 import { offeneFuerNummer } from "../lib/archivnummer.ts";
+import { stichprobe, anteilText } from "../lib/stichprobe.ts";
 import { deutsch, kurzfassung, INDEX_DATEI } from "../lib/index-format.ts";
 import { Ablaufbild, FesterBaum, Info, OrdnerBaum, Seitentitel, type Schritt } from "./ui.tsx";
 import { ausAuswahl, nativWaehlen, nativerOrdner, ordnerWaehlen, ordnerWahlMoeglich, testOrdner } from "./quellen.ts";
@@ -258,8 +259,23 @@ export function VerlaufSeite({ z }: P) {
         <div className="card-heading"><h2>Gelernt</h2><span className="badge du">{z.regeln.length}</span></div>
         {z.regeln.length === 0 ? <p className="leise">Noch keine Regel.</p> : <ul className="verlauf-liste">{z.regeln.map((r) => <li key={r.wenn.absender + r.feld + (r.wenn.sache || "")}><span>Absender „{r.wenn.absender}“{r.wenn.sache ? <> bei Vorschlag „{r.wenn.sache}“</> : null} → {FELD_NAMEN[r.feld]} „{r.dann}“</span><span className="leise">{r.anzahl}×</span></li>)}</ul>}
       </section>
+      <StichprobeKarte z={z}/>
+
     </div>
   </>;
+}
+
+// ---------------- Stichprobe (Punkt 9): nur Zahlen ----------------
+function StichprobeKarte({ z }: { z: AppZustand }) {
+  const sp = useMemo(() => stichprobe(z.verlauf), [z.verlauf]);
+  const [kopiert, setKopiert] = useState(false);
+  const felder = Object.entries(sp.felder);
+  return <section className="card" data-stichprobe>
+    <div className="card-heading"><h2>Stichprobe – nur Zahlen</h2><span className="badge">{sp.dateien}</span></div>
+    <Info titel="Stichprobe eigener Unterlagen" punkte={["Lege 30 bis 50 eigene Unterlagen ein und bestätige oder berichtige bei jeder Datei Bereich, Art, Absender und Frist.", "Hier steht nur, wie oft der erste Vorschlag stimmte – keine Namen, keine Texte, keine Dateinamen.", "Nichts verlässt das Gerät. „Zahlen kopieren“ legt nur diese Zahlen in die Zwischenablage."]}/>
+    {felder.length === 0 ? <p className="leise">Noch nichts bestätigt oder berichtigt.</p> : <ul className="verlauf-liste">{felder.map(([f, w]) => <li key={f}><span><strong>{FELD_NAMEN[f as FeldName] || f}</strong> {anteilText(w)}</span><span className="leise">{w.berichtigt} berichtigt</span></li>)}</ul>}
+    {felder.length > 0 && <button type="button" className="button klein" data-stichprobe-kopieren onClick={() => { void navigator.clipboard?.writeText(JSON.stringify(sp)).then(() => setKopiert(true)); }}><Check size={15}/>{kopiert ? "Kopiert" : "Zahlen kopieren"}</button>}
+  </section>;
 }
 
 // ---------------- Familienakte ----------------
