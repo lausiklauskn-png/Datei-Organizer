@@ -55,3 +55,9 @@ HTML-Vorschau für Klaus.
 13 Änderungen (F1–F6 Fragen, A1–A5 Bauauftrag, U1–U2 Umfang) und N1 (Rückwärtstest mit neuen Kunden) als Vorschau mit Ja/Nein/Später:
 https://claude.ai/artifact/UKsF4XLDoBMhFtVzSsHx8a. Klaus' Wahl liegt in der Datenbank der Vorschau (Sammlung `antworten`, je Punkt
 `wahl`, `notiz`); die nächste Sitzung liest sie dort (`ArtifactData list`) und baut nur Punkte mit Ja. Beispielwerte in den Skizzen erfunden.
+
+## Umgesetzt (14.11.2026, Workflow-Needs #36, auf main) und Runde 2
+
+Alle Punkte 1–5 und 7–11 sowie der „Rahmen“-Absatz sind gebaut (Klaus: Ja zu allen Punkten der Vorschau). Runde 2 mit sieben
+Marktideen: alle bestanden (81–100 % Kern), siehe `runde-2/ERGEBNIS.md`. Neue Befunde dort: Budget je Monat, Abgleich zwischen Geräten,
+Ort der KI.
