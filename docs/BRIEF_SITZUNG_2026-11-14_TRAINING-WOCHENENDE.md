@@ -17,11 +17,11 @@ außer Rechenzeit). Als **handeingeordnete Lehrdaten** sind sie weder nötig noc
 unabhängig eingeordneten, möglichst verschiedenen** Schriftstücken; mehr gleichartige Daten bringen kaum etwas. Echte Unterlagen
 (Runde G) kommen erst über die Maske aus der Plansitzung.
 
-## Erweiterung (Klaus 14.11.2026: „ohne Codex … hier in dieser Sitzung … Dokumente komplexer … Personenanzahl erweitern“)
+## Erweiterung (Klaus 14.11.2026: „ohne Codex … Dokumente komplexer … Personenanzahl erweitern“)
 
 - **Ohne Codex.** Einordner sind **drei unabhängige Claude-Agenten** (ohne Kenntnis des Kerns und der Lösung) plus Stapel-Autor;
   Mehrheit aus den drei Agenten, Autor als Schiedsrichter nur bei Gleichstand.
-- **Läuft in der Sitzung vom 14.11.** (keine neue Sitzung nötig; Brief bleibt für eine Fortsetzung).
+- **Läuft in einer eigenen, neuen Sitzung** (nicht in der Sitzung, die diesen Brief geschrieben hat).
 - **Block 0 – Stapel komplexer machen** (vor allen Runden, erweitert `scripts/scan-setzen.py`/Generator, alles erfunden):
   Briefkopf mit Logo und Absenderzeile, **zwei- und dreispaltige** Seiten, **Tabellen** (Rechnungsposten, Kontoauszug, Gehalt),
   **fett und dünn**, verschiedene Schriftgrößen, Fußzeilen mit Bankverbindung, Stempel und Unterschrift, mehrseitig;
