@@ -57,14 +57,109 @@ Eine **Plansitzung**: nichts bauen, nichts veröffentlichen. Am Ende steht ein P
    Schreibrecht? Fach „Abrechnung KI-Projekt“ für Anthropic/OpenAI.
 8. **Reihenfolge und Umfang:** Vorschlag KI-Sicht (1 Sitzung) → Lernen und Übertragung (1 Sitzung) → echte Stapel in Runden.
 
+## Nachtrag (Klaus 14.11.2026, später am Morgen)
+
+**Pseudo-Ordner – Maske in beide Richtungen.** Der Gmail-Konnektor wird getrennt; die Mails liest nur Private Brain.
+Private Brain maskiert heute nur auf dem Weg hinaus (Schreiben mit KI). Neu: eine App (Android und Windows) mit **zwei Ordnern**:
+Original-Ordner (echte Dateien, unverändert) und Pseudo-Ordner (dieselben Dateien mit Platzhaltern „Person A“, „Konto 1“ …).
+Hineinziehen → pseudonymisiert im anderen Ordner. Mit dem Pseudo-Ordner arbeitet jede KI (sortieren, nach Wichtigkeit ordnen,
+Antworten entwerfen); der Datei-Organizer lernt nur daraus. **Zurück** (eine Antwort mit „Person A“ wieder mit echtem Namen) nur auf
+dem Gerät; die Zuordnung liegt verschlüsselt dort und verlässt es nie (wie `reidentify` beim Schreiben mit KI in Private Brain).
+Name offen: Pseudo-Ordner, Maskenordner, Doppelordner.
+
+**Profile, damit die Maske sich nicht irrt.** Man legt sein **eigenes Profil** an (Name, Anschrift, Geburtsdatum, Konten,
+Versicherten-/Kunden-/Steuernummern) und **Profile der Menschen, mit denen man zu tun hat** (Familie, Kontakte), dazu
+**Stellen** (Krankenkasse, Arzt, Vermieter, Bank) mit ihren Anschriften und Nummern. Was in einem Profil steht, wird immer sicher
+erkannt und ersetzt; das Muster-Erkennen bleibt nur für Unbekanntes. Beim ersten Fehler: **„Korrigieren“** – „das hier verdecken“
+oder „das darf bleiben“; die Maske merkt es sich (wie in BookLedgerPro „Weitere Namen“ und „Nie verdecken“).
+Profile liegen nur verschlüsselt auf dem Gerät, nie im Repo, nie bei einer KI. Vorhandenes nutzen: Familienakte (Personen,
+Organisationen), BookLedgerPro (Stammdaten, Weitere Namen, `namensmuster.js`), Private Brain (Modul 25).
+
+**Offene Punkte dazu für die Plansitzung**
+
+9. **Gesundheitsdaten:** ICD-Code bleibt · wird zur Gruppe („Herz-Kreislauf“) · wird ersetzt – je Nutzer wählbar? (DSGVO Art. 9.)
+10. **Datum:** bleibt (sonst kein Sortieren), außer Geburtsdatum → z. B. nur Geburtsjahr.
+11. **Scans und Fotos:** Texterkennung, dann Stellen im Bild schwärzen (Bausteine Reinigung/OCR aus Workflow PDF) – größter Teil.
+12. **Stellen:** Krankenkasse, Bank, Vermieter als Firmen stehen lassen (wichtig fürs Sortieren) oder verdecken? Je Profil wählbar.
+13. **Profile teilen:** zwischen Private Brain, Familienakte, BookLedgerPro und Datei-Organizer über den gemeinsamen Pro-Tresor?
+
+**Reihenfolge (Klaus 14.11.2026: „Genauso machen wir das“)**
+
+14. **Erst Marktcheck:** was es schon gibt (Microsoft Presidio, Google Sensitive Data Protection, Private AI, Tonic, Browser-
+    Erweiterungen, Schwärzen in PDF-Programmen …), aktuell recherchiert, mit Stärken und Grenzen. Dann **das Beste übernehmen**
+    (Erkennungsregeln, deutsche Nummernformate, Umkehr-Verfahren) – Lizenzen prüfen, nichts blind kopieren.
+15. **Dann Modul 25 verbessern** (Quelle bleibt Sage, byte-gleich mit Pin) und **in alle Apps nachziehen**, die es enthalten oder nutzen
+    (Familienakte `lib/ki-auftrag.ts`, Private Brain, BookLedgerPro, weitere) – je App eine Probe und Gegenprobe.
+16. **Nie doppelt pseudonymisieren:** schon pseudonymisierte Dateien müssen sicher erkennbar sein (z. B. feste Marke im Kopf/Metadaten
+    und einheitliche Platzhalter-Form wie `⟦Person A⟧`), damit der Pseudo-Ordner sie nicht ein zweites Mal verarbeitet und
+    Platzhalter nicht selbst für Namen hält. Probe: eine pseudonymisierte Datei erneut hineinziehen → unverändert.
+
+17. **Als Knopf in jeder App (Klaus 14.11.2026):** derselbe Baustein (Modul 25 + Profile + Erkennung der Marke) steckt in jeder
+    Pro-App als Knopf **„Pseudonymisieren“** an Datei, Mail oder Auswahl (und **„Zurückführen“** für Antworten), nach den gemeinsamen
+    Profilen. Der Pseudo-Ordner ist dann nur eine weitere Art, denselben Baustein zu benutzen (Hineinziehen statt Knopf).
+    Eine Quelle, byte-gleich mit Pin in allen Apps, nie nachbauen. Klären: wo die Profile liegen (Pro-Tresor?), welche App zuerst.
+
+**Entscheidungen Klaus (14.11.2026, Vorplansitzung)**
+
+- **Profile liegen in der Familienakte.** Sie arbeitet ohnehin mit den anderen Apps zusammen; jede Pro-App (BookLedgerPro,
+  Private Brain Pro, Workflow PDF Pro und alle im Verbund) holt sich dort die Daten **für** die Pseudonymisierung (Weg über den
+  gemeinsamen Pro-Tresor klären; ohne Familienakte: was dann?).
+- **Kein eigenes Werkzeug, kein neues Repo.** Nur der Knopf in jeder App, an dem man direkt sieht, wie pseudonymisiert wird.
+- **Beispiel Private Brain Pro:** Mail mit Inhalt öffnen → „Pseudonymisieren“ → Text **und Anhänge**; ein Anhang wird geöffnet,
+  bei Bild/Scan läuft die Texterkennung (OCR) darüber, dann werden die Daten pseudonymisiert und können weiterverarbeitet werden.
+  Gilt für empfangene und selbst gesendete Mails.
+
+- **Profile im Pro-Tresor, in jeder App wählbar:** In der Familienakte, BookLedgerPro und allen Pro-Apps kann man Profile anlegen.
+  Damit es keine Doppelungen gibt, fragt jede App: **„Profile aus einer anderen Pro-App übernehmen“ oder „selbst anlegen“**.
+  Profile dürfen Gesundheits- und Bankdaten enthalten.
+- **Verschlüsseln und kein Anschein von Datenabfluss** (Vorschläge Claude, je Punkt Klaus' Ja):
+  a) nur im Pro-Tresor, verschlüsselt wie dort (AES-256-GCM, Schlüssel nur auf dem Gerät), nie im Klartext, nie in einem Repo;
+  b) **nur Fingerabdrücke statt Klartext** für Nummern: IBAN, Versicherten-, Steuer-, Kundennummer werden als gesalzener
+     Fingerabdruck gespeichert; die Maske erkennt sie im Text, ohne dass das Profil die Nummer selbst enthält; angezeigt nur
+     „DE…1234“. Zurückführen braucht sie nicht (der Originaltext liegt ohnehin auf dem Gerät);
+  c) der Profil-Baustein hat **keinen Netzweg** (keinen Abruf, keine KI); die App sagt das sichtbar („Profile verlassen dieses
+     Gerät nie“) und zeigt, dass beim Pseudonymisieren nichts gesendet wird; Proben belegen es (kein Netzaufruf);
+  d) IBAN muss man gar nicht eintragen: Muster mit Prüfziffer erkennt jede IBAN auch ohne Profil – Profile braucht es vor allem
+     für Namen, Anschriften, eigene Nummern;
+  e) Nachweis für Dritte: der Quelltext ist einsehbar, eine kurze Seite „Was mit deinen Profilen passiert“.
+
+- **PWA-Apps (Basic) besonders** (Klaus: „vor allen Dingen bei den PWA-Apps“): Im Browser wird der Code bei jedem Laden vom Server
+  geholt, fremde Browser-Erweiterungen können mitlesen, und es gibt keinen Pro-Tresor. Vorschläge: in Basic Profile **nur als
+  Fingerabdrücke** (nie Klartext-Nummern), Speicherung verschlüsselt im Browser mit eigenem Passwort; strenge Sicherheitsregel
+  der Seite (CSP `connect-src` nur zur eigenen Adresse); Hinweis „Für Gesundheits- und Bankdaten die Pro-App nehmen“;
+  Frage an Klaus: Profile in Basic überhaupt anbieten oder nur in den Pro-Apps?
+
+18. **Landkarten nachziehen:** der Pseudonymisierer (Knopf in jeder App, Profile im Pro-Tresor, Weg Familienakte → andere Apps,
+    Rückweg „Zurückführen“) kommt als eigener Kasten in die Pro-Verbund-Karte (Quelle BookLedgerPro, byte-gleich in den anderen
+    Apps), in die Landkarte der Familienakte und in die Landkarte des Datei-Organizers; zuerst grau „geplant“, dann je Stand.
+    Danach Geschenkbox neu bauen.
+
+19. **Export und Kopieren (Klaus 14.11.2026):** einen ganzen eigenen Ordner pseudonymisieren lassen und das Ergebnis
+    **exportieren** (Ordner/ZIP/Textdatei) oder **kopieren** – Knopf mit Strichsymbol „Kopieren“ (zwei übereinanderliegende
+    Blätter, im Stil der vorhandenen Strichgrafiken), damit man den pseudonymisierten Text in eine beliebige KI einfügen kann.
+    Kopiert/exportiert wird nur die pseudonymisierte Fassung, nie das Original; Marke „pseudonymisiert“ bleibt dabei (Punkt 16).
+
+20. **Ganze App pseudonymisieren → KI sortiert → zurück (Klaus 14.11.2026):** Knopf „Alles pseudonymisieren“ exportiert den
+    ganzen Inhalt der gerade benutzten App (je App verschieden) als pseudonymisierten Ordner mit Inhaltsliste und Marke.
+    Weg zur KI: ein über Remote Control freigegebener Ordner am Rechner (Claude Code liest nur diesen Ordner) oder eine Datei,
+    die man in eine Sitzung hochlädt; **nie** ein öffentliches Repo (auch nicht der Codex-Briefkasten `docs/fremdpruefung/`,
+    der liegt öffentlich – für Codex ein privater Weg klären). Die KI legt eine **Sortier-Datei** zurück (je Datei: Bereich, Art,
+    Absender-Rolle, Frist, Wichtigkeit; nur Platzhalter, keine Klarnamen). Die App liest sie ein, zeigt die Vorschläge an den
+    **echten** Dateien und übernimmt erst nach Bestätigung. Jede Bestätigung oder Korrektur ist zugleich **Lehrdatum** für das
+    Wortmodell (pseudonymisiert) → Training ohne Einzelklicks über hunderte Dateien. Erst kleine Stichprobe, dann alles.
+
 ## Startauftrag zum Einfügen
 
 ```
 Repo lausiklauskn-png/Datei-Organizer (eigener Zweig). PLANSITZUNG – nichts bauen, nichts veröffentlichen.
-Zuerst lesen: CLAUDE.md, docs/BRIEF_SITZUNG_2026-11-14_PLAN-TRAINING-MASKE.md, docs/PLAN.md,
-docs/PRUEFREGELN-GRUPPE.md; in Private Brain Pro docs/KI-BEIM-SCHREIBEN.md und docs/AUFRAEUMEN-NEWSLETTER.md.
-Ziel: Plan „Training mit echten, pseudonymisierten Dokumenten über eine Maske in Private Brain“ mit den
-Fragen 1–8 aus dem Brief; Klaus sagt je Punkt Ja. Plan als docs/PLAN_TRAINING-MASKE.md + Vorschau (HTML) wenn sichtbar.
+Zuerst lesen: CLAUDE.md, docs/BRIEF_SITZUNG_2026-11-14_PLAN-TRAINING-MASKE.md (ganz, mit Nachtrag und Entscheidungen),
+docs/PLAN.md, docs/PRUEFREGELN-GRUPPE.md; in Private Brain Pro docs/KI-BEIM-SCHREIBEN.md, docs/AUFRAEUMEN-NEWSLETTER.md.
+Ziel: Plan „Pseudonymisieren in allen Pro-Apps“ – Knopf „Pseudonymisieren“/„Zurückführen“ in jeder App, Profile im
+Pro-Tresor (aus der Familienakte übernehmen oder selbst anlegen, verschlüsselt, Nummern nur als Fingerabdruck),
+Mail mit Anhängen samt OCR, Export und Kopieren-Knopf (Doppelblatt-Symbol) für jede KI, Training des Datei-Organizers nur aus pseudonymisierten Daten (ganze App pseudonymisiert exportieren → KI legt Sortier-Datei zurück → App übernimmt nach Bestätigung).
+Reihenfolge: zuerst Marktcheck (aktuell recherchieren), dann das Beste übernehmen, dann Modul 25 verbessern und in alle
+Apps nachziehen, nie doppelt pseudonymisieren, Landkarten nachziehen. Punkte 1–20 aus dem Brief; Klaus sagt je Punkt Ja.
+Ergebnis: docs/PLAN_PSEUDONYMISIEREN.md + HTML-Vorschau der sichtbaren Teile.
 Nicht: echte Dokumente oder pseudonymisierte Texte ins Repo (öffentlich), keine Schlüssel/PINs im Chat oder in Dateien,
-Gmail-Konnektor nicht als Trainingsquelle (liest Klartext), nichts veröffentlichen.
+Gmail-Konnektor nicht als Quelle (liest Klartext), kein neues Repo, nichts veröffentlichen.
 ```
