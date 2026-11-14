@@ -236,3 +236,25 @@ in den falschen Ordner geschrieben hätte; es entstand nichts.)
 **Übernommen (zuerst):** Punkte 2 und 3 (Endstand). **Berichtigt 14.11.:** Der Gewinn beim Absender aus gelesenen Seiten ist ein Kreisschluss (Setzer-Spuren, siehe Prüfbericht); **Punkt 2 ist wieder aus dem Kern**, Punkt 3 bleibt als Fehlerbehebung ohne Nachweis am fremden Stapel. Am reinen Text ändert sich
 nichts. Grenzen: Absender aus Scans und Fotos bleibt schwach (43 %, schlechte Scans 12 %), zwei Stücke in einem Scan 27 % Bereich, schlechte
 Scans Bereich 48 %. Zahlen: `ergebnisse/training/rest-{kern-text,kern-gesetzt,kern-gesetzt-endstand,einordner}.json`.
+
+## Teil 2 – Vorverarbeitung vor der Texterkennung: im Kreuztest gesichert schlechter, nicht übernommen (14.11.2026)
+
+Versuch an selbst gesetzten Scans (537 Stück): gefundene Wörter 79 → 91 %, schlechte Scans 41 → 83 % – nach dem Prüfbericht ein Kreisschluss
+(die Rechnung kehrt genau die Schäden des eigenen Setzers um). Darum **Kreuztest nach vorab eingecheckter Regel**: ein unabhängiger Claude-Agent
+(Opus, ohne Setzer, Vorverarbeitung und Kern zu sehen) baute einen eigenen Simulator (`scripts/kreuz/simulator.py`, `LIES-MICH.md`: eigene
+Briefköpfe mit Wort- und Bildmarken, farbiges Papier, Flachbett, Einzug, Handyfoto mit Perspektive und Glanz, Fax, Kopie der Kopie, Thermopapier,
+Knicke, Textmarker) und setzte die 200 Texte von `pruefstapel-rest/` neu (120 Scan-PDFs, 80 Fotos, je Güte ein Drittel). Derselbe Kern (main
+`2ca6f38`), ohne und mit Vorverarbeitung, Soll = Mehrheit der drei Einordner:
+
+| Feld | ohne | mit | nur ohne / nur mit richtig | McNemar |
+|---|---|---|---|---|
+| **Bereich (Hauptfeld)** | 78,5 % | 70,0 % | 19 / 2 | **p = 0,0002 – gesichert schlechter** |
+| Frist | 87,5 % | 81,0 % | 14 / 1 | p = 0,001 – gesichert schlechter (Holm) |
+| Person | 77,6 % | 68,7 % | 18 / 5 | p = 0,011 (Holm-Grenze 0,017: knapp nicht) |
+| Absender | 18,0 % | 12,0 % | 22 / 10 | p = 0,050 |
+| Schriftstück | 70,0 % | 66,0 % | 16 / 8 | p = 0,15 |
+
+Am stärksten schadet sie bei Fotos (gefundene Wörter Foto mittel 89 → 72 %). **Entscheidung nach der Vorab-Regel: nicht übernommen**, aus der
+App entfernt (`src/vendor.ts`); `src/vorverarbeitung.ts` bleibt nur für Messskripte. Lehre: Der Setzer-Kreisschluss hätte ohne den Kreuztest eine
+schädliche Änderung in die App gebracht. Nebenbefund: Absender aus diesen fremd gesetzten Bildern nur 18 % (Kern ohne die zurückgenommenen
+Block-5-Regeln) – Absender aus Scans und Fotos bleibt die größte Schwäche. Zahlen: `ergebnisse/training/kreuz-{roh,vv,vergleich}*.json`.

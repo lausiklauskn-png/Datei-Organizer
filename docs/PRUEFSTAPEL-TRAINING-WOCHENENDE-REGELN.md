@@ -96,3 +96,14 @@ mehr Personen; Freibrief zum Mergen eigener geprüfter PRs; nichts veröffentlic
 **Block 5 eingefroren (14.11.2026):** Kern nach dem Lernen = Commit `156bd4c` (lib), gegen den eingefrorenen Kern `05c7ef0`.
 Eingetragen, bevor der Auftrag für `pruefstapel-rest/` vergeben wurde. Gelernt nur an verbrauchten Stapeln (C, D, E, F, A, B, H, Briefe-2)
 und Generator-Daten. Das neu abgestimmte Wortmodell brachte reihum ausgelassen nichts und ist nicht im Kandidaten.
+
+## Teil 2 – Kreuztest der Vorverarbeitung (vorab festgelegt 14.11.2026, vor der Messung)
+
+- **Frage:** Hilft die Vorverarbeitung vor der Texterkennung (`src/vorverarbeitung.ts`) an Schäden, die **nicht** vom eigenen Setzer stammen?
+- **Bilder:** ein unabhängiger Claude-Agent hat einen eigenen Seitenaufbau und eigene Fehlerbilder gebaut (`/tmp/claude-0/training/kreuz/simulator.py`,
+  Beschreibung `LIES-MICH.md`), ohne Setzer, Vorverarbeitung oder Kern zu sehen; 200 Stücke aus den Texten von `pruefstapel-rest/` (Text verbraucht,
+  Bilder neu), 120 Scan-PDFs und 80 Fotos, je Güte ein Drittel.
+- **Vergleich:** derselbe Kern (main `2ca6f38`), einmal ohne, einmal mit Vorverarbeitung, je Stück; Soll = `pruefstapel-rest/SOLL.json`.
+- **Hauptfeld: Bereich** (McNemar, 5 %). Nebenfelder Schriftstück, Absender, Person, Frist mit Holm-Bonferroni; dazu gefundene Wörter und Zeit je Seite.
+- **Einschalten** nur, wenn das Hauptfeld gesichert besser ist und kein Feld gesichert schlechter. Sonst bleibt sie aus.
+- **Grenze:** Die Texte sind verbraucht (der Kern wurde aber zwischen beiden Läufen nicht geändert); beide Bildquellen sind erfunden; echte Unterlagen nur über Runde G.
