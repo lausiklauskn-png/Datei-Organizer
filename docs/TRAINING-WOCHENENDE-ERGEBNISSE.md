@@ -180,4 +180,8 @@ Person 96,4 %, Frist 98,0 → 97,3 % – **kein Unterschied** alt/neu. Veralten 
 77 % rund 8 Punkte unter C und E** (Text) – alte Namen (Arbeitsamt, LVA, GEZ, Erziehungsgeld) und erfundene künftige Namen treffen das
 Wortmodell schlechter.
 
-Zahlen: `ergebnisse/training/runde-{d,f}-{kern,einordner}.json`.
+**Gesetzt** (Scan 60 %, Foto 25 %, PDF mit Text 15 %, Texterkennung wie die App; Nebenergebnis): D – Bereich 65,3 → 70,0 % (p = 0,14),
+Schriftstück 74,0 → 68,7 % (**p = 0,008, gesichert schlechter**), Absender 28,7 %, Person 83,2 %, Frist 86,0 %; F – Bereich 75,3 → 73,3 %
+(p = 0,65), Schriftstück 75,3 → 76,7 %, Absender 56,0 %, Person 80,4 %, Frist 90,0 %. Schlechte Scans je Runde: Bereich 29 % (D) und 53 % (F).
+
+Zahlen: `ergebnisse/training/runde-{d,f}-{kern,kern-gesetzt,einordner}.json`.
