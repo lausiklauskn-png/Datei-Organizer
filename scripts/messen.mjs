@@ -23,38 +23,27 @@ const BLP = resolve(WURZEL, arg("--blp", "../lausiklauskn-png/bookledgerpro"));
 const STILL = process.argv.includes("--still");
 
 // ---------- Leser ----------
-const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-pdfjs.GlobalWorkerOptions.workerSrc = new URL("../node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs", import.meta.url).href;
-// Ein gemeinsamer Zwischenspeicher für alle Testordner (Schlüssel = Fingerabdruck der Datei)
-const cacheDatei = join(WURZEL, ".ocr-cache.json");
-const cache = existsSync(cacheDatei) ? JSON.parse(readFileSync(cacheDatei, "utf8")) : {};
-for (const alt of [join(ORDNER, ".ocr-cache.json")]) if (existsSync(alt)) Object.assign(cache, JSON.parse(readFileSync(alt, "utf8")));
-let worker = null;
-const LANG = join(FA, "public/apps/workflow-pdf/vendor/tesseract/lang");
-async function ocr(bytes) {
-  const k = await sha256Hex(bytes);
-  if (k in cache) return cache[k];
-  if (!worker) {
-    if (!existsSync(join(LANG, "deu.traineddata"))) return "";
-    const { createWorker } = await import("tesseract.js");
-    worker = await createWorker("deu", 1, { langPath: LANG, gzip: false, cachePath: join(ORDNER, ".tess") });
-  }
-  const t = (await worker.recognize(Buffer.from(bytes))).data.text;
-  cache[k] = t;
-  return t;
-}
+// Wie in der App: PDF-Text, sonst Seitenbilder per Texterkennung; Bilder per Texterkennung (scripts/leser-node.mjs, Sprachdaten aus
+// src/public/vendor, Zwischenspeicher .ocr-cache.json). --ohne-ocr: nur Textebene (für Tempo-Proben).
+const leser = await import("./leser-node.mjs");
+const OHNE_OCR = process.argv.includes("--ohne-ocr");
+const ocr = OHNE_OCR ? async () => "" : leser.ocr;
+const pdfLies = leser.pdfLeser(!OHNE_OCR);
 
 // ---------- Einlesen und sieben ----------
 let uebersprungen = 0;
 async function lesen(ordner) {
   const liste = JSON.parse(readFileSync(join(ordner, "dateien.json"), "utf8"));
-  let ds = [];
-  for (const [i, pfad] of liste.entries()) {
-    if (ueberspringen(pfad.split("/").pop())) { if (ordner === ORDNER) uebersprungen++; continue; }
+  // Vier Dateien gleichzeitig, damit die Erkennungs-Worker ausgelastet sind; Reihenfolge bleibt wie in der Liste.
+  const teile = new Array(liste.length); let naechste = 0;
+  const arbeiter = async () => { for (let i = naechste++; i < liste.length; i = naechste++) {
+    const pfad = liste[i];
+    if (ueberspringen(pfad.split("/").pop())) { if (ordner === ORDNER) uebersprungen++; teile[i] = []; continue; }
     const bytes = new Uint8Array(readFileSync(join(ordner, pfad)));
-    ds.push(...await einlesen({ pfad, name: pfad.split("/").pop(), geaendert: Date.UTC(2026, 10, 1) + i, bytes }, (b) => pdfTextLesen(pdfjs, b), 0, ocr));
-  }
-  return doppelteMarkieren(ds);
+    teile[i] = await einlesen({ pfad, name: pfad.split("/").pop(), geaendert: Date.UTC(2026, 10, 1) + i, bytes }, pdfLies, 0, ocr);
+  } };
+  await Promise.all(Array.from({ length: Number(process.env.OCR_WORKER || 4) }, arbeiter));
+  return doppelteMarkieren(teile.flat());
 }
 const soll = JSON.parse(readFileSync(join(ORDNER, "ERWARTUNG.json"), "utf8")).dateien;
 const hh = existsSync(join(ORDNER, "HAUSHALTE.json")) ? Object.fromEntries(JSON.parse(readFileSync(join(ORDNER, "HAUSHALTE.json"), "utf8")).haushalte.map((h) => [h.id, h])) : {};
@@ -91,8 +80,7 @@ if (LERN) {
   }
   nutzerBericht.regeln = regeln.length;
 }
-if (worker) await worker.terminate();
-writeFileSync(cacheDatei, JSON.stringify(cache));
+await leser.beenden();
 const org = new Map(absenderVereinheitlichen(dateien.map((d) => siebe(d, 5, regeln))).map((d) => [d.pfad, d]));
 
 // ---------- Familienakte heute ----------
@@ -190,6 +178,37 @@ for (const e of soll) {
   }
 }
 
+// ---------- Je Form und Scanqualität (Block 0): Treffer je Feld und OCR-Güte (Wortfehler gegen den Ausgangstext) ----------
+const qt = existsSync(join(ORDNER, ".quelltext.json")) ? JSON.parse(readFileSync(join(ORDNER, ".quelltext.json"), "utf8")) : {};
+const woerter = (t) => (t || "").toLowerCase().replace(/[^a-z0-9äöüß€,.]+/g, " ").split(" ").filter((w) => w.length > 1);
+const levW = (a, b) => { let v = Array.from({ length: b.length + 1 }, (_, i) => i); for (let i = 1; i <= a.length; i++) { const n = [i]; for (let j = 1; j <= b.length; j++) n[j] = Math.min(v[j] + 1, n[j - 1] + 1, v[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); v = n; } return v[b.length]; };
+const jeForm = {}, guete = [];
+for (const e of soll) {
+  if (!e.form || e.doppelt) continue;
+  const o = org.get(e.pfad); if (!o) continue;
+  const k = e.qualitaet ? `${e.form}/${e.qualitaet}` : e.form, zf = (jeForm[k] ??= { n: 0, textGelesen: 0 });
+  zf.n++; if ((o.volltext || "").trim()) zf.textGelesen++;
+  const h = hh[e.haushalt];
+  const ist = { schriftstueck: o.felder.schriftstueck, kategorie: o.felder.kategorie, absender: o.felder.absender, betrag: o.felder.betrag, frist: o.felder.frist,
+    person: h ? personZuordnen(`${o.email?.an || ""}\n${o.volltext || ""}`, o.felder.betrifft?.wert, h) : undefined };
+  for (const f of ["schriftstueck", "kategorie", "absender", "person", "frist", "betrag"]) {
+    const sv = e[f]; if (!sv || (f === "betrag" && e.schriftstueck !== "Kassenbon")) continue;
+    const w = ist[f], ok = w && (f === "betrag" ? cents(w.wert) === cents(sv) : f === "absender" ? norm(w.wert) === norm(sv) : w.wert === sv);
+    const z0 = (zf[f] ??= { n: 0, ok: 0, falschSicher: 0 }); z0.n++; if (ok) z0.ok++; else if (w?.sicher) z0.falschSicher++;
+  }
+  if (qt[e.pfad] && e.form !== "pdf-text" && e.form !== "einfach") {
+    const a = woerter(qt[e.pfad]).slice(0, 400), b = woerter(o.volltext).slice(0, 500);
+    const wf = a.length ? Math.min(1, levW(a, b) / a.length) : 0;
+    const menge = new Set(b); const gefunden = a.length ? a.filter((w) => menge.has(w)).length / a.length : 1;
+    guete.push({ pfad: e.pfad, form: e.form, qualitaet: e.qualitaet || null, langerBon: !!e.langerBon, woerter: a.length, wortfehler: Math.round(wf * 1000) / 1000, woerterGefunden: Math.round(gefunden * 1000) / 1000,
+      kategorieRichtig: o.felder.kategorie?.wert === e.kategorie, absenderRichtig: norm(o.felder.absender?.wert) === norm(e.absender) });
+  }
+}
+if (guete.length) {
+  const zus = {}; for (const g of guete) { const k = g.qualitaet ? `${g.form}/${g.qualitaet}` : g.form; const z0 = (zus[k] ??= { n: 0, wortfehler: 0, gefunden: 0 }); z0.n++; z0.wortfehler += g.wortfehler; z0.gefunden += g.woerterGefunden; }
+  for (const z0 of Object.values(zus)) { z0.wortfehler = Math.round((1000 * z0.wortfehler) / z0.n) / 1000; z0.gefunden = Math.round((1000 * z0.gefunden) / z0.n) / 1000; }
+  writeFileSync(join(ORDNER, "OCR-GUETE.json"), JSON.stringify({ hinweis: "Wortfehler = Levenshtein auf Wörtern gegen den Ausgangstext (erste 400 Wörter), je Stück; gefunden = Anteil der Ausgangswörter, die im erkannten Text vorkommen.", zusammen: zus, dateien: guete }, null, 1));
+}
 const pz = (a, b) => b ? `${a}/${b} = ${Math.round((100 * a) / b)} %` : "–";
 const ergebnis = { ordner: ORDNER.replace(WURZEL, ""), dateien: soll.length, organizer: z, familienakte: zfa, bookledgerpro: zblp, offenDateien, jeHaushalt };
 console.log(`Messung ${ergebnis.ordner}: ${soll.length} Dateien${regeln.length ? `, ${regeln.length} gelernte Regeln` : ""}`);
@@ -205,6 +224,9 @@ console.log("Gehaltsabrechnungen: " + GF.map((f) => `${f} ${pz(zg[f].ok, zg[f].n
 if (blpKat) console.log(`BookLedgerPro Konto (SKR03) an Geschäftsbelegen: ${pz(zkonto.blp, zkonto.n)}`);
 ergebnis.gehalt = zg; ergebnis.nutzer = nutzerBericht; ergebnis.jeHaushaltFeld = jeHF; ergebnis.jeArt = jeArt;
 if (arg("--trainingsdaten")) { const { appendFileSync } = await import("node:fs"); appendFileSync(resolve(WURZEL, arg("--trainingsdaten")), training.map((t) => JSON.stringify({ runde: ergebnis.ordner, ...t })).join("\n") + "\n"); }
+ergebnis.jeForm = jeForm; ergebnis.ocrGuete = guete.length ? JSON.parse(readFileSync(join(ORDNER, "OCR-GUETE.json"), "utf8")).zusammen : null; ergebnis.leser = leser.statistik;
+if (Object.keys(jeForm).length) { console.log("\nJe Form/Scanqualität (Bereich · Absender · Schriftstück · Text gelesen · OCR-Wortfehler):");
+  for (const [k, v] of Object.entries(jeForm).sort()) console.log(`  ${k.padEnd(20)} n=${String(v.n).padEnd(5)} ${pz(v.kategorie?.ok || 0, v.kategorie?.n || 0).padEnd(16)} ${pz(v.absender?.ok || 0, v.absender?.n || 0).padEnd(16)} ${pz(v.schriftstueck?.ok || 0, v.schriftstueck?.n || 0).padEnd(16)} ${pz(v.textGelesen, v.n).padEnd(16)} ${ergebnis.ocrGuete?.[k] ? (100 * ergebnis.ocrGuete[k].wortfehler).toFixed(0) + " %" : ""}`); }
 ergebnis.doppelt = zdopp; ergebnis.leer = zleer; ergebnis.anhang = zanh; ergebnis.blpKonto = zkonto;
 if (arg("--json")) writeFileSync(resolve(WURZEL, arg("--json")), JSON.stringify(ergebnis, null, 1));
 if (!STILL && gfehler.length) { console.log("\nFehler Gehalt:"); for (const x of gfehler) console.log("  " + x); }

@@ -13,12 +13,20 @@ import { textPdf } from "../lib/test-pdf.ts";
 const START = Number(process.argv[2] || 1);
 /** --chaos: ein Nutzer „neben der Spur“: abfotografierte statt gescannte Briefe, schief/unscharf/dunkel, Unsinnsnamen, Mehrfachkopien. */
 const CHAOS = process.argv.includes("--chaos");
+/** --komplex (Block 0, Trainings-Sitzung 14.11.2026): 26 Haushalte mit mehr Mitgliedern; Briefe gesetzt wie echte Post (scripts/setzen-komplex.py:
+ *  Logo, Spalten, Tabellen, fett/dünn, Fußzeilen, Stempel) als PDF mit Textebene, PDF nur aus Seitenbildern (Texterkennung nötig), Handyfoto
+ *  oder Bildschirmfoto; Scanqualität gut/mittel/schlecht. Ohne --komplex bleibt der Stapel bytegleich wie bisher (alle Zufallsaufrufe dahinter). */
+const KOMPLEX = process.argv.includes("--komplex");
 const AUS_NAME = process.argv.includes("--aus") ? process.argv[process.argv.indexOf("--aus") + 1] : "testdaten-haushalte";
 const WURZEL = join(dirname(fileURLToPath(import.meta.url)), "..");
 const AUS = join(WURZEL, AUS_NAME);
 rmSync(AUS, { recursive: true, force: true });
 let z = (START * 2654435761) % 2147483648 || 1;
-const rnd = () => (z = (z * 1103515245 + 12345) % 2147483648) / 2147483648;
+// Befund 14.11.2026: die alte Formel rechnet über 2^53 hinaus, verliert Stellen und läuft in einen kurzen Kreis – bei 26 Haushalten
+// kamen dieselben Bons byte-gleich in mehreren Haushalten vor. Mit --komplex deshalb mulberry32; ohne bleibt der alte Stapel bytegleich.
+let m32 = (START * 2654435761) >>> 0;
+const mulberry = () => { m32 = (m32 + 0x6d2b79f5) >>> 0; let t = m32; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+const rnd = () => process.argv.includes("--komplex") ? mulberry() : (z = (z * 1103515245 + 12345) % 2147483648) / 2147483648;
 const wahl = (a) => a[Math.floor(rnd() * a.length)];
 const ja = (p) => rnd() < p;
 const zahl = (a, b) => a + Math.floor(rnd() * (b - a + 1));
@@ -169,6 +177,54 @@ const HAUSHALTE = [
   { id: "studentin-ketelsen", titel: "Studentin", name: "Ketelsen", strasse: "WG Hafenblick 7", plz: "20108",
     personen: [P("Lena", "Ketelsen", "Studentin, 22", "Frau")], fahrzeuge: [], arbeitgeber: { Lena: "minijob" }, wohnen: "wg", studentin: true },
 ];
+if (KOMPLEX) HAUSHALTE.push(
+  { id: "mehrgenerationen-hansen", titel: "Mehrgenerationenhaus: Großeltern, Eltern, zwei Kinder", name: "Hansen", strasse: "Lindenallee 30", plz: "20120",
+    personen: [P("Bernd", "Hansen", "Vater, Elektriker", "Herr"), P("Svenja", "Hansen", "Mutter, Erzieherin", "Frau"), P("Jonas", "Hansen", "Kind, 15, Gymnasium", "Kind"), P("Emma", "Hansen", "Kind, 7, Grundschule", "Kind"),
+      P("Walter", "Hansen", "Großvater, Rentner, 81", "Herr"), P("Ilse", "Hansen", "Großmutter, 79, Pflegegrad 3", "Frau")],
+    fahrzeuge: ["BSP-BH 300"], arbeitgeber: { Bernd: "arbeitgeber5", Svenja: "arbeitgeber2" }, wohnen: "eigentum", rentner: ["Walter", "Ilse"], pflege: "Ilse" },
+  { id: "pflegefamilie-mommsen", titel: "Pflegefamilie mit eigenem Kind und Pflegekind", name: "Mommsen", strasse: "Kastanienweg 8", plz: "20121",
+    personen: [P("Heike", "Mommsen", "Mutter, Bürokauffrau", "Frau"), P("Rolf", "Mommsen", "Vater, Busfahrer", "Herr"), P("Paula", "Mommsen", "Kind, 11, Gymnasium", "Kind"), P("Noah", "Krüger", "Pflegekind, 9, Grundschule", "Kind")],
+    fahrzeuge: ["BSP-RM 44"], arbeitgeber: { Heike: "arbeitgeber4", Rolf: "arbeitgeber1" }, wohnen: "miete", pflegekind: "Noah" },
+  { id: "patchwork-carstensen-wulf", titel: "Patchwork: zwei Erwachsene, Kinder aus zwei Ehen", name: "Carstensen", strasse: "Holunderweg 15", plz: "20122",
+    personen: [P("Nina", "Carstensen", "Mutter, Steuerfachangestellte", "Frau"), P("Marco", "Wulf", "Partner, Koch", "Herr"), P("Leni", "Carstensen", "Kind, 13, Gymnasium", "Kind"),
+      P("Tim", "Wulf", "Kind, 10, Grundschule", "Kind"), P("Ben", "Wulf", "Kind, 4, Kita", "Kind")],
+    fahrzeuge: ["BSP-NC 13"], arbeitgeber: { Nina: "arbeitgeber3", Marco: "minijob" }, wohnen: "miete", patchwork: true },
+  { id: "wg-hafenstrasse", titel: "Wohngemeinschaft mit vier Erwachsenen", name: "WG Hafenstraße", strasse: "Hafenstraße 101", plz: "20123",
+    personen: [P("Jule", "Sievers", "Studentin, 24", "Frau"), P("Can", "Yilmaz", "Auszubildender, 20", "Herr"), P("Malte", "Brandt", "Pfleger, 29", "Herr"), P("Sophie", "Lange", "Doktorandin, 27", "Frau")],
+    fahrzeuge: [], arbeitgeber: { Can: "arbeitgeber1", Malte: "arbeitgeber2", Jule: "minijob" }, wohnen: "wg", studentin: true },
+  { id: "selbststaendig-physio-ahrens", titel: "Selbstständige Physiotherapeutin mit Mann und Kind", name: "Ahrens", strasse: "Brunnenstraße 2", plz: "20124",
+    personen: [P("Merle", "Ahrens", "Physiotherapeutin, eigene Praxis", "Frau"), P("Lars", "Ahrens", "Ehemann, Lehrer", "Herr"), P("Fiete", "Ahrens", "Kind, 5, Kita", "Kind")],
+    fahrzeuge: ["BSP-MA 22"], arbeitgeber: {}, wohnen: "eigentum", selbststaendig: true },
+  { id: "taxiunternehmer-oezdemir", titel: "Selbstständiger Taxiunternehmer, Großfamilie", name: "Özdemir", strasse: "Bahnhofstraße 77", plz: "20125",
+    personen: [P("Murat", "Özdemir", "Taxiunternehmer", "Herr"), P("Aylin", "Özdemir", "Ehefrau, Verkäuferin", "Frau"), P("Deniz", "Özdemir", "Kind, 17, Ausbildung", "Kind"),
+      P("Elif", "Özdemir", "Kind, 14, Gymnasium", "Kind"), P("Emir", "Özdemir", "Kind, 8, Grundschule", "Kind"), P("Fatma", "Özdemir", "Großmutter, 74, Rentnerin", "Frau")],
+    fahrzeuge: ["BSP-TX 1", "BSP-TX 2"], arbeitgeber: { Aylin: "arbeitgeber4" }, wohnen: "miete", selbststaendig: true, rentner: ["Fatma"] },
+  { id: "alleinerziehend-vater-friedrichsen", titel: "Alleinerziehender Vater mit zwei Kindern", name: "Friedrichsen", strasse: "Uferweg 6", plz: "20126",
+    personen: [P("Sven", "Friedrichsen", "Vater, Lagerist", "Herr"), P("Mila", "Friedrichsen", "Kind, 9, Grundschule", "Kind"), P("Luca", "Friedrichsen", "Kind, 12, Gymnasium", "Kind")],
+    fahrzeuge: ["BSP-SF 9"], arbeitgeber: { Sven: "arbeitgeber1" }, wohnen: "miete" },
+  { id: "rentnerin-allein-paulsen", titel: "Rentnerin, verwitwet, Hörgerät", name: "Paulsen", strasse: "Seniorenhof 3", plz: "20127",
+    personen: [P("Edith", "Paulsen", "Rentnerin, 84, Witwe", "Frau")], fahrzeuge: [], arbeitgeber: {}, wohnen: "miete", rentner: ["Edith"] },
+  { id: "paar-ohne-kinder-voss", titel: "Doppelverdiener ohne Kinder, Motorrad", name: "Voß", strasse: "Deichstraße 41", plz: "20128",
+    personen: [P("Julia", "Voß", "Ingenieurin", "Frau"), P("Henrik", "Voß", "Bankkaufmann", "Herr")], fahrzeuge: ["BSP-JV 41"], motorrad: "BSP-HV 4", arbeitgeber: { Julia: "arbeitgeber3", Henrik: "arbeitgeber5" }, wohnen: "eigentum" },
+  { id: "buergergeld-familie-schulz", titel: "Familie im Bürgergeld mit drei Kindern", name: "Schulz", strasse: "Am Bahndamm 9", plz: "20129",
+    personen: [P("Daniel", "Schulz", "arbeitsuchend, 41", "Herr"), P("Jessica", "Schulz", "Mutter, Minijob", "Frau"), P("Kevin", "Schulz", "Kind, 16, Schule", "Kind"), P("Lea", "Schulz", "Kind, 10, Grundschule", "Kind"), P("Mats", "Schulz", "Kind, 2, Kita", "Kind")],
+    fahrzeuge: [], arbeitgeber: { Jessica: "minijob" }, wohnen: "miete", buergergeld: true },
+  { id: "beamtenpaar-lorenz", titel: "Beamtenpaar (Polizei, Lehrerin) mit Kind", name: "Lorenz", strasse: "Rathausweg 12", plz: "20130",
+    personen: [P("Stefanie", "Lorenz", "Lehrerin, verbeamtet", "Frau", { titel: "Dr." }), P("Michael", "Lorenz", "Polizeibeamter", "Herr"), P("Hanna", "Lorenz", "Kind, 6, Grundschule", "Kind")],
+    fahrzeuge: ["BSP-ML 110"], arbeitgeber: {}, wohnen: "eigentum", beamtin: true },
+  { id: "student-azubi-geschwister-petersen", titel: "Geschwister in einer Wohnung (Student, Auszubildende) – gleicher Nachname wie Familie Petersen", name: "Petersen", strasse: "Studentenhof 2", plz: "20131",
+    personen: [P("Ole", "Petersen", "Student, 21", "Herr"), P("Frieda", "Petersen", "Auszubildende, 19", "Frau")], fahrzeuge: [], arbeitgeber: { Frieda: "arbeitgeber4", Ole: "minijob" }, wohnen: "wg", studentin: true },
+  { id: "pflegebeduerftig-mueller", titel: "Ehepaar, Mann pflegebedürftig, Frau pflegt", name: "Müller", strasse: "Gartenstadt 5", plz: "20132",
+    personen: [P("Gisela", "Müller", "Rentnerin, 70, pflegende Angehörige", "Frau"), P("Horst", "Müller", "Rentner, 73, Pflegegrad 4", "Herr")], fahrzeuge: ["BSP-GM 70"], arbeitgeber: {}, wohnen: "eigentum", rentner: ["Gisela", "Horst"], pflege: "Horst" },
+  { id: "landwirt-claussen", titel: "Nebenerwerbslandwirt mit Familie und Altenteiler", name: "Claußen", strasse: "Hofstelle 1", plz: "20133",
+    personen: [P("Jens", "Claußen", "Landwirt im Nebenerwerb, Hausmeister", "Herr"), P("Birte", "Claußen", "Ehefrau, Bäckereifachverkäuferin", "Frau"), P("Lasse", "Claußen", "Kind, 18, Ausbildung", "Kind"),
+      P("Karl", "Claußen", "Altenteiler, 80", "Herr")], fahrzeuge: ["BSP-JC 1", "BSP-BC 2"], arbeitgeber: { Jens: "arbeitgeber5", Birte: "arbeitgeber4" }, wohnen: "eigentum", rentner: ["Karl"] },
+  { id: "zugezogen-nowak", titel: "Zugezogene Familie (Pflegekraft aus dem Ausland) mit Kind", name: "Nowak", strasse: "Neubauweg 20", plz: "20134",
+    personen: [P("Agnieszka", "Nowak", "Pflegefachkraft", "Frau"), P("Piotr", "Nowak", "Lagerarbeiter", "Herr"), P("Zofia", "Nowak", "Kind, 4, Kita", "Kind")],
+    fahrzeuge: [], arbeitgeber: { Agnieszka: "arbeitgeber2", Piotr: "arbeitgeber1" }, wohnen: "miete" },
+  { id: "kuenstler-dreyer", titel: "Freischaffender Musiker, Künstlersozialkasse, Hund", name: "Dreyer", strasse: "Atelierhof 4", plz: "20135",
+    personen: [P("Matthias", "Dreyer", "Musiker, freischaffend", "Herr")], fahrzeuge: ["BSP-MD 7"], arbeitgeber: {}, wohnen: "miete", entwickler: true },
+);
 
 // ---------- Schreibstile (Rollenmuster) ----------
 function kopfzeilen(h, an) {
@@ -196,6 +252,15 @@ function brief({ h, abs, an, datum, betreff, absatz, nummern = [], schluss, roll
   const fuss = stil === "firma" ? [wahl([`${abs.name} · Sitz Beispielstadt · Amtsgericht Beispielstadt HRB ${zahl(10000, 99999)}`, `${abs.name} · Bankverbindung: IBAN DE00 0000 0000 0000 0000 00`, ""])]
     : stil === "behoerde" ? [wahl(["Rechtsbehelfsbelehrung: Gegen diesen Bescheid kann innerhalb eines Monats nach Bekanntgabe Widerspruch erhoben werden.", "Dieses Schreiben wurde maschinell erstellt und ist ohne Unterschrift gültig.", ""])] : [""];
   const vorn = stil === "behoerde" && ja(0.5) ? [...nr, datumZeile] : [datumZeile, ...nr];
+  if (KOMPLEX) {
+    // Komplexer Satz: Hinweisblock in Spalten, Bankverbindung im Fuß, Unterschrift, manchmal Eingangsstempel oder zweite Seite
+    const hinweise = stil === "behoerde" ? ["## Rechtsbehelfsbelehrung", "Gegen diesen Bescheid kann innerhalb eines Monats nach Bekanntgabe schriftlich Widerspruch erhoben werden.", "## Datenschutz", "Informationen zur Verarbeitung Ihrer Daten finden Sie unter beispiel.invalid/datenschutz.", "## Sprechzeiten", "Mo–Fr 8–12 Uhr, Do 14–18 Uhr, Termine nach Vereinbarung."]
+      : ["## Ihr Kundenservice", "Montag bis Freitag 8 bis 20 Uhr erreichbar, Samstag 9 bis 14 Uhr.", "## Widerruf und Datenschutz", "Hinweise zum Widerruf und zur Datenverarbeitung finden Sie in unseren Geschäftsbedingungen.", "## Online-Konto", "Rechnungen und Verträge auch im Kundenportal."];
+    const fussK = [`@fuss ${abs.name} · ${abs.zeile.split(" · ").slice(1).join(", ")} · Telefon 0400 ${zahl(100000, 999999)}`, `@fuss Bankverbindung: Hafensparkasse Beispiel · IBAN DE00 0000 0000 0000 0000 00 · BIC BSPXDEXX`, ...(stil === "firma" ? [`@fuss Amtsgericht Beispielstadt HRB ${zahl(10000, 99999)} · Geschäftsführung: ${wahl(["K. Beispiel", "M. Muster", "A. Probe"])}`] : [])];
+    const mitte = ja(0.45) ? ["", `@spalten ${wahl([2, 2, 3])}`, ...hinweise, "@ende"] : [];
+    const umbruch = ja(0.15) ? ["@seite", "## Anlage", "Diese Seite enthält die allgemeinen Hinweise zu Ihrem Schreiben.", ...hinweise.filter((x) => !x.startsWith("##"))] : [];
+    return [...kopf, ...rueck, "", ...kopfzeilen(h, an), "", ...vorn, ...(rolleZeile ? [rolleZeile] : []), "", `# ${betr}`, "", anredeSatz(h, an, stil), "", ...absatz, ...mitte, "", schluss || gruss, ...(ja(0.6) ? ["@unterschrift"] : []), abs.name, "", ...umbruch, ...fussK];
+  }
   return [...kopf, ...rueck, "", ...kopfzeilen(h, an), "", ...vorn, ...(rolleZeile ? [rolleZeile] : []), "", `# ${betr}`, "", anredeSatz(h, an, stil), "", ...absatz, "", schluss || gruss, abs.name, "", ...fuss];
 }
 function mail({ h, abs, an, datum, betreff, absatz }) {
@@ -210,7 +275,35 @@ const dateien = [], erwartung = [];
 let zaehler = 1;
 const UNSINN = () => wahl(["neu", "asdf", "Unbenannt", "Dokument", "scan", "Bild", "xx", "WhatsApp Image 2026-0" + zahl(1, 9) + "-" + zahl(10, 28) + " at 1" + zahl(0, 9) + "." + zahl(10, 59) + ".22", "rechnung.pdf", "Kopie von Kopie"]);
 const kopien = [];
+const setzAuftrag = [], quelltext = {};
+const klarText = (zeilen) => zeilen.filter((z) => !/^@(spalten|ende|seite|unterschrift)/.test(z)).map((z) => z.replace(/^@(fuss|stempel)\s*/, "").replace(/^#+\s*/, "").replace(/^\|(.*)\|$/, (m, x) => x.split("|").map((c) => c.trim()).join(" "))).join("\n");
+const ohneAuszeichnung = (zeilen) => zeilen.filter((z) => !/^@(spalten|ende|seite|unterschrift)/.test(z)).map((z) => z.replace(/^@(fuss|stempel)\s*/, "").replace(/^\|(.*)\|$/, (m, x) => x.split("|").map((c) => c.trim()).join("   ")));
+function komplexAblegen(h, inhalt, soll, sprechend) {
+  const x = rnd(), form = x < 0.3 ? "pdf-text" : x < 0.72 ? "pdf-scan" : x < 0.88 ? "foto" : "einfach";
+  const q = rnd(), qualitaet = form === "pdf-scan" || form === "foto" ? (q < 0.35 ? "gut" : q < 0.75 ? "mittel" : "schlecht") : null;
+  const n = zaehler++;
+  const ordner = form === "foto" ? wahl(["Handy/DCIM/Camera", "Handy/WhatsApp/Media"]) : wahl(["Scanner", "Scanner", "Downloads", "Durcheinander", "alt"]);
+  const name = form === "foto" ? `IMG_2026${String(1000 + n).slice(-4)}_${zahl(100000, 235959)}.jpg` : form === "pdf-scan" && ja(0.6) ? `scan_${String(n).padStart(4, "0")}.pdf`
+    : `${(sprechend || "Dokument").replace(/[^\wäöüÄÖÜß-]+/g, "_")}_${n}.pdf`;
+  const pfad = `Eingang/${h.id}/${ordner}/${name}`, voll = join(AUS, pfad);
+  mkdirSync(dirname(voll), { recursive: true });
+  if (form === "einfach") writeFileSync(voll, textPdf([ohneAuszeichnung(inhalt)]));
+  else setzAuftrag.push({ ziel: voll, zeilen: inhalt, form, qualitaet, saat: `${START}:${pfad}`, art: /^Kontoauszug|Buchungstag/m.test(inhalt.join("\n")) ? "bank" : "brief" });
+  quelltext[pfad] = klarText(inhalt);
+  dateien.push(pfad);
+  erwartung.push({ pfad, haushalt: h.id, ...soll, form, ...(qualitaet ? { qualitaet } : {}) });
+}
 function ablegen(h, art, inhalt, soll, sprechend) {
+  if (KOMPLEX && art === "pdf") return komplexAblegen(h, inhalt, soll, sprechend);
+  if (KOMPLEX && art === "eml" && ja(0.15)) {  // Bildschirmfoto der Mail statt der Mail selbst
+    const n = zaehler++, pfad = `Eingang/${h.id}/Handy/Screenshots/Screenshot_2026${String(100 + n).slice(-3)}_${zahl(100000, 235959)}.png`;
+    const text = inhalt.split("\r\n\r\n").slice(1).join("\n").replace(/\r/g, ""), betreff = (inhalt.match(/^Subject: (.*)$/m) || [])[1] || "", von = (inhalt.match(/^From: (.*)$/m) || [])[1] || "";
+    const zeilen = [`# ${betreff}`, `Von: ${von.replace(/ <.*>/, "")}`, "", ...text.split("\n")];
+    mkdirSync(dirname(join(AUS, pfad)), { recursive: true });
+    setzAuftrag.push({ ziel: join(AUS, pfad), zeilen, form: "bildschirm", saat: `${START}:${pfad}` });
+    quelltext[pfad] = klarText(zeilen); dateien.push(pfad); erwartung.push({ pfad, haushalt: h.id, ...soll, form: "bildschirm" });
+    return;
+  }
   if (CHAOS && art === "pdf" && ja(0.45)) { bildAblegen(h, "blatt", inhalt, soll, wahl([-9, -6, -4, 4, 6, 9]), true); return; }
   if (CHAOS && ja(0.5)) sprechend = `${UNSINN()}${ja(0.3) ? ` (${zahl(1, 9)})` : ""}`;
   const ordner = wahl(["Scanner", "Scanner", "Downloads", "Handy", "Durcheinander", "alt"]);
@@ -231,17 +324,49 @@ const sollFuer = (h, abs, an, art, extra = {}) => ({ schriftstueck: art, kategor
 
 // ---------- Bilder: Belege und Fotos (Inhalt erst per Texterkennung lesbar) ----------
 const bildAuftrag = [];
-function bildAblegen(h, art, zeilen, soll, drehung = 0, abfotografiert = false) {
+function bildAblegen(h, art, zeilen, soll, drehung = 0, abfotografiert = false, klein = false) {
   const n = zaehler++;
   const ordner = wahl(["Handy/DCIM/Camera", "Handy/DCIM/Camera", "Handy/WhatsApp/Media", "Scanner"]);
   const name = ordner === "Scanner" ? `scan_${String(n).padStart(4, "0")}.jpg` : ordner.includes("WhatsApp") ? `IMG-2026${String(100 + n).slice(-3)}-WA00${zahl(10, 99)}.jpg` : `IMG_2026${String(1000 + n).slice(-4)}_${zahl(100000, 235959)}.jpg`;
   const pfad = `Eingang/${h.id}/${ordner}/${name}`;
   mkdirSync(dirname(join(AUS, pfad)), { recursive: true });
   const wild = CHAOS || abfotografiert;
-  bildAuftrag.push({ datei: pfad, ziel: join(AUS, pfad), art, zeilen, drehung: wild ? drehung + (ja(0.5) ? zahl(-3, 3) : 0) : drehung, rauschen: wild ? (ja(0.6) ? 0.8 + rnd() * 0.7 : 0.4) : ja(0.4) ? 0.6 : 0, hell: wild ? (ja(0.4) ? 0.62 + rnd() * 0.15 : 0) : ja(0.3) ? 0.85 : 0, tisch: [zahl(80, 160), zahl(80, 140), zahl(70, 120)] });
+  bildAuftrag.push({ datei: pfad, ziel: join(AUS, pfad), art, zeilen, drehung: wild ? drehung + (ja(0.5) ? zahl(-3, 3) : 0) : drehung, rauschen: wild ? (ja(0.6) ? 0.8 + rnd() * 0.7 : 0.4) : ja(0.4) ? 0.6 : 0, hell: wild ? (ja(0.4) ? 0.62 + rnd() * 0.15 : 0) : ja(0.3) ? 0.85 : 0, tisch: [zahl(80, 160), zahl(80, 140), zahl(70, 120)], ...(klein ? { klein: true } : {}) });
   dateien.push(pfad);
   erwartung.push({ pfad, haushalt: h.id, ...soll, ...(abfotografiert ? { abfotografiert: true } : {}) });
   if (CHAOS && ja(0.15)) kopien.push({ von: pfad, h, soll });
+}
+// Großeinkauf (Klaus 14.11.: „die langen Bons … hunderte Euro … sehr schlecht zu lesen, weil sie klein sind“): 40–120 Posten,
+// kleine Schrift, Pfand, Rabatte, Zwischensumme, Steuertabelle. App-Bons (eBon aus der Supermarkt-App) als PDF oder Bildschirmfoto.
+const MEHR_WAREN = [["Hähnchenbrust 1kg", 8.99], ["Rinderhack 500g", 4.99], ["Lachsfilet", 6.49], ["Gurke", 0.69], ["Paprika rot", 0.99], ["Kartoffeln 2,5kg", 2.99], ["Zwiebeln 1kg", 1.29],
+  ["Orangensaft 1L", 1.89], ["Cola 1,5L", 1.39], ["Bier Kasten 20x0,5", 15.99], ["Pfand Kasten", 3.10], ["Pfand Flasche", 0.25], ["Spülmittel", 1.45], ["Waschmittel 20WL", 5.95], ["Toilettenpapier 8er", 3.79],
+  ["Müsli 750g", 2.99], ["Haferflocken", 0.89], ["Reis 1kg", 1.99], ["Olivenöl 0,75L", 7.99], ["Mehl 1kg", 0.79], ["Zucker 1kg", 0.99], ["Schokolade", 1.29], ["Chips", 1.69], ["Pizza TK", 2.49],
+  ["Gemüsemischung TK", 1.99], ["Katzenfutter 12x100g", 4.29], ["Blumenstrauß", 5.99], ["Batterien AA 8er", 4.99], ["Rabatt Aktion", -1.00], ["Coupon 10 %", -2.50]];
+function langerBon(h, laden, an) {
+  const d = tag(), uhr = `${zahl(8, 20)}:${String(zahl(0, 59)).padStart(2, "0")}`;
+  const posten = Array.from({ length: zahl(40, 120) }, () => wahl(rnd() < 0.3 ? laden.waren : MEHR_WAREN));
+  const cent = posten.reduce((a, [, p]) => a + Math.round(p * 100), 0), summe = (cent / 100).toFixed(2).replace(".", ",");
+  const zw = Math.floor(posten.length / 2), f = (p) => p.toFixed(2).replace(".", ",");
+  const zeilen = [`# ${laden.name.toUpperCase()}`, `${wahl(["Hafenstraße", "Marktplatz", "Nordring"])} ${zahl(1, 80)}, 201${zahl(10, 99)} Beispielstadt`, `Filiale ${zahl(100, 999)}  Kasse ${zahl(1, 12)}`, "",
+    ...posten.slice(0, zw).map(([w, p]) => `${w.padEnd(24)}${f(p).padStart(7)} ${p < 0 ? "" : wahl(["A", "B"])}`), `ZWISCHENSUMME${f(posten.slice(0, zw).reduce((a, [, p]) => a + p, 0)).padStart(18)}`,
+    ...posten.slice(zw).map(([w, p]) => `${w.padEnd(24)}${f(p).padStart(7)} ${p < 0 ? "" : wahl(["A", "B"])}`), "-".repeat(33), `SUMME EUR${summe.padStart(22)}`, `${posten.length} Artikel`,
+    wahl(["Kartenzahlung girocard", "Kreditkarte kontaktlos", "Bar gegeben"]), "", "Steuer   Netto     MwSt    Brutto", `A 19%  ${f(cent / 100 * 0.3 / 1.19).padStart(8)} ${f(cent / 100 * 0.3 * 0.19 / 1.19).padStart(7)} ${f(cent / 100 * 0.3).padStart(8)}`,
+    `B  7%  ${f(cent / 100 * 0.7 / 1.07).padStart(8)} ${f(cent / 100 * 0.7 * 0.07 / 1.07).padStart(7)} ${f(cent / 100 * 0.7).padStart(8)}`, "", `${de(d)}  ${uhr}   Bon-Nr ${zahl(1000, 9999)}`, "Vielen Dank für Ihren Einkauf!"];
+  bildAblegen(h, "kassenbon", zeilen, { schriftstueck: "Kassenbon", kategorie: laden.kat, absender: laden.name, betrag: summe, datum: d, buchung: laden.buchung, fotografiert: an.voll, langerBon: true }, wahl([0, -1, 1, -3]), false, true);
+}
+function appBon(h, laden, an) {
+  const d = tag(), posten = Array.from({ length: zahl(3, 30) }, () => wahl(rnd() < 0.4 ? laden.waren : MEHR_WAREN));
+  const cent = posten.reduce((a, [, p]) => a + Math.round(p * 100), 0), summe = (cent / 100).toFixed(2).replace(".", ","), f = (p) => p.toFixed(2).replace(".", ",") + " €";
+  const app = `${laden.name.split(" ")[0]}-App`;
+  const zeilen = [`# ${laden.name}`, `Digitaler Kassenbon · ${app}`, "", `Datum: ${de(d)}`, `Uhrzeit: ${zahl(8, 20)}:${String(zahl(0, 59)).padStart(2, "0")}`, `Bon-Nr.: ${nr("", 6)}`, `Kundenkarte: ${nr("**** ", 4)}`, "",
+    "|Artikel|Menge|Preis|", ...posten.map(([w, p]) => `|${w}|1|${f(p)}|`), `||Summe|${f(cent / 100)}|`, "", `Gesamtbetrag: ${summe} EUR`, `Bezahlt mit ${wahl(["App-Pay", "girocard", "Kreditkarte"])}`, `Gesammelte Punkte: ${zahl(5, 300)}`, "",
+    `@fuss ${laden.name} · Beispielstadt · Dieser Bon wurde digital über die ${app} ausgestellt.`];
+  const n = zaehler++, bild = ja(0.45);
+  const pfad = bild ? `Eingang/${h.id}/Handy/Screenshots/Screenshot_eBon_${String(100 + n).slice(-3)}.png` : `Eingang/${h.id}/Downloads/eBon_${laden.name.split(" ")[0]}_${d.replaceAll("-", "")}_${n}.pdf`;
+  mkdirSync(dirname(join(AUS, pfad)), { recursive: true });
+  setzAuftrag.push({ ziel: join(AUS, pfad), zeilen, form: bild ? "bildschirm" : "pdf-text", saat: `${START}:${pfad}` });
+  quelltext[pfad] = klarText(zeilen); dateien.push(pfad);
+  erwartung.push({ pfad, haushalt: h.id, schriftstueck: "Kassenbon", kategorie: laden.kat, absender: laden.name, betrag: summe, datum: d, buchung: laden.buchung, form: bild ? "bildschirm" : "pdf-text", appBon: true });
 }
 function kassenbon(h, laden, an) {
   const d = tag(), uhr = `${zahl(8, 20)}:${String(zahl(0, 59)).padStart(2, "0")}`;
@@ -267,10 +392,16 @@ function plakatFoto(h) {
 function landschaftFoto(h) { bildAblegen(h, "landschaft", [], { schriftstueck: "Foto", kategorie: "Fotos" }); }
 
 // ---------- Vorlagen ----------
+function postenTabelle(was, b) {
+  // Rechnungsposten als Tabelle (nur --komplex): netto, MwSt, Summe passen zum Betrag
+  const brutto = Number(b.replace(",", ".")), netto = brutto / 1.19, teil = Math.round(netto * (0.55 + rnd() * 0.3) * 100) / 100;
+  const f = (x) => x.toFixed(2).replace(".", ",") + " €";
+  return ["", "|Pos.|Beschreibung|Menge|Betrag|", `|1|${was}|1|${f(teil)}|`, `|2|${wahl(["Grundgebühr", "Servicepauschale", "Material", "Arbeitszeit"])}|1|${f(netto - teil)}|`, `|||Summe netto|${f(netto)}|`, `|||MwSt 19 %|${f(brutto - netto)}|`, `|||Rechnungsbetrag|${f(brutto)}|`, ""];
+}
 function rechnung(h, abs, an, was, sprechend, nummern = [["Kundennummer", nr("KD-", 7)]], kat) {
   const d = tag(), frist = plus(d, 14), b = betrag(12, 480);
   ablegen(h, "pdf", brief({ h, abs, an, datum: d, betreff: `Ihre Rechnung ${was}`, nummern: [...nummern, ["Rechnungsnummer", nr("RE-2026-", 5)]],
-    absatz: [`für ${was} stellen wir Ihnen ${b} € in Rechnung.`, `Bitte überweisen Sie den Betrag bis zum ${de(frist)}.`, "Vielen Dank für Ihr Vertrauen."] }), sollFuer(h, abs, an, "Rechnung", { frist, ...(kat ? { kategorie: kat } : {}) }), sprechend);
+    absatz: [`für ${was} stellen wir Ihnen ${b} € in Rechnung.`, ...(KOMPLEX ? postenTabelle(was, b) : []), `Bitte überweisen Sie den Betrag bis zum ${de(frist)}.`, "Vielen Dank für Ihr Vertrauen."] }), sollFuer(h, abs, an, "Rechnung", { frist, ...(kat ? { kategorie: kat } : {}) }), sprechend);
 }
 function mahnung(h, abs, an) {
   const d = tag(), frist = plus(d, 10);
@@ -317,7 +448,9 @@ function befund(h, abs, an, was) {
 function kontoauszug(h, abs, an) {
   const d = tag();
   ablegen(h, "pdf", [`# ${abs.name}`, "", ...kopfzeilen(h, an), "", `Kontoauszug Nr. ${zahl(1, 12)}/${d.slice(0, 4)}`, `IBAN DE00 0000 0000 ${zahl(1000, 9999)} 0000 00`, `Datum: ${de(d)}`, "",
-    "Buchungstag  Verwendungszweck  Betrag", `${de(plus(d, -20))}  Lastschrift ${wahl(["Nordstrom", "Funkwelle", "Miete"])}  -${betrag(20, 900)}`, `${de(plus(d, -10))}  Gutschrift  +${betrag(100, 3000)}`, "", `Neuer Saldo: ${betrag(100, 9000)} EUR`],
+    "Buchungstag  Verwendungszweck  Betrag", `${de(plus(d, -20))}  Lastschrift ${wahl(["Nordstrom", "Funkwelle", "Miete"])}  -${betrag(20, 900)}`, `${de(plus(d, -10))}  Gutschrift  +${betrag(100, 3000)}`,
+    ...(KOMPLEX ? Array.from({ length: zahl(4, 14) }, (_, i) => `${de(plus(d, -19 + i))}  ${wahl(["Kartenzahlung Supermarkt", "Lastschrift Versicherung", "Dauerauftrag Sparen", "Überweisung Verein", "Bargeldauszahlung", "Lastschrift Rundfunkbeitrag"])}  -${betrag(5, 300)}`) : []),
+    "", `Neuer Saldo: ${betrag(100, 9000)} EUR`],
   sollFuer(h, abs, an, "Kontoauszug"), "Kontoauszug");
 }
 function werbung(h, abs) {
@@ -540,6 +673,7 @@ function emailMitAnhang(h, p) {
     `--${grenze}`, `Content-Type: application/pdf; name="Rechnung_${d.slice(0, 7)}.pdf"`, "Content-Transfer-Encoding: base64", `Content-Disposition: attachment; filename="Rechnung_${d.slice(0, 7)}.pdf"`, "", pdfB64, `--${grenze}--`, ""].join("\r\n");
   ablegen(h, "eml", roh, sollFuer(h, abs, p, "Rechnung"), "Rechnung_Mail");
   const mailPfad = dateien.at(-1);
+  if (mailPfad.endsWith(".png")) return; // als Bildschirmfoto abgelegt: keine Anlage zum Auspacken
   erwartung.push({ pfad: `${mailPfad} › Rechnung_${d.slice(0, 7)}.pdf`, haushalt: h.id, ...sollFuer(h, abs, p, "Rechnung", { frist }), anhang: true });
 }
 
@@ -631,6 +765,8 @@ for (const h of HAUSHALTE) {
   // Belege und Fotos
   for (let i = 0; i < zahl(3, 6); i++) kassenbon(h, wahl([LADEN.supermarkt, LADEN.supermarkt, LADEN.discounter, LADEN.drogerie, LADEN.baecker]), jemand());
   if (ja(0.6)) kassenbon(h, h.wohnen === "eigentum" ? LADEN.baumarkt : LADEN.apotheke, jemand());
+  if (KOMPLEX) { for (let i = 0; i < zahl(1, h.personen.length > 3 ? 3 : 2); i++) langerBon(h, wahl([LADEN.supermarkt, LADEN.discounter, LADEN.supermarkt]), jemand());
+    for (let i = 0; i < zahl(1, 3); i++) appBon(h, wahl([LADEN.supermarkt, LADEN.discounter, LADEN.drogerie]), jemand()); }
   if (h.rente || ja(0.3)) kassenbon(h, LADEN.apotheke, jemand());
   for (const kz of [...h.fahrzeuge, ...(h.motorrad ? [h.motorrad] : [])]) for (let i = 0; i < zahl(1, 2); i++) tankquittung(h, kz, jemand());
   if (h.fahrzeuge.length || ja(0.4)) autohausFoto(h, jemand());
@@ -695,6 +831,19 @@ for (const h of HAUSHALTE) {
     vertrag(h, ABS.bahn, p1, "Deutschlandticket im Abo", "Ticket");
   }
   if (h.selbststaendig || h.entwickler) jahresabschluss(h, p1);
+  if (KOMPLEX) {
+    for (const v of h.rentner || []) { const p = h.personen.find((x) => x.vorname === v);
+      bescheid(h, ABS.rente, p, "Rentenanpassung zum 1. Juli", () => [`Ihre Rente wird angepasst. Neuer Zahlbetrag: ${betrag(700, 1900)} €.`, "Die Anpassung beruht auf gesetzlichen Vorgaben."], "Rente");
+      if (ja(0.6)) rechnung(h, ABS.apotheke, p, "Zuzahlungen Arzneimittel", "Apotheke", [[p.anrede === "Frau" ? "Patientin" : "Patient", p.voll]], K.ges); }
+    if (h.pflege) { const p = h.personen.find((x) => x.vorname === h.pflege);
+      bescheid(h, ABS.pflegekasse, p, `Pflegegrad ${p.rolle.match(/Pflegegrad (\d)/)?.[1] || 3}`, () => [`für ${p.voll} wird ein Pflegegrad anerkannt.`, `Pflegegeld: ${betrag(300, 800)} € monatlich.`], "Pflegekasse");
+      befund(h, ABS.klinik, p, "Entlassungsbericht"); }
+    if (h.pflegekind) { const k = h.personen.find((x) => x.vorname === h.pflegekind);
+      bescheid(h, ABS.jugendamt, p1, "Pflegegeld für Vollzeitpflege", () => [`für das Pflegekind ${k.voll} wird Pflegegeld nach § 39 SGB VIII gezahlt.`, `Monatlicher Betrag: ${betrag(900, 1300)} €.`], "Pflegegeld");
+      termin(h, ABS.jugendamt, p1, `Hilfeplangespräch für ${k.voll}`, "Hilfeplan"); }
+    if (h.patchwork) { const k = h.personen.filter((x) => x.anrede === "Kind" && x.name !== h.name)[0];
+      if (k) bescheid(h, ABS.familienkasse, p2, "Kindergeld (Berechtigtenwechsel)", () => [`Kindergeld für ${k.voll} wird ab sofort an Sie gezahlt.`, "Der bisherige Berechtigte erhält eine Mitteilung."], "Kindergeld"); }
+  }
   // BookLedgerPro-Fälle: Schenkung, Versicherungsleistung, Spende
   if (ja(0.4)) schenkung(h, jemand());
   if (ja(0.6)) versicherungsleistung(h, jemand());
@@ -718,6 +867,20 @@ if (bildAuftrag.length) {
   if (r.status !== 0) throw new Error("Bilder konnten nicht gebaut werden (python3 mit Pillow nötig).");
 }
 
+// ---------- Komplex gesetzte Seiten rendern (scripts/setzen-komplex.py) ----------
+if (setzAuftrag.length) {
+  const auftragDatei = join(AUS, ".setz-auftrag.json");
+  writeFileSync(auftragDatei, JSON.stringify(setzAuftrag));
+  const teile = Number(process.env.SETZ_PROZESSE || 4), stueck = Math.ceil(setzAuftrag.length / teile);
+  const { spawn } = await import("node:child_process");
+  await Promise.all(Array.from({ length: teile }, (_, i) => new Promise((ok, fehler) => {
+    const d = join(AUS, `.setz-${i}.json`); writeFileSync(d, JSON.stringify(setzAuftrag.slice(i * stueck, (i + 1) * stueck)));
+    spawn("python3", [join(WURZEL, "scripts/setzen-komplex.py"), d], { stdio: "inherit" }).on("exit", (c) => { rmSync(d, { force: true }); c === 0 ? ok() : fehler(new Error("Setzen fehlgeschlagen")); });
+  })));
+  rmSync(auftragDatei, { force: true });
+  writeFileSync(join(AUS, ".quelltext.json"), JSON.stringify(quelltext));
+}
+
 // ---------- Mehrfachkopien (dieselben Bytes, über WhatsApp/Handy nochmal gespeichert) ----------
 for (const k of kopien) {
   const n = zaehler++;
@@ -733,6 +896,6 @@ mkdirSync(AUS, { recursive: true });
 writeFileSync(join(AUS, "dateien.json"), JSON.stringify(dateien, null, 1));
 writeFileSync(join(AUS, "ERWARTUNG.json"), JSON.stringify({ hinweis: "Soll-Werte je Datei (erfunden). person = wen es wirklich betrifft; betrifft = wie die Anrede es nennt.", startwert: START, dateien: erwartung }, null, 1));
 writeFileSync(join(AUS, "HAUSHALTE.json"), JSON.stringify({ hinweis: "Was ein Start-Assistent in der Familienakte abfragen würde (alles erfunden).", haushalte: HAUSHALTE.map(({ id, titel, name, strasse, plz, personen, fahrzeuge, motorrad, arbeitgeber }) => ({ id, titel, name, anschrift: `${strasse}, ${plz} Beispielstadt`, personen, fahrzeuge: [...fahrzeuge, ...(motorrad ? [motorrad] : [])], arbeitgeber: Object.fromEntries(Object.entries(arbeitgeber).map(([k, v]) => [k, ABS[v].name])) })) }, null, 1));
-writeFileSync(join(AUS, "LIES-MICH.txt"), `Testdaten „Haushalte“ – alles erfunden (Startwert ${START}).\n8 Haushalte, ${dateien.length} Dateien, durcheinander abgelegt.\nNeu bauen: node scripts/haushalte-bauen.mjs <startwert>\n`);
+writeFileSync(join(AUS, "LIES-MICH.txt"), `Testdaten „Haushalte“ – alles erfunden (Startwert ${START}${KOMPLEX ? ", komplex" : ""}).\n${HAUSHALTE.length} Haushalte, ${dateien.length} Dateien, durcheinander abgelegt.\nNeu bauen: node scripts/haushalte-bauen.mjs <startwert>\n`);
 const jeH = Object.fromEntries(HAUSHALTE.map((h) => [h.id, erwartung.filter((e) => e.haushalt === h.id).length]));
 console.log(`Startwert ${START}: ${dateien.length} Dateien in ${HAUSHALTE.length} Haushalten`, jeH);
