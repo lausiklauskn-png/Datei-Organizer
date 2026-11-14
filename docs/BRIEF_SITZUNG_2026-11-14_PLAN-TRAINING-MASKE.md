@@ -99,6 +99,16 @@ Organisationen), BookLedgerPro (Stammdaten, Weitere Namen, `namensmuster.js`), P
     Profilen. Der Pseudo-Ordner ist dann nur eine weitere Art, denselben Baustein zu benutzen (Hineinziehen statt Knopf).
     Eine Quelle, byte-gleich mit Pin in allen Apps, nie nachbauen. Klären: wo die Profile liegen (Pro-Tresor?), welche App zuerst.
 
+**Entscheidungen Klaus (14.11.2026, Vorplansitzung)**
+
+- **Profile liegen in der Familienakte.** Sie arbeitet ohnehin mit den anderen Apps zusammen; jede Pro-App (BookLedgerPro,
+  Private Brain Pro, Workflow PDF Pro und alle im Verbund) holt sich dort die Daten **für** die Pseudonymisierung (Weg über den
+  gemeinsamen Pro-Tresor klären; ohne Familienakte: was dann?).
+- **Kein eigenes Werkzeug, kein neues Repo.** Nur der Knopf in jeder App, an dem man direkt sieht, wie pseudonymisiert wird.
+- **Beispiel Private Brain Pro:** Mail mit Inhalt öffnen → „Pseudonymisieren“ → Text **und Anhänge**; ein Anhang wird geöffnet,
+  bei Bild/Scan läuft die Texterkennung (OCR) darüber, dann werden die Daten pseudonymisiert und können weiterverarbeitet werden.
+  Gilt für empfangene und selbst gesendete Mails.
+
 ## Startauftrag zum Einfügen
 
 ```
