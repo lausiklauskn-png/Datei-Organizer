@@ -138,10 +138,14 @@ Organisationen), BookLedgerPro (Stammdaten, Weitere Namen, `namensmuster.js`), P
 
 ```
 Repo lausiklauskn-png/Datei-Organizer (eigener Zweig). PLANSITZUNG – nichts bauen, nichts veröffentlichen.
-Zuerst lesen: CLAUDE.md, docs/BRIEF_SITZUNG_2026-11-14_PLAN-TRAINING-MASKE.md, docs/PLAN.md,
-docs/PRUEFREGELN-GRUPPE.md; in Private Brain Pro docs/KI-BEIM-SCHREIBEN.md und docs/AUFRAEUMEN-NEWSLETTER.md.
-Ziel: Plan „Training mit echten, pseudonymisierten Dokumenten über eine Maske in Private Brain“ mit den
-Punkte 1–18 aus dem Brief (Reihenfolge: Marktcheck → Bestes übernehmen → Modul 25 → nachziehen; mit Nachtrag Pseudo-Ordner und Profile); Klaus sagt je Punkt Ja. Plan als docs/PLAN_TRAINING-MASKE.md + Vorschau (HTML) wenn sichtbar.
+Zuerst lesen: CLAUDE.md, docs/BRIEF_SITZUNG_2026-11-14_PLAN-TRAINING-MASKE.md (ganz, mit Nachtrag und Entscheidungen),
+docs/PLAN.md, docs/PRUEFREGELN-GRUPPE.md; in Private Brain Pro docs/KI-BEIM-SCHREIBEN.md, docs/AUFRAEUMEN-NEWSLETTER.md.
+Ziel: Plan „Pseudonymisieren in allen Pro-Apps“ – Knopf „Pseudonymisieren“/„Zurückführen“ in jeder App, Profile im
+Pro-Tresor (aus der Familienakte übernehmen oder selbst anlegen, verschlüsselt, Nummern nur als Fingerabdruck),
+Mail mit Anhängen samt OCR, Training des Datei-Organizers nur aus pseudonymisierten Daten.
+Reihenfolge: zuerst Marktcheck (aktuell recherchieren), dann das Beste übernehmen, dann Modul 25 verbessern und in alle
+Apps nachziehen, nie doppelt pseudonymisieren, Landkarten nachziehen. Punkte 1–18 aus dem Brief; Klaus sagt je Punkt Ja.
+Ergebnis: docs/PLAN_PSEUDONYMISIEREN.md + HTML-Vorschau der sichtbaren Teile.
 Nicht: echte Dokumente oder pseudonymisierte Texte ins Repo (öffentlich), keine Schlüssel/PINs im Chat oder in Dateien,
-Gmail-Konnektor nicht als Trainingsquelle (liest Klartext), nichts veröffentlichen.
+Gmail-Konnektor nicht als Quelle (liest Klartext), kein neues Repo, nichts veröffentlichen.
 ```
