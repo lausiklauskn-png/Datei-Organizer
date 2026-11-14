@@ -15,6 +15,10 @@ def schraeg(g):
         r = np.asarray(Image.fromarray(a.astype(np.uint8)).rotate(w, fillcolor=0)).sum(1); v = r.var()
         if v > bw: best, bw = w, v
     return g.rotate(best, resample=Image.BICUBIC, fillcolor=255, expand=False), best
+if sys.argv[1] == "--pgm":  # Bild → Graustufen-PGM (für die JS-Fassung in src/vorverarbeitung.ts)
+    ImageOps.grayscale(Image.open(sys.argv[2])).save(sys.argv[3]); sys.exit(0)
+if sys.argv[1] == "--png":
+    Image.open(sys.argv[2]).save(sys.argv[3]); sys.exit(0)
 src, ziel = sys.argv[1], sys.argv[2]
 g = ImageOps.grayscale(Image.open(src))
 if g.width < 1400: g = g.resize((g.width * 2, g.height * 2), Image.LANCZOS)

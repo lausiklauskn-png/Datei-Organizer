@@ -3,6 +3,9 @@
 Regeln: `docs/PRUEFSTAPEL-TRAINING-WOCHENENDE-REGELN.md` (vorab). Alt = Kern `534cc08` (0.2.0), neu = Kern `05c7ef0` (lib = `b391aaa`,
 0.3.4 bis 0.4.3), eingefroren vor der ersten Vergabe. Alles erfunden. Zahlen mit 95-%-Spanne (Wilson), Unterschied mit McNemar.
 
+> **Berichtigung 14.11.2026 nach unabhängiger Prüfung (`docs/PRUEFBERICHT-EHRLICHKEIT-2026-11-14.md`):** Der einzige „gesicherte“ Gewinn aus Block 5 (Absender aus Scans/Fotos 34 → 43 %) ist ein **Kreisschluss** – 16 von 18 Gewinnen sind Spuren des eigenen Setzers (Logo-Kürzel, App-Leiste). Die Absender-Regeln sind wieder aus dem Kern. „Gesichert“ steht im Folgenden ohne Mehrfachkorrektur (Bonferroni über 10 Tests je Runde: 0,005); danach hielte keine der Verbesserungen. Alle sechs Stapel-Autoren schrieben mit Python-Generatoren; 35 Agenten mit Fehlstart. Runde F Frist nach Regel (nur mit Soll, n = 64): neu 93,8 %, alt 95,3 %. Block-1-„IndexedDB“ ist in Node nachgebildet.
+
+
 ## Block 0 – Stapel komplexer (14.11., ohne Agenten)
 
 Werkzeuge: `scripts/setzen-komplex.py` (Satz wie echte Post, vier Formen, drei Güten), `scripts/haushalte-bauen.mjs --komplex`
@@ -34,7 +37,7 @@ Text und alle erledigten Schlüssel) – der Aufwand wächst mit dem Quadrat der
 `src/zustand.ts` und `src/arbeit.ts`): Kopf klein, Dateien und Schlüssel in Teilen zu 1.000, je Block nur der neue Teil; dazu eine
 IndexedDB-Verbindung für die Sitzung statt einer neuen je Schreibvorgang.
 
-| Menge | Merken je 1.000 Dateien vorher (IndexedDB / Arbeitsordner) | nachher | Speicherspitze vorher → nachher (IndexedDB) |
+| Menge | Merken je 1.000 Dateien vorher (IndexedDB nachgebildet in Node / Arbeitsordner) | nachher | Speicherspitze vorher → nachher (IndexedDB) |
 |---|---|---|---|
 | 1.000 | 44 / 81 ms | 43 / 54 ms | 137 → 130 MB |
 | 5.000 | 202 / 306 ms | 46 / 51 ms | 350 → 207 MB |
@@ -48,11 +51,14 @@ UI-Probe 115 grün.
 **Was sonst Zeit kostet (nachher, 50.000):** Lesen (Bytes, Fingerabdruck, PDF-Text mit pdf.js) 3,4–4,2 s je 1.000 = rund 3 Minuten;
 Doppelte 0,7 s; Sieb 2–5 über alle 7,8 s; ohne Merken insgesamt 177 s, mit Merken 199–220 s. Der Kern ist **keine** Engstelle.
 
-**Engstelle 2 – Texterkennung (nicht behoben, Vorschlag):** In Block 0 kostete eine Seite rund 5 s je Erkennungs-Worker (Seite mit viel Text
-bis 5,4 s). Bei 50.000 gemischten Dateien (rund 45 % Scans und Fotos, bis 2 Seiten) sind das grob **40 Stunden mit einem Worker**, wie
-die App ihn heute nutzt (Datei für Datei, eine Erkennung). Vorschläge für Klaus (sichtbares Verhalten, daher erst Vorschau):
-(a) erst alles ohne Texterkennung einlesen und vorsortieren, Erkennung danach im Hintergrund nach Wichtigkeit; (b) auf starken Geräten
-2–4 Erkennungen gleichzeitig (in der Probe mit 4 rund 4-fach schneller); (c) nur die erste Seite, wenn der Kopf schon reicht.
+**Engstelle 2 – Texterkennung.** *Berichtigung:* Zuerst stand hier „rund 5 s je Seite, grob 40 Stunden für 50.000 Dateien“ – geschätzt aus einem
+einzelnen dichten Testbild mit Anlaufzeit. Gemessen (`scripts/tempo-ocr.mjs`, 40 Scanseiten, 144 dpi wie die App, ohne Zwischenspeicher,
+Node auf dem 4-Kern-Rechner der Sitzung): **0,52 s je Seite mit einer Erkennung**, also für 50.000 gemischte Dateien grob 4 Stunden auf
+diesem Rechner (auf Handys mehrfach länger, nicht gemessen). **Behoben (Klaus 14.11.: „mach die Texterkennung schneller“):** mehrere
+Erkennungen nebeneinander (`src/vendor.ts`), Dateien eines Blocks werden zugleich gelesen (`src/app.tsx`, ein Schub geht nie über das
+Blockende), Anzahl nach Gerät (`src/arbeit.ts` `gleichzeitig`: klein 1, mittel 2, stark 2–4). Gemessen: **2 nebeneinander 0,28 s je Seite
+(1,9-fach), 4 nebeneinander 0,18 s (2,9-fach)**. UI-Probe 115 grün (Weitermachen nach Abbruch unverändert). Nicht im Browser und nicht am
+Gerät gemessen; der Speicher je zusätzlicher Erkennung (Tesseract-WASM) ist nicht gemessen.
 
 **Engstelle 3 – Speicher (nicht behoben):** 1,2 GB Heap bei 50.000 Dateien, auch ohne Merken – der volle Text jeder Datei bleibt im
 Speicher. Für Handys zu viel; mit Arbeitsordner werden heute nur Texte über 20.000 Zeichen ausgelagert. Vorschlag: im Speicher nur Kopf
@@ -84,7 +90,7 @@ Soll = Mehrheit der drei Einordner; der Autor musste einmal entscheiden (Schrift
 
 | Feld | alt 534cc08 | neu 05c7ef0 | McNemar | falsch und sicher alt → neu |
 |---|---|---|---|---|
-| Bereich | 81,7 % (77–86) | **85,3 % (81–89)** | p = 0,019 – **gesichert besser** | 19 → 13 |
+| Bereich | 81,7 % (77–86) | **85,3 % (81–89)** | p = 0,019 – gesichert besser ohne Mehrfachkorrektur (mit Bonferroni nicht) | 19 → 13 |
 | Schriftstück | 75,0 % (70–80) | 78,3 % (73–83) | p = 0,087 – nicht gesichert | 26 → 24 |
 | Absender | 80,7 % (76–85) | 80,7 % (76–85) | gleich | 45 → 45 |
 | Person | 83,4 % (78–88) | 83,4 % (78–88) | gleich | 9 → 9 |
@@ -138,7 +144,7 @@ Scan gut 91 / 68 / 82 % (97 % gelesen); Scan mittel 84 / 57 / 86 % (86 %); **Sca
 
 **Lesen oder Einordnen?** Bei gut gelesenen Stücken (≥ 80 % der Wörter gefunden, n = 102): Bereich 84 %, Absender **50 %**, Person 83 %.
 Bei schlecht gelesenen (n = 64): Bereich 67 %, Absender 22 %, Person 66 %. Der Absender scheitert also auch bei gutem Lesen – das
-liegt am Einordnen (Logo-Reste, Kopfzeilen der Handy-Ansicht wie „Posteingang“ oder die Uhrzeit), nicht an der Texterkennung.
+liegt am Einordnen (Logo-Reste, Kopfzeilen der Handy-Ansicht wie „Posteingang“ oder die Uhrzeit), nicht an der Texterkennung. **Berichtigung:** Logo-Reste und App-Leiste sind Spuren des eigenen Setzers – das ist ein Befund über die eigene Prüfmachart, nicht allein über den Kern.
 Bereich und Person fallen dagegen erst mit schlechtem Lesen. Vorgemerkt für Block 5: Absender aus gelesenen Seiten säubern,
 Kopfzeilen von Bildschirmfotos übergehen, zwei Stücke in einem Scan erkennen (zweiter Briefkopf, „Seite 1 von 1“).
 
@@ -165,7 +171,7 @@ Checkout scheiterte) und wurden nach dem Einordnen in „_“ umbenannt; die Zuo
 | Feld | alt 534cc08 | neu 05c7ef0 | McNemar |
 |---|---|---|---|
 | Bereich | 77,3 % (70–83) | 81,3 % (74–87) | p = 0,18 – nicht gesichert |
-| Schriftstück | 82,0 % (75–87) | **77,3 % (70–83)** | **p = 0,016 – gesichert SCHLECHTER** (7 nur alt richtig, 0 nur neu) |
+| Schriftstück | 82,0 % (75–87) | **77,3 % (70–83)** | **p = 0,016 – SCHLECHTER** (7 nur alt richtig, 0 nur neu; mit Bonferroni nicht gesichert) |
 | Absender | 54,0 % (46–62) | 54,0 % | gleich; 21 falsch und sicher |
 | Person | 95,0 % | 95,0 % | gleich |
 | Frist | 90,7 % | 90,7 % | gleich |
@@ -176,7 +182,7 @@ in Großbuchstaben mit angehängtem Thema („HAUPTZOLLAMT BEISPIELSTADT KRAFTFA
 an Vordrucken verloren (Briefe als „Kontoauszug“, „Bescheinigung“, „Mahnung“ gelesen) – das Wortmodell von 0.3.x ist an Fließtext gelernt.
 
 **Runde F – andere Jahre (Text, n = 150, Person n = 112):** Bereich 76,0 → 77,3 % (p = 0,82), Schriftstück 82,0 → 82,7 %, Absender 88,0 %,
-Person 96,4 %, Frist 98,0 → 97,3 % – **kein Unterschied** alt/neu. Veralten die Regeln? Absender, Person, Frist halten; der **Bereich liegt mit
+Person 96,4 %, Frist 98,0 → 97,3 % (über alle 150; nach der Vorab-Regel nur mit Soll, n = 64: 95,3 → 93,8 %) – **kein Unterschied** alt/neu. Veralten die Regeln? Absender, Person, Frist halten; der **Bereich liegt mit
 77 % rund 8 Punkte unter C und E** (Text) – alte Namen (Arbeitsamt, LVA, GEZ, Erziehungsgeld) und erfundene künftige Namen treffen das
 Wortmodell schlechter.
 
@@ -227,6 +233,6 @@ in den falschen Ordner geschrieben hätte; es entstand nichts.)
 | Absender, Text (n = 200) | 81,0 % | 80,5 % | p = 1,0 (3 nur alt, 2 nur neu) |
 | Bereich / Schriftstück / Person / Frist, Text | 85,5 / 78,5 / 87,1 / 93,5 % | 85,5 / 79,5 (Endstand 78,5) / 87,1 / 93,5 % | nicht verschieden |
 
-**Übernommen:** Punkte 2 und 3 (Endstand). Gesichert besser ist **nur der Absender aus gelesenen Seiten**; am reinen Text ändert sich
+**Übernommen (zuerst):** Punkte 2 und 3 (Endstand). **Berichtigt 14.11.:** Der Gewinn beim Absender aus gelesenen Seiten ist ein Kreisschluss (Setzer-Spuren, siehe Prüfbericht); **Punkt 2 ist wieder aus dem Kern**, Punkt 3 bleibt als Fehlerbehebung ohne Nachweis am fremden Stapel. Am reinen Text ändert sich
 nichts. Grenzen: Absender aus Scans und Fotos bleibt schwach (43 %, schlechte Scans 12 %), zwei Stücke in einem Scan 27 % Bereich, schlechte
 Scans Bereich 48 %. Zahlen: `ergebnisse/training/rest-{kern-text,kern-gesetzt,kern-gesetzt-endstand,einordner}.json`.

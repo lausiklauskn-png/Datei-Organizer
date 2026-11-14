@@ -14,8 +14,10 @@ export const LANG = join(WURZEL, "src/public/vendor/tesseract/lang");
 const SCAN_SEITEN = 2; // wie src/pdf.ts
 const cacheDatei = join(WURZEL, ".ocr-cache.json");
 let cache = null, geaendert = 0;
-const ladeCache = () => (cache ??= existsSync(cacheDatei) ? JSON.parse(readFileSync(cacheDatei, "utf8")) : {});
-export function cacheSichern() { if (cache && geaendert) { writeFileSync(cacheDatei, JSON.stringify(cache)); geaendert = 0; } }
+// LESER_OHNE_CACHE=1: nichts aus dem Zwischenspeicher nehmen und nichts hineinschreiben (für Tempo-Messungen)
+const OHNE_CACHE = !!process.env.LESER_OHNE_CACHE;
+const ladeCache = () => (cache ??= OHNE_CACHE ? {} : existsSync(cacheDatei) ? JSON.parse(readFileSync(cacheDatei, "utf8")) : {});
+export function cacheSichern() { if (cache && geaendert && !OHNE_CACHE) { writeFileSync(cacheDatei, JSON.stringify(cache)); geaendert = 0; } }
 
 let pdfjs = null;
 async function pdfJs() {
@@ -35,7 +37,23 @@ export const statistik = { ocrBilder: 0, ocrMs: 0, ausCache: 0, scanPdf: 0, haen
 const OCR_FRIST = Number(process.env.OCR_FRIST || 60000);
 /** Texterkennung für ein Bild (Bytes); Ergebnis zwischengespeichert. */
 const LOG = process.env.LESER_LOG ? (x) => process.stderr.write(`[leser ${new Date().toISOString().slice(11, 19)}] ${x}\n`) : () => {};
+// LESER_VORVERARBEITUNG=1: vor der Erkennung dieselbe Rechnung wie die App (src/vorverarbeitung.ts); Bild über Python (Pillow) zu Graustufen
+// und zurück zu PNG, weil Node kein Bild dekodieren kann. Eigener Schlüssel im Zwischenspeicher.
+const VV = !!process.env.LESER_VORVERARBEITUNG;
+async function vorbereiten(bytes) {
+  const { vorverarbeiten } = await import("../src/vorverarbeitung.ts");
+  const d = mkdtempSync(join(tmpdir(), "vv-")); const py = fileURLToPath(new URL("./vorverarbeiten.py", import.meta.url));
+  try {
+    writeFileSync(join(d, "ein"), bytes); execFileSync("python3", [py, "--pgm", join(d, "ein"), join(d, "g.pgm")]);
+    const buf = readFileSync(join(d, "g.pgm")), t = buf.toString("latin1"), m = t.match(/^P5\s+(?:#.*\s+)*(\d+)\s+(\d+)\s+(\d+)\s/), off = m[0].length;
+    const g = vorverarbeiten({ b: +m[1], h: +m[2], daten: new Uint8ClampedArray(buf.subarray(off, off + (+m[1]) * (+m[2]))) });
+    writeFileSync(join(d, "a.pgm"), Buffer.concat([Buffer.from(`P5\n${g.b} ${g.h}\n255\n`, "latin1"), Buffer.from(g.daten.buffer, g.daten.byteOffset, g.daten.length)]));
+    execFileSync("python3", [py, "--png", join(d, "a.pgm"), join(d, "a.png")]);
+    return new Uint8Array(readFileSync(join(d, "a.png")));
+  } finally { rmSync(d, { recursive: true, force: true }); }
+}
 export async function ocr(bytes) {
+  if (VV) bytes = await vorbereiten(bytes).catch(() => bytes);
   const k = createHash("sha256").update(bytes).digest("hex"); const c = ladeCache();
   if (k in c) { statistik.ausCache++; return c[k]; }
   const t0 = Date.now(); LOG(`ocr ${k.slice(0, 8)} ${bytes.length}`);
@@ -58,7 +76,7 @@ export function pdfLeser(mitOcr = true) {
     const t = await pdfTextLesen(await pdfJs(), bytes);
     if (t.voll.trim() || !mitOcr) return t;
     statistik.scanPdf++;
-    const k = "scanpdf:" + createHash("sha256").update(bytes).digest("hex"); const c = ladeCache();
+    const k = (VV ? "scanpdf-vv:" : "scanpdf:") + createHash("sha256").update(bytes).digest("hex"); const c = ladeCache();
     let text = c[k];
     if (text === undefined) {
       const d = mkdtempSync(join(tmpdir(), "do-pdf-"));

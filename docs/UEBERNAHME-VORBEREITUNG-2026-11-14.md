@@ -1,5 +1,7 @@
 # Übernahme in die anderen Apps – vorbereitet, nicht ausgeführt (14.11.2026)
 
+> **Berichtigung 14.11.2026:** Die Absender-Regeln (erste Zeile der Tabelle unten) sind nach unabhängiger Prüfung **wieder aus dem Kern** – ihr Gewinn war ein Kreisschluss mit dem eigenen Setzer (`docs/PRUEFBERICHT-EHRLICHKEIT-2026-11-14.md`). Zu übernehmen bleiben nur die zwei Fehlerbehebungen (Zwischensumme, PDF ohne Text), ohne Nachweis am fremden Stapel. **Nichts davon nachziehen, bevor es unabhängig nachgewiesen ist.**
+
 Klaus 14.11.: „Erst den Datei-Organizer trainieren und danach die Werte vorbereiten für die Übernahme in die anderen Apps.“ Bei der
 Familienakte vorher prüfen, ob die Sitzung „Pseudonymisierung“ dort noch umbaut – sonst erst am Ende. Diese Sitzung hat **nur das Repo
 Datei-Organizer** im Zugriff; in die anderen Repos wurde nichts geschrieben. Nachziehen ist ein eigener Schritt mit Klaus' Ja (Brief, Regel 8).
