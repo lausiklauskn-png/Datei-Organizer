@@ -101,7 +101,7 @@ Repo lausiklauskn-png/Datei-Organizer (eigener Zweig). PLANSITZUNG – nichts ba
 Zuerst lesen: CLAUDE.md, docs/BRIEF_SITZUNG_2026-11-14_PLAN-TRAINING-MASKE.md, docs/PLAN.md,
 docs/PRUEFREGELN-GRUPPE.md; in Private Brain Pro docs/KI-BEIM-SCHREIBEN.md und docs/AUFRAEUMEN-NEWSLETTER.md.
 Ziel: Plan „Training mit echten, pseudonymisierten Dokumenten über eine Maske in Private Brain“ mit den
-Fragen 1–16 aus dem Brief (Reihenfolge: Marktcheck → Bestes übernehmen → Modul 25 → nachziehen) (mit Nachtrag Pseudo-Ordner und Profile); Klaus sagt je Punkt Ja. Plan als docs/PLAN_TRAINING-MASKE.md + Vorschau (HTML) wenn sichtbar.
+Fragen 1–16 aus dem Brief (Reihenfolge: Marktcheck → Bestes übernehmen → Modul 25 → nachziehen; mit Nachtrag Pseudo-Ordner und Profile); Klaus sagt je Punkt Ja. Plan als docs/PLAN_TRAINING-MASKE.md + Vorschau (HTML) wenn sichtbar.
 Nicht: echte Dokumente oder pseudonymisierte Texte ins Repo (öffentlich), keine Schlüssel/PINs im Chat oder in Dateien,
 Gmail-Konnektor nicht als Trainingsquelle (liest Klartext), nichts veröffentlichen.
 ```
