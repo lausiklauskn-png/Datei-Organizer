@@ -29,6 +29,12 @@ keine Namen, erfunden) an allen neuen und den vier Pro-Beispielen. Kosten: Needs
 Dabei behoben: Namensteile des Ansprechpartners blockierten den Bauauftrag, wenn sie in anderen Wörtern steckten („Beispiel“ in
 „Beispielwert“) – jetzt Ersetzen als ganzes Wort. ⚠ Die neun neuen Beispiele sind nicht rückwärts geprüft (nur Selbsttest).
 
+## Nachtrag 14.11.: Beispiele an/aus, Rahmen, Rückwärtsprüfung aller Beispiele
+
+Workflow-Needs #38 und #39: „Entfernen“ / „Alle Beispiele entfernen“, Rahmen an den 14 App-Beispielen, Widersprüche behoben.
+Rückwärtsprüfung K3/K4 (`rueckwaertstest/beispiele-2026-11-14/ERGEBNIS.md`): **alle 13 Einzel-Beispiele bestehen** (90–100 % nach
+Nachbesserung), Pro-Verbund gesamt 57 % (Absicht, Entscheidung bei Klaus). Sechs Lücken in Needs selbst dort aufgelistet (erst Vorschau).
+
 ## Was liegt wo
 
 | | |

@@ -61,6 +61,18 @@
   ],
   "verkehrt": []
  },
+ "kimsync/k4": {
+  "kern": 15,
+  "quote": 100,
+  "bewerter": [
+   100,
+   100
+  ],
+  "einig": 100,
+  "bestanden": true,
+  "fehlt": [],
+  "verkehrt": []
+ },
  "mixarium": {
   "kern": 16,
   "quote": 78,
@@ -74,6 +86,18 @@
   "verkehrt": [
    "M38 Die App legt automatisch Sicherungsstände in einem Tresor auf dem Gerät an, aus dem man frühere Stände wiederherstellen, exportieren oder löschen kann."
   ]
+ },
+ "mixarium/k4": {
+  "kern": 16,
+  "quote": 94,
+  "bewerter": [
+   94,
+   94
+  ],
+  "einig": 100,
+  "bestanden": true,
+  "fehlt": [],
+  "verkehrt": []
  },
  "mixariumpage": {
   "kern": 12,
@@ -99,6 +123,18 @@
   "fehlt": [
    "M13 Die App fragt den Rahmen des Vorhabens ab: Geräte, Betrieb ohne Internet, Abgleich zwischen Geräten, eigene vorhandene Programme, Datenort, Sicherung und Ort einer KI (keine, Gerät, Dienst, beides)."
   ],
+  "verkehrt": []
+ },
+ "needs/k4": {
+  "kern": 16,
+  "quote": 94,
+  "bewerter": [
+   97,
+   94
+  ],
+  "einig": 94,
+  "bestanden": true,
+  "fehlt": [],
   "verkehrt": []
  },
  "privatebrainpro": {
@@ -150,6 +186,18 @@
   "fehlt": [],
   "verkehrt": []
  },
+ "rezeptbuch/k4": {
+  "kern": 17,
+  "quote": 94,
+  "bewerter": [
+   94,
+   97
+  ],
+  "einig": 94,
+  "bestanden": true,
+  "fehlt": [],
+  "verkehrt": []
+ },
  "toolpoint": {
   "kern": 17,
   "quote": 88,
@@ -178,6 +226,18 @@
   ],
   "verkehrt": []
  },
+ "workflohpage/k4": {
+  "kern": 15,
+  "quote": 90,
+  "bewerter": [
+   90,
+   97
+  ],
+  "einig": 87,
+  "bestanden": true,
+  "fehlt": [],
+  "verkehrt": []
+ },
  "workflowpdfpro": {
   "kern": 17,
   "quote": 74,
@@ -187,6 +247,18 @@
   ],
   "einig": 100,
   "bestanden": false,
+  "fehlt": [],
+  "verkehrt": []
+ },
+ "workflowpdfpro/k4": {
+  "kern": 17,
+  "quote": 91,
+  "bewerter": [
+   91,
+   97
+  ],
+  "einig": 88,
+  "bestanden": true,
   "fehlt": [],
   "verkehrt": []
  }
