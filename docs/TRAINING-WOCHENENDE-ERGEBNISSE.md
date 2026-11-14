@@ -106,3 +106,41 @@ Bereich und Person fallen dagegen erst mit schlechtem Lesen. Vorgemerkt für Blo
 Kopfzeilen von Bildschirmfotos übergehen, zwei Stücke in einem Scan erkennen (zweiter Briefkopf, „Seite 1 von 1“).
 
 Zahlen: `ergebnisse/training/runde-e-{kern-gesetzt,kern-text,einordner}.json`, Lesegüte je Stück `pruefstapel-runde-e/OCR-GUETE.json`.
+
+## Block 4 – Runden D (anderer Schreiber) und F (andere Zeit) (14.11., einmal gemessen, verbraucht)
+
+**Wer was gemacht hat:**
+
+| Rolle | Wer | Umfang |
+|---|---|---|
+| Stapel-Autor D | Claude-Agent (**Sonnet**, anderer Auftrag: Vordrucke und Formularschreiben, Portal-Benachrichtigungen) | 150 Stücke, 5 Haushalte; schrieb mit eigenem Generator-Skript; meldete selbst: nur 34 Stücke mit Frist (statt ~40 %), einzelne Texte dünn |
+| Stapel-Autor F | Claude-Agent (Opus) | 150 Stücke, 5 Haushalte; 23 vor 2002 (DM), 77 aus 2002–2015, 50 aus 2027–2030 |
+| Pakete | Claude-Agent (Haiku), nur zwei Befehle | je ein Paket zu 150 |
+| Einordner E1, E2 | je 1 Claude-Agent (Sonnet) je Runde | je 150 |
+| Einordner E3 | 1 Claude-Agent (Opus) je Runde | je 150 |
+
+9 Agenten, rund 1,25 Mio. Token, 16 Minuten. Einigkeit (Kappa, mit Autor) D: Bereich 0,94 · Schriftstück 0,88 · Absender 0,96 ·
+Person 0,94 · Frist 0,90; F: 0,97 · 0,98 · 0,97 · 0,93 · 0,99. Nichts strittig. Nachtrag: zehn Dateinamen in D enthielten „?“ (Windows-
+Checkout scheiterte) und wurden nach dem Einordnen in „_“ umbenannt; die Zuordnung der Urteile geht über den gesäuberten Namen.
+
+**Runde D – Vordrucke, Portal-Mitteilungen (Text, n = 150, Person n = 101):**
+
+| Feld | alt 534cc08 | neu 05c7ef0 | McNemar |
+|---|---|---|---|
+| Bereich | 77,3 % (70–83) | 81,3 % (74–87) | p = 0,18 – nicht gesichert |
+| Schriftstück | 82,0 % (75–87) | **77,3 % (70–83)** | **p = 0,016 – gesichert SCHLECHTER** (7 nur alt richtig, 0 nur neu) |
+| Absender | 54,0 % (46–62) | 54,0 % | gleich; 21 falsch und sicher |
+| Person | 95,0 % | 95,0 % | gleich |
+| Frist | 90,7 % | 90,7 % | gleich |
+
+Hängt der Kern an der Machart? **Ja, beim Absender deutlich** (54 % gegen 88–95 % bei Fließtext-Briefen in A/B/H und F): Formularköpfe
+in Großbuchstaben mit angehängtem Thema („HAUPTZOLLAMT BEISPIELSTADT KRAFTFAHRZEUGSTEUER“), Kopfzeilen wie „VORGANGS-NR. …“ oder
+„NEUE NACHRICHT“ vor dem eigentlichen Absender, Absender nur in der zweiten Zeile („Kundenportal …“). Beim Schriftstück hat der neue Kern
+an Vordrucken verloren (Briefe als „Kontoauszug“, „Bescheinigung“, „Mahnung“ gelesen) – das Wortmodell von 0.3.x ist an Fließtext gelernt.
+
+**Runde F – andere Jahre (Text, n = 150, Person n = 112):** Bereich 76,0 → 77,3 % (p = 0,82), Schriftstück 82,0 → 82,7 %, Absender 88,0 %,
+Person 96,4 %, Frist 98,0 → 97,3 % – **kein Unterschied** alt/neu. Veralten die Regeln? Absender, Person, Frist halten; der **Bereich liegt mit
+77 % rund 8 Punkte unter C und E** (Text) – alte Namen (Arbeitsamt, LVA, GEZ, Erziehungsgeld) und erfundene künftige Namen treffen das
+Wortmodell schlechter.
+
+Zahlen: `ergebnisse/training/runde-{d,f}-{kern,einordner}.json`.
