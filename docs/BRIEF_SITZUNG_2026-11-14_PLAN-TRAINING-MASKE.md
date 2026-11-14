@@ -57,6 +57,32 @@ Eine **Plansitzung**: nichts bauen, nichts veröffentlichen. Am Ende steht ein P
    Schreibrecht? Fach „Abrechnung KI-Projekt“ für Anthropic/OpenAI.
 8. **Reihenfolge und Umfang:** Vorschlag KI-Sicht (1 Sitzung) → Lernen und Übertragung (1 Sitzung) → echte Stapel in Runden.
 
+## Nachtrag (Klaus 14.11.2026, später am Morgen)
+
+**Pseudo-Ordner – Maske in beide Richtungen.** Der Gmail-Konnektor wird getrennt; die Mails liest nur Private Brain.
+Private Brain maskiert heute nur auf dem Weg hinaus (Schreiben mit KI). Neu: eine App (Android und Windows) mit **zwei Ordnern**:
+Original-Ordner (echte Dateien, unverändert) und Pseudo-Ordner (dieselben Dateien mit Platzhaltern „Person A“, „Konto 1“ …).
+Hineinziehen → pseudonymisiert im anderen Ordner. Mit dem Pseudo-Ordner arbeitet jede KI (sortieren, nach Wichtigkeit ordnen,
+Antworten entwerfen); der Datei-Organizer lernt nur daraus. **Zurück** (eine Antwort mit „Person A“ wieder mit echtem Namen) nur auf
+dem Gerät; die Zuordnung liegt verschlüsselt dort und verlässt es nie (wie `reidentify` beim Schreiben mit KI in Private Brain).
+Name offen: Pseudo-Ordner, Maskenordner, Doppelordner.
+
+**Profile, damit die Maske sich nicht irrt.** Man legt sein **eigenes Profil** an (Name, Anschrift, Geburtsdatum, Konten,
+Versicherten-/Kunden-/Steuernummern) und **Profile der Menschen, mit denen man zu tun hat** (Familie, Kontakte), dazu
+**Stellen** (Krankenkasse, Arzt, Vermieter, Bank) mit ihren Anschriften und Nummern. Was in einem Profil steht, wird immer sicher
+erkannt und ersetzt; das Muster-Erkennen bleibt nur für Unbekanntes. Beim ersten Fehler: **„Korrigieren“** – „das hier verdecken“
+oder „das darf bleiben“; die Maske merkt es sich (wie in BookLedgerPro „Weitere Namen“ und „Nie verdecken“).
+Profile liegen nur verschlüsselt auf dem Gerät, nie im Repo, nie bei einer KI. Vorhandenes nutzen: Familienakte (Personen,
+Organisationen), BookLedgerPro (Stammdaten, Weitere Namen, `namensmuster.js`), Private Brain (Modul 25).
+
+**Offene Punkte dazu für die Plansitzung**
+
+9. **Gesundheitsdaten:** ICD-Code bleibt · wird zur Gruppe („Herz-Kreislauf“) · wird ersetzt – je Nutzer wählbar? (DSGVO Art. 9.)
+10. **Datum:** bleibt (sonst kein Sortieren), außer Geburtsdatum → z. B. nur Geburtsjahr.
+11. **Scans und Fotos:** Texterkennung, dann Stellen im Bild schwärzen (Bausteine Reinigung/OCR aus Workflow PDF) – größter Teil.
+12. **Stellen:** Krankenkasse, Bank, Vermieter als Firmen stehen lassen (wichtig fürs Sortieren) oder verdecken? Je Profil wählbar.
+13. **Profile teilen:** zwischen Private Brain, Familienakte, BookLedgerPro und Datei-Organizer über den gemeinsamen Pro-Tresor?
+
 ## Startauftrag zum Einfügen
 
 ```
@@ -64,7 +90,7 @@ Repo lausiklauskn-png/Datei-Organizer (eigener Zweig). PLANSITZUNG – nichts ba
 Zuerst lesen: CLAUDE.md, docs/BRIEF_SITZUNG_2026-11-14_PLAN-TRAINING-MASKE.md, docs/PLAN.md,
 docs/PRUEFREGELN-GRUPPE.md; in Private Brain Pro docs/KI-BEIM-SCHREIBEN.md und docs/AUFRAEUMEN-NEWSLETTER.md.
 Ziel: Plan „Training mit echten, pseudonymisierten Dokumenten über eine Maske in Private Brain“ mit den
-Fragen 1–8 aus dem Brief; Klaus sagt je Punkt Ja. Plan als docs/PLAN_TRAINING-MASKE.md + Vorschau (HTML) wenn sichtbar.
+Fragen 1–13 aus dem Brief (mit Nachtrag Pseudo-Ordner und Profile); Klaus sagt je Punkt Ja. Plan als docs/PLAN_TRAINING-MASKE.md + Vorschau (HTML) wenn sichtbar.
 Nicht: echte Dokumente oder pseudonymisierte Texte ins Repo (öffentlich), keine Schlüssel/PINs im Chat oder in Dateien,
 Gmail-Konnektor nicht als Trainingsquelle (liest Klartext), nichts veröffentlichen.
 ```
