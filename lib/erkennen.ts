@@ -183,9 +183,10 @@ const EIGENE_STELLE = /^(amt\b|klinik|institut|eigenbetrieb|fachbereich|fakultä
 const RAND_WORT = /^(an|am|im|in|zu|zum|zur|der|die|das|den|dem|des|dr|st|von|vom|und|bei|für|auf|aus|mit|per|ab|ob|so|da|wo|du|er|es|wir|ihr|sie)$/i;
 const RECHTSFORM_KURZ = /^(ag|kg|se|ug|eg|ev|ek|kgaa|ohg|mbh|gbr|sa|ab|as|oy|bv|nv|ltd|inc|llc|plc|spa|srl|eu|de)$/i;
 export function ocrRand(zeile: string): string {
-  const zeichen = zeile.replace(/\s+/g, ""), buchst = (zeile.match(/\p{L}/gu) || []).length;
-  if (zeichen.length >= 4 && buchst < zeichen.length / 2) return "";     // überwiegend Zeichenreste („= - BEE == —“)
-  let s = /^\[.*\]$/.test(zeile.trim()) ? zeile : zeile.replace(/^[^\p{L}\d"„(]+/u, "");
+  if (/^\s*\[/.test(zeile)) return zeile;                                   // „[Scan Teil 1 von 3]“: Vermerk, bleibt wie er ist
+  const zeichen = (zeile.match(/[^\p{L}\d\s]/gu) || []).length, buchst = (zeile.match(/\p{L}/gu) || []).length;
+  if (zeichen >= 3 && buchst < zeichen) return "";                         // überwiegend Zeichenreste („= - BEE == —“)
+  let s = zeile.replace(/^[^\p{L}\d"„(]+/u, "");
   let wortRest = false;
   for (let k = 0; k < 2; k++) {
     const m = s.match(/^((?:[a-zäöü]{1,3}|[A-ZÄÖÜ][a-zäöü]?)[\]|)}>]?)\s+(?=[A-ZÄÖÜ][\wäöüß-]{2,})/);
@@ -194,14 +195,19 @@ export function ocrRand(zeile: string): string {
   }
   if (wortRest && !/\s/.test(s.trim())) return "";                        // „een Peer“: vor einem einzelnen Wort ist meist alles Rest
   for (let k = 0; k < 3; k++) {
-    const m = s.match(/\s+([a-zäöü]{1,2}|[A-ZÄÖÜ][a-zäöü]|[A-ZÄÖÜ]{2}|[|\]}=—–_~»«*]+|\((?:ex|e|x)\))\s*$/);
-    if (!m || RECHTSFORM_KURZ.test(m[1]) || RAND_WORT.test(m[1])) break;
+    const m = s.match(/\s+([a-zäöü]{1,2}|[A-ZÄÖÜ][a-zäöü]?|[A-ZÄÖÜ]{2}|[|\]}=—–_~»«*]+|\((?:ex|e|x)\))\s*$/);
+    if (!m || RECHTSFORM_KURZ.test(m[1])) break;
     s = s.slice(0, m.index);
   }
   return s.replace(/\s+[|\]}]+\s*$/, "").trim();
 }
 /** Name ist nur Straße mit Hausnummer, nur Postfach oder nur Zeichenreste (kein Wort mit drei Buchstaben). */
-const KEIN_ABSENDER = (n: string) => /^[A-ZÄÖÜ][\wäöüß.-]*(straße|strasse|str\.|weg|platz|ring|allee|gasse|damm|chaussee|ufer|steig|pfad)\s*\d/i.test(n) || /^postfach\b/i.test(n) || !/\p{L}{3}/u.test(n);
+const OBERFLAECHE = /^(posteingang|mitteilungen|benachrichtigungen|nachrichten|neue nachricht|startseite|übersicht|menü|einstellungen|zurück|suche|profil|mein konto|meine daten|kassenbon|digitaler kassenbon|ihr schreiben|ihre nachricht|ihre anfrage|ihr antrag|unser zeichen|ihr zeichen)\b/i;
+const KEIN_ABSENDER = (n: string) => {
+  const worte = n.split(/\s+/), kurz = worte.filter((x) => /^\p{L}{1,2}$/u.test(x) && !RECHTSFORM_KURZ.test(x) && !/^(dr|st|am|an|im|in|zu|zum|zur)$/i.test(x)).length;
+  return /^[A-ZÄÖÜ][\wäöüß.-]*(straße|strasse|str\.|weg|platz|ring|allee|gasse|damm|chaussee|ufer|steig|pfad)\s*\d/i.test(n) || /^postfach\b/i.test(n) || !/\p{L}{3}/u.test(n)
+    || OBERFLAECHE.test(n) || /\bi{2,}\b|(?<![\p{L}])(\p{L})\1{2,}(?![\p{L}])/iu.test(n) || worte.length >= 3 && kurz * 2 >= worte.length;   // „iii ii 4428816“, „fr ee naeim er ren“
+};
 
 /** Aus einer Kopfzeile den Namen herausschälen: erste Spalte, ohne Anschrift, Abteilung, Werbespruch, Datum, Kürzel in Klammern, „Inh. …“. */
 export function nameAusZeile(zeile: string, fuss = false): string {
