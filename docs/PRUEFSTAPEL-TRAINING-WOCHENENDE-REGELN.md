@@ -92,3 +92,7 @@ mehr Personen; Freibrief zum Mergen eigener geprüfter PRs; nichts veröffentlic
   Kern; deshalb wird schon jetzt eingefroren und Runde C vergeben, während die Mengenprobe läuft. Sollte Block 1 doch am Kern etwas
   für das Tempo ändern, muss es nachweislich dasselbe Ergebnis liefern (gleiche Felder an allen Generator-Dateien), sonst wird es erst
   nach Block 5 eingebaut.
+
+**Block 5 eingefroren (14.11.2026):** Kern nach dem Lernen = Commit `156bd4c` (lib), gegen den eingefrorenen Kern `05c7ef0`.
+Eingetragen, bevor der Auftrag für `pruefstapel-rest/` vergeben wurde. Gelernt nur an verbrauchten Stapeln (C, D, E, F, A, B, H, Briefe-2)
+und Generator-Daten. Das neu abgestimmte Wortmodell brachte reihum ausgelassen nichts und ist nicht im Kandidaten.
