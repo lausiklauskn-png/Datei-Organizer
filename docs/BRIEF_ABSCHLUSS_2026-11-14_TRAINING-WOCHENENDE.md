@@ -6,6 +6,8 @@ lange Kassenbons und App-Bons mit hinein; Freibrief für selbstständiges Merken
 (Familienakte erst prüfen); bei sichtbarer Verbesserung ein weiteres Training unter anderen Bedingungen; genauere Dokumentation, wer
 welche Rolle hatte. Alle Zahlen und Rollen: **`docs/TRAINING-WOCHENENDE-ERGEBNISSE.md`**. Regeln vorab: `docs/PRUEFSTAPEL-TRAINING-WOCHENENDE-REGELN.md`.
 
+> **Berichtigung 14.11.2026 nach unabhängiger Prüfung (`docs/PRUEFBERICHT-EHRLICHKEIT-2026-11-14.md`):** Der einzige „gesicherte“ Gewinn aus Block 5 (Absender aus Scans/Fotos 34 → 43 %) ist ein **Kreisschluss** – 16 von 18 Gewinnen sind Spuren des eigenen Setzers (Logo-Kürzel, App-Leiste). Die Absender-Regeln sind wieder aus dem Kern. „Gesichert“ steht im Folgenden ohne Mehrfachkorrektur (Bonferroni über 10 Tests je Runde: 0,005); danach hielte keine der Verbesserungen. Alle sechs Stapel-Autoren schrieben mit Python-Generatoren; 35 Agenten mit Fehlstart. Runde F Frist nach Regel (nur mit Soll, n = 64): neu 93,8 %, alt 95,3 %. Block-1-„IndexedDB“ ist in Node nachgebildet.
+
 ## Ergebnis in einem Satz je Block
 
 - **Block 0 – Stapel komplexer:** Setzer für echte Post (Logo, Spalten, Tabellen, fett/dünn, Fuß, Stempel, Unterschrift; PDF mit Text,
@@ -34,9 +36,9 @@ welche Rolle hatte. Alle Zahlen und Rollen: **`docs/TRAINING-WOCHENENDE-ERGEBNIS
 | (Fehlstart) | Skript von Runde E mit falschem Zielordner | 1 | nach Sekunden abgebrochen, nichts geschrieben | ~0 | – |
 | 0, 1, Auswertung | diese Sitzung | – | Generator, Setzer, Messung, Kern-Änderungen, Statistik | – | – |
 
-Zusammen **34 Agenten, rund 5,5 Mio. Token** in Agenten (die Token dieser Hauptsitzung sind nicht einzeln ausgewiesen). Kein Workflow über
+Zusammen **35 Agenten (mit Fehlstart), rund 5,5 Mio. Token** in Agenten (die Token dieser Hauptsitzung sind nicht einzeln ausgewiesen). Kein Workflow über
 10 Agenten. Soll stets = Mehrheit der drei Einordner; der Autor musste zweimal entscheiden (je ein Schriftstück in C und E); nie strittig.
-Zwei Autoren schrieben mit eigenen Hilfsskripten (E, D) – D meldete selbst weniger Fristen als verlangt.
+**Alle sechs** Autoren schrieben mit eigenen Python-Generatoren (gleichförmigere Texte); die zwei C-Autoren teilten einen Arbeitsordner (einer überschrieb eine Datei des anderen); Einordner-Hälften teilten Hilfsdateien und sahen per `ls` fremde Ergebnisdateien (gelesen hat sie keiner). D meldete selbst weniger Fristen als verlangt.
 
 ## Stundennachweis
 

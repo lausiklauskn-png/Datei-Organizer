@@ -1,7 +1,8 @@
 /**
  * Vorverarbeitung vor der Texterkennung (Training Teil 2, 14.11.2026): Graustufen, kleine Bilder vergrößern, den Hintergrund (Schatten,
- * Verlauf, vergilbtes Papier, Flecken) schätzen und herausteilen, dann den Kontrast strecken. Gemessen an 537 gesetzten Scans und Fotos
- * (scripts/vorverarbeitung-versuch.mjs): gefundene Wörter 79 → 91 %, schlechte Scans 41 → 83 %, gute Scans unverändert.
+ * Verlauf, vergilbtes Papier, Flecken) schätzen und herausteilen, dann den Kontrast strecken. Versuch an 537 selbst gesetzten Scans und Fotos
+ * (scripts/vorverarbeitung-versuch.mjs): gefundene Wörter 79 → 91 %, schlechte Scans 41 → 83 % – ABER an Schäden des eigenen Setzers, deren
+ * Umkehrung diese Rechnung ist (Kreisschluss, docs/PRUEFBERICHT-EHRLICHKEIT-2026-11-14.md). Kein Nachweis; unabhängige Messung ausstehend.
  * Rein, ohne Browser: bekommt und liefert Graustufen-Pixel. Die App zeichnet das Bild dafür auf eine Leinwand (src/vendor.ts).
  */
 export type Grau = { daten: Uint8ClampedArray<ArrayBuffer>; b: number; h: number };

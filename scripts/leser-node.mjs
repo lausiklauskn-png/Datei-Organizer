@@ -14,8 +14,10 @@ export const LANG = join(WURZEL, "src/public/vendor/tesseract/lang");
 const SCAN_SEITEN = 2; // wie src/pdf.ts
 const cacheDatei = join(WURZEL, ".ocr-cache.json");
 let cache = null, geaendert = 0;
-const ladeCache = () => (cache ??= existsSync(cacheDatei) ? JSON.parse(readFileSync(cacheDatei, "utf8")) : {});
-export function cacheSichern() { if (cache && geaendert) { writeFileSync(cacheDatei, JSON.stringify(cache)); geaendert = 0; } }
+// LESER_OHNE_CACHE=1: nichts aus dem Zwischenspeicher nehmen und nichts hineinschreiben (für Tempo-Messungen)
+const OHNE_CACHE = !!process.env.LESER_OHNE_CACHE;
+const ladeCache = () => (cache ??= OHNE_CACHE ? {} : existsSync(cacheDatei) ? JSON.parse(readFileSync(cacheDatei, "utf8")) : {});
+export function cacheSichern() { if (cache && geaendert && !OHNE_CACHE) { writeFileSync(cacheDatei, JSON.stringify(cache)); geaendert = 0; } }
 
 let pdfjs = null;
 async function pdfJs() {
