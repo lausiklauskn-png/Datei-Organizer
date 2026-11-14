@@ -23,6 +23,43 @@ stammen aus sehr gleichförmigen Daten. Mit `--komplex` behoben; ohne bleibt der
 **Befund Messwerkzeug:** Eine hängende Texterkennung hielt die Messung an, und ein Fehler auf einer Seite ließ das ganze PDF leer
 zurück (und wurde zwischengespeichert). Behoben (Frist 60 s wie in der App, Seiten einzeln, Leeres nie gemerkt).
 
+## Block 1 – Tempo, Mengenprobe bis 50.000 Dateien (14.11., ohne Agenten)
+
+Daten: 25 Stapel `haushalte-bauen.mjs --komplex` (Startwerte 501–525), 51.770 erfundene Dateien, davon die ersten 50.000 (mit
+Mail-Anhängen 50.553 Einträge). `scripts/mengenprobe.mjs` bildet den Ablauf der App nach (Datei für Datei einlesen, nach je 50 den
+Stand merken, am Ende Doppelte, Sieb 2–5, Absender vereinheitlichen). Texterkennung aus (getrennt unten). Ein Kern, 4-Kern-Rechner der Sitzung.
+
+**Engstelle 1 – Stand nach jedem Block merken (behoben):** Bis 0.4.3 wurde nach jedem Block der ganze Lauf geschrieben (alle Dateien mit
+Text und alle erledigten Schlüssel) – der Aufwand wächst mit dem Quadrat der Menge. Jetzt (`src/lauf.ts` `LaufSchreiber`, in
+`src/zustand.ts` und `src/arbeit.ts`): Kopf klein, Dateien und Schlüssel in Teilen zu 1.000, je Block nur der neue Teil; dazu eine
+IndexedDB-Verbindung für die Sitzung statt einer neuen je Schreibvorgang.
+
+| Menge | Merken je 1.000 Dateien vorher (IndexedDB / Arbeitsordner) | nachher | Speicherspitze vorher → nachher (IndexedDB) |
+|---|---|---|---|
+| 1.000 | 44 / 81 ms | 43 / 54 ms | 137 → 130 MB |
+| 5.000 | 202 / 306 ms | 46 / 51 ms | 350 → 207 MB |
+| 20.000 | **1.069 / 1.235 ms** | **52 / 54 ms** | **1.405 → 535 MB** |
+| 50.000 | nicht gemessen (hochgerechnet ~2,7 s je 1.000, über 3 GB) | 59 / 59 ms | → 1.248 MB |
+
+Abbruch bei 60 % (30.000 Dateien), Stand wie nach einem Neustart geladen, weitergemacht: **dasselbe Ergebnis wie in einem Zug**
+(50.553 Einträge, alle Felder gleich) – mit IndexedDB und mit Arbeitsordner. Alte gemerkte Stände (bis 0.4.3) werden weiter gelesen.
+UI-Probe 115 grün.
+
+**Was sonst Zeit kostet (nachher, 50.000):** Lesen (Bytes, Fingerabdruck, PDF-Text mit pdf.js) 3,4–4,2 s je 1.000 = rund 3 Minuten;
+Doppelte 0,7 s; Sieb 2–5 über alle 7,8 s; ohne Merken insgesamt 177 s, mit Merken 199–220 s. Der Kern ist **keine** Engstelle.
+
+**Engstelle 2 – Texterkennung (nicht behoben, Vorschlag):** In Block 0 kostete eine Seite rund 5 s je Erkennungs-Worker (Seite mit viel Text
+bis 5,4 s). Bei 50.000 gemischten Dateien (rund 45 % Scans und Fotos, bis 2 Seiten) sind das grob **40 Stunden mit einem Worker**, wie
+die App ihn heute nutzt (Datei für Datei, eine Erkennung). Vorschläge für Klaus (sichtbares Verhalten, daher erst Vorschau):
+(a) erst alles ohne Texterkennung einlesen und vorsortieren, Erkennung danach im Hintergrund nach Wichtigkeit; (b) auf starken Geräten
+2–4 Erkennungen gleichzeitig (in der Probe mit 4 rund 4-fach schneller); (c) nur die erste Seite, wenn der Kopf schon reicht.
+
+**Engstelle 3 – Speicher (nicht behoben):** 1,2 GB Heap bei 50.000 Dateien, auch ohne Merken – der volle Text jeder Datei bleibt im
+Speicher. Für Handys zu viel; mit Arbeitsordner werden heute nur Texte über 20.000 Zeichen ausgelagert. Vorschlag: im Speicher nur Kopf
+und die ersten Tausend Zeichen, den Rest im Arbeitsordner (Kernänderung, braucht eigene Probe).
+
+Zahlen: `ergebnisse/training/block1-{vorher,nachher}-{idb,arbeit}.json`, `block1-ohne-merken.json`.
+
 ## Block 2 – Runde C, Vorgänge über Jahre (14.11., einmal gemessen, verbraucht)
 
 **Wer was gemacht hat:**
