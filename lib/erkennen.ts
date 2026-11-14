@@ -218,7 +218,7 @@ export function nameAusZeile(zeile: string, fuss = false): string {
   if (spalten.length > 1 && ETIKETT.test(spalten[0] + " ")) spalten.shift();
   let s = spalten.find((x) => !istTitel(x) && !KEIN_NAME.test(x) && !/^[\d\s.,:/-]+$/.test(x)) || "";
   s = s.replace(/^(arbeitgeber|absender|von|aussteller|verkäufer|verkäuferin|vermieter|vermieterin|auftragnehmer|anbieter|lieferant|firma)\s*:\s*/i, "");
-  s = s.split(/\s+[·•|:]\s+|\s+\/\/\s+/)[0];
+  s = s.split(/\s+[·•|]\s+|\s+\/\/\s+/)[0];
   s = s.replace(/\s+(inh\.|inhaber(in)?\b|c\/o\b).*$/i, "").replace(/\s*\([^)]*\)?\s*$/, "");
   s = s.replace(/[\s–—-]+$/, "");
   const strich = s.split(/\s+[–—-]\s+/);
@@ -264,7 +264,7 @@ export function erkenneAbsender(kopf: string): Wert | undefined {
   }
   // Absenderzeile über dem Anschriftfeld: „Firma · Straße · PLZ Ort“
   for (const z of zeilen) {
-    const m = z.match(/^(.+?)\s+[·|•:]\s+.+\d{5}\s/);
+    const m = z.match(/^(.+?)\s+[·|•]\s+.+\d{5}\s/);
     if (m && FIRMA.test(m[1]) && !EMPFAENGER_ZEILE.test(z)) { const n = nameAusZeile(z); if (n.length >= 3) return w(n, true, "Absenderzeile über der Anschrift"); }
   }
   // Rückfall: eine Zeile mit Firmenmerkmal weiter unten im Kopf (vor der Anrede)
