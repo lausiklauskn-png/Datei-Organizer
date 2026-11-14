@@ -51,11 +51,14 @@ UI-Probe 115 grün.
 **Was sonst Zeit kostet (nachher, 50.000):** Lesen (Bytes, Fingerabdruck, PDF-Text mit pdf.js) 3,4–4,2 s je 1.000 = rund 3 Minuten;
 Doppelte 0,7 s; Sieb 2–5 über alle 7,8 s; ohne Merken insgesamt 177 s, mit Merken 199–220 s. Der Kern ist **keine** Engstelle.
 
-**Engstelle 2 – Texterkennung (nicht behoben, Vorschlag):** In Block 0 kostete eine Seite rund 5 s je Erkennungs-Worker (Seite mit viel Text
-bis 5,4 s). Bei 50.000 gemischten Dateien (rund 45 % Scans und Fotos, bis 2 Seiten) sind das grob **40 Stunden mit einem Worker**, wie
-die App ihn heute nutzt (Datei für Datei, eine Erkennung). Vorschläge für Klaus (sichtbares Verhalten, daher erst Vorschau):
-(a) erst alles ohne Texterkennung einlesen und vorsortieren, Erkennung danach im Hintergrund nach Wichtigkeit; (b) auf starken Geräten
-2–4 Erkennungen gleichzeitig (in der Probe mit 4 rund 4-fach schneller); (c) nur die erste Seite, wenn der Kopf schon reicht.
+**Engstelle 2 – Texterkennung.** *Berichtigung:* Zuerst stand hier „rund 5 s je Seite, grob 40 Stunden für 50.000 Dateien“ – geschätzt aus einem
+einzelnen dichten Testbild mit Anlaufzeit. Gemessen (`scripts/tempo-ocr.mjs`, 40 Scanseiten, 144 dpi wie die App, ohne Zwischenspeicher,
+Node auf dem 4-Kern-Rechner der Sitzung): **0,52 s je Seite mit einer Erkennung**, also für 50.000 gemischte Dateien grob 4 Stunden auf
+diesem Rechner (auf Handys mehrfach länger, nicht gemessen). **Behoben (Klaus 14.11.: „mach die Texterkennung schneller“):** mehrere
+Erkennungen nebeneinander (`src/vendor.ts`), Dateien eines Blocks werden zugleich gelesen (`src/app.tsx`, ein Schub geht nie über das
+Blockende), Anzahl nach Gerät (`src/arbeit.ts` `gleichzeitig`: klein 1, mittel 2, stark 2–4). Gemessen: **2 nebeneinander 0,28 s je Seite
+(1,9-fach), 4 nebeneinander 0,18 s (2,9-fach)**. UI-Probe 115 grün (Weitermachen nach Abbruch unverändert). Nicht im Browser und nicht am
+Gerät gemessen; der Speicher je zusätzlicher Erkennung (Tesseract-WASM) ist nicht gemessen.
 
 **Engstelle 3 – Speicher (nicht behoben):** 1,2 GB Heap bei 50.000 Dateien, auch ohne Merken – der volle Text jeder Datei bleibt im
 Speicher. Für Handys zu viel; mit Arbeitsordner werden heute nur Texte über 20.000 Zeichen ausgelagert. Vorschlag: im Speicher nur Kopf
