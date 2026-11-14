@@ -178,6 +178,31 @@ function istTitel(s: string): boolean {
 const GEBIET = /^(stadt|gemeinde|markt|landkreis|kreis|land|freistaat|magistrat|kreisverwaltung|stadtverwaltung|verbandsgemeinde|amt)\b|^\S*(amt|gericht|präsidium|ministerium|behörde)\b/i;
 const EIGENE_STELLE = /^(amt\b|klinik|institut|eigenbetrieb|fachbereich|fakultät|zentrum)/i;
 
+// Absender-Runde 14.11.2026 (an verbrauchten Stapeln gelernt, Regeln docs/PRUEFSTAPEL-TRAINING-WOCHENENDE-REGELN.md): Logos und Ränder werden von
+// der Texterkennung als Zeichenreste vor und hinter dem Namen gelesen („Zn Beispiel Versicherung AG“, „® Inkasso GmbH“, „Firma GmbH BA“, „Amt rs |“).
+const RAND_WORT = /^(an|am|im|in|zu|zum|zur|der|die|das|den|dem|des|dr|st|von|vom|und|bei|für|auf|aus|mit|per|ab|ob|so|da|wo|du|er|es|wir|ihr|sie)$/i;
+const RECHTSFORM_KURZ = /^(ag|kg|se|ug|eg|ev|ek|kgaa|ohg|mbh|gbr|sa|ab|as|oy|bv|nv|ltd|inc|llc|plc|spa|srl|eu|de)$/i;
+export function ocrRand(zeile: string): string {
+  const zeichen = zeile.replace(/\s+/g, ""), buchst = (zeile.match(/\p{L}/gu) || []).length;
+  if (zeichen.length >= 4 && buchst < zeichen.length / 2) return "";     // überwiegend Zeichenreste („= - BEE == —“)
+  let s = /^\[.*\]$/.test(zeile.trim()) ? zeile : zeile.replace(/^[^\p{L}\d"„(]+/u, "");
+  let wortRest = false;
+  for (let k = 0; k < 2; k++) {
+    const m = s.match(/^((?:[a-zäöü]{1,3}|[A-ZÄÖÜ][a-zäöü]?)[\]|)}>]?)\s+(?=[A-ZÄÖÜ][\wäöüß-]{2,})/);
+    if (!m || RAND_WORT.test(m[1])) break;
+    s = s.slice(m[0].length); wortRest = true;
+  }
+  if (wortRest && !/\s/.test(s.trim())) return "";                        // „een Peer“: vor einem einzelnen Wort ist meist alles Rest
+  for (let k = 0; k < 3; k++) {
+    const m = s.match(/\s+([a-zäöü]{1,2}|[A-ZÄÖÜ][a-zäöü]|[A-ZÄÖÜ]{2}|[|\]}=—–_~»«*]+|\((?:ex|e|x)\))\s*$/);
+    if (!m || RECHTSFORM_KURZ.test(m[1]) || RAND_WORT.test(m[1])) break;
+    s = s.slice(0, m.index);
+  }
+  return s.replace(/\s+[|\]}]+\s*$/, "").trim();
+}
+/** Name ist nur Straße mit Hausnummer, nur Postfach oder nur Zeichenreste (kein Wort mit drei Buchstaben). */
+const KEIN_ABSENDER = (n: string) => /^[A-ZÄÖÜ][\wäöüß.-]*(straße|strasse|str\.|weg|platz|ring|allee|gasse|damm|chaussee|ufer|steig|pfad)\s*\d/i.test(n) || /^postfach\b/i.test(n) || !/\p{L}{3}/u.test(n);
+
 /** Aus einer Kopfzeile den Namen herausschälen: erste Spalte, ohne Anschrift, Abteilung, Werbespruch, Datum, Kürzel in Klammern, „Inh. …“. */
 export function nameAusZeile(zeile: string, fuss = false): string {
   const spalten = zeile.trim().split(/\s{2,}|\t+/).map((s) => s.trim()).filter(Boolean);
@@ -185,7 +210,7 @@ export function nameAusZeile(zeile: string, fuss = false): string {
   if (spalten.length > 1 && ETIKETT.test(spalten[0] + " ")) spalten.shift();
   let s = spalten.find((x) => !istTitel(x) && !KEIN_NAME.test(x) && !/^[\d\s.,:/-]+$/.test(x)) || "";
   s = s.replace(/^(arbeitgeber|absender|von|aussteller|verkäufer|verkäuferin|vermieter|vermieterin|auftragnehmer|anbieter|lieferant|firma)\s*:\s*/i, "");
-  s = s.split(/\s+[·•|]\s+|\s+\/\/\s+/)[0];
+  s = s.split(/\s+[·•|:]\s+|\s+\/\/\s+/)[0];
   s = s.replace(/\s+(inh\.|inhaber(in)?\b|c\/o\b).*$/i, "").replace(/\s*\([^)]*\)?\s*$/, "");
   s = s.replace(/[\s–—-]+$/, "");
   const strich = s.split(/\s+[–—-]\s+/);
@@ -211,7 +236,7 @@ const istMailKopf = (zeilen: string[]) => { const k = zeilen.slice(0, 7); return
 export function erkenneAbsender(kopf: string): Wert | undefined {
   const alle = kopf.split(/\r?\n/).map((z) => z.trim()).filter(Boolean);
   if (istMailKopf(alle)) return undefined; // gespeicherte Mail: Absender steht in „Von:“ und in der Fußzeile → absenderAusGruss (ganzer Text)
-  const zeilen = alle.filter((z) => !TITEL.test(z)).slice(0, 18);
+  const zeilen = alle.map(ocrRand).filter((z) => z && !TITEL.test(z)).slice(0, 18);
   // Briefkopf: die erste Zeile, die keine Überschrift, kein Etikett und kein Datum ist
   let i = 0;
   while (i < zeilen.length && i < 6) {
@@ -219,7 +244,7 @@ export function erkenneAbsender(kopf: string): Wert | undefined {
     if (ANREDE_ZEILE.test(z) || EMPFAENGER_ZEILE.test(z)) break;
     if (ORT_DATUM.test(z)) { i++; continue; }
     const n = nameAusZeile(z);
-    if (n && namensartig(n) && !istTitel(n) && !KEIN_NAME.test(n)) {
+    if (n && namensartig(n) && !istTitel(n) && !KEIN_NAME.test(n) && !KEIN_ABSENDER(n)) {
       const firma = FIRMA.test(n);
       const spur = ADRESS_SPUR.test(z.slice(Math.min(z.length, n.length))) || zeilen.slice(i + 1, i + 4).some((x) => ADRESS_SPUR.test(x) && !EMPFAENGER_ZEILE.test(x));
       if (firma) return w(n, i === 0 || spur, i === 0 ? "Briefkopf oben" : "Briefkopf oben (nach der Überschrift)");
@@ -231,14 +256,14 @@ export function erkenneAbsender(kopf: string): Wert | undefined {
   }
   // Absenderzeile über dem Anschriftfeld: „Firma · Straße · PLZ Ort“
   for (const z of zeilen) {
-    const m = z.match(/^(.+?)\s+[·|•]\s+.+\d{5}\s/);
+    const m = z.match(/^(.+?)\s+[·|•:]\s+.+\d{5}\s/);
     if (m && FIRMA.test(m[1]) && !EMPFAENGER_ZEILE.test(z)) { const n = nameAusZeile(z); if (n.length >= 3) return w(n, true, "Absenderzeile über der Anschrift"); }
   }
   // Rückfall: eine Zeile mit Firmenmerkmal weiter unten im Kopf (vor der Anrede)
   for (const roh of zeilen.slice(0, 6)) {
     if (ANREDE_ZEILE.test(roh)) break;
     const z = nameAusZeile(roh);
-    if (z && FIRMA.test(z) && z.length <= 70 && !EMPFAENGER_ZEILE.test(roh) && !istTitel(z) && namensartig(z)) return w(z, false, "Zeile mit Firmenmerkmal im Kopf");
+    if (z && FIRMA.test(z) && z.length <= 70 && !EMPFAENGER_ZEILE.test(roh) && !istTitel(z) && namensartig(z) && !KEIN_ABSENDER(z)) return w(z, false, "Zeile mit Firmenmerkmal im Kopf");
   }
   return undefined;
 }
