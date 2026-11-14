@@ -34,10 +34,11 @@ async function ocrPlaner() {
 export const statistik = { ocrBilder: 0, ocrMs: 0, ausCache: 0, scanPdf: 0, haenger: 0, seitenFehler: 0 };
 const OCR_FRIST = Number(process.env.OCR_FRIST || 60000);
 /** Texterkennung für ein Bild (Bytes); Ergebnis zwischengespeichert. */
+const LOG = process.env.LESER_LOG ? (x) => process.stderr.write(`[leser ${new Date().toISOString().slice(11, 19)}] ${x}\n`) : () => {};
 export async function ocr(bytes) {
   const k = createHash("sha256").update(bytes).digest("hex"); const c = ladeCache();
   if (k in c) { statistik.ausCache++; return c[k]; }
-  const t0 = Date.now(); const p = await ocrPlaner();
+  const t0 = Date.now(); LOG(`ocr ${k.slice(0, 8)} ${bytes.length}`); const p = await ocrPlaner(); LOG(`planer bereit ${k.slice(0, 8)}`);
   // Frist wie in der App (src/vendor.ts): hängt die Erkennung, bleibt das Bild ohne Text. Nach zwei Hängern werden die Worker neu gestartet.
   let uhr; const frist = new Promise((ok) => { uhr = setTimeout(() => ok(null), OCR_FRIST); });
   const r = await Promise.race([p.addJob("recognize", Buffer.from(bytes)).catch(() => ({ data: { text: "" } })), frist]); clearTimeout(uhr);
@@ -69,4 +70,4 @@ export function pdfLeser(mitOcr = true) {
     return (text.match(/[A-Za-zÄÖÜäöüß]{3,}/g) || []).length >= 4 ? { kopf: text.slice(0, 1500), voll: text } : t;
   };
 }
-export async function beenden() { cacheSichern(); if (planer) { await planer.terminate(); planer = null; } }
+export async function beenden() { cacheSichern(); if (planer) { const p = planer; planer = null; await Promise.race([p.terminate().catch(() => {}), new Promise((ok) => setTimeout(ok, 5000).unref())]); } }

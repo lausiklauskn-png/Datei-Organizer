@@ -20,6 +20,7 @@ const FELDER = Object.keys(FORM);
 const GESETZT = arg("--gesetzt") ? resolve(WURZEL, arg("--gesetzt")) : null;
 const SETZEN = GESETZT ? JSON.parse(readFileSync(join(GESETZT, "SETZEN.json"), "utf8")) : null;
 const leser = GESETZT ? await import("./leser-node.mjs") : null;
+const TEXTE = new Map();
 const quelle = (o, datei) => SETZEN ? { pfad: join(GESETZT, SETZEN[datei].datei), name: SETZEN[datei].datei.split("/").pop() } : { pfad: join(o, datei), name: datei };
 async function kern(pfad) {
   const L = (f) => import(join(pfad, "lib", f));
@@ -35,6 +36,7 @@ async function kern(pfad) {
     return new Map(e.map((x) => { const d = org.get(x.datei), h = hh[x.haushalt], f = d?.felder || {};
       const p = h && d ? personZuordnen(`${d.email?.an || ""}\n${d.volltext || ""}`, f.betrifft?.wert, h) : undefined;
       const w = { bereich: f.kategorie, schriftstueck: f.schriftstueck, absender: f.absender, person: p, frist: f.frist };
+      if (SETZEN && d) TEXTE.set(x.datei, d.volltext || "");
       return [x.datei, { wert: Object.fromEntries(FELDER.map((k) => [k, FORM[k]({ [k]: w[k]?.wert })])), sicher: Object.fromEntries(FELDER.map((k) => [k, !!w[k]?.sicher])), zweit: f.kategorie?.zweitfach ?? null }]; }));
   };
 }
@@ -71,8 +73,22 @@ for (const f of FELDER) {
 }
 // Je Form und Scanqualität (nur mit --gesetzt): Treffer des neuen Kerns je Feld
 if (SETZEN) { erg.jeForm = {};
-  for (const z of zeilen) { const s0 = SETZEN[z.d]; const k = s0.qualitaet ? `${s0.form}/${s0.qualitaet}` : s0.form; const e0 = (erg.jeForm[k] ??= { n: 0 });
-    e0.n++; for (const f of FELDER) { if (z.soll[f] === undefined) continue; const x = (e0[f] ??= { n: 0, ok: 0 }); x.n++; if (z.neu.wert[f] === z.soll[f]) x.ok++; } }
+  // Lesegüte je Stück: Wortfehler (Levenshtein auf Wörtern, erste 400) und Anteil gefundener Wörter gegen den reinen Text
+  const woerter = (t) => (t || "").toLowerCase().replace(/[^a-z0-9äöüß€,.]+/g, " ").split(" ").filter((w) => w.length > 1);
+  const levW = (a, b) => { let v = Array.from({ length: b.length + 1 }, (_, i) => i); for (let i = 1; i <= a.length; i++) { const n = [i]; for (let j = 1; j <= b.length; j++) n[j] = Math.min(v[j] + 1, n[j - 1] + 1, v[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); v = n; } return v[b.length]; };
+  const guete = [];
+  for (const z of zeilen) { const s0 = SETZEN[z.d]; const k = s0.zweitesStueck ? "zwei-in-einem-scan" : s0.qualitaet ? `${s0.form}/${s0.qualitaet}` : s0.form; const e0 = (erg.jeForm[k] ??= { n: 0 });
+    e0.n++; for (const f of FELDER) { if (z.soll[f] === undefined) continue; const x = (e0[f] ??= { n: 0, ok: 0 }); x.n++; if (z.neu.wert[f] === z.soll[f]) x.ok++; }
+    if (s0.form !== "pdf-text") { const a = woerter(readFileSync(join(z.o, z.d), "utf8")).slice(0, 400), b = woerter(TEXTE.get(z.d)).slice(0, 600), m = new Set(b);
+      guete.push({ datei: z.d, form: k, wortfehler: a.length ? Math.min(1, levW(a, b) / a.length) : 0, gefunden: a.length ? a.filter((w) => m.has(w)).length / a.length : 1,
+        richtig: Object.fromEntries(FELDER.filter((f) => z.soll[f] !== undefined).map((f) => [f, z.neu.wert[f] === z.soll[f]])) }); } }
+  erg.ocrGuete = {}; for (const g of guete) { const e0 = (erg.ocrGuete[g.form] ??= { n: 0, wortfehler: 0, gefunden: 0 }); e0.n++; e0.wortfehler += g.wortfehler / 1; e0.gefunden += g.gefunden; }
+  for (const e0 of Object.values(erg.ocrGuete)) { e0.wortfehler = Math.round(1000 * e0.wortfehler / e0.n) / 1000; e0.gefunden = Math.round(1000 * e0.gefunden / e0.n) / 1000; }
+  // Liegt ein Fehler am Lesen oder am Einordnen? Treffer je Feld bei gut gelesenen (≥ 80 % der Wörter gefunden) und schlecht gelesenen Stücken
+  erg.lesenOderEinordnen = Object.fromEntries(["gut gelesen", "schlecht gelesen"].map((t) => { const g0 = guete.filter((g) => (g.gefunden >= 0.8) === (t === "gut gelesen"));
+    return [t, { n: g0.length, ...Object.fromEntries(FELDER.map((f) => { const m = g0.filter((g) => f in g.richtig); return [f, m.length ? Math.round(100 * m.filter((g) => g.richtig[f]).length / m.length) : null]; })) }]; }));
+  writeFileSync(join(GESETZT, "OCR-GUETE.json"), JSON.stringify({ zusammen: erg.ocrGuete, lesenOderEinordnen: erg.lesenOderEinordnen, dateien: guete }, null, 1));
+  console.log("\nLesegüte je Form:", JSON.stringify(erg.ocrGuete)); console.log("Lesen oder Einordnen:", JSON.stringify(erg.lesenOderEinordnen));
   console.log("\nJe Form/Güte (neu):"); for (const [k, v] of Object.entries(erg.jeForm).sort()) console.log(`  ${k.padEnd(18)} n=${v.n} ` + FELDER.map((f) => `${f} ${v[f] ? Math.round(100 * v[f].ok / v[f].n) : "–"} %`).join(" · "));
   await leser.beenden(); }
 if (arg("--json")) writeFileSync(resolve(WURZEL, arg("--json")), JSON.stringify(erg, null, 1));
