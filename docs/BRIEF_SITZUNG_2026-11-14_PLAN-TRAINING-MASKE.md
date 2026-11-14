@@ -148,18 +148,40 @@ Organisationen), BookLedgerPro (Stammdaten, Weitere Namen, `namensmuster.js`), P
     **echten** Dateien und übernimmt erst nach Bestätigung. Jede Bestätigung oder Korrektur ist zugleich **Lehrdatum** für das
     Wortmodell (pseudonymisiert) → Training ohne Einzelklicks über hunderte Dateien. Erst kleine Stichprobe, dann alles.
 
+21. **Vorlage Briefweg der Familienakte (Klaus 14.11.2026):** `lib/brief-antwort.ts`/`app/brief-antwort.tsx` gibt es schon:
+    Brief pseudonymisieren (Namen aus der Akte + eigene Zusatzwörter), Auftrag „Antwort“ oder „Gegenlesen“ mit eigenem Wunsch
+    (Ton: formaler, strenger, freundlicher …), dann kopieren/Direktlink zu jeder KI oder mit eigenem Schlüssel an Mistral (EU);
+    Antwort zurück → Platzhalter wieder ersetzt. Ausbau: **Ordner-Weg** – die App legt den Auftrag (pseudonymisierter Brief + Ton)
+    als Datei in den freigegebenen Ordner; Claude Code (Remote Control) oder ChatGPT (Datei hochladen) schreibt die Antwort-Datei
+    zurück; die App holt sie ab, führt zurück und zeigt den Entwurf. Optional eigene Schlüssel auch für Claude/ChatGPT wie heute
+    für Mistral (Schlüssel nur in der App, nie im Chat). Ton-Wahl als feste Knöpfe statt nur Freitext. Gleicher Baustein für alle
+    Pro-Apps (Punkt 17).
+
+22. **Bezugsdokumente zum Brief (Klaus 14.11.2026):** Zum Auftrag gehören automatisch die Dokumente, auf die sich der Brief bezieht –
+    z. B. AGB, Nutzungsbedingungen, Vertrag, frühere Briefe derselben Sache. Die App findet sie selbst (Familienakte: Vorgang/Akte;
+    Datei-Organizer: vorsortierter Baum; Private Brain: Suche/Bedeutungssuche) und legt sie mit in den Auftrag im Ordner; die KI
+    kann sich dann auf Abschnitte beziehen (Kündigungsfrist § …). Öffentliche Texte (AGB) dürfen unverändert mit, eigene Verträge
+    und Briefe nur pseudonymisiert; Anzeige vor dem Senden, welche Dateien mitgehen (abwählbar). Quellenangabe in der Antwort.
+
+23. **Familienakte zuerst (Klaus 14.11.2026):** Die Familienakte wird als erste App **komplett** mit dem ganzen Paket ausgestattet
+    (Profile, Knopf Pseudonymisieren/Zurückführen, Mail/Anhänge mit OCR, Export/Kopieren, Briefweg mit Ordner-Weg und
+    Bezugsdokumenten, Landkarte). Davor: **Marktanalyse** – das Beste aus den anderen Werkzeugen ziehen und abgleichen, ob es
+    für die Familienakte nutzbar ist (Lizenz, offline, Deutsch, Android/Windows/PWA). Erst danach die anderen Pro-Apps.
+
 ## Startauftrag zum Einfügen
 
 ```
-Repo lausiklauskn-png/Datei-Organizer (eigener Zweig). PLANSITZUNG – nichts bauen, nichts veröffentlichen.
-Zuerst lesen: CLAUDE.md, docs/BRIEF_SITZUNG_2026-11-14_PLAN-TRAINING-MASKE.md (ganz, mit Nachtrag und Entscheidungen),
-docs/PLAN.md, docs/PRUEFREGELN-GRUPPE.md; in Private Brain Pro docs/KI-BEIM-SCHREIBEN.md, docs/AUFRAEUMEN-NEWSLETTER.md.
-Ziel: Plan „Pseudonymisieren in allen Pro-Apps“ – Knopf „Pseudonymisieren“/„Zurückführen“ in jeder App, Profile im
-Pro-Tresor (aus der Familienakte übernehmen oder selbst anlegen, verschlüsselt, Nummern nur als Fingerabdruck),
-Mail mit Anhängen samt OCR, Export und Kopieren-Knopf (Doppelblatt-Symbol) für jede KI, Training des Datei-Organizers nur aus pseudonymisierten Daten (ganze App pseudonymisiert exportieren → KI legt Sortier-Datei zurück → App übernimmt nach Bestätigung).
-Reihenfolge: zuerst Marktcheck (aktuell recherchieren), dann das Beste übernehmen, dann Modul 25 verbessern und in alle
-Apps nachziehen, nie doppelt pseudonymisieren, Landkarten nachziehen. Punkte 1–20 aus dem Brief; Klaus sagt je Punkt Ja.
-Ergebnis: docs/PLAN_PSEUDONYMISIEREN.md + HTML-Vorschau der sichtbaren Teile.
-Nicht: echte Dokumente oder pseudonymisierte Texte ins Repo (öffentlich), keine Schlüssel/PINs im Chat oder in Dateien,
+Repos: lausiklauskn-png/Meine-Familienakte (Ziel, eigener Zweig) und lausiklauskn-png/Datei-Organizer (Brief).
+PLANSITZUNG – nichts bauen, nichts veröffentlichen.
+Zuerst lesen: CLAUDE.md beider Repos; im Datei-Organizer docs/BRIEF_SITZUNG_2026-11-14_PLAN-TRAINING-MASKE.md (ganz,
+Punkte 1–23 mit Entscheidungen); in der Familienakte lib/ki-auftrag.ts, lib/brief-antwort.ts, app/brief-antwort.tsx.
+Ziel: Plan „Pseudonymisieren – Familienakte zuerst, komplett“: Profile im Pro-Tresor (übernehmen oder selbst anlegen,
+verschlüsselt, Nummern nur als Fingerabdruck), Knopf „Pseudonymisieren“/„Zurückführen“, Mail und Anhänge mit OCR,
+Export und Kopieren-Knopf (Doppelblatt), Briefweg mit Ordner-Weg zu Claude Code/ChatGPT und Bezugsdokumenten (AGB, Vertrag),
+nie doppelt pseudonymisieren, Landkarten nachziehen; danach die anderen Pro-Apps.
+Schritt 1: Marktanalyse (aktuell recherchieren: Presidio, Google Sensitive Data Protection, Private AI, Tonic, Browser-
+Erweiterungen u. a.) – Bestes übernehmen, abgleichen ob für die Familienakte nutzbar (Lizenz, offline, Deutsch, Android/Windows/PWA).
+Schritt 2: Plan mit Fragen, Klaus sagt je Punkt Ja. Ergebnis: docs/PLAN_PSEUDONYMISIEREN.md in der Familienakte + HTML-Vorschau.
+Nicht: echte Dokumente oder pseudonymisierte Texte in ein Repo, keine Schlüssel/PINs im Chat oder in Dateien,
 Gmail-Konnektor nicht als Quelle (liest Klartext), kein neues Repo, nichts veröffentlichen.
 ```
