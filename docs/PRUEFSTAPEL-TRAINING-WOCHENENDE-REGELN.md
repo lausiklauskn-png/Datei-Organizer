@@ -136,6 +136,16 @@ entfernt; „Stelle mitnennen“ (Text +10/−9) → verworfen. (c) Lernwerte (k
 Simulator 1 22,7 → 41,2 %. (d) Der erste Messlauf wurde abgebrochen, bevor ein Ergebnis gelesen war, um im Messwerkzeug den Export je Stück
 (`--stuecke`, für den Bootstrap) zu ergänzen; der Kern blieb `079dd6d`. Ausgewertet wird nur der zweite Lauf (`scripts/absender-nachweis.mjs`).
 
+**Ergebnis (gemessen 14.11.2026, einmal, `pruefstapel-absender/NACHWEIS.txt`; Stapel jetzt verbraucht):**
+Hauptfeld **Absender gesetzt 29,5 → 49,0 %** (59 → 98 von 200; nur alt 0, nur neu 39; McNemar p = 3,6·10⁻¹²). Bootstrap nach Absender
+(137 Blöcke, 10.000 Ziehungen): Gewinn 95-%-Bereich 25–54 Stück, keine Ziehung ≤ 0. Nebenfelder (Holm): keins gesichert anders;
+Absender Text 83,0 → 85,0 % (nur neu 4), Bereich gesetzt 78,0 → 78,5 %, Schriftstück, Person, Frist unverändert. **Übernommen** (Regel 7 erfüllt).
+Je Form (neu, Absender): Foto gut 70 %, mittel 33 %, schlecht 12 %; Scan gut 63 %, mittel 60 %, schlecht 45 %.
+**Rollen:** Autor 1 (Opus), Einordner 6 Läufe (E1, E2 Sonnet; E3 Opus; je Hälfte ein eigener Agent), Verpacken 1, Simulator 2 1 (Opus, eigener
+Code `scripts/kreuz2/`, ohne Zugang zu Setzer, Simulator 1, Kern) – 9 Agenten in einem Workflow, rund 1,7 Mio. Tokens, 22 Minuten.
+Lernen, Einfrieren, Messen: diese Sitzung (Claude). **Grenzen:** erfundene Briefe von Claude-Autoren; Bilder von einem Simulator, nicht von
+echten Scannern; ein Soll aus Claude-Einordnern. Echte Unterlagen nur über Runde G.
+
 **Auftrag an den Autor (wörtlich vergeben):** „Schreibe 200 erfundene Schriftstücke für fünf neue Haushalte (eine Familie mit Kindern,
 ein älteres Paar, eine Alleinlebende mit Nebenjob, eine Wohngemeinschaft, ein Selbstständiger mit Familie) über ein Jahr, Mischung wie im
 echten Papierkram eines Jahres, alle 18 Bereiche, etwa 40 % mit eigener Frist. Wie echte Briefe als reiner Text.“ (Format, Listen,

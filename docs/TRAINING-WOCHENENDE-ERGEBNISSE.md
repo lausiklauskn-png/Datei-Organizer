@@ -258,3 +258,28 @@ Am stärksten schadet sie bei Fotos (gefundene Wörter Foto mittel 89 → 72 %).
 App entfernt (`src/vendor.ts`); `src/vorverarbeitung.ts` bleibt nur für Messskripte. Lehre: Der Setzer-Kreisschluss hätte ohne den Kreuztest eine
 schädliche Änderung in die App gebracht. Nebenbefund: Absender aus diesen fremd gesetzten Bildern nur 18 % (Kern ohne die zurückgenommenen
 Block-5-Regeln) – Absender aus Scans und Fotos bleibt die größte Schwäche. Zahlen: `ergebnisse/training/kreuz-{roh,vv,vergleich}*.json`.
+
+## Absender-Runde – Absender aus Scans und Fotos (14.11.2026, einmal gemessen, verbraucht)
+
+Klaus 14.11.: „erst die Absenderoptimierung, danach in die anderen Apps“. Regeln vorab: `docs/PRUEFSTAPEL-TRAINING-WOCHENENDE-REGELN.md`
+(„Absender-Runde“). Gelernt nur an verbrauchten Stapeln (C, D, E, F, Rest) als Text, mit dem eigenen Setzer **und** dem ersten fremden
+Simulator; gemessen an einem **neuen** Stapel (`pruefstapel-absender/`, 200 Stücke, fünf neue Haushalte), gesetzt von einem **zweiten**,
+unabhängigen Simulator (`scripts/kreuz2/`). Kern vorher `a9068c6`, eingefroren `079dd6d`.
+
+**Was der Kern jetzt kann (`lib/erkennen.ts`, `ocrRand`, `KEIN_ABSENDER`):** Logos und Ränder erzeugen in der Texterkennung Zeichenreste vor und
+hinter dem Namen („Zn Beispiel Versicherung AG“, „® Inkasso GmbH“, „Firma GmbH BA“, „Finanzamt X rs |“) – die werden abgeschnitten,
+Rechtsformen (AG, eG, KG …) bleiben. Zeilen aus fast nur Zeichenresten, Straße mit Hausnummer, Postfach, Bildschirm-Wörter („Posteingang“,
+„Mitteilungen“) und Feld-Etiketten („Ihr Zeichen“, „Vorname“) gelten nicht mehr als Absender. Verworfen nach Abzug-Probe: Doppelpunkt als
+Trennpunkt (kein Beitrag), Stelle mitnennen (Text +10/−9).
+
+| Menge | vorher | nachher | nur alt / nur neu |
+|---|---|---|---|
+| Lernen: Text (1.000) | 79,7 % | 79,7 % | 0 / 0 |
+| Lernen: eigener Setzer (970) | 40,4 % | 55,9 % | 3 / 153 |
+| Lernen: Simulator 1 (1.000) | 22,7 % | 41,2 % | 12 / 197 |
+| **Nachweis: Simulator 2 (200), Hauptfeld** | **29,5 %** | **49,0 %** | **0 / 39**, p = 3,6·10⁻¹² |
+| Nachweis: Text (200) | 83,0 % | 85,0 % | 0 / 4 (nicht gesichert) |
+
+Bootstrap nach Absender: Gewinn 25–54 Stück (95 %), keine Ziehung ohne Gewinn. Nebenfelder (Holm): keins gesichert anders.
+Was bleibt: schlechte Fotos (12 %) und Scans, aus denen die Texterkennung nur Zeichensalat liest – dort hilft keine Absender-Regel.
+Rollen, Agenten, Grenzen: Regeldatei. Proben: Kern 153 (4 neu, Gegenprobe 2/2), UI 115.
