@@ -16,7 +16,8 @@ const haelften = readdirSync(pw).filter((d) => d.startsWith("haelfte-"));
 const einordner = NAMEN.map((n) => {
   const dateien = haelften.flatMap((h) => { const f = join(pw, h, `ERGEBNIS-${n}.json`); return existsSync(f) ? JSON.parse(readFileSync(f, "utf8")).dateien : []; });
   writeFileSync(join(stapel, `EINORDNER-${n}.json`), JSON.stringify({ einordner: n, dateien }, null, 1));
-  return { n, m: new Map(dateien.map((x) => [x.datei, x])) };
+  // Einordner sahen den Namen vor dem Umbenennen (Windows-Zeichen → „_“): über den gesäuberten Namen zuordnen
+  return { n, m: new Map(dateien.map((x) => [x.datei.replace(/[<>:"\\|?*]/g, "_"), x])) };
 });
 for (const e of einordner) console.log(`${e.n}: ${e.m.size} von ${erw.length}`, erw.filter((x) => !e.m.has(x.datei)).length ? `– fehlt: ${erw.filter((x) => !e.m.has(x.datei)).map((x) => x.datei).slice(0, 5).join(", ")}` : "");
 const zahl = { strittig: {}, autor: {} };

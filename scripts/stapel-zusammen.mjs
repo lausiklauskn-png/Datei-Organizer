@@ -25,7 +25,9 @@ for (const [ti, t] of teile.entries()) {
   for (const h of JSON.parse(readFileSync(join(t, "HAUSHALTE.json"), "utf8")).haushalte) haushalte.push(h);
   for (const x of e) {
     if (!existsSync(join(t, x.datei))) { maengel.push(`Teil ${ti + 1}: ${x.datei} fehlt`); continue; }
-    let n = x.datei; for (let k = 2; namen.has(n); k++) n = x.datei.replace(/(\.txt)$/, ` (${k})$1`);
+    // Zeichen, die Windows in Dateinamen nicht erlaubt (Checkout im Windows-Bau scheitert sonst), werden zu „_“
+    const sicher = x.datei.replace(/[<>:"\\|?*]/g, "_");
+    let n = sicher; for (let k = 2; namen.has(n); k++) n = sicher.replace(/(\.txt)$/, ` (${k})$1`);
     namen.add(n);
     if (SATZ) { mkdirSync(join(ziel, "satz"), { recursive: true }); copyFileSync(join(t, x.datei), join(ziel, "satz", n)); writeFileSync(join(ziel, n), rein(readFileSync(join(t, x.datei), "utf8"))); }
     else copyFileSync(join(t, x.datei), join(ziel, n));
