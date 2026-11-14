@@ -123,12 +123,17 @@ Lehren aus `docs/PRUEFBERICHT-EHRLICHKEIT-2026-11-14.md` sind eingearbeitet.
 4. **Drei Einordner** (zwei Sonnet, ein Opus), je Agent ein eigener Arbeitsordner, Ergebnisse außerhalb des gemeinsamen Pakets.
 5. **Gesetzt** wird der Nachweisstapel von einem **zweiten, neuen** unabhängigen Simulator (anderer Agent, ohne Zugang zu Setzer,
    erstem Simulator, Kern, Vorverarbeitung), der weder zum Lernen noch zum Abstimmen benutzt wird. 120 Scan-PDFs, 80 Fotos, Güten je ein Drittel.
-6. **Einmal messen**, Kern vor dem Lernen (main `a9068c6`) gegen Kern nach dem Lernen (Commit wird hier eingetragen, bevor gemessen wird).
+6. **Einmal messen**, Kern vor dem Lernen (main `a9068c6`) gegen Kern nach dem Lernen **`079dd6d`** (eingefroren 14.11.2026, eingetragen vor der Messung).
    **Hauptfeld: Absender gesetzt** (McNemar, 5 %). Nebenfelder (Absender Text, Bereich, Schriftstück, Person, Frist – gesetzt und Text) mit
    Holm-Bonferroni; sie dürfen nicht gesichert schlechter werden. Abhängigkeit: zusätzlich Bootstrap nach Absender (gleicher Absender = ein Block).
 7. **Übernommen** wird nur, was das Hauptfeld gesichert besser macht und kein Nebenfeld gesichert schlechter. Einzelne Regeln, die zum
    Gewinn nichts beitragen (Abzug-Probe am Lernstapel), werden vor dem Einfrieren herausgenommen.
 8. **Grenze:** erfundene Unterlagen, Claude-Autoren und -Einordner; echte Unterlagen nur über Runde G.
+
+**Vermerke vor der Messung:** (a) Beim Prüfen des Fortschritts wurden einmal die ersten 10 Dateinamen des Nachweisstapels gesehen (`ls | head`),
+keine Inhalte; keine Regel danach ausgerichtet. (b) Abzug-Probe: „ : “ als Trennpunkt ohne Beitrag (Setzer 542 = 542, Simulator 1 412 = 412) →
+entfernt; „Stelle mitnennen“ (Text +10/−9) → verworfen. (c) Lernwerte (keine Nachweise): Text 79,7 → 79,7 %, eigener Setzer 40,4 → 55,9 %,
+Simulator 1 22,7 → 41,2 %.
 
 **Auftrag an den Autor (wörtlich vergeben):** „Schreibe 200 erfundene Schriftstücke für fünf neue Haushalte (eine Familie mit Kindern,
 ein älteres Paar, eine Alleinlebende mit Nebenjob, eine Wohngemeinschaft, ein Selbstständiger mit Familie) über ein Jahr, Mischung wie im
