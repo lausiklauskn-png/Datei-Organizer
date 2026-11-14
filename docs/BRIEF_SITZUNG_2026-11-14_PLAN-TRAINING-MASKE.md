@@ -123,6 +123,12 @@ Organisationen), BookLedgerPro (Stammdaten, Weitere Namen, `namensmuster.js`), P
      für Namen, Anschriften, eigene Nummern;
   e) Nachweis für Dritte: der Quelltext ist einsehbar, eine kurze Seite „Was mit deinen Profilen passiert“.
 
+- **PWA-Apps (Basic) besonders** (Klaus: „vor allen Dingen bei den PWA-Apps“): Im Browser wird der Code bei jedem Laden vom Server
+  geholt, fremde Browser-Erweiterungen können mitlesen, und es gibt keinen Pro-Tresor. Vorschläge: in Basic Profile **nur als
+  Fingerabdrücke** (nie Klartext-Nummern), Speicherung verschlüsselt im Browser mit eigenem Passwort; strenge Sicherheitsregel
+  der Seite (CSP `connect-src` nur zur eigenen Adresse); Hinweis „Für Gesundheits- und Bankdaten die Pro-App nehmen“;
+  Frage an Klaus: Profile in Basic überhaupt anbieten oder nur in den Pro-Apps?
+
 ## Startauftrag zum Einfügen
 
 ```
