@@ -18,20 +18,21 @@ const MB = 1024 * 1024;
 const TEXT_GRENZE = 30 * MB;
 
 // ---------- A Leistung ----------
-export type Leistung = { stufe: "klein" | "mittel" | "stark"; block: number; vollBis: number; speicherGB?: number; kerne?: number };
+/** gleichzeitig: wie viele Dateien zugleich gelesen werden (und wie viele Texterkennungen nebeneinander laufen) – Training 14.11.2026 */
+export type Leistung = { stufe: "klein" | "mittel" | "stark"; block: number; vollBis: number; gleichzeitig: number; speicherGB?: number; kerne?: number };
 /** Aus den Angaben des Geräts (Arbeitsspeicher in GB, Rechenkerne). Fehlt eine Angabe, gilt „mittel“. */
 export function leistungAus(speicherGB?: number, kerne?: number): Leistung {
   const g = { speicherGB, kerne };
-  if (speicherGB !== undefined && kerne !== undefined && speicherGB >= 8 && kerne >= 8) return { stufe: "stark", block: 100, vollBis: 256 * MB, ...g };
-  if ((speicherGB !== undefined && speicherGB <= 3) || (kerne !== undefined && kerne <= 4)) return { stufe: "klein", block: 25, vollBis: TEXT_GRENZE, ...g };
-  return { stufe: "mittel", block: 50, vollBis: 64 * MB, ...g };
+  if (speicherGB !== undefined && kerne !== undefined && speicherGB >= 8 && kerne >= 8) return { stufe: "stark", block: 100, vollBis: 256 * MB, gleichzeitig: Math.min(4, Math.max(2, Math.floor(kerne / 3))), ...g };
+  if ((speicherGB !== undefined && speicherGB <= 3) || (kerne !== undefined && kerne <= 4)) return { stufe: "klein", block: 25, vollBis: TEXT_GRENZE, gleichzeitig: 1, ...g };
+  return { stufe: "mittel", block: 50, vollBis: 64 * MB, gleichzeitig: 2, ...g };
 }
 export function leistungMessen(): Leistung {
   const n = typeof navigator !== "undefined" ? (navigator as Navigator & { deviceMemory?: number }) : undefined;
   return leistungAus(n?.deviceMemory, n?.hardwareConcurrency || undefined);
 }
 export const leistungText = (l: Leistung) =>
-  `${l.stufe === "stark" ? "Starkes Gerät" : l.stufe === "klein" ? "Kleines Gerät" : "Gerät mittel"}: Blöcke zu ${l.block}, Dateien bis ${Math.round(l.vollBis / MB)} MB ganz laden, größere Stück für Stück`;
+  `${l.stufe === "stark" ? "Starkes Gerät" : l.stufe === "klein" ? "Kleines Gerät" : "Gerät mittel"}: Blöcke zu ${l.block}, Dateien bis ${Math.round(l.vollBis / MB)} MB ganz laden, größere Stück für Stück, ${l.gleichzeitig === 1 ? "eine Datei" : `${l.gleichzeitig} Dateien`} zugleich lesen`;
 
 // ---------- D Speicher ----------
 export const RESERVE = 50 * MB;

@@ -31,8 +31,9 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
 
 - **Training (Freibrief, ohne Codex):** Block 0 (Setzer `scripts/setzen-komplex.py`, Generator `--komplex` mit 26 Haushalten, lange Bons,
   App-Bons, Leser `scripts/leser-node.mjs`), Block 1 (Lauf in Teilen: `src/lauf.ts` `LaufSchreiber`; Merken bei 20.000 von 1.069 auf 52 ms je
-  1.000), Runden C, E, D, F und ungesehener Rest (je drei Claude-Einordner + Autor, alle verbraucht), Block 5: Absender aus Scans/Fotos
-  gesichert besser (34 → 43 %), Wortmodell unverändert. Alles: `docs/TRAINING-WOCHENENDE-ERGEBNISSE.md`, Brief
+  1.000), Runden C, E, D, F und ungesehener Rest (je drei Claude-Einordner + Autor, alle verbraucht), Block 5: der Absender-Gewinn (34 → 43 %) war ein
+  Kreisschluss mit dem eigenen Setzer – Regeln wieder aus dem Kern (`docs/PRUEFBERICHT-EHRLICHKEIT-2026-11-14.md`); Wortmodell unverändert.
+  **Lehre:** Nachweise an gesetzten Scans nur mit einem unabhängig gebauten Setzer oder echten Unterlagen. Alles: `docs/TRAINING-WOCHENENDE-ERGEBNISSE.md`, Brief
   `docs/BRIEF_ABSCHLUSS_2026-11-14_TRAINING-WOCHENENDE.md`, Übernahme vorbereitet `docs/UEBERNAHME-VORBEREITUNG-2026-11-14.md`.
 - Messen am Prüfstapel: alt/neu als Worktrees (`laeufe/kern-…`), Soll = `SOLL.json` aus drei Einordnern (`scripts/soll-aus-einordnern.mjs`),
   gesetzt mit `--gesetzt` (Texterkennung wie die App). Generator ohne `--komplex` ist absichtlich alt (Zufall im Kreis, nur für alte Vergleiche).

@@ -139,5 +139,5 @@ mit dem dritten entscheiden. Ausgaben danach siehe `docs/BRIEF_ABSCHLUSS_2026-11
 Ohne Codex (Klaus 14.11.): je Runde drei unabhängige Claude-Einordner (zwei Sonnet, ein Opus), Soll = Mehrheit, Autor nur bei drei
 verschiedenen Urteilen; Abweichung von Regel 3 („mindestens einer aus einem anderen KI-System“) mit Klaus' Wort. Kern `05c7ef0` gegen
 0.2.0 (`534cc08`): C Bereich gesichert besser (85,3 %), E gesetzt nichts gesichert, D Schriftstück gesichert schlechter (77,3 %), F kein
-Unterschied. Nach dem Lernen (Block 5) am ungesehenen Rest: Absender aus Scans/Fotos gesichert besser (34,1 → 42,7 %), sonst gleich.
+Unterschied. Nach dem Lernen (Block 5) am ungesehenen Rest: Absender aus Scans/Fotos 34,1 → 42,7 % – **berichtigt: Kreisschluss** (Spuren des eigenen Setzers), Regeln zurückgenommen (`docs/PRUEFBERICHT-EHRLICHKEIT-2026-11-14.md`). Neue Lehre zu Regel 2: Bei gesetzten Stapeln gilt „fremd“ auch für den Setzer; Mehrfachtests werden ab jetzt korrigiert oder ein Hauptfeld vorab benannt.
 Einzelheiten und Rollen: `docs/TRAINING-WOCHENENDE-ERGEBNISSE.md`. Offen: G (echte Stichprobe über die Maske).

@@ -9,7 +9,11 @@ import { execFileSync } from "node:child_process";
 import { ocr, beenden } from "./leser-node.mjs";
 const arg = (n, v) => { const i = process.argv.indexOf(n); return i > 0 ? process.argv[i + 1] : v; };
 const PY = arg("--python", new URL("./vorverarbeiten.py", import.meta.url).pathname);
-const VAR = ["roh", "a_grau", "b_schatten", "c_schatten_gerade", "d_binaer"];
+const VAR = (arg("--varianten", "roh,a_grau,b_schatten,c_schatten_gerade,d_binaer,e_app")).split(",");
+const { vorverarbeiten } = await import("../src/vorverarbeitung.ts");
+// PGM (P5) lesen und schreiben, für die JS-Fassung der App
+const pgmLesen = (buf) => { const t = buf.toString("latin1"); const m = t.match(/^P5\s+(?:#.*\s+)*(\d+)\s+(\d+)\s+(\d+)\s/); const off = m[0].length; return { b: +m[1], h: +m[2], daten: new Uint8ClampedArray(buf.subarray(off, off + (+m[1]) * (+m[2]))) }; };
+const pgmSchreiben = (g) => Buffer.concat([Buffer.from(`P5\n${g.b} ${g.h}\n255\n`, "latin1"), Buffer.from(g.daten.buffer, g.daten.byteOffset, g.daten.length)]);
 const woerter = (t) => (t || "").toLowerCase().replace(/[^a-z0-9äöüß€,.]+/g, " ").split(" ").filter((w) => w.length > 1);
 const levW = (a, b) => { let v = Array.from({ length: b.length + 1 }, (_, i) => i); for (let i = 1; i <= a.length; i++) { const n = [i]; for (let j = 1; j <= b.length; j++) n[j] = Math.min(v[j] + 1, n[j - 1] + 1, v[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); v = n; } return v[b.length]; };
 const aus = [];
@@ -24,9 +28,9 @@ for (const paar of process.argv[2].split(",")) {
       else seiten = [datei];
       const texte = Object.fromEntries(VAR.map((v) => [v, []]));
       for (const [k, p] of seiten.entries()) {
-        execFileSync("python3", [PY, p, join(d, `v${k}`)]);
-        texte.roh.push(await ocr(readFileSync(p)));
-        for (const v of VAR.slice(1)) texte[v].push(await ocr(readFileSync(join(d, `v${k}_${v}.png`))));
+        if (VAR.some((v) => v.length > 2 && v !== "roh" && v !== "e_app")) execFileSync("python3", [PY, p, join(d, `v${k}`)]);
+        if (VAR.includes("e_app")) { execFileSync("python3", [PY, "--pgm", p, join(d, `g${k}.pgm`)]); writeFileSync(join(d, `e${k}.pgm`), pgmSchreiben(vorverarbeiten(pgmLesen(readFileSync(join(d, `g${k}.pgm`)))))); execFileSync("python3", [PY, "--png", join(d, `e${k}.pgm`), join(d, `v${k}_e_app.png`)]); }
+        for (const v of VAR) texte[v].push(await ocr(readFileSync(v === "roh" ? p : join(d, `v${k}_${v}.png`))));
       }
       const quelle = woerter(readFileSync(join(st, txt), "utf8")).slice(0, 400);
       const r = { stapel: st.split("/").pop(), datei: txt, form: s.form, qualitaet: s.qualitaet };

@@ -3,7 +3,7 @@ import { Archive, FolderOpen, FolderTree, HelpCircle, History, ListChecks, Downl
 import type { Datei, FeldName, Korrektur, Lernregel } from "../lib/typen.ts";
 import { einlesen, doppelteMarkieren } from "../lib/einlesen.ts";
 import { aehnlicheFinden } from "../lib/aehnlich.ts";
-import { bildLeser, kernLeser } from "./vendor.ts";
+import { bildLeser, kernLeser, ocrGleichzeitig } from "./vendor.ts";
 import { leseEml } from "../lib/eml.ts";
 import { siebe, istUnsicher, offeneFelder } from "../lib/siebe.ts";
 import { absenderVereinheitlichen } from "../lib/abgleich.ts";
@@ -135,15 +135,8 @@ function useOrganizer() {
       blockTexte = {};
     };
     const offen = liste.filter((qd) => !erledigt.has(schluessel(qd)));
-    for (const [i, qd] of offen.entries()) {
-      if (anhaltenRef.current) break;
-      // D: vor jedem Block prüfen, ob der Speicher reicht (Arbeitsordner bzw. App-Speicher). Unbekannt → weiter, aber gesagt.
-      if (seitBlock === 0) {
-        const noetig = blockBedarf(offen.slice(i, i + leistung.block).map((x) => x.groesse || 0));
-        const frei = ar ? await arbeitFrei(ar.a) : await navigator.storage?.estimate?.().then((e) => (e.quota !== undefined && e.usage !== undefined ? e.quota - e.usage : null)).catch(() => null) ?? null;
-        if (!speicherReicht(frei, noetig)) { speicherHalt = `Zu wenig Speicher ${ar ? `im Arbeitsordner (${arbeitAnzeige(ar.a)})` : "in der App"}: frei ${mbText(frei!)}, für den nächsten Block gebraucht ${mbText(noetig)}.`; break; }
-      }
-      if (performance.now() - gezeichnet > 80) { setFortschritt({ phase: "lesen", fertig: erledigt.size, gesamt: liste.length, name: qd.name }); await luft(); gezeichnet = performance.now(); }
+    // Eine Datei lesen (Bytes, Text, Texterkennung). Mehrere laufen nebeneinander (leistung.gleichzeitig), Ergebnis in Listen-Reihenfolge.
+    const leseEine = async (qd: QuellDatei): Promise<Datei[]> => {
       try {
         let teile: Datei[];
         // A: große Dateien nicht ganz laden – nur Kopf (für die Art) und Prüfsumme Stück für Stück (in der App am Ort).
@@ -161,17 +154,35 @@ function useOrganizer() {
         originale.current.set(qd.pfad, qd);
         // C: mit Arbeitsordner bleibt im Speicher nur der Anfang langer Texte; der ganze Text kommt in den Arbeitsordner.
         if (ar) teile = teile.map((t) => { const s = schlank(t); if (s.lang) blockTexte[t.pfad] = s.lang; return s.d; });
-        neu.push(...teile);
+        return teile;
       } catch (e) {
-        neu.push({ pfad: qd.pfad, name: qd.name, groesse: 0, geaendert: qd.geaendert, stufe: 1, felder: { schriftstueck: { wert: "Unklar", sicher: false, grund: `nicht lesbar: ${(e as Error).message}`, quelle: "regel" } } });
+        return [{ pfad: qd.pfad, name: qd.name, groesse: 0, geaendert: qd.geaendert, stufe: 1, felder: { schriftstueck: { wert: "Unklar", sicher: false, grund: `nicht lesbar: ${(e as Error).message}`, quelle: "regel" } } }];
       }
-      erledigt.add(schluessel(qd));
-      // Nach jedem Block merken: bricht es danach ab, ist höchstens ein Block verloren.
-      if (++seitBlock >= leistung.block) {
-        seitBlock = 0;
-        await texteAblegen();
-        if (liste.length > leistung.block && erledigt.size < liste.length) await laufMerken(laufStand());
+    };
+    ocrGleichzeitig(leistung.gleichzeitig);
+    for (let i = 0; i < offen.length;) {
+      if (anhaltenRef.current) break;
+      // D: vor jedem Block prüfen, ob der Speicher reicht (Arbeitsordner bzw. App-Speicher). Unbekannt → weiter, aber gesagt.
+      if (seitBlock === 0) {
+        const noetig = blockBedarf(offen.slice(i, i + leistung.block).map((x) => x.groesse || 0));
+        const frei = ar ? await arbeitFrei(ar.a) : await navigator.storage?.estimate?.().then((e) => (e.quota !== undefined && e.usage !== undefined ? e.quota - e.usage : null)).catch(() => null) ?? null;
+        if (!speicherReicht(frei, noetig)) { speicherHalt = `Zu wenig Speicher ${ar ? `im Arbeitsordner (${arbeitAnzeige(ar.a)})` : "in der App"}: frei ${mbText(frei!)}, für den nächsten Block gebraucht ${mbText(noetig)}.`; break; }
       }
+      // Ein Schub geht nie über das Ende eines Blocks hinaus: Merken und Speicherprüfung bleiben je Block wie bisher.
+      const schub = offen.slice(i, i + Math.max(1, Math.min(leistung.gleichzeitig, leistung.block - seitBlock)));
+      if (performance.now() - gezeichnet > 80) { setFortschritt({ phase: "lesen", fertig: erledigt.size, gesamt: liste.length, name: schub[0].name }); await luft(); gezeichnet = performance.now(); }
+      const ergebnisse = await Promise.all(schub.map(leseEine));
+      for (const [k, qd] of schub.entries()) {
+        neu.push(...ergebnisse[k]);
+        erledigt.add(schluessel(qd));
+        // Nach jedem Block merken: bricht es danach ab, ist höchstens ein Block verloren.
+        if (++seitBlock >= leistung.block) {
+          seitBlock = 0;
+          await texteAblegen();
+          if (liste.length > leistung.block && erledigt.size < liste.length) await laufMerken(laufStand());
+        }
+      }
+      i += schub.length;
     }
     await texteAblegen().catch((e) => setMeldung({ text: `Lange Texte nicht abgelegt: ${arbeitFehler(e)}`, art: "fehler" }));
     if (erledigt.size < liste.length) {

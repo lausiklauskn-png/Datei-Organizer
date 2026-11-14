@@ -208,35 +208,7 @@ export function nameAusZeile(zeile: string, fuss = false): string {
 const namensartig = (s: string) => s.length >= 3 && s.length <= 64 && s.split(/\s+/).length <= 8 && /^["„]?[A-ZÄÖÜ]|^\d+\S/.test(s) && !/[!?]$|[a-zäöüß]\.$/.test(s.replace(/(e\.\s?v|e\.\s?k|a\.\s?g|co|dr|str|inh)\.$/i, "")) && !ANREDE_ZEILE.test(s) && !EMPFAENGER_ZEILE.test(s) && !DATUM_IN_ZEILE.test(s) && !/\d,\d{2}|@|\b(ist|sind|wird|werden|haben|hat|bitte|wir|sie|ich)\b/i.test(s);
 const istMailKopf = (zeilen: string[]) => { const k = zeilen.slice(0, 7); return k.some((z) => /^(von|from)\s*:.*@/i.test(z)) || k.some((z) => /^(von|from)\s*:/i.test(z)) && k.some((z) => /^(betreff|subject|datum|date|gesendet|an|to)\s*:/i.test(z)) || (/^(betreff|subject)\s*:/i.test(k[0] || "") && !k.some((z) => EMPFAENGER_ZEILE.test(z))); };
 
-/** Zeilen, die in Bildschirmfotos und Portal-Mitteilungen über dem Absender stehen (Uhrzeit, Ordner der App, „Neue Nachricht“, Vorgangsnummer). */
-const KOPF_RAUSCHEN = /^(?:\d{1,2}[:.]\d{2}\b.*|(?:posteingang|postfach|dokumente|mitteilungen|nachrichten|inbox|neue (?:nachricht|mitteilung|benachrichtigung)|benachrichtigung|vorgangs?-?nr\.?.*|vorgang\b.*|blatt \d.*|seite \d.*)\s*)$/i;
-/** Lesereste der Texterkennung und Kopf-Themen am Namen abschneiden: Logo-Kürzel davor („BB Bühlstrom …“), Zeichen dahinter („®“, „Ins]“),
- *  das Thema hinter dem Namen in Formularköpfen („HAUPTZOLLAMT … KRAFTFAHRZEUGSTEUER“, „Praxis … Terminerinnerung“), „Kundenportal“ davor. */
-function absenderSaeubern(n: string): string {
-  let s = n.replace(/^(?:kundenportal|portal|online-?postfach|app)\s+(?:der|des|von)?\s*/i, "");
-  const worte = s.split(/\s+/);
-  // Logo-Kürzel: doppelter Buchstabe („BB“), gemischt („Zn“) oder genau die Anfangsbuchstaben der nächsten Wörter („NB Nordstrom Beispiel“);
-  // echte Kürzel wie „SV Talheim“ oder „TK“ bleiben
-  const k0 = worte[0] || "", anf = worte.slice(1, 1 + k0.length).map((x) => x[0]).join("");
-  if (worte.length >= 3 && /^[A-Za-zÄÖÜäöü]{1,2}$/.test(k0) && /^[A-ZÄÖÜ]/.test(worte[1]) && (/^(.)\1$/i.test(k0) || /^[A-ZÄÖÜ][a-zäöü]$/.test(k0) || k0.length === 1 || k0.toUpperCase() === anf.toUpperCase())) worte.shift();
-  // Lesereste am Ende: Zeichen ohne Buchstaben, Klammern/Zeichen, ein bis zwei lose Buchstaben („zn“, „Z“, „be“) – Rechtsformen (AG, KG, eG, SE, UG) bleiben
-  while (worte.length > 2 && (/^[^A-Za-zÄÖÜäöüß0-9]+$/.test(worte.at(-1)!) || /[\]\[|®©™}{]/.test(worte.at(-1)!) || (/^(?:[a-zäöü]{1,2}|[A-ZÄÖÜ])$/.test(worte.at(-1)!) && !/[.,]$/.test(worte.at(-2)!) && !/^(ag|kg|eg|se|ug|ev|ek)$/i.test(worte.at(-1)!)))) worte.pop();
-  while (worte.length > 2 && !worte.includes("–") && !worte.includes("-") && /^(\w*steuer|\w*termin|terminerinnerung|erinnerung|hauptuntersuchung|app|techniker|service-?center)$/i.test(worte.at(-1)!)) worte.pop();
-  return worte.join(" ").replace(/\s*[®©™&|]+$/, "").trim();
-}
-
 export function erkenneAbsender(kopf: string): Wert | undefined {
-  const zeilen = kopf.split(/\r?\n/).filter((z) => !KOPF_RAUSCHEN.test(z.trim()));
-  // Bildschirmfoto einer Mail: „Von: Name“ unter dem Betreff, ohne die übrigen Kopfzeilen einer gespeicherten Mail
-  const von = zeilen.slice(0, 6).map((z) => z.trim().match(/^von\s*:\s*([^<@]+?)\s*(?:<.*)?$/i)).find(Boolean);
-  if (von && !zeilen.slice(0, 8).some((z) => /^(betreff|subject|an|to|datum|date)\s*:/i.test(z.trim()))) { const n = absenderSaeubern(von[1].replace(/["']/g, "")); if (n.length >= 3) return w(n, FIRMA.test(n), "„Von:“ im Kopf (Ansicht einer Mail)"); }
-  const roh = erkenneAbsenderRoh(zeilen.join("\n"));
-  if (!roh) return roh;
-  const n = absenderSaeubern(roh.wert);
-  return n === roh.wert || n.length < 3 ? roh : { ...roh, wert: n };
-}
-
-function erkenneAbsenderRoh(kopf: string): Wert | undefined {
   const alle = kopf.split(/\r?\n/).map((z) => z.trim()).filter(Boolean);
   if (istMailKopf(alle)) return undefined; // gespeicherte Mail: Absender steht in „Von:“ und in der Fußzeile → absenderAusGruss (ganzer Text)
   const zeilen = alle.filter((z) => !TITEL.test(z)).slice(0, 18);
@@ -431,7 +403,8 @@ export function erkenneFrist(text: string, dokumentDatum?: string, datumSicher =
 }
 
 export function erkenneBetrag(text: string): Wert | undefined {
-  // „Zwischensumme“ ist nicht der Betrag (lange Bons vom Großeinkauf, Block 0 am 14.11.2026)
+  // „Zwischensumme“ ist nicht der Betrag (lange Bons vom Großeinkauf). Fehlerbehebung, gefunden und gemessen nur am eigenen Generator
+  // (Bon-Betrag 73 → 86 %), kein Nachweis an einem fremden Stapel (Training 14.11.2026, Prüfbericht Befund 3).
   const t = text.replace(/\s+/g, " ").replace(/zwischen\s?summe[^0-9]{0,30}\d{1,3}(?:\.\d{3})*,\d{2}/gi, " ");
   const genannt = t.match(/(?:gesamtbetrag|rechnungsbetrag|zu zahlen|betrag|summe|offener betrag)[^0-9]{0,30}(\d{1,3}(?:\.\d{3})*,\d{2})\s?(?:€|eur)/i)
     || t.match(/(?:summe|gesamt|total|zu zahlen)\s*(?:eur|€)?\s*:?\s*(\d{1,3}(?:\.\d{3})*,\d{2})(?!\d)/i);
