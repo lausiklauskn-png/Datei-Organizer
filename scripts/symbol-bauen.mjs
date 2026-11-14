@@ -14,17 +14,18 @@ const ZEICHEN = [
   "M3 5a2 2 0 0 0 2 2h3", "M3 3v13a2 2 0 0 0 2 2h3",
 ];
 
-/** form: "kachel" (gerundetes Quadrat), "rund" (Kreis), "vorne" (nur Zeichen, Android-Vordergrund), "hinten" (nur Verlauf) */
+/** form: "kachel" (gerundetes Quadrat), "rund" (Kreis), "voll" (randlos, für „maskable“), "vorne" (nur Zeichen, Android-Vordergrund), "hinten" (nur Verlauf) */
 export function symbolSvg(form = "kachel", groesse = 1024) {
-  const g = groesse, r = form === "rund" ? g / 2 : g * 0.22;
+  const g = groesse, r = form === "rund" ? g / 2 : g * 0.22, randlos = form === "hinten" || form === "voll";
   const flaeche = form === "vorne" ? "" : `
-    <rect x="0" y="0" width="${g}" height="${g}" rx="${form === "hinten" ? 0 : r}" fill="url(#verlauf)"/>
-    <rect x="0" y="0" width="${g}" height="${g}" rx="${form === "hinten" ? 0 : r}" fill="url(#glanz)"/>
-    ${form === "hinten" ? "" : `<rect x="${g * 0.012}" y="${g * 0.012}" width="${g * 0.976}" height="${g * 0.976}" rx="${r * 0.97}" fill="none" stroke="url(#kante)" stroke-width="${g * 0.016}"/>`}`;
+    <rect x="0" y="0" width="${g}" height="${g}" rx="${randlos ? 0 : r}" fill="url(#verlauf)"/>
+    <rect x="0" y="0" width="${g}" height="${g}" rx="${randlos ? 0 : r}" fill="url(#glanz)"/>
+    ${randlos ? "" : `<rect x="${g * 0.012}" y="${g * 0.012}" width="${g * 0.976}" height="${g * 0.976}" rx="${r * 0.97}" fill="none" stroke="url(#kante)" stroke-width="${g * 0.016}"/>`}`;
   // Zeichen: Android-Vordergrund braucht den Rand (sichere Zone 66/108), sonst etwa 58 % der Kachel
-  const anteil = form === "vorne" ? 0.44 : 0.58, s = (g * anteil) / 24, x0 = (g - 24 * s) / 2, y0 = (g - 24 * s) / 2 + g * 0.005;
+  const anteil = form === "vorne" ? 0.44 : form === "voll" ? 0.5 : 0.58, s = (g * anteil) / 24, x0 = (g - 24 * s) / 2, y0 = (g - 24 * s) / 2 + g * 0.005;
   const pfade = ZEICHEN.map((d) => `<path d="${d}"/>`).join("");
   const zeichen = (farbe, dx, dy, filter = "", breite = 2.1) => `<g transform="translate(${x0 + dx} ${y0 + dy}) scale(${s})" fill="none" stroke="${farbe}" stroke-width="${breite}" stroke-linecap="round" stroke-linejoin="round" ${filter}>${pfade}</g>`;
+  const alleZeichen = form === "hinten" ? "" : null;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${g} ${g}" width="${g}" height="${g}">
   <defs>
     <linearGradient id="verlauf" x1="0" y1="0" x2="1" y2="1">
@@ -39,10 +40,10 @@ export function symbolSvg(form = "kachel", groesse = 1024) {
     <linearGradient id="strich" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#d6e6f4"/></linearGradient>
     <filter id="weich" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="${0.55}"/></filter>
   </defs>${flaeche}
-  ${zeichen("#04182b", 0.0 * s, 0.9 * s, 'opacity="0.45" filter="url(#weich)"')}
+  ${alleZeichen ?? `${zeichen("#04182b", 0.0 * s, 0.9 * s, 'opacity="0.45" filter="url(#weich)"')}
   ${zeichen("#06223d", 0.0 * s, 0.38 * s, 'opacity="0.55"')}
   ${zeichen("url(#strich)", 0, 0)}
-  ${zeichen("#ffffff", 0, -0.12 * s, 'opacity="0.35"', 0.7)}
+  ${zeichen("#ffffff", 0, -0.12 * s, 'opacity="0.35"', 0.7)}`}
 </svg>`;
 }
 
@@ -73,6 +74,7 @@ if (arg("--vorschau")) {
   const schreibe = (p, b) => { mkdirSync(dirname(p), { recursive: true }); writeFileSync(p, b); console.log(p); };
   schreibe("src/public/icon-192.png", await bild(seite, symbolSvg("kachel"), 192));
   schreibe("src/public/icon-512.png", await bild(seite, symbolSvg("kachel"), 512));
+  schreibe("src/public/icon-maskable-512.png", await bild(seite, symbolSvg("voll"), 512));
   schreibe("src/public/favicon.svg", symbolSvg("kachel", 64));
   const dichten = { mdpi: 48, hdpi: 72, xhdpi: 96, xxhdpi: 144, xxxhdpi: 192 };
   for (const [d, px] of Object.entries(dichten)) {

@@ -1,1 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#0b3154"/><path d="M14 20h14l4 5h18v23H14z" fill="#e8f1f7"/><path d="M22 34h20M22 40h14" stroke="#087f7a" stroke-width="4" stroke-linecap="round"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="verlauf" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3b8ed0"/><stop offset="0.55" stop-color="#1c5f98"/><stop offset="1" stop-color="#0b3154"/>
+    </linearGradient>
+    <radialGradient id="glanz" cx="0.3" cy="0.12" r="0.75">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.32"/><stop offset="0.6" stop-color="#ffffff" stop-opacity="0.04"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="kante" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.45"/><stop offset="0.5" stop-color="#ffffff" stop-opacity="0.05"/><stop offset="1" stop-color="#000000" stop-opacity="0.25"/>
+    </linearGradient>
+    <linearGradient id="strich" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#d6e6f4"/></linearGradient>
+    <filter id="weich" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="0.55"/></filter>
+  </defs>
+    <rect x="0" y="0" width="64" height="64" rx="14.08" fill="url(#verlauf)"/>
+    <rect x="0" y="0" width="64" height="64" rx="14.08" fill="url(#glanz)"/>
+    <rect x="0.768" y="0.768" width="62.464" height="62.464" rx="13.6576" fill="none" stroke="url(#kante)" stroke-width="1.024"/>
+  <g transform="translate(13.440000000000001 15.152000000000001) scale(1.5466666666666666)" fill="none" stroke="#04182b" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity="0.45" filter="url(#weich)"><path d="M20 10a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-2.5a1 1 0 0 1-.8-.4l-.9-1.2A1 1 0 0 0 15 3h-2a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z"/><path d="M20 21a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-2.9a1 1 0 0 1-.88-.55l-.42-.85a1 1 0 0 0-.92-.6H13a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z"/><path d="M3 5a2 2 0 0 0 2 2h3"/><path d="M3 3v13a2 2 0 0 0 2 2h3"/></g>
+  <g transform="translate(13.440000000000001 14.347733333333334) scale(1.5466666666666666)" fill="none" stroke="#06223d" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"><path d="M20 10a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-2.5a1 1 0 0 1-.8-.4l-.9-1.2A1 1 0 0 0 15 3h-2a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z"/><path d="M20 21a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-2.9a1 1 0 0 1-.88-.55l-.42-.85a1 1 0 0 0-.92-.6H13a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z"/><path d="M3 5a2 2 0 0 0 2 2h3"/><path d="M3 3v13a2 2 0 0 0 2 2h3"/></g>
+  <g transform="translate(13.440000000000001 13.760000000000002) scale(1.5466666666666666)" fill="none" stroke="url(#strich)" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" ><path d="M20 10a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-2.5a1 1 0 0 1-.8-.4l-.9-1.2A1 1 0 0 0 15 3h-2a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z"/><path d="M20 21a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-2.9a1 1 0 0 1-.88-.55l-.42-.85a1 1 0 0 0-.92-.6H13a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z"/><path d="M3 5a2 2 0 0 0 2 2h3"/><path d="M3 3v13a2 2 0 0 0 2 2h3"/></g>
+  <g transform="translate(13.440000000000001 13.5744) scale(1.5466666666666666)" fill="none" stroke="#ffffff" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round" opacity="0.35"><path d="M20 10a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-2.5a1 1 0 0 1-.8-.4l-.9-1.2A1 1 0 0 0 15 3h-2a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z"/><path d="M20 21a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-2.9a1 1 0 0 1-.88-.55l-.42-.85a1 1 0 0 0-.92-.6H13a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z"/><path d="M3 5a2 2 0 0 0 2 2h3"/><path d="M3 3v13a2 2 0 0 0 2 2h3"/></g>
+</svg>
