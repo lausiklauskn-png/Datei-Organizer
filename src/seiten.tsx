@@ -100,7 +100,14 @@ export function OrdnerSeite({ z, gehe }: P) {
       </div>}
       <input ref={dateiWahl} type="file" multiple hidden onChange={(e) => { const l = e.target.files; if (l?.length) void los(() => z.einlesenAus(ausAuswahl(l, "Ausgewählte Dateien"))); else z.setMeldung({ text: `Der Browser hat keine Dateien übergeben${z.ordnerName ? ` – angezeigt wird weiter „${z.ordnerName}“` : ""}. Bitte „Ordner am PC“ oder „Dateien wählen“ nehmen.`, art: "halt" }); e.target.value = ""; }}/>
       <input ref={ordnerWahl} type="file" multiple hidden {...{ webkitdirectory: "" }} onChange={(e) => { const l = e.target.files; if (l?.length) { const n = (l[0] as File & { webkitRelativePath?: string }).webkitRelativePath?.split("/")[0] || "Ordner"; void los(() => z.einlesenAus(ausAuswahl(l, n))); } else z.setMeldung({ text: `Der Browser hat keine Dateien übergeben${z.ordnerName ? ` – angezeigt wird weiter „${z.ordnerName}“` : ""}. Bitte „Ordner am PC“ oder „Dateien wählen“ nehmen.`, art: "halt" }); e.target.value = ""; }}/>
-      <Ladebalken f={z.fortschritt}/>
+      <Ladebalken f={z.fortschritt} anhalten={z.anhalten}/>
+      {z.angefangen && !z.fortschritt && <div className="weiter-kasten" data-angefangen role="status">
+        <p><b>Einlesen angefangen:</b> {z.angefangen.erledigt.length} von {z.angefangen.gesamt} Dateien aus „{z.angefangen.quelleName}“ gelesen ({new Date(z.angefangen.zeit).toLocaleString("de-DE", { dateStyle: "short", timeStyle: "short" })}).</p>
+        <div className="button-row">
+          <button type="button" className="button primary" disabled={laeuft} data-weitermachen onClick={() => los(() => z.weitermachen())}>Weitermachen</button>
+          <button type="button" className="button" disabled={laeuft} data-lauf-verwerfen onClick={() => los(() => z.laufVerwerfen())}>Verwerfen</button>
+        </div>
+      </div>}
       <Meldung z={z} gehe={gehe}/>
     </section>
     <section className={`card ablage ${ziehtDrueber ? "drueber" : ""}`} data-ablage
