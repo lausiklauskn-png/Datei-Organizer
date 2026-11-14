@@ -31,15 +31,20 @@ async function ocrPlaner() {
   for (let i = 0; i < n; i++) planer.addWorker(await createWorker("deu", 1, { langPath: LANG, gzip: false, cachePath: join(tmpdir(), "do-tess") }));
   return planer;
 }
-export const statistik = { ocrBilder: 0, ocrMs: 0, ausCache: 0, scanPdf: 0 };
+export const statistik = { ocrBilder: 0, ocrMs: 0, ausCache: 0, scanPdf: 0, haenger: 0, seitenFehler: 0 };
+const OCR_FRIST = Number(process.env.OCR_FRIST || 60000);
 /** Texterkennung für ein Bild (Bytes); Ergebnis zwischengespeichert. */
 export async function ocr(bytes) {
   const k = createHash("sha256").update(bytes).digest("hex"); const c = ladeCache();
   if (k in c) { statistik.ausCache++; return c[k]; }
   const t0 = Date.now(); const p = await ocrPlaner();
-  const t = (await p.addJob("recognize", Buffer.from(bytes))).data.text;
+  // Frist wie in der App (src/vendor.ts): hängt die Erkennung, bleibt das Bild ohne Text. Nach zwei Hängern werden die Worker neu gestartet.
+  let uhr; const frist = new Promise((ok) => { uhr = setTimeout(() => ok(null), OCR_FRIST); });
+  const r = await Promise.race([p.addJob("recognize", Buffer.from(bytes)).catch(() => ({ data: { text: "" } })), frist]); clearTimeout(uhr);
+  if (!r) { statistik.haenger++; if (statistik.haenger % 2 === 0 && planer === p) { planer = null; p.terminate().catch(() => {}); } return ""; }
+  const t = r.data.text;
   statistik.ocrBilder++; statistik.ocrMs += Date.now() - t0;
-  c[k] = t; if (++geaendert % 25 === 0) cacheSichern();
+  if (t.trim()) { c[k] = t; if (++geaendert % 25 === 0) cacheSichern(); }
   return t;
 }
 /** PdfLeser wie die App: Textebene, sonst Seitenbilder per Texterkennung (mitOcr = false: nur Textebene). */
@@ -55,10 +60,11 @@ export function pdfLeser(mitOcr = true) {
       try {
         writeFileSync(join(d, "a.pdf"), bytes);
         execFileSync("pdftoppm", ["-r", "144", "-f", "1", "-l", String(SCAN_SEITEN), "-png", join(d, "a.pdf"), join(d, "s")]);
-        const teile = await Promise.all(readdirSync(d).filter((n) => n.endsWith(".png")).sort().map((n) => ocr(readFileSync(join(d, n)))));
+        // je Seite einzeln abfangen: eine Seite, die nicht gelesen werden kann, lässt die anderen stehen
+        const teile = await Promise.all(readdirSync(d).filter((n) => n.endsWith(".png")).sort().map((n) => ocr(readFileSync(join(d, n))).catch(() => { statistik.seitenFehler++; return ""; })));
         text = teile.map((x) => x.trim()).filter(Boolean).join("\n\n");
       } catch { text = ""; } finally { rmSync(d, { recursive: true, force: true }); }
-      c[k] = text; geaendert++;
+      if (text) { c[k] = text; geaendert++; } // Leeres nie merken: beim nächsten Mal wird neu gelesen
     }
     return (text.match(/[A-Za-zÄÖÜäöüß]{3,}/g) || []).length >= 4 ? { kopf: text.slice(0, 1500), voll: text } : t;
   };

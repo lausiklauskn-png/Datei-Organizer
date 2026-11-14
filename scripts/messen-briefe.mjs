@@ -39,6 +39,11 @@ async function kern(pfad) {
   };
 }
 function soll(o) {
+  // --soll SOLL.json: Mehrheit der drei Einordner (scripts/soll-aus-einordnern.mjs); strittige Felder werden nicht gewertet
+  if (arg("--soll", "").endsWith(".json") && arg("--soll") !== "ERWARTUNG.json") {
+    const d = JSON.parse(readFileSync(join(o, arg("--soll")), "utf8")).dateien;
+    return new Map(d.map((x) => [x.datei, { ...Object.fromEntries(FELDER.map((k) => [k, (x.strittig || []).includes(k) ? undefined : FORM[k](x)])), zweit: leer(x.zweitfach) }]));
+  }
   const e = JSON.parse(readFileSync(join(o, "ERWARTUNG.json"), "utf8"));
   if (arg("--soll") !== "mehrheit") return new Map(e.dateien.map((x) => [x.datei, { ...Object.fromEntries(FELDER.map((k) => [k, FORM[k](x)])), zweit: leer(x.zweitfach) }]));
   const q = [e, ...["ZWEITER.json", "DRITTER.json"].filter((f) => existsSync(join(o, f))).map((f) => JSON.parse(readFileSync(join(o, f), "utf8")))].map((d) => new Map(d.dateien.map((x) => [x.datei, x])));
