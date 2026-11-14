@@ -20,7 +20,7 @@ export function merkmaleTbl(text, stueck) {
   for (const w of wort(zeilen.slice(0, 12).join(" "))) m.add("k:" + w);          // im Kopf (erste 12 Zeilen)
   for (const w of wort(text)) m.add("t:" + w);                                    // irgendwo im Text
   for (const w of wort(stueck.absender || "")) m.add("a:" + w);                   // im erkannten Absender
-  m.add("o:" + (stueck[ANDERES] ?? "-"));                                         // Vorschlag des anderen Feldes
+  m.add("o:" + (("anders" in stueck ? stueck.anders : stueck[ANDERES]) ?? "-"));    // Vorschlag des anderen Feldes
   // Betreff: ausdrückliche Betreffzeile, sonst die Zeilen direkt vor der Anrede (Überschrift des Briefs)
   const an = zeilen.findIndex((z) => /^(sehr geehrte|liebe|hallo|guten tag)/i.test(z));
   const betr = zeilen.filter((z) => /^(betreff|betr\.|re:|aw:|wg\.)/i.test(z));
