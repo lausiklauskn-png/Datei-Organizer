@@ -91,4 +91,6 @@ if (SETZEN) { erg.jeForm = {};
   console.log("\nLesegüte je Form:", JSON.stringify(erg.ocrGuete)); console.log("Lesen oder Einordnen:", JSON.stringify(erg.lesenOderEinordnen));
   console.log("\nJe Form/Güte (neu):"); for (const [k, v] of Object.entries(erg.jeForm).sort()) console.log(`  ${k.padEnd(18)} n=${v.n} ` + FELDER.map((f) => `${f} ${v[f] ? Math.round(100 * v[f].ok / v[f].n) : "–"} %`).join(" · "));
   await leser.beenden(); }
+// --zeilen datei: je Stück und Feld, ob der neue Kern richtig liegt (für Vergleiche zweier Lesewege, z. B. mit/ohne Vorverarbeitung)
+if (arg("--zeilen")) writeFileSync(resolve(WURZEL, arg("--zeilen")), JSON.stringify(zeilen.map((z) => ({ datei: z.d, ...Object.fromEntries(FELDER.filter((f) => z.soll[f] !== undefined && !(f === "person" && z.soll[f] === null)).map((f) => [f, z.neu.wert[f] === z.soll[f]])) }))));
 if (arg("--json")) writeFileSync(resolve(WURZEL, arg("--json")), JSON.stringify(erg, null, 1));
