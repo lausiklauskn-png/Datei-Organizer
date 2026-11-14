@@ -9,6 +9,14 @@ oder Altbestand kommen in **einen** Ordner; der Organizer sortiert sie Klick fü
 Nummern → Absender → Inhalt) und zeigt sie als Baum nach vielen Gesichtspunkten. Zuerst für die Familienakte gemacht: der Ordner
 wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). Plan und alle Entscheidungen: `docs/PLAN.md`.
 
+## Veröffentlicht (14.11.2026, Klaus' Wort): Datei-Organizer 0.4.3 – nicht erneut ausgeben
+
+- **Android** `Datei-Organizer-Pro-0.4.3.apk` (Code 43, SHA-256 `7e34f5bc…80eb`, Zertifikat `594e44df…365d`), **Windows**
+  `Datei-Organizer-Pro-Windows-0.4.3-x64-setup.exe`, beide auf `family-projekt.de/updates/datei-organizer/` (das Repo ist **privat** –
+  GitHub-Release-Links gehen ohne Anmeldung nicht; in der Geschenkbox stehen deshalb die Server-Links), **Basic** über Pages.
+  Nachweis `docs/VEROEFFENTLICHUNG-0.4.3.json`. Geschenkbox (Familienakte `docs/geschenk/`, Artefakt XeUMGuSZ49FzsJYjwQznM7) mit Datei-Organizer.
+  Nächste Ausgabe: **0.4.4** (Windows 0.4.3 ist vor #20 gebaut, sonst gleich). Updates kommen ab jetzt über das Fähnchen in der App.
+
 ## Stand (14.11.2026, Fassung 0.4.3, große Ordner)
 
 - **A–D gebaut** (Klaus' Ja 14.11.): Leistung des Geräts, große Dateien Stück für Stück (Prüfsumme in der App am Ort), **Arbeitsordner**
@@ -18,7 +26,7 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
 
 ## Offen (Klaus 14.11.2026)
 
-- **Sehr große Ordner:** gebaut in 0.4.3 (oben). Danach veröffentlichen (Klaus 14.11.: Basic, Pro, Windows, Geschenkbox).
+- **Sehr große Ordner:** gebaut und veröffentlicht in 0.4.3 (oben).
 - **Signier-Identität der APK** steht (#17, Fingerabdruck `594e44df…365d`); Update-Schlüssel eingetragen (#16). Geheimnisse bei Klaus im Tresor.
 - **Browser-Tresor → Tresor-APK:** Plan `docs/PLAN_MEIN-TRESOR-APK.md` (später, eigenes Repo).
 

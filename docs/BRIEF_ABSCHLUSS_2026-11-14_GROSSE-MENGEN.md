@@ -1,4 +1,4 @@
-# Abschluss 14.11.2026 (Nacht): Datei-Organizer 0.4.2 – große Mengen in Blöcken, Weitermachen nach Abbruch
+# Abschluss 14.11.2026 (Nacht): Datei-Organizer 0.4.2 → 0.4.3 – große Mengen, Schlüssel, große Ordner, veröffentlicht
 
 Folgt auf `BRIEF_ABSCHLUSS_2026-11-14_ORGANIZER-PRO-WINDOWS.md` (PR #15). Diese Arbeit baut auf PR #15 auf.
 
@@ -88,4 +88,53 @@ UND DesktopUpdates.SCHLUESSEL (Windows) eintragen, Proben laufen lassen. 3. Gro�
 ob Weitermachen trägt; bei Bedarf Speicherprüfung vor jedem Block (Gedanke aus speicherReicht in der Familienakte).
 Nicht: nichts veröffentlichen, keine Signieridentität initialisieren, keine Schlüssel in Dateien oder Chat, byte-gleiche Bausteine nicht
 von Hand ändern. Name: Web-App „Datei-Organizer Basic“, App „Datei-Organizer Pro“. Abschlussbrief mit Stundennachweis.
+```
+
+## Nachtrag 14.11. (00:25–02:55 UTC): Schlüssel, große Ordner, Veröffentlichung
+
+Klaus 14.11.: erst die App fertig; keine Tests mit großen Dateimengen; die Schlüssel Schritt für Schritt; danach A–D für große Ordner;
+veröffentlichen erst danach – Basic, Pro, Windows – und die Geschenkbox ergänzen.
+
+| Schritt | Ergebnis |
+|---|---|
+| Update-Schlüssel (Klaus in Termux) | öffentlicher Teil in `UpdateFeed.SCHLUESSEL` = `DesktopUpdates.SCHLUESSEL` (#16); `signatur.pem.age` im Tresor |
+| Signier-Identität APK | Freigabe `DO_SIGNING_UNLOCK` (Klaus, `.age` im Tresor), Lauf „initialize“, PR #17 von Hand (Actions dürfen hier keine PRs anlegen), Merge auf Klaus' Ja; Zertifikat `594e44df…365d` |
+| Große Ordner A–D (0.4.3, #19) | `docs/PLAN_GROSSE-ORDNER.md`: Leistung des Geräts, Prüfsumme am Ort, Arbeitsordner `Datei-Organizer-Arbeit` (nie im Pro-Tresor; Abweichung „unter Familienakte“ benannt), schlanke Liste, Speicherprüfung; UI 114, Engine 64, Gegenproben 5/5 |
+| Veröffentlicht | Windows (Lauf 43541397352), Android (Lauf 43547054990, erster Versuch brach in der Emulator-Probe ab → #20), Basic über Pages; Nachweis `docs/VEROEFFENTLICHUNG-0.4.3.json` |
+| Geschenkbox | Familienakte PR #179, Artefakt Version 22 |
+| Pläne | `docs/PLAN_MEIN-TRESOR-APK.md` (Browser-Tresor → APK, später) |
+
+**Funde unterwegs (alle behoben):**
+- Die Windows-Abnahme und die Engine-Probe erwarteten bei der Update-Prüfung immer einen Fehler. Mit Schlüssel bzw. nach der ersten Veröffentlichung antwortet der Server richtig mit „aktuell“. Die Proben sichern jetzt zu: nie ein Angebot.
+- Die Emulator-Probe der APK las im Kopf nur den Tooltip ohne Anzahl. Das Feld hat jetzt `aria-label` gleich dem sichtbaren Text (#20); das hilft auch Vorlesern.
+- Zweimal fiel Maven Central kurz aus (Engine- bzw. Android-Bau). Jeweils einmal neu gestartet, danach grün.
+- Das Repo ist **privat**: GitHub-Release-Links gehen ohne Anmeldung nicht. Die Geschenkbox zeigt deshalb die Links des eigenen Servers.
+
+**Grenzen:**
+- Kein Gerät, kein Windows-PC.
+- Anonymer Download nur durch die Läufe selbst geprüft; aus der Sitzung sperrt der Proxy family-projekt.de und github.io.
+- Windows 0.4.3 ist vor #20 gebaut; der einzige Unterschied ist das `aria-label`.
+- Die nächste Ausgabe heißt 0.4.4.
+
+### Stundennachweis (ganze Sitzung)
+
+| Zeit (UTC) | Block |
+|---|---|
+| 00:13–00:25 | Lesen, Blöcke mit Weitermachen (0.4.2), Proben, Gegenproben, PR #16 |
+| 00:25–00:50 | Update-Schlüssel und Signier-Identität mit Klaus Schritt für Schritt, Windows-Abnahme angepasst, #15/#16/#17 |
+| 00:50–01:35 | Tresor-Frage, Pläne (#18), große Ordner A–D bauen und prüfen (#19) |
+| 01:35–02:55 | Veröffentlichen (Windows, Android mit #20, Maven-Ausfälle), Geschenkbox, Nachweis |
+
+Erste Spur 00:13, letzte gegen 02:55 UTC. Obergrenze rund 2 h 45 min, darin viel Warten auf GitHub-Läufe. Klaus' eigene Angabe geht vor.
+
+### Startauftrag zum Einfügen (neu)
+
+```
+Repos: Datei-Organizer (CLAUDE.md, docs/BRIEF_ABSCHLUSS_2026-11-14_GROSSE-MENGEN.md, docs/VEROEFFENTLICHUNG-0.4.3.json,
+docs/PLAN_GROSSE-ORDNER.md zuerst lesen). Zweig: der vorgegebene. FREIBRIEF (Klaus 13.11.): eigene geprüfte PRs (CI + Proben grün) selbst
+mergen; veröffentlichen nur mit Klaus' Wort. 0.4.3 ist veröffentlicht (Android, Windows, Basic) – nicht erneut ausgeben, nächste Fassung 0.4.4.
+Auftrag: 1. Klaus' Rückmeldung vom Gerät aufnehmen (Arbeitsordner auf SD-Karte, große Dateien, Update-Fähnchen) und Funde beheben.
+2. Familienakte PR #179 (Geschenkbox) prüfen und mergen, falls noch offen.
+Nicht: keine Massenprüfung mit vielen Dateien/Agenten (eigene Sitzungen, Klaus 14.11.), keine Schlüssel in Dateien oder Chat,
+byte-gleiche Bausteine nicht von Hand ändern. Abschlussbrief mit Stundennachweis.
 ```
