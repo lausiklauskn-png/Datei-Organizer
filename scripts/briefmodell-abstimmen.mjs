@@ -11,7 +11,11 @@ const arg = (n, v) => { const i = process.argv.indexOf(n); return i > 0 ? proces
 const GROB = { "Arbeit & Sozialversicherung": "Rente, Arbeit & Sozialversicherung", "Rente": "Rente, Arbeit & Sozialversicherung", "Einkäufe": "Einkäufe, Rechnungen & Garantien", "Rechnungen & Garantien": "Einkäufe, Rechnungen & Garantien", "Erbschaft": "Erbschaft, Vollmachten & Vorsorge", "Vollmachten & Vorsorge": "Erbschaft, Vollmachten & Vorsorge" };
 const namen = (o) => { const f = join(o, "HAUSHALTE.json"); return existsSync(f) ? JSON.parse(readFileSync(f, "utf8")).haushalte.flatMap((h) => [h.name, ...h.personen.flatMap((p) => [p.vorname, p.name])]).join(" ") : ""; };
 function lade(o, mehrheit) {
-  const e = JSON.parse(readFileSync(join(o, "ERWARTUNG.json"), "utf8")).dateien, eig = namen(o);
+  const eig = namen(o);
+  // Stapel des Trainings-Wochenendes: Soll = Mehrheit der drei Einordner (SOLL.json, scripts/soll-aus-einordnern.mjs); strittige Felder fehlen
+  if (mehrheit && existsSync(join(o, "SOLL.json"))) return JSON.parse(readFileSync(join(o, "SOLL.json"), "utf8")).dateien.map((x) => ({ gruppe: o,
+    bereich: (x.strittig || []).includes("bereich") ? null : (GROB[x.bereich] ?? x.bereich), art: (x.strittig || []).includes("schriftstueck") ? null : x.schriftstueck, zweit: x.zweitfach || null, merkmale: merkmale(readFileSync(join(o, x.datei), "utf8"), eig) }));
+  const e = JSON.parse(readFileSync(join(o, "ERWARTUNG.json"), "utf8")).dateien;
   const q = mehrheit ? ["ZWEITER.json", "DRITTER.json"].map((f) => new Map(JSON.parse(readFileSync(join(o, f), "utf8")).dateien.map((x) => [x.datei, x]))) : [];
   const mh = (x, feld, alt) => { const v = [x[alt] ?? x[feld], ...q.map((m) => m.get(x.datei)?.[feld])].map((b) => GROB[b] ?? b); const z = {}; for (const b of v) z[b] = (z[b] || 0) + 1; const [b, n] = Object.entries(z).sort((a, c) => c[1] - a[1])[0]; return !q.length ? v[0] : n >= 2 ? b : null; };
   return e.map((x) => ({ gruppe: o, bereich: mh(x, "bereich", "kategorie"), art: mh(x, "schriftstueck"), zweit: x.zweitfach || null, merkmale: merkmale(readFileSync(join(o, x.datei), "utf8"), eig) }));

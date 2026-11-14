@@ -38,7 +38,11 @@ const LOG = process.env.LESER_LOG ? (x) => process.stderr.write(`[leser ${new Da
 export async function ocr(bytes) {
   const k = createHash("sha256").update(bytes).digest("hex"); const c = ladeCache();
   if (k in c) { statistik.ausCache++; return c[k]; }
-  const t0 = Date.now(); LOG(`ocr ${k.slice(0, 8)} ${bytes.length}`); const p = await ocrPlaner(); LOG(`planer bereit ${k.slice(0, 8)}`);
+  const t0 = Date.now(); LOG(`ocr ${k.slice(0, 8)} ${bytes.length}`);
+  // Auch das Anlegen der Worker bekommt eine Frist (hing in der Sitzung zweimal ohne Rückmeldung)
+  let uhr0; const p = await Promise.race([ocrPlaner(), new Promise((ok) => { uhr0 = setTimeout(() => ok(null), OCR_FRIST); })]); clearTimeout(uhr0);
+  if (!p) { statistik.haenger++; planer = null; return ""; }
+  LOG(`planer bereit ${k.slice(0, 8)}`);
   // Frist wie in der App (src/vendor.ts): hängt die Erkennung, bleibt das Bild ohne Text. Nach zwei Hängern werden die Worker neu gestartet.
   let uhr; const frist = new Promise((ok) => { uhr = setTimeout(() => ok(null), OCR_FRIST); });
   const r = await Promise.race([p.addJob("recognize", Buffer.from(bytes)).catch(() => ({ data: { text: "" } })), frist]); clearTimeout(uhr);

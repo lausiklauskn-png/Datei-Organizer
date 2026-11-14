@@ -25,6 +25,7 @@ ${kopf.slice(0, 700)}`);
   for (const r of ART_REGELN) if (r.muster.test(vorne)) return w(r.art, true, `\u201E${r.wort}\u201C im Kopf oder Betreff`);
   for (const r of ART_REGELN) if (r.muster.test(alles)) return w(r.art, false, `\u201E${r.wort}\u201C erst weiter unten im Text`);
   if (/sehr geehrte|liebe |hallo /.test(alles)) return w("Brief", false, "Anrede gefunden, aber kein klares Wort f\xFCr die Art");
+  if ((alles.match(/[a-zäöüß]{3,}/g) || []).length >= 12) return w("Brief", false, "Text ohne klares Wort f\xFCr die Art");
   return w(UNKLAR, false, "kein Merkmal f\xFCr die Art gefunden");
 }
 const MONATE = ["januar", "februar", "m\xE4rz", "april", "mai", "juni", "juli", "august", "september", "oktober", "november", "dezember"];
@@ -209,7 +210,29 @@ const istMailKopf = (zeilen) => {
   const k = zeilen.slice(0, 7);
   return k.some((z) => /^(von|from)\s*:.*@/i.test(z)) || k.some((z) => /^(von|from)\s*:/i.test(z)) && k.some((z) => /^(betreff|subject|datum|date|gesendet|an|to)\s*:/i.test(z)) || /^(betreff|subject)\s*:/i.test(k[0] || "") && !k.some((z) => EMPFAENGER_ZEILE.test(z));
 };
+const KOPF_RAUSCHEN = /^(?:\d{1,2}[:.]\d{2}\b.*|(?:posteingang|postfach|dokumente|mitteilungen|nachrichten|inbox|neue (?:nachricht|mitteilung|benachrichtigung)|benachrichtigung|vorgangs?-?nr\.?.*|vorgang\b.*|blatt \d.*|seite \d.*)\s*)$/i;
+function absenderSaeubern(n) {
+  let s = n.replace(/^(?:kundenportal|portal|online-?postfach|app)\s+(?:der|des|von)?\s*/i, "");
+  const worte = s.split(/\s+/);
+  const k0 = worte[0] || "", anf = worte.slice(1, 1 + k0.length).map((x) => x[0]).join("");
+  if (worte.length >= 3 && /^[A-Za-zÄÖÜäöü]{1,2}$/.test(k0) && /^[A-ZÄÖÜ]/.test(worte[1]) && (/^(.)\1$/i.test(k0) || /^[A-ZÄÖÜ][a-zäöü]$/.test(k0) || k0.length === 1 || k0.toUpperCase() === anf.toUpperCase())) worte.shift();
+  while (worte.length > 2 && (/^[^A-Za-zÄÖÜäöüß0-9]+$/.test(worte.at(-1)) || /[\]\[|®©™}{]/.test(worte.at(-1)) || /^(?:[a-zäöü]{1,2}|[A-ZÄÖÜ])$/.test(worte.at(-1)) && !/[.,]$/.test(worte.at(-2)) && !/^(ag|kg|eg|se|ug|ev|ek)$/i.test(worte.at(-1)))) worte.pop();
+  while (worte.length > 2 && !worte.includes("\u2013") && !worte.includes("-") && /^(\w*steuer|\w*termin|terminerinnerung|erinnerung|hauptuntersuchung|app|techniker|service-?center)$/i.test(worte.at(-1))) worte.pop();
+  return worte.join(" ").replace(/\s*[®©™&|]+$/, "").trim();
+}
 function erkenneAbsender(kopf) {
+  const zeilen = kopf.split(/\r?\n/).filter((z) => !KOPF_RAUSCHEN.test(z.trim()));
+  const von = zeilen.slice(0, 6).map((z) => z.trim().match(/^von\s*:\s*([^<@]+?)\s*(?:<.*)?$/i)).find(Boolean);
+  if (von && !zeilen.slice(0, 8).some((z) => /^(betreff|subject|an|to|datum|date)\s*:/i.test(z.trim()))) {
+    const n2 = absenderSaeubern(von[1].replace(/["']/g, ""));
+    if (n2.length >= 3) return w(n2, FIRMA.test(n2), "\u201EVon:\u201C im Kopf (Ansicht einer Mail)");
+  }
+  const roh = erkenneAbsenderRoh(zeilen.join("\n"));
+  if (!roh) return roh;
+  const n = absenderSaeubern(roh.wert);
+  return n === roh.wert || n.length < 3 ? roh : { ...roh, wert: n };
+}
+function erkenneAbsenderRoh(kopf) {
   const alle = kopf.split(/\r?\n/).map((z) => z.trim()).filter(Boolean);
   if (istMailKopf(alle)) return void 0;
   const zeilen = alle.filter((z) => !TITEL.test(z)).slice(0, 18);
@@ -423,7 +446,7 @@ function erkenneFrist(text, dokumentDatum, datumSicher = true) {
   return void 0;
 }
 function erkenneBetrag(text) {
-  const t = text.replace(/\s+/g, " ");
+  const t = text.replace(/\s+/g, " ").replace(/zwischen\s?summe[^0-9]{0,30}\d{1,3}(?:\.\d{3})*,\d{2}/gi, " ");
   const genannt = t.match(/(?:gesamtbetrag|rechnungsbetrag|zu zahlen|betrag|summe|offener betrag)[^0-9]{0,30}(\d{1,3}(?:\.\d{3})*,\d{2})\s?(?:€|eur)/i) || t.match(/(?:summe|gesamt|total|zu zahlen)\s*(?:eur|€)?\s*:?\s*(\d{1,3}(?:\.\d{3})*,\d{2})(?!\d)/i);
   if (genannt) return w(`${genannt[1]} \u20AC`, true, `\u201E${genannt[0].trim()}\u201C`);
   const alle = [...t.matchAll(/(\d{1,3}(?:\.\d{3})*,\d{2})\s?(?:€|eur)\b/gi)].map((m) => m[1]);
