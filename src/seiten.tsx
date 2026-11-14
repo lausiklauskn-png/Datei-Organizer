@@ -13,6 +13,7 @@ import { deutsch, kurzfassung, INDEX_DATEI } from "../lib/index-format.ts";
 import { Ablaufbild, FesterBaum, Info, OrdnerBaum, Seitentitel, type Schritt } from "./ui.tsx";
 import { ausAuswahl, nativGemerkt, nativPlattform, nativVergessen, nativSpeichernMoeglich, nativWaehlen, nativWieder, nativerOrdner, ordnerWaehlen, ordnerWahlMoeglich, testOrdner, type GemerkterOrdner } from "./quellen.ts";
 import { heute, Ladebalken, type AppZustand, type FindenZiel, type SeitenId } from "./app.tsx";
+import { ARBEIT, arbeitAnzeige, arbeitFrei, arbeitMoeglich, leistungText, mbText, TEXT_IM_SPEICHER } from "./arbeit.ts";
 
 export type P = { z: AppZustand; gehe: (s: SeitenId) => void; oeffne?: (sicht: string, knoten?: string) => void; ziel?: FindenZiel };
 
@@ -54,6 +55,31 @@ const SD_BAUM = { titel: "SD-Karte", kinder: [
   ] },
 ] };
 
+/** Arbeitsordner (Klaus 14.11.: „nur aufs Laufwerk gehen – automatisch immer in den richtigen Ordner“). Nur in Datei-Organizer Pro. */
+function ArbeitKarte({ z, laeuft, los }: { z: AppZustand; laeuft: boolean; los: (f: () => Promise<unknown>) => Promise<void> }) {
+  const [frei, setFrei] = useState<number | null>(null);
+  useEffect(() => { let weg = false; if (z.arbeit && !z.arbeitFehlt) void arbeitFrei(z.arbeit).then((f) => { if (!weg) setFrei(f); }); else setFrei(null); return () => { weg = true; }; }, [z.arbeit, z.arbeitFehlt, z.dateien.length]);
+  const amPc = nativPlattform() === "windows";
+  return <section className="card" data-arbeitsordner>
+    <div className="card-heading"><h2>Arbeitsordner</h2>
+      <Info titel="Wofür der Arbeitsordner?" punkte={[
+        `Für große Ordner: Liste, Texte und Sortierung liegen dann auf ${amPc ? "der Festplatte" : "der SD-Karte"} statt im App-Speicher.`,
+        `Du wählst nur das Laufwerk – der Ordner „${ARBEIT}“ entsteht darin von selbst. So landet nichts aus Versehen im falschen Ordner.`,
+        "Nie im Pro-Tresor: der ist verschlüsselt, dort schreibt der Organizer nichts hinein.",
+        "Deinstallieren oder neu installieren verliert nichts: Laufwerk wieder wählen, der Stand ist da.",
+        `Schlank: im Speicher nur die ersten ${TEXT_IM_SPEICHER.toLocaleString("de-DE")} Zeichen langer Texte, der ganze Text liegt im Arbeitsordner.`,
+      ]}/></div>
+    {z.arbeit
+      ? <p data-arbeit-pfad>{z.arbeitFehlt ? <span className="badge warn">{z.arbeitFehlt}</span> : <>Arbeitsordner: <b>{arbeitAnzeige(z.arbeit)}</b>{frei !== null && <span className="leise"> · frei {mbText(frei)}</span>}</>}</p>
+      : <p className="leise">Noch keiner – die App speichert im App-Speicher. Für große Ordner empfohlen.</p>}
+    <div className="button-row">
+      <button type="button" className={`button ${z.arbeit ? "" : "primary"}`} disabled={laeuft} data-arbeit-waehlen onClick={() => los(() => z.arbeitEinrichten())}>{amPc ? <Monitor size={18}/> : <Smartphone size={18}/>}{z.arbeit ? "Anderes Laufwerk" : "Laufwerk wählen"}</button>
+      {z.arbeit && <button type="button" className="button" disabled={laeuft} data-arbeit-aus onClick={() => z.arbeitAus()}>Nicht mehr nutzen</button>}
+    </div>
+    <p className="leise" data-leistung>{leistungText(z.leistung)}.</p>
+  </section>;
+}
+
 export function OrdnerSeite({ z, gehe }: P) {
   const dateiWahl = useRef<HTMLInputElement>(null), ordnerWahl = useRef<HTMLInputElement>(null);
   const [laeuft, setLaeuft] = useState(false);
@@ -91,9 +117,9 @@ export function OrdnerSeite({ z, gehe }: P) {
         <button type="button" className="button" disabled={laeuft} onClick={() => dateiWahl.current?.click()}><File size={18}/>Dateien wählen</button>
         <button type="button" className="button" disabled={laeuft} onClick={() => los(() => z.einlesenAus(testOrdner()))} data-testordner><Archive size={18}/>Testordner</button>
       </div>
-      {gemerkt.some((g) => g.da) && <div className="chips" data-gemerkt style={{ marginTop: 10 }}>
+      {gemerkt.some((g) => g.da && g.id !== z.arbeit?.id) && <div className="chips" data-gemerkt style={{ marginTop: 10 }}>
         <span className="leise">Zuletzt:</span>
-        {gemerkt.filter((g) => g.da).slice(0, 3).map((g) => <span key={g.id} className="chip">
+        {gemerkt.filter((g) => g.da && g.id !== z.arbeit?.id).slice(0, 3).map((g) => <span key={g.id} className="chip">
           <button type="button" className="text-link" disabled={laeuft} data-ordner-wieder onClick={() => los(async () => { await z.einlesenAus(await nativWieder(g.id)); })}><FolderOpen size={15}/>{g.name}</button>
           <button type="button" className="text-link" aria-label={`„${g.name}“ vergessen`} title="Vergessen (der Ordner selbst bleibt)" onClick={() => void nativVergessen(g.id).then(nativGemerkt).then(setGemerkt)}><X size={14}/></button>
         </span>)}
@@ -110,6 +136,7 @@ export function OrdnerSeite({ z, gehe }: P) {
       </div>}
       <Meldung z={z} gehe={gehe}/>
     </section>
+    {arbeitMoeglich() && <ArbeitKarte z={z} laeuft={laeuft} los={los}/>}
     <section className={`card ablage ${ziehtDrueber ? "drueber" : ""}`} data-ablage
       onDragOver={(e) => { e.preventDefault(); setZiehtDrueber(true); }} onDragLeave={() => setZiehtDrueber(false)}
       onDrop={(e) => { e.preventDefault(); setZiehtDrueber(false); const dt = e.dataTransfer; void los(async () => { const q = await ausZiehen(dt); if (q) await z.einlesenAus(q, z.dateien.length > 0); else z.setMeldung({ text: "Darin war keine Datei.", art: "halt" }); }); }}>

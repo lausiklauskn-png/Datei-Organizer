@@ -9,10 +9,16 @@ oder Altbestand kommen in **einen** Ordner; der Organizer sortiert sie Klick fü
 Nummern → Absender → Inhalt) und zeigt sie als Baum nach vielen Gesichtspunkten. Zuerst für die Familienakte gemacht: der Ordner
 wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). Plan und alle Entscheidungen: `docs/PLAN.md`.
 
+## Stand (14.11.2026, Fassung 0.4.3, große Ordner)
+
+- **A–D gebaut** (Klaus' Ja 14.11.): Leistung des Geräts, große Dateien Stück für Stück (Prüfsumme in der App am Ort), **Arbeitsordner**
+  `Datei-Organizer-Arbeit` auf dem gewählten Laufwerk (nie im Pro-Tresor), schlanke Liste, Speicherprüfung vor jedem Block. Alles:
+  `docs/PLAN_GROSSE-ORDNER.md` (Abschnitt „gebaut“, Abweichung beim Ort benannt). Code `src/arbeit.ts`, `src/sha256.ts`; Verträge
+  `pruefsumme`/`speicherFrei`/`arbeitsordner` in `windows/bridge/contracts.json` = Android.
+
 ## Offen (Klaus 14.11.2026)
 
-- **Sehr große Ordner** (Arbeitsordner auf SD-Karte, große Dateien nie ganz laden, Speicherprüfung): Vorschau `docs/PLAN_GROSSE-ORDNER.md`,
-  wartet auf Klaus' Ja je Punkt und die Wahl des Arbeitsordners. Erst danach veröffentlichen (Empfehlung).
+- **Sehr große Ordner:** gebaut in 0.4.3 (oben). Danach veröffentlichen (Klaus 14.11.: Basic, Pro, Windows, Geschenkbox).
 - **Signier-Identität der APK** steht (#17, Fingerabdruck `594e44df…365d`); Update-Schlüssel eingetragen (#16). Geheimnisse bei Klaus im Tresor.
 - **Browser-Tresor → Tresor-APK:** Plan `docs/PLAN_MEIN-TRESOR-APK.md` (später, eigenes Repo).
 

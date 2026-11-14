@@ -35,7 +35,7 @@ import java.util.UUID;
  * der Ordnerweg der Familienakte Pro („FamilyFolders“), damit src/quellen.ts (nativWaehlen) unverändert in beiden Apps läuft.
  * Androids Speicherzugriff (ACTION_OPEN_DOCUMENT_TREE); die Seite bekommt nur eine Kennung, nie eine Adresse. Eine Ordnerliste ist
  * EINE Abfrage je Ordner (Name, Art, Größe, Änderungsdatum zusammen); Dateien werden in Stücken bis 1 MiB gelesen. Geschrieben wird
- * nur eine .json-Datei direkt im gewählten Ordner (organizer-index.json). Originale werden nie verändert, nichts wird gelöscht.
+ * nur eine .json-Datei direkt im gewählten Ordner (organizer-index.json) oder direkt im Arbeitsordner „Datei-Organizer-Arbeit“ (0.4.3). Originale werden nie verändert, nichts wird gelöscht.
  * Dauerhafte Freigabe (0.4.1, Klaus' Liste „Ordnerfreigabe merken“): die App nimmt Androids dauerhafte Freigabe
  * (takePersistableUriPermission) und merkt sich die zuletzt gewählten Ordner (höchstens 5, OrdnerMerkliste) mit Namen; „gemerkt“
  * zeigt sie, „wiederOeffnen“ öffnet ohne Auswahl-Fenster, „vergessen“ gibt die Freigabe an Android zurück.
@@ -239,21 +239,77 @@ public final class DoOrdnerPlugin extends Plugin {
 
     @PluginMethod public void dateiBeginn(PluginCall call) {
         arbeit(call, () -> {
-            Baum b = baum(call); String name = call.getString("pfad", "");
-            if (!NativeUtil.schreibNameGueltig(name)) throw new IOException("DO_NICHT_ERLAUBT");
-            liste(b, "");
-            String id = b.ids.get(name);
-            if (id != null && Boolean.TRUE.equals(b.istOrdner.get(name))) throw new IOException("DO_NICHT_ERLAUBT");
+            Baum b = baum(call); String voll = call.getString("pfad", "");
+            if (!NativeUtil.schreibPfadGueltig(voll)) throw new IOException("DO_NICHT_ERLAUBT");
+            int i = voll.lastIndexOf('/');
+            String eltern = i < 0 ? "" : voll.substring(0, i), name = voll.substring(i + 1);
+            if (!eltern.isEmpty()) { id(b, eltern); if (!Boolean.TRUE.equals(b.istOrdner.get(eltern))) throw new IOException("DO_NICHT_GEFUNDEN"); }
+            liste(b, eltern);
+            String id = b.ids.get(voll);
+            if (id != null && Boolean.TRUE.equals(b.istOrdner.get(voll))) throw new IOException("DO_NICHT_ERLAUBT");
             Uri doc = id != null ? DocumentsContract.buildDocumentUriUsingTree(b.baum, id)
-                : DocumentsContract.createDocument(cr(), DocumentsContract.buildDocumentUriUsingTree(b.baum, b.ids.get("")), "application/json", name);
+                : DocumentsContract.createDocument(cr(), DocumentsContract.buildDocumentUriUsingTree(b.baum, b.ids.get(eltern)), "application/json", name);
             if (doc == null) throw new IOException("DO_SCHREIBEN_FEHLT");
-            Schreiben s = new Schreiben(); s.baum = b; s.name = name; s.sha = MessageDigest.getInstance("SHA-256");
+            Schreiben s = new Schreiben(); s.baum = b; s.name = voll; s.sha = MessageDigest.getInstance("SHA-256");
             try { s.out = cr().openOutputStream(doc, "wt"); }
-            // Ohne Kürzen („w“) blieben bei einem kürzeren Index alte Bytes am Ende stehen – dann lieber nicht schreiben.
+            // Ohne Kürzen („w“) blieben bei einer kürzeren Datei alte Bytes am Ende stehen – dann lieber nicht schreiben.
             catch (IllegalArgumentException | java.io.FileNotFoundException keinKuerzen) { throw new IOException("DO_SCHREIBEN_FEHLT"); }
             if (s.out == null) throw new IOException("DO_SCHREIBEN_FEHLT");
             String sid = UUID.randomUUID().toString(); offen.put(sid, s);
             return new JSObject().put("id", sid);
+        });
+    }
+
+    // ---------- Große Ordner (0.4.3, Klaus 14.11.) ----------
+    /** Fingerabdruck einer Datei am Ort, Stück für Stück – die Bytes gehen nie durch die Brücke (auch bei mehreren GB). */
+    @PluginMethod public void pruefsumme(PluginCall call) {
+        arbeit(call, () -> {
+            Baum b = baum(call); String p = pfad(call); String id = id(b, p);
+            if (Boolean.TRUE.equals(b.istOrdner.get(p))) throw new IOException("DO_NICHT_GEFUNDEN");
+            MessageDigest sha = MessageDigest.getInstance("SHA-256"); long n = 0;
+            try (InputStream in = cr().openInputStream(DocumentsContract.buildDocumentUriUsingTree(b.baum, id))) {
+                if (in == null) throw new IOException("DO_NICHT_GEFUNDEN");
+                byte[] buf = new byte[NativeUtil.STUECK]; int r;
+                while ((r = in.read(buf)) > 0) { sha.update(buf, 0, r); n += r; }
+            } catch (SecurityException e) { throw new IOException("DO_FREIGABE_FEHLT"); }
+            return new JSObject().put("sha256", NativeUtil.hex(sha.digest())).put("groesse", n);
+        });
+    }
+    /** Freier Speicher auf dem Laufwerk des Ordners (Androids Angabe zum Speicher); -1 = unbekannt (Anbieter sagt es nicht). */
+    @PluginMethod public void speicherFrei(PluginCall call) {
+        arbeit(call, () -> {
+            Baum b = baum(call); long frei = -1;
+            String wurzel = b.ids.get(""), vol = wurzel.contains(":") ? wurzel.substring(0, wurzel.indexOf(':') + 1) : wurzel;
+            String[] spalten = { DocumentsContract.Root.COLUMN_DOCUMENT_ID, DocumentsContract.Root.COLUMN_AVAILABLE_BYTES };
+            try (Cursor c = cr().query(DocumentsContract.buildRootsUri(b.baum.getAuthority()), spalten, null, null, null)) {
+                while (c != null && c.moveToNext()) {
+                    String rid = c.getString(0);
+                    if (rid != null && (wurzel.startsWith(rid) || rid.startsWith(vol)) && !c.isNull(1)) { frei = c.getLong(1); break; }
+                }
+            } catch (Exception keineAngabe) { frei = -1; }
+            return new JSObject().put("frei", frei);
+        });
+    }
+    /** Arbeitsordner anlegen: im gewählten Laufwerk/Ordner entsteht „Datei-Organizer-Arbeit“ (heißt der gewählte Ordner schon so, gilt er selbst).
+     *  Nie im Pro-Tresor (Ordner mit tresorordner.json): der ist verschlüsselt und gehört dem Tresor-Paket. */
+    @PluginMethod public void arbeitsordner(PluginCall call) {
+        arbeit(call, () -> {
+            Baum b = baum(call);
+            JSArray kinder = liste(b, "");
+            for (int i = 0; i < kinder.length(); i++) if ("tresorordner.json".equals(kinder.getJSONObject(i).getString("name"))) throw new IOException("DO_TRESOR_ORDNER");
+            String wurzelName = b.ids.get(""); int k = wurzelName.lastIndexOf('/'); if (k >= 0) wurzelName = wurzelName.substring(k + 1);
+            k = wurzelName.lastIndexOf(':'); if (k >= 0) wurzelName = wurzelName.substring(k + 1);
+            if (NativeUtil.ARBEIT.equals(wurzelName)) return new JSObject().put("pfad", "").put("neu", false);
+            String id = b.ids.get(NativeUtil.ARBEIT);
+            if (id != null && !Boolean.TRUE.equals(b.istOrdner.get(NativeUtil.ARBEIT))) throw new IOException("DO_NICHT_ERLAUBT");
+            boolean neu = id == null;
+            if (neu) {
+                Uri d = DocumentsContract.createDocument(cr(), DocumentsContract.buildDocumentUriUsingTree(b.baum, b.ids.get("")), DocumentsContract.Document.MIME_TYPE_DIR, NativeUtil.ARBEIT);
+                if (d == null) throw new IOException("DO_SCHREIBEN_FEHLT");
+                liste(b, "");
+                if (!Boolean.TRUE.equals(b.istOrdner.get(NativeUtil.ARBEIT))) throw new IOException("DO_SCHREIBEN_FEHLT");
+            }
+            return new JSObject().put("pfad", NativeUtil.ARBEIT).put("neu", neu);
         });
     }
     @PluginMethod public void dateiAnhaengen(PluginCall call) {

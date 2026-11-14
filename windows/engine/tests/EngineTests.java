@@ -94,6 +94,28 @@ public final class EngineTests {
             &&fehler(()->call(s,"FamilyFolders","dateiBeginn",o("token",token,"pfad","brief.txt"))).equals("DO_NICHT_ERLAUBT")&&fehler(()->call(s,"FamilyFolders","dateiBeginn",o("token",token,"pfad",".x.json"))).equals("DO_NICHT_ERLAUBT"));
         check("Index: Originale unverändert",Arrays.equals(Files.readAllBytes(eingang.resolve("2026/Bank/Auszug März.pdf")),gross)&&Files.readString(eingang.resolve("brief.txt")).equals("Hallo"));
 
+        // ---------- Große Ordner (0.4.3): Prüfsumme am Ort, freier Speicher, Arbeitsordner ----------
+        JSONObject ps=call(s,"FamilyFolders","pruefsumme",o("token",token,"pfad","2026/Bank/Auszug März.pdf"));
+        check("Groß: Prüfsumme am Ort = SHA-256 der Datei, mit Größe",ps.getString("sha256").equals(DesktopFiles.hex(java.security.MessageDigest.getInstance("SHA-256").digest(gross)))&&ps.getLong("groesse")==gross.length);
+        check("Groß: Prüfsumme nur für Dateien im Ordner",fehler(()->call(s,"FamilyFolders","pruefsumme",o("token",token,"pfad","2026"))).equals("DO_NICHT_GEFUNDEN")
+            &&fehler(()->call(s,"FamilyFolders","pruefsumme",o("token",token,"pfad","../x"))).equals("DO_PFAD_UNGUELTIG"));
+        check("Groß: freier Speicher wird gemeldet",call(s,"FamilyFolders","speicherFrei",o("token",token)).getLong("frei")>0);
+        check("Arbeit: ohne Arbeitsordner kein Schreiben dorthin",fehler(()->call(s,"FamilyFolders","dateiBeginn",o("token",token,"pfad","Datei-Organizer-Arbeit/stand.json"))).equals("DO_NICHT_GEFUNDEN"));
+        JSONObject ao=call(s,"FamilyFolders","arbeitsordner",o("token",token));
+        check("Arbeit: Arbeitsordner wird angelegt",ao.getString("pfad").equals("Datei-Organizer-Arbeit")&&ao.getBoolean("neu")&&Files.isDirectory(eingang.resolve("Datei-Organizer-Arbeit")));
+        check("Arbeit: zweites Mal derselbe, nicht neu",!call(s,"FamilyFolders","arbeitsordner",o("token",token)).getBoolean("neu"));
+        String ida=call(s,"FamilyFolders","dateiBeginn",o("token",token,"pfad","Datei-Organizer-Arbeit/stand.json")).getString("id");
+        call(s,"FamilyFolders","dateiAnhaengen",o("id",ida,"offset",0,"data",b64("{\"a\":1}".getBytes())));call(s,"FamilyFolders","dateiFertig",o("id",ida,"size",7));
+        check("Arbeit: .json direkt im Arbeitsordner geschrieben und wieder lesbar",Files.readString(eingang.resolve("Datei-Organizer-Arbeit/stand.json")).equals("{\"a\":1}")
+            &&new String(unb64(call(s,"FamilyFolders","dateiLesen",o("token",token,"pfad","Datei-Organizer-Arbeit/stand.json","offset",0,"laenge",100)).getString("data"))).equals("{\"a\":1}"));
+        check("Arbeit: nicht tiefer, nicht in andere Ordner, nur .json",fehler(()->call(s,"FamilyFolders","dateiBeginn",o("token",token,"pfad","Datei-Organizer-Arbeit/x/y.json"))).equals("DO_NICHT_ERLAUBT")
+            &&fehler(()->call(s,"FamilyFolders","dateiBeginn",o("token",token,"pfad","Datei-Organizer-Arbeit/x.pdf"))).equals("DO_NICHT_ERLAUBT"));
+        Path tres=tmp.resolve("Family-Projekt");Files.createDirectories(tres);Files.writeString(tres.resolve("tresorordner.json"),"{}");
+        host.folder=tres;String tt=call(s,"FamilyFolders","ordnerWaehlen",o()).getString("token");
+        check("Arbeit: nie im Pro-Tresor (Ordner mit tresorordner.json)",fehler(()->call(s,"FamilyFolders","arbeitsordner",o("token",tt))).equals("DO_TRESOR_ORDNER")&&!Files.exists(tres.resolve("Datei-Organizer-Arbeit")));
+        call(s,"FamilyFolders","vergessen",o("id",call(s,"FamilyFolders","gemerkt",o()).getJSONArray("ordner").getJSONObject(0).getString("id")));
+        host.folder=eingang;
+
         // ---------- Gemerkt (dauerhafte Freigabe) ----------
         JSONArray g=call(s,"FamilyFolders","gemerkt",o()).getJSONArray("ordner");
         check("Gemerkt: der gewählte Ordner steht in der Liste, ohne Pfad",g.length()==1&&g.getJSONObject(0).getString("name").equals("Eingang Ä")&&g.getJSONObject(0).getBoolean("da")&&!g.toString().contains(tmp.toString()));
