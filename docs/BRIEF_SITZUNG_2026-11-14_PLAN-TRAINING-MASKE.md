@@ -129,6 +129,11 @@ Organisationen), BookLedgerPro (Stammdaten, Weitere Namen, `namensmuster.js`), P
   der Seite (CSP `connect-src` nur zur eigenen Adresse); Hinweis „Für Gesundheits- und Bankdaten die Pro-App nehmen“;
   Frage an Klaus: Profile in Basic überhaupt anbieten oder nur in den Pro-Apps?
 
+18. **Landkarten nachziehen:** der Pseudonymisierer (Knopf in jeder App, Profile im Pro-Tresor, Weg Familienakte → andere Apps,
+    Rückweg „Zurückführen“) kommt als eigener Kasten in die Pro-Verbund-Karte (Quelle BookLedgerPro, byte-gleich in den anderen
+    Apps), in die Landkarte der Familienakte und in die Landkarte des Datei-Organizers; zuerst grau „geplant“, dann je Stand.
+    Danach Geschenkbox neu bauen.
+
 ## Startauftrag zum Einfügen
 
 ```
@@ -136,7 +141,7 @@ Repo lausiklauskn-png/Datei-Organizer (eigener Zweig). PLANSITZUNG – nichts ba
 Zuerst lesen: CLAUDE.md, docs/BRIEF_SITZUNG_2026-11-14_PLAN-TRAINING-MASKE.md, docs/PLAN.md,
 docs/PRUEFREGELN-GRUPPE.md; in Private Brain Pro docs/KI-BEIM-SCHREIBEN.md und docs/AUFRAEUMEN-NEWSLETTER.md.
 Ziel: Plan „Training mit echten, pseudonymisierten Dokumenten über eine Maske in Private Brain“ mit den
-Fragen 1–17 aus dem Brief (Reihenfolge: Marktcheck → Bestes übernehmen → Modul 25 → nachziehen; mit Nachtrag Pseudo-Ordner und Profile); Klaus sagt je Punkt Ja. Plan als docs/PLAN_TRAINING-MASKE.md + Vorschau (HTML) wenn sichtbar.
+Punkte 1–18 aus dem Brief (Reihenfolge: Marktcheck → Bestes übernehmen → Modul 25 → nachziehen; mit Nachtrag Pseudo-Ordner und Profile); Klaus sagt je Punkt Ja. Plan als docs/PLAN_TRAINING-MASKE.md + Vorschau (HTML) wenn sichtbar.
 Nicht: echte Dokumente oder pseudonymisierte Texte ins Repo (öffentlich), keine Schlüssel/PINs im Chat oder in Dateien,
 Gmail-Konnektor nicht als Trainingsquelle (liest Klartext), nichts veröffentlichen.
 ```
