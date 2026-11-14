@@ -1,5 +1,7 @@
 // Briefe (Textdateien) mit dem Sortier-Kern lesen und je Feld gegen ein Soll werten – für alt/neu-Vergleiche (docs/PRUEFSTAPEL-BRIEFE-2-REGELN.md).
 // Aufruf: node scripts/messen-briefe.mjs <ordner>[,<ordner>…] [--kern pfad-zum-repo] [--alt pfad-zum-alten-repo] [--soll ERWARTUNG.json|mehrheit] [--json datei] [--fehler feld]
+//   --gesetzt <ordner>: statt der Texte die gesetzten Stücke (scripts/setzen-komplex.py, SETZEN.json) lesen – PDF mit Textebene,
+//                       PDF nur aus Seitenbildern und Fotos, mit der Texterkennung wie in der App (scripts/leser-node.mjs).
 //   --soll mehrheit: Mehrheit aus ERWARTUNG.json, ZWEITER.json, DRITTER.json (je Feld; ohne Mehrheit nicht gewertet).
 import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -15,6 +17,10 @@ const leer = (v) => v == null || v === "" || v === "null" ? null : v;
 const FORM = { bereich: (x) => { const b = leer(x.bereich ?? x.kategorie); return b ? (GROB[b] ?? b) : null; }, schriftstueck: (x) => leer(x.schriftstueck), absender: (x) => norm(x.absender), person: (x) => norm(x.person), frist: (x) => leer(x.frist) };
 const FELDER = Object.keys(FORM);
 
+const GESETZT = arg("--gesetzt") ? resolve(WURZEL, arg("--gesetzt")) : null;
+const SETZEN = GESETZT ? JSON.parse(readFileSync(join(GESETZT, "SETZEN.json"), "utf8")) : null;
+const leser = GESETZT ? await import("./leser-node.mjs") : null;
+const quelle = (o, datei) => SETZEN ? { pfad: join(GESETZT, SETZEN[datei].datei), name: SETZEN[datei].datei.split("/").pop() } : { pfad: join(o, datei), name: datei };
 async function kern(pfad) {
   const L = (f) => import(join(pfad, "lib", f));
   const [{ einlesen }, { siebe }, { absenderVereinheitlichen }, { personZuordnen }] = await Promise.all([L("einlesen.ts"), L("siebe.ts"), L("abgleich.ts"), L("personen.ts")]);
@@ -22,7 +28,9 @@ async function kern(pfad) {
     const e = JSON.parse(readFileSync(join(o, "ERWARTUNG.json"), "utf8")).dateien;
     const hh = existsSync(join(o, "HAUSHALTE.json")) ? Object.fromEntries(JSON.parse(readFileSync(join(o, "HAUSHALTE.json"), "utf8")).haushalte.map((h) => [h.id, h])) : {};
     let ds = [];
-    for (const [i, x] of e.entries()) ds.push(...await einlesen({ pfad: x.datei, name: x.datei, geaendert: Date.UTC(2026, 10, 1) + i, bytes: new Uint8Array(readFileSync(join(o, x.datei))) }, async () => "", 0, async () => ""));
+    for (const [i, x] of e.entries()) { const q = quelle(o, x.datei);
+      const t = await einlesen({ pfad: x.datei, name: q.name, geaendert: Date.UTC(2026, 10, 1) + i, bytes: new Uint8Array(readFileSync(q.pfad)) }, leser ? leser.pdfLeser(true) : async () => "", 0, leser ? leser.ocr : async () => "");
+      t[0].pfad = x.datei; ds.push(...t); }
     const org = new Map(absenderVereinheitlichen(ds.map((d) => siebe(d, 5, []))).map((d) => [d.pfad, d]));
     return new Map(e.map((x) => { const d = org.get(x.datei), h = hh[x.haushalt], f = d?.felder || {};
       const p = h && d ? personZuordnen(`${d.email?.an || ""}\n${d.volltext || ""}`, f.betrifft?.wert, h) : undefined;
@@ -54,4 +62,10 @@ for (const f of FELDER) {
   if (r.mcnemar) console.log(`  McNemar: nur alt richtig ${r.mcnemar.nurAltRichtig}, nur neu richtig ${r.mcnemar.nurNeuRichtig}, p=${r.mcnemar.p < 0.001 ? r.mcnemar.p.toExponential(1) : r.mcnemar.p.toFixed(3)}`);
   if (arg("--fehler") === f) for (const z of menge.filter((z) => z.neu.wert[f] !== z.soll[f])) console.log(`    ${z.d}: „${z.neu.wert[f]}“ statt „${z.soll[f]}“${z.neu.sicher[f] ? " (sicher)" : ""}`);
 }
+// Je Form und Scanqualität (nur mit --gesetzt): Treffer des neuen Kerns je Feld
+if (SETZEN) { erg.jeForm = {};
+  for (const z of zeilen) { const s0 = SETZEN[z.d]; const k = s0.qualitaet ? `${s0.form}/${s0.qualitaet}` : s0.form; const e0 = (erg.jeForm[k] ??= { n: 0 });
+    e0.n++; for (const f of FELDER) { if (z.soll[f] === undefined) continue; const x = (e0[f] ??= { n: 0, ok: 0 }); x.n++; if (z.neu.wert[f] === z.soll[f]) x.ok++; } }
+  console.log("\nJe Form/Güte (neu):"); for (const [k, v] of Object.entries(erg.jeForm).sort()) console.log(`  ${k.padEnd(18)} n=${v.n} ` + FELDER.map((f) => `${f} ${v[f] ? Math.round(100 * v[f].ok / v[f].n) : "–"} %`).join(" · "));
+  await leser.beenden(); }
 if (arg("--json")) writeFileSync(resolve(WURZEL, arg("--json")), JSON.stringify(erg, null, 1));

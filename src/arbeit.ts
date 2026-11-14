@@ -1,4 +1,5 @@
 import type { Datei } from "../lib/typen.ts";
+import { LaufSchreiber, laufAusTeilen, type Lauf, type LaufAblage } from "./lauf.ts";
 import { nativerOrdner, nativGemerkt, nativPlattform } from "./quellen.ts";
 
 /**
@@ -165,24 +166,28 @@ export class ArbeitSpeicher {
     await jsonSchreiben(this.a, name, texte);
     return name;
   }
-  // Stand des Einlesens (Blöcke, Weitermachen): lauf.json + lauf-NNNN.json; je Block ändert sich nur der letzte Teil.
-  async laufSpeichern(l: { dateien: Datei[] } & Record<string, unknown>) {
-    const teile = Math.ceil(l.dateien.length / TEIL);
-    for (let i = 0; i < teile; i++) await this.wennAnders(`lauf-${nr(i)}.json`, l.dateien.slice(i * TEIL, (i + 1) * TEIL));
-    const { dateien, ...rest } = l;
-    await this.wennAnders("lauf.json", { ...rest, aktiv: true, teile });
+  // Stand des Einlesens (Blöcke, Weitermachen): lauf.json (Kopf) + lauf-d-NNNN.json/lauf-e-NNNN.json (src/lauf.ts, LaufSchreiber).
+  // Seit Block 1 (14.11.2026) wird je Block nur der neue Teil geschrieben; vorher wurde jeder Teil neu in Text verwandelt und verglichen.
+  private schreiber: LaufSchreiber | null = null;
+  private laufAblage(): LaufAblage {
+    return { schreiben: (n, w) => jsonSchreiben(this.a, `${n}.json`, n === "lauf" ? { ...(w as object), aktiv: true } : w),
+      lesen: async (n) => { const x = await jsonLesen<Record<string, unknown>>(this.a, `${n}.json`); return n === "lauf" && !x?.aktiv ? null : x; } };
   }
+  laufNeuBeginnen() { this.schreiber = null; }
+  async laufSpeichern(l: Lauf) { this.schreiber ??= new LaufSchreiber(this.laufAblage()); await this.schreiber.merken(l); }
   async laufLaden<L>(): Promise<L | null> {
     const da = await inhalt(this.a);
-    const meta = da.has("lauf.json") ? await jsonLesen<Record<string, unknown> & { aktiv?: boolean; teile?: number }>(this.a, "lauf.json", da.get("lauf.json")) : null;
+    const meta = da.has("lauf.json") ? await jsonLesen<Record<string, unknown> & { aktiv?: boolean; teile?: number; erledigtTeile?: number }>(this.a, "lauf.json", da.get("lauf.json")) : null;
     if (!meta?.aktiv) return null;
+    if (typeof meta.erledigtTeile === "number") return await laufAusTeilen(this.laufAblage()) as L | null;
+    // alter Stand (bis 0.4.3): erledigt im Kopf, Dateien in lauf-NNNN.json
     const dateien: Datei[] = [];
     for (let i = 0; i < (meta.teile || 0); i++) { const n = `lauf-${nr(i)}.json`; const t = da.has(n) ? await jsonLesen<Datei[]>(this.a, n, da.get(n)) : null; if (!t) return null; dateien.push(...t); }
     const { aktiv, teile, ...rest } = meta; void aktiv; void teile;
     return { ...rest, dateien } as L;
   }
   /** Nichts wird gelöscht: der Lauf wird nur als beendet markiert. */
-  async laufEnde() { await this.wennAnders("lauf.json", { aktiv: false }); }
+  async laufEnde() { this.schreiber = null; await jsonSchreiben(this.a, "lauf.json", { aktiv: false }); }
 
   async langerText(datei: string, pfad: string): Promise<string | null> {
     const t = await jsonLesen<Record<string, string>>(this.a, datei);

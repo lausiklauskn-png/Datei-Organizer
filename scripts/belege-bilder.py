@@ -15,14 +15,15 @@ def schrift(groesse, fett=False):
 
 def kassenbon(a, r):
     zeilen = a["zeilen"]
-    b, zh = 520, 30
+    klein = a.get("klein")  # langer Bon vom Großeinkauf: kleine Schrift, schmal
+    b, zh = (440, 19) if klein else (520, 30)
     papier = Image.new("RGB", (b, 60 + zh * len(zeilen)), (248, 246, 240))
     d = ImageDraw.Draw(papier)
     for i, z in enumerate(zeilen):
         fett = z.startswith("# ")
         t = z[2:] if fett else z
-        f = schrift(26 if fett else 22, fett)
-        x = (b - d.textlength(t, font=f)) / 2 if fett else 24
+        f = schrift((18 if fett else 14) if klein else (26 if fett else 22), fett)
+        x = (b - d.textlength(t, font=f)) / 2 if fett else (14 if klein else 24)
         d.text((x, 30 + i * zh), t, fill=(30, 30, 30), font=f)
     hg = Image.new("RGB", (papier.width + 220, papier.height + 220), tuple(int(c) for c in a.get("tisch", (120, 110, 100))))
     hg.paste(papier, (110, 110))

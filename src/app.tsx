@@ -12,7 +12,7 @@ import { archivnummernVergeben } from "../lib/archivnummer.ts";
 import { indexLesen, organizerIndex, INDEX_DATEI } from "../lib/index-format.ts";
 import { pdfLeser } from "./pdf.ts";
 import { ausHandle, eingangAbholen, erlaubnisPruefen, herunterladen, nativerEingang, nativGemerkt, nativSpeichern, nativWieder, testOrdner, type Quelle, type QuellDatei } from "./quellen.ts";
-import { laden, laufLaden, laufLoeschen, laufSpeichern, loeschen, ordnerHolen, ordnerMerken, speichern } from "./zustand.ts";
+import { laden, laufLaden, laufLoeschen, laufNeuBeginnen, laufSpeichern, loeschen, ordnerHolen, ordnerMerken, speichern } from "./zustand.ts";
 import { fortsetzen, passt, schluessel, type Lauf } from "./lauf.ts";
 import { erkenneArt } from "../lib/dateiart.ts";
 import { ArbeitSpeicher, arbeitAnzeige, arbeitFehler, arbeitFrei, arbeitGemerkt, arbeitMoeglich, arbeitVergessen, arbeitWaehlen, blockBedarf, leistungMessen, leistungText, mbText, schlank, speicherReicht, type Arbeitsordner, type Leistung } from "./arbeit.ts";
@@ -116,6 +116,7 @@ function useOrganizer() {
     if (!dazu) originale.current.clear();
     // Große Mengen in Blöcken: ein passender angefangener Lauf wird fortgesetzt, schon Gelesenes übersprungen.
     const alt = await laufHolen().catch(() => null);
+    laufNeuBeginnen(); arbeitRef.current?.laufNeuBeginnen();
     let erledigt = new Set<string>(), fortgesetzt = 0;
     if (alt && passt(alt, q, liste, dazu)) { const f = fortsetzen(alt, liste); neu = [...f.fertig]; erledigt = f.erledigt; fortgesetzt = erledigt.size; }
     if (q.handle) void ordnerMerken(q.handle);
