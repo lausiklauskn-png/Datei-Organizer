@@ -27,6 +27,15 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   `docs/BRIEF_ABSCHLUSS_2026-11-14_PSEUDONYMISIERER.md`. APK/Windows erst mit eigenem Repo (Klaus legt es an). Fassung steht in
   `src/pseudo/app.tsx` (`FASSUNG`), unabhängig vom Datei-Organizer.
 
+## Stand (14.11.2026, Absender-Runde, nicht veröffentlicht)
+
+- **Absender aus Scans/Fotos nachgewiesen besser** (Klaus: „erst die Absenderoptimierung, danach in die anderen Apps“): am neuen Stapel
+  `pruefstapel-absender` mit Bildern des zweiten unabhängigen Simulators (`scripts/kreuz2/`) 29,5 → 49,0 % (nur neu 39, nur alt 0, p ≈ 4·10⁻¹²),
+  Text und Nebenfelder nicht schlechter. Kern `079dd6d` (`ocrRand`, `KEIN_ABSENDER` in `lib/erkennen.ts`). Alles: `docs/TRAINING-WOCHENENDE-ERGEBNISSE.md`
+  (letzter Abschnitt), Regeln und Rollen `docs/PRUEFSTAPEL-TRAINING-WOCHENENDE-REGELN.md`. Werkzeuge: `scripts/absender-lernstand.mjs`, `kopf-zeigen.mjs`,
+  `absender-nachweis.mjs`. Nächster Schritt: in die anderen Apps (Familienakte erst nach der Pseudonymisierungs-Sitzung, mit Klaus' Ja).
+- **App-Symbol in 3D** (Klaus 14.11.): Vorschau `docs/symbol/symbol-vorschau-3d.png`, Quelle `scripts/symbol-bauen.mjs` – noch **nicht** eingesetzt, wartet auf Ja.
+
 ## Stand (14.11.2026, Trainings-Wochenende Teil 1, nicht veröffentlicht)
 
 - **Training (Freibrief, ohne Codex):** Block 0 (Setzer `scripts/setzen-komplex.py`, Generator `--komplex` mit 26 Haushalten, lange Bons,
