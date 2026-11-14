@@ -9,6 +9,16 @@ oder Altbestand kommen in **einen** Ordner; der Organizer sortiert sie Klick fü
 Nummern → Absender → Inhalt) und zeigt sie als Baum nach vielen Gesichtspunkten. Zuerst für die Familienakte gemacht: der Ordner
 wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). Plan und alle Entscheidungen: `docs/PLAN.md`.
 
+## Stand (14.11.2026 nachts, Fassung 0.4.2, große Mengen in Blöcken, nicht veröffentlicht)
+
+- **Große Mengen in Blöcken mit Weitermachen nach Abbruch** (Auftrag aus dem Brief vom 14.11., Klaus: „Schritt für Schritt“): das Einlesen merkt nach
+  jedem Block (50 Dateien, `BLOCK` in `src/lauf.ts`) den Stand in IndexedDB (`laufSpeichern`, Schlüssel `lauf` neben dem Zustand). Knopf **„Anhalten“**
+  unter dem Ladebalken der Ordner-Karte; Kasten **„Einlesen angefangen“** mit „Weitermachen“/„Verwerfen“ (auch nach Neustart oder Absturz).
+  Weitermachen öffnet die Quelle ohne Auswahl-Fenster, wo das geht (Testordner, gemerkter PC-Ordner, gemerkter App-Ordner), sonst die Bitte, sie
+  noch einmal zu wählen; schon Gelesenes (Pfad + Änderungsdatum) wird übersprungen, das Ergebnis ist dasselbe wie in einem Zug. UI-Probe 97 (8 neu),
+  Gegenprobe 3/3. Kern (`lib/`) unverändert. ⚠ Nicht gemessen: echte Mengen über ~800 Dateien (Speicher, Dauer), am Gerät. Brief:
+  `docs/BRIEF_ABSCHLUSS_2026-11-14_GROSSE-MENGEN.md`. Baut auf PR #15 (Windows) auf.
+
 ## Stand (14.11.2026 nachts, Fassung 0.4.1, Windows-App und Android-Lücken, nicht veröffentlicht)
 
 - **Datei-Organizer Pro für Windows** (Auftrag aus dem Brief vom 13.11.): `windows/` nach dem Muster von BookLedgerPro – Tauri 2 + Java-Engine
@@ -20,7 +30,7 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
 - **Ein Update-Schlüssel für Android und Windows** (`UpdateFeed.SCHLUESSEL` = `DesktopUpdates.SCHLUESSEL`, geprüft) – noch leer, bis Klaus ihn gibt
   (Anleitung Schritt für Schritt im Chat; Block in `docs/ANDROID.md` (b)).
 - ⚠ Kein Windows-PC, kein Android-Gerät, kein Rust- oder Gradle-Bau in der Sitzung: erst `windows.yml`/`android.yml` zeigen, ob es baut.
-  Offen: große Mengen in Blöcken mit Weitermachen (Klaus: die nächsten 2–3 Wochen). Brief: `docs/BRIEF_ABSCHLUSS_2026-11-14_ORGANIZER-PRO-WINDOWS.md`.
+  (Große Mengen in Blöcken: seit 0.4.2, oben.) Brief: `docs/BRIEF_ABSCHLUSS_2026-11-14_ORGANIZER-PRO-WINDOWS.md`.
 
 ## Stand (13.11.2026 nachts, Fassung 0.4.0, Android-App, nicht veröffentlicht)
 

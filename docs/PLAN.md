@@ -112,6 +112,9 @@ Was der Organizer dafür neben jede Datei legt (eine Begleitdatei bzw. ein Eintr
   ersetzbar, der Text bleibt die Quelle.
 - **Altbestände:** ganze Ordner in Blöcken (wie der Eingangsordner, `lib/eingang-bloecke.ts`), schon Gelesenes wird am
   Fingerabdruck erkannt und nicht noch einmal gelesen. Originale bleiben, wo und wie sie sind, wenn nur vorbereitet werden soll.
+  **Gebaut 0.4.2 (14.11.):** eigene kleine Fassung `src/lauf.ts` (Blöcke zu 50, Stand nach jedem Block, Anhalten/Weitermachen/Verwerfen); erkannt
+  wird am Pfad + Änderungsdatum, nicht am Fingerabdruck (der kostet das Lesen). `eingang-bloecke.ts` der Familienakte ist eine Warteschlange
+  für den Eingangsordner mit Name|Größe|Zeit und passt nicht auf die Quellen hier (ohne Größe); übernommen ist nichts davon.
 - **Übernahme:** die Familienakte liest `organizer-index.json` im Eingang und übernimmt Steckbrief, Text und Vorschläge; andere
   Pro-Apps (Private Brain Pro, BookLedgerPro) über dasselbe Format.
 
