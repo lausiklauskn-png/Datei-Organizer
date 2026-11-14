@@ -16,13 +16,14 @@ const ZEICHEN = [
 
 /** form: "kachel" (gerundetes Quadrat), "rund" (Kreis), "voll" (randlos, für „maskable“), "vorne" (nur Zeichen, Android-Vordergrund), "hinten" (nur Verlauf) */
 export function symbolSvg(form = "kachel", groesse = 1024) {
-  const g = groesse, r = form === "rund" ? g / 2 : g * 0.22, randlos = form === "hinten" || form === "voll";
+  // Klaus 14.11.: kein Außenrand, komplett ausgefüllt – Kachel randlos bis an die Kante (das System rundet selbst), keine helle Kante
+  const g = groesse, r = form === "rund" ? g / 2 : 0, randlos = form !== "rund";
   const flaeche = form === "vorne" ? "" : `
     <rect x="0" y="0" width="${g}" height="${g}" rx="${randlos ? 0 : r}" fill="url(#verlauf)"/>
     <rect x="0" y="0" width="${g}" height="${g}" rx="${randlos ? 0 : r}" fill="url(#glanz)"/>
-    ${randlos ? "" : `<rect x="${g * 0.012}" y="${g * 0.012}" width="${g * 0.976}" height="${g * 0.976}" rx="${r * 0.97}" fill="none" stroke="url(#kante)" stroke-width="${g * 0.016}"/>`}`;
-  // Zeichen: Android-Vordergrund braucht den Rand (sichere Zone 66/108), sonst etwa 58 % der Kachel
-  const anteil = form === "vorne" ? 0.44 : form === "voll" ? 0.5 : 0.58, s = (g * anteil) / 24, x0 = (g - 24 * s) / 2, y0 = (g - 24 * s) / 2 + g * 0.005;
+`;
+  // Zeichen (Klaus 14.11.: Fläche gut gefüllt, nicht zu nah am Rand): Kachel 68 %, rund 62 %, randlos „maskable“ 60 %, Android-Vordergrund 56 % (sichere Zone 66/108)
+  const anteil = { vorne: 0.56, voll: 0.6, rund: 0.62 }[form] ?? 0.68, s = (g * anteil) / 24, x0 = (g - 24 * s) / 2, y0 = (g - 24 * s) / 2 + g * 0.005;
   const pfade = ZEICHEN.map((d) => `<path d="${d}"/>`).join("");
   const zeichen = (farbe, dx, dy, filter = "", breite = 2.1) => `<g transform="translate(${x0 + dx} ${y0 + dy}) scale(${s})" fill="none" stroke="${farbe}" stroke-width="${breite}" stroke-linecap="round" stroke-linejoin="round" ${filter}>${pfade}</g>`;
   const alleZeichen = form === "hinten" ? "" : null;
