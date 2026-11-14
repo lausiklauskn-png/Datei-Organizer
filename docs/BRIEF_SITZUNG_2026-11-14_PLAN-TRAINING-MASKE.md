@@ -157,6 +157,12 @@ Organisationen), BookLedgerPro (Stammdaten, Weitere Namen, `namensmuster.js`), P
     für Mistral (Schlüssel nur in der App, nie im Chat). Ton-Wahl als feste Knöpfe statt nur Freitext. Gleicher Baustein für alle
     Pro-Apps (Punkt 17).
 
+22. **Bezugsdokumente zum Brief (Klaus 14.11.2026):** Zum Auftrag gehören automatisch die Dokumente, auf die sich der Brief bezieht –
+    z. B. AGB, Nutzungsbedingungen, Vertrag, frühere Briefe derselben Sache. Die App findet sie selbst (Familienakte: Vorgang/Akte;
+    Datei-Organizer: vorsortierter Baum; Private Brain: Suche/Bedeutungssuche) und legt sie mit in den Auftrag im Ordner; die KI
+    kann sich dann auf Abschnitte beziehen (Kündigungsfrist § …). Öffentliche Texte (AGB) dürfen unverändert mit, eigene Verträge
+    und Briefe nur pseudonymisiert; Anzeige vor dem Senden, welche Dateien mitgehen (abwählbar). Quellenangabe in der Antwort.
+
 ## Startauftrag zum Einfügen
 
 ```
@@ -167,7 +173,7 @@ Ziel: Plan „Pseudonymisieren in allen Pro-Apps“ – Knopf „Pseudonymisiere
 Pro-Tresor (aus der Familienakte übernehmen oder selbst anlegen, verschlüsselt, Nummern nur als Fingerabdruck),
 Mail mit Anhängen samt OCR, Export und Kopieren-Knopf (Doppelblatt-Symbol) für jede KI, Training des Datei-Organizers nur aus pseudonymisierten Daten (ganze App pseudonymisiert exportieren → KI legt Sortier-Datei zurück → App übernimmt nach Bestätigung).
 Reihenfolge: zuerst Marktcheck (aktuell recherchieren), dann das Beste übernehmen, dann Modul 25 verbessern und in alle
-Apps nachziehen, nie doppelt pseudonymisieren, Landkarten nachziehen. Punkte 1–21 aus dem Brief; Klaus sagt je Punkt Ja.
+Apps nachziehen, nie doppelt pseudonymisieren, Landkarten nachziehen. Punkte 1–22 aus dem Brief; Klaus sagt je Punkt Ja.
 Ergebnis: docs/PLAN_PSEUDONYMISIEREN.md + HTML-Vorschau der sichtbaren Teile.
 Nicht: echte Dokumente oder pseudonymisierte Texte ins Repo (öffentlich), keine Schlüssel/PINs im Chat oder in Dateien,
 Gmail-Konnektor nicht als Quelle (liest Klartext), kein neues Repo, nichts veröffentlichen.
