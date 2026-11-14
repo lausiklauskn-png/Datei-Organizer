@@ -134,6 +134,11 @@ Organisationen), BookLedgerPro (Stammdaten, Weitere Namen, `namensmuster.js`), P
     Apps), in die Landkarte der Familienakte und in die Landkarte des Datei-Organizers; zuerst grau „geplant“, dann je Stand.
     Danach Geschenkbox neu bauen.
 
+19. **Export und Kopieren (Klaus 14.11.2026):** einen ganzen eigenen Ordner pseudonymisieren lassen und das Ergebnis
+    **exportieren** (Ordner/ZIP/Textdatei) oder **kopieren** – Knopf mit Strichsymbol „Kopieren“ (zwei übereinanderliegende
+    Blätter, im Stil der vorhandenen Strichgrafiken), damit man den pseudonymisierten Text in eine beliebige KI einfügen kann.
+    Kopiert/exportiert wird nur die pseudonymisierte Fassung, nie das Original; Marke „pseudonymisiert“ bleibt dabei (Punkt 16).
+
 ## Startauftrag zum Einfügen
 
 ```
@@ -142,9 +147,9 @@ Zuerst lesen: CLAUDE.md, docs/BRIEF_SITZUNG_2026-11-14_PLAN-TRAINING-MASKE.md (g
 docs/PLAN.md, docs/PRUEFREGELN-GRUPPE.md; in Private Brain Pro docs/KI-BEIM-SCHREIBEN.md, docs/AUFRAEUMEN-NEWSLETTER.md.
 Ziel: Plan „Pseudonymisieren in allen Pro-Apps“ – Knopf „Pseudonymisieren“/„Zurückführen“ in jeder App, Profile im
 Pro-Tresor (aus der Familienakte übernehmen oder selbst anlegen, verschlüsselt, Nummern nur als Fingerabdruck),
-Mail mit Anhängen samt OCR, Training des Datei-Organizers nur aus pseudonymisierten Daten.
+Mail mit Anhängen samt OCR, Export und Kopieren-Knopf (Doppelblatt-Symbol) für jede KI, Training des Datei-Organizers nur aus pseudonymisierten Daten.
 Reihenfolge: zuerst Marktcheck (aktuell recherchieren), dann das Beste übernehmen, dann Modul 25 verbessern und in alle
-Apps nachziehen, nie doppelt pseudonymisieren, Landkarten nachziehen. Punkte 1–18 aus dem Brief; Klaus sagt je Punkt Ja.
+Apps nachziehen, nie doppelt pseudonymisieren, Landkarten nachziehen. Punkte 1–19 aus dem Brief; Klaus sagt je Punkt Ja.
 Ergebnis: docs/PLAN_PSEUDONYMISIEREN.md + HTML-Vorschau der sichtbaren Teile.
 Nicht: echte Dokumente oder pseudonymisierte Texte ins Repo (öffentlich), keine Schlüssel/PINs im Chat oder in Dateien,
 Gmail-Konnektor nicht als Quelle (liest Klartext), kein neues Repo, nichts veröffentlichen.
