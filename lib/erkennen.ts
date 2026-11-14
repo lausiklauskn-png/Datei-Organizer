@@ -186,7 +186,8 @@ export function ocrRand(zeile: string): string {
   if (/^\s*\[/.test(zeile)) return zeile;                                   // „[Scan Teil 1 von 3]“: Vermerk, bleibt wie er ist
   const zeichen = (zeile.match(/[^\p{L}\d\s]/gu) || []).length, buchst = (zeile.match(/\p{L}/gu) || []).length;
   if (zeichen >= 3 && buchst < zeichen) return "";                         // überwiegend Zeichenreste („= - BEE == —“)
-  let s = zeile.replace(/^[^\p{L}\d"„(]+/u, "");
+  let s = zeile.replace(/^[^\p{L}\d"„(]+/u, "").replace(/^\d[a-z]?\s+(?=\p{L})/u, "");   // „7 Seniorenkreis …“, „7z Vorgangs-Nr.“
+  if (/^[A-ZÄÖÜ]{2}\s+/.test(s) && GEBIET.test(s.replace(/^\S+\s+/, ""))) s = s.replace(/^\S+\s+/, "");   // „FB Finanzamt …“
   let wortRest = false;
   for (let k = 0; k < 2; k++) {
     const m = s.match(/^((?:[a-zäöü]{1,3}|[A-ZÄÖÜ][a-zäöü]?)[\]|)}>]?)\s+(?=[A-ZÄÖÜ][\wäöüß-]{2,})/);
@@ -195,14 +196,15 @@ export function ocrRand(zeile: string): string {
   }
   if (wortRest && !/\s/.test(s.trim())) return "";                        // „een Peer“: vor einem einzelnen Wort ist meist alles Rest
   for (let k = 0; k < 3; k++) {
-    const m = s.match(/\s+([a-zäöü]{1,2}|[A-ZÄÖÜ][a-zäöü]?|[A-ZÄÖÜ]{2}|[|\]}=—–_~»«*]+|\((?:ex|e|x)\))\s*$/);
+    const m = s.match(/\s+([a-zäöü]{1,2}|[A-ZÄÖÜ][a-zäöü]?|[A-ZÄÖÜ]{2}|\d|[a-z]\d|[|\]}=—–_~»«*]+|\((?:ex|e|x)\))\s*$/);
     if (!m || RECHTSFORM_KURZ.test(m[1])) break;
+    if (/\d/.test(m[1]) && !(GEBIET.test(s) || RECHTSFORM.test(s))) break;   // Hausnummern bleiben; nur „Finanzamt Unistadt 7“
     s = s.slice(0, m.index);
   }
   return s.replace(/\s+[|\]}]+\s*$/, "").trim();
 }
 /** Name ist nur Straße mit Hausnummer, nur Postfach oder nur Zeichenreste (kein Wort mit drei Buchstaben). */
-const OBERFLAECHE = /^(posteingang|mitteilungen|benachrichtigungen|nachrichten|neue nachricht|startseite|übersicht|menü|einstellungen|zurück|suche|profil|mein konto|meine daten|kassenbon|digitaler kassenbon|ihr schreiben|ihre nachricht|ihre anfrage|ihr antrag|unser zeichen|ihr zeichen)\b/i;
+const OBERFLAECHE = /^(?:\S{1,3}\s+)?zeichen\b|^(vorname|nachname|name|versicherungsschein|vorgangs)\b|^(posteingang|mitteilungen|benachrichtigungen|nachrichten|neue nachricht|startseite|übersicht|menü|einstellungen|zurück|suche|profil|mein konto|meine daten|kassenbon|digitaler kassenbon|ihr schreiben|ihre nachricht|ihre anfrage|ihr antrag|unser zeichen|ihr zeichen)\b/i;
 const KEIN_ABSENDER = (n: string) => {
   const worte = n.split(/\s+/), kurz = worte.filter((x) => /^\p{L}{1,2}$/u.test(x) && !RECHTSFORM_KURZ.test(x) && !/^(dr|st|am|an|im|in|zu|zum|zur)$/i.test(x)).length;
   return /^[A-ZÄÖÜ][\wäöüß.-]*(straße|strasse|str\.|weg|platz|ring|allee|gasse|damm|chaussee|ufer|steig|pfad)\s*\d/i.test(n) || /^postfach\b/i.test(n) || !/\p{L}{3}/u.test(n)
