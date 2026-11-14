@@ -28,7 +28,7 @@ async function kern(pfad) {
     const e = JSON.parse(readFileSync(join(o, "ERWARTUNG.json"), "utf8")).dateien;
     const hh = existsSync(join(o, "HAUSHALTE.json")) ? Object.fromEntries(JSON.parse(readFileSync(join(o, "HAUSHALTE.json"), "utf8")).haushalte.map((h) => [h.id, h])) : {};
     let ds = [];
-    for (const [i, x] of e.entries()) { const q = quelle(o, x.datei);
+    for (const [i, x] of e.entries()) { if (SETZEN?.[x.datei]?.inScanVon) continue; const q = quelle(o, x.datei);
       const t = await einlesen({ pfad: x.datei, name: q.name, geaendert: Date.UTC(2026, 10, 1) + i, bytes: new Uint8Array(readFileSync(q.pfad)) }, leser ? leser.pdfLeser(true) : async () => "", 0, leser ? leser.ocr : async () => "");
       t[0].pfad = x.datei; ds.push(...t); }
     const org = new Map(absenderVereinheitlichen(ds.map((d) => siebe(d, 5, []))).map((d) => [d.pfad, d]));
@@ -52,7 +52,9 @@ function soll(o) {
 }
 const systeme = { neu: await kern(resolve(WURZEL, arg("--kern", "."))) }; if (arg("--alt")) systeme.alt = await kern(resolve(WURZEL, arg("--alt")));
 const erg = { ordner: ordner.map((o) => o.replace(WURZEL, "")), felder: {} }, zeilen = [];
-for (const o of ordner) { const s = soll(o), ist = {}; for (const k of Object.keys(systeme)) ist[k] = await systeme[k](o); for (const [d, sw] of s) zeilen.push({ o, d, soll: sw, ...Object.fromEntries(Object.keys(systeme).map((k) => [k, ist[k].get(d)])) }); }
+for (const o of ordner) { const s = soll(o), ist = {};
+  // gesetzt: ein Stück, das als zweites in einem fremden Scan steckt, ist keine eigene Datei – es zählt nicht einzeln
+  if (SETZEN) for (const d of [...s.keys()]) if (SETZEN[d]?.inScanVon) s.delete(d); for (const k of Object.keys(systeme)) ist[k] = await systeme[k](o); for (const [d, sw] of s) zeilen.push({ o, d, soll: sw, ...Object.fromEntries(Object.keys(systeme).map((k) => [k, ist[k].get(d)])) }); }
 const pz = (x) => x.n ? `${x.ok}/${x.n} = ${(100 * x.ok / x.n).toFixed(1)} %` + (x.spanne ? ` (${x.spanne.map((v) => (100 * v).toFixed(0)).join("–")} %)` : "") : "nicht gemessen";
 console.log(`${zeilen.length} Schriftstücke aus ${ordner.length} Ordner(n), Soll: ${arg("--soll", "ERWARTUNG.json")}`);
 for (const f of FELDER) {

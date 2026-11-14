@@ -407,6 +407,21 @@ def bildschirm(text_zeilen, r):
     d.rectangle([0, h - 140, w, h], fill=(245, 245, 245))
     return img
 
+def bonstreifen(zeilen, r):
+    """Kassenbon als Thermopapier-Streifen: schmal, kleine Schrift, bei langen Bons sehr lang (Klaus 14.11.: „einen halben Kilometer lang“)."""
+    lang = len(zeilen) > 35
+    fn = ImageFont.truetype(SCHRIFT["mono"][0], 15 if lang else 21); fb = ImageFont.truetype(SCHRIFT["mono"][1], 18 if lang else 25)
+    zh = 20 if lang else 29; b = 430 if lang else 520
+    papier = Image.new("RGB", (b, 70 + zh * len(zeilen)), (247, 245, 238)); d = ImageDraw.Draw(papier)
+    for i, z in enumerate(zeilen):
+        fett = z.startswith("#"); t = z.lstrip("# ").rstrip()
+        f = fb if fett else fn
+        x = (b - d.textlength(t, font=f)) / 2 if fett else 14
+        d.text((x, 35 + i * zh), t, fill=(35, 35, 35), font=f)
+    # Thermopapier verblasst ungleichmäßig
+    a = np.asarray(papier).astype(np.float32); a = 255 - (255 - a) * np.linspace(r.uniform(0.55, 0.95), 1.0, a.shape[0])[:, None, None]
+    return Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
+
 def quelltext(zeilen):
     aus = []
     for z in zeilen:
@@ -423,18 +438,24 @@ def setze_eins(a):
     form, guete = a.get("form", "pdf-scan"), a.get("qualitaet", "gut")
     art = a.get("art", "brief")
     os.makedirs(os.path.dirname(a["ziel"]) or ".", exist_ok=True)
+    if zeilen and zeilen[0].strip() in ("@bon", "@appbon"):
+        app = zeilen[0].strip() == "@appbon"; zeilen = zeilen[1:]
+        if app and form in ("pdf-scan", "foto"): form = "bildschirm"
+        if not app and form in ("pdf-text", "bildschirm", "pdf-scan"): form = "foto"
+        if not app:
+            img = altern(bonstreifen(zeilen, r), r, guete, True); img.save(a["ziel"], "JPEG", quality=GUETE[guete]["jpeg"]); return {"seiten": 1, "form": "foto"}
     if form == "bildschirm":
-        bildschirm(quelltext(zeilen).split("\n"), r).save(a["ziel"], "PNG", optimize=True); return {"seiten": 1}
+        bildschirm(quelltext(zeilen).split("\n"), r).save(a["ziel"], "PNG", optimize=True); return {"seiten": 1, "form": "bildschirm"}
     seiten = setzen(zerlegen(zeilen), r, art)
     if form == "pdf-text":
-        pdf_text(seiten, a["ziel"]); return {"seiten": len(seiten)}
+        pdf_text(seiten, a["ziel"]); return {"seiten": len(seiten), "form": "pdf-text"}
     dpi = GUETE[guete]["dpi"] if form == "pdf-scan" else 130
     bilder = [altern(bild(ops, dpi), r, guete, form == "foto") for ops in seiten]
     if form == "foto":
-        bilder[0].save(a["ziel"], "JPEG", quality=GUETE[guete]["jpeg"]); return {"seiten": 1, "seitenGesetzt": len(bilder)}
+        bilder[0].save(a["ziel"], "JPEG", quality=GUETE[guete]["jpeg"]); return {"seiten": 1, "seitenGesetzt": len(bilder), "form": "foto"}
     bilder = [b.convert("L") if r.random() < 0.5 else b for b in bilder]  # Graustufen-Scan oder Farbe
     bilder[0].save(a["ziel"], "PDF", save_all=True, append_images=bilder[1:], resolution=dpi, quality=GUETE[guete]["jpeg"])
-    return {"seiten": len(bilder)}
+    return {"seiten": len(bilder), "form": "pdf-scan"}
 
 def verteilung(s, std):
     if not s: return std
@@ -453,16 +474,27 @@ if __name__ == "__main__":
         formen = verteilung(arg("--formen"), [("pdf-scan", 0.6), ("foto", 0.25), ("pdf-text", 0.15)])
         guete = verteilung(arg("--guete"), [("gut", 0.35), ("mittel", 0.4), ("schlecht", 0.25)])
         protokoll = {}
+        # --paare datei.json: {"A.txt": "B.txt"} – zwei Stücke in einem Scan (Runde E): B wird hinter A gesetzt, als PDF-Scan
+        paare = json.load(open(arg("--paare"), encoding="utf-8")) if arg("--paare") else {}
+        hinten = {b: a for a, b in paare.items()}
         for wurzel, _, namen in os.walk(stapel):
             for name in sorted(namen):
                 if not name.endswith(".txt"): continue
                 pfad = os.path.relpath(os.path.join(wurzel, name), stapel)
                 r = random.Random(int(hashlib.sha256(("form" + pfad).encode()).hexdigest()[:12], 16))
                 form, q = ziehe(r, formen), ziehe(r, guete)
-                endung = {"pdf-scan": ".pdf", "pdf-text": ".pdf", "foto": ".jpg", "bildschirm": ".png"}[form]
-                ausgabe = pfad[:-4] + endung
-                info = setze_eins({"ziel": os.path.join(ziel, ausgabe), "text": open(os.path.join(wurzel, name), encoding="utf-8").read(), "form": form, "qualitaet": q, "saat": pfad, "art": "bank" if pfad.startswith("bank/") else "brief"})
-                protokoll[pfad] = {"datei": ausgabe, "form": form, "qualitaet": q if form in ("pdf-scan", "foto") else None, **info}
+                if pfad in hinten: continue
+                text = open(os.path.join(wurzel, name), encoding="utf-8").read()
+                if pfad in paare:
+                    form = "pdf-scan"; text = text.rstrip() + "\n@seite\n" + open(os.path.join(stapel, paare[pfad]), encoding="utf-8").read()
+                tmp = os.path.join(ziel, pfad[:-4] + ".tmp")
+                info = setze_eins({"ziel": tmp, "text": text, "form": form, "qualitaet": q, "saat": pfad, "art": "bank" if pfad.startswith("bank/") else "brief"})
+                form = info.pop("form", form)
+                ausgabe = pfad[:-4] + {"pdf-scan": ".pdf", "pdf-text": ".pdf", "foto": ".jpg", "bildschirm": ".png"}[form]
+                os.replace(tmp, os.path.join(ziel, ausgabe))
+                protokoll[pfad] = {"datei": ausgabe, "form": form, "qualitaet": q if form in ("pdf-scan", "foto") else None, **info, **({"zweitesStueck": paare[pfad]} if pfad in paare else {})}
+        for b, a in hinten.items():
+            if a in protokoll: protokoll[b] = {**protokoll[a], "inScanVon": a}
         os.makedirs(ziel, exist_ok=True)
         json.dump(protokoll, open(os.path.join(ziel, "SETZEN.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
         print(f"{len(protokoll)} Stücke gesetzt → {ziel}")
