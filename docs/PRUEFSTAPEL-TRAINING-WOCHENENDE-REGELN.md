@@ -86,4 +86,9 @@ mehr Personen; Freibrief zum Mergen eigener geprüfter PRs; nichts veröffentlic
 ## Eingefroren
 
 - Alt: `534cc08`.
-- Neu (nach Block 1): _wird vor dem ersten Stapel-Auftrag eingetragen._
+- **Neu: Commit `05c7ef0` (14.11.2026, 08:10 UTC)** – `lib/` darin byte-gleich mit `b391aaa` (Fassung 0.3.4 bis 0.4.3). Eingetragen,
+  bevor der erste Stapel-Auftrag (Runde C) vergeben wurde.
+- **Nachtrag zu Regel 1 (14.11., vor der Vergabe):** Block 1 ändert nur den Ablauf der App (`src/`: Stand in Teilen merken), nicht den
+  Kern; deshalb wird schon jetzt eingefroren und Runde C vergeben, während die Mengenprobe läuft. Sollte Block 1 doch am Kern etwas
+  für das Tempo ändern, muss es nachweislich dasselbe Ergebnis liefern (gleiche Felder an allen Generator-Dateien), sonst wird es erst
+  nach Block 5 eingebaut.
