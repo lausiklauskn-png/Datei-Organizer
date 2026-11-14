@@ -16,7 +16,9 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   unter dem Ladebalken der Ordner-Karte; Kasten **„Einlesen angefangen“** mit „Weitermachen“/„Verwerfen“ (auch nach Neustart oder Absturz).
   Weitermachen öffnet die Quelle ohne Auswahl-Fenster, wo das geht (Testordner, gemerkter PC-Ordner, gemerkter App-Ordner), sonst die Bitte, sie
   noch einmal zu wählen; schon Gelesenes (Pfad + Änderungsdatum) wird übersprungen, das Ergebnis ist dasselbe wie in einem Zug. UI-Probe 97 (8 neu),
-  Gegenprobe 3/3. Kern (`lib/`) unverändert. ⚠ Nicht gemessen: echte Mengen über ~800 Dateien (Speicher, Dauer), am Gerät. Brief:
+  Gegenprobe 3/3. Kern (`lib/`) unverändert.
+  **Update-Schlüssel eingetragen (Klaus 14.11., Schritt b):** `UpdateFeed.SCHLUESSEL` = `DesktopUpdates.SCHLUESSEL`, Geheimnisse `UPDATE_SIGNING_KEY`/`UPDATE_UPLOAD_KEY`
+  gesetzt. Klaus 14.11.: **erst die App fertig** (Signier-Identität, Veröffentlichen), **keine Tests mit großen Mengen** davor. ⚠ Nicht gemessen: echte Mengen über ~800 Dateien (Speicher, Dauer), am Gerät. Brief:
   `docs/BRIEF_ABSCHLUSS_2026-11-14_GROSSE-MENGEN.md`. Baut auf PR #15 (Windows) auf.
 
 ## Stand (14.11.2026 nachts, Fassung 0.4.1, Windows-App und Android-Lücken, nicht veröffentlicht)

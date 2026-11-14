@@ -20,12 +20,11 @@ final class UpdateFeed {
     static final String BASIS = "https://family-projekt.de/updates/datei-organizer/";
     static final String FEED = "aktuell-android.json";
     /**
-     * PLATZHALTER – öffentlicher Signatur-Schlüssel (SubjectPublicKeyInfo, Ed25519, Base64) fehlt noch.
-     * Klaus erzeugt ihn in Termux (docs/ANDROID.md, „Was Klaus einmalig tun muss“, Schritt b) und gibt die ausgegebene Zeile
-     * an Claude; sie kommt genau hierher. Solange hier nichts steht, meldet die Updateprüfung „nicht eingerichtet“ und
-     * installiert nie etwas; der Veröffentlichungs-Lauf bricht vor dem Hochladen ab.
+     * Öffentlicher Signatur-Schlüssel (SubjectPublicKeyInfo, Ed25519, Base64), von Klaus am 14.11.2026 in Termux erzeugt
+     * (docs/ANDROID.md, Schritt b). Der geheime Teil liegt nur in Termux und als GitHub-Geheimnis UPDATE_SIGNING_KEY.
+     * Dieselbe Zeile steht in DesktopUpdates.SCHLUESSEL (Windows) – test-native.mjs und die Veröffentlichungs-Läufe prüfen das.
      */
-    static final String SCHLUESSEL = "";
+    static final String SCHLUESSEL = "MCowBQYDK2VwAyEAfdutRiXMBL+fOEgDuf4y7oaGaOFhP9NAjSa760JUQYw=";
     static final long MAX_APK = 512L * 1024 * 1024;
     private static final byte[] SPKI_KOPF = { 0x30, 0x2a, 0x30, 0x05, 0x06, 0x03, 0x2b, 0x65, 0x70, 0x03, 0x21, 0x00 };
     private UpdateFeed() { }
