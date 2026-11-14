@@ -42,7 +42,7 @@ unabhängig eingeordneten, möglichst verschiedenen** Schriftstücken; mehr glei
 | 4 Runde D + F | D: anderer Schreiber (Stapel von einem anderen Agenten-Aufbau); F: andere Jahre, alte Vordrucke, neue Gebührennamen | je 150 | 3 + Autor | Kreuztest: hängt der Kern an der Machart? |
 | 5 Lernen | erst **nach** den Messungen: Wortmodell neu abstimmen aus allen verbrauchten Stapeln, Regeln schärfen, an einem **ungesehenen** Rest gegenmessen; nur übernehmen, was gesichert besser ist | – | keine | neuer Kern mit Zahlen |
 
-Zusammen rund **950 neu eingeordnete Schriftstücke** (je zwei unabhängige Agenten + Autor) und eine 50.000er-Mengenprobe.
+Zusammen rund **950 neu eingeordnete Schriftstücke** (je drei unabhängige Agenten + Autor) und eine 50.000er-Mengenprobe.
 Ohne Codex (Klaus 14.11.): drei unabhängige Claude-Agenten je Runde.
 Je Workflow höchstens 10 Agenten; jeder Block ein eigener Lauf, damit Klaus nach jedem Block anhalten kann.
 Ist Block 1–3 fertig und Budget übrig: Block 4, dann 5. Reicht es nicht: 1, 2, 5 sind das Wichtigste.
