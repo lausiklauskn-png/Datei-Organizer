@@ -67,6 +67,8 @@ try {
   soll("Alle Testdateien (mit Mail-Anhängen) im Eingang", gesamt >= 101, meldung);
   soll("Sieb 1 meldet 3 gesperrte und 3 doppelte (eine als Mail-Anhang)", /3 auffällig, 3 doppelt/.test(meldung), meldung);
   soll("Kopf nennt den Ordner", (await page.locator("[data-ordner-pill]").innerText()).includes("Testordner"));
+  // Android liest am Feld nur die Beschriftung (sonst den Tooltip ohne Anzahl) – die Emulator-Probe der APK sucht „Testordner (erfunden) · N“.
+  soll("Kopf: Beschriftung = sichtbarer Text mit Anzahl (für Vorleser und die APK-Probe)", await page.locator("[data-ordner-pill]").evaluate((e) => e.getAttribute("aria-label") === e.textContent && /Testordner \(erfunden\) · \d+/.test(e.getAttribute("aria-label") || "")));
 
   console.log("Sortieren");
   await page.locator("[data-nav=sortieren]").click();
