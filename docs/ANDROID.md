@@ -57,9 +57,9 @@ Speicher-Namen bleiben in beiden gleich (IndexedDB, Vorrat `datei-organizer-v…
   `do_update_still_v1`). Steht ein Update bereit, erscheint neben der Fassung das Fähnchen „Update X.Y.Z“. Ein Tipp auf das Fähnchen
   **oder** auf die Fassungsnummer im Kopf lädt direkt (mit Prozent) und öffnet das Installieren-Fenster – wie Workflow PDF Pro.
   Aktuell → kurze Meldung „Aktuelle Fassung …“. Ohne Netz → still (die stille Frage zeigt nie etwas an).
-- ⚠ **Der öffentliche Schlüssel fehlt noch** (Platzhalter `SCHLUESSEL = ""`). Bis Klaus ihn erzeugt hat, meldet ein Tipp
-  „Updates sind in dieser Fassung noch nicht eingerichtet“, die stille Frage bleibt stumm, installiert wird nie etwas, und
-  `android-release.yml` bricht schon im ersten Schritt ab.
+- **Öffentlicher Schlüssel eingetragen (Klaus 14.11.2026, Schritt b erledigt):** `UpdateFeed.SCHLUESSEL` = `DesktopUpdates.SCHLUESSEL`;
+  die Geheimnisse `UPDATE_SIGNING_KEY` und `UPDATE_UPLOAD_KEY` liegen im Repo, der Server-Ordner `updates/datei-organizer/` antwortet.
+  Solange nichts veröffentlicht ist, findet die App keinen Feed und bleibt still.
 
 ### Fassungsnummern
 
@@ -96,7 +96,7 @@ Nichts davon kann Claude tun; nichts wird ohne Klaus' Wort ausgelöst oder verö
    ⚠ Der Lauf bricht ab, wenn es im Repo schon GitHub-Releases gibt (Schutz vor einem zweiten Schlüssel) – dann vorher Bescheid geben.
    ⚠ Wer die Freigabe verliert, kann nach der ersten Veröffentlichung keine Updates mehr ausliefern.
 
-**(b) Update-Server** (Termux, ein Block; der Hochlade-Schlüssel von BookLedgerPro darf schon in `/srv/family-project/updates` schreiben):
+**(b) Update-Server** – ✅ erledigt am 14.11.2026 (Termux, ein Block; der Hochlade-Schlüssel von BookLedgerPro darf schon in `/srv/family-project/updates` schreiben):
 
 ```
 A=datei-organizer; R=lausiklauskn-png/Datei-Organizer; S=root@167.233.204.72

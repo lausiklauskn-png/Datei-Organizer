@@ -71,6 +71,9 @@ a { color: var(--teal); }
 .ladeanzeige.oben { padding: 0 16px 8px; }
 .ladeanzeige.oben .fortschritt { margin-top: 0; height: 6px; }
 .ladeanzeige.oben .leise { font-size: .76rem; }
+.ladeanzeige [data-anhalten] { margin-top: 8px; }
+.weiter-kasten { margin-top: 12px; padding: 10px 12px; border: 1px solid var(--line); background: var(--amber-soft); border-radius: 8px; }
+.weiter-kasten p { margin: 0 0 8px; }
 
 /* „?“ wie in der Familienakte */
 .info { position: relative; display: inline-flex; flex: 0 0 auto; }

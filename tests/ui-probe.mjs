@@ -385,6 +385,50 @@ try {
     soll("Android-App: keine Fehler in der Seite", afehler.length === 0, afehler.slice(0, 3).join(" | "));
     await actx.close();
   }
+  // Große Mengen in Blöcken (0.4.2): Absturz mitten im Einlesen, Weitermachen, Anhalten. Der Testordner (101 Dateien) ist größer als ein Block (50).
+  {
+    console.log("Einlesen in Blöcken, Weitermachen nach Abbruch");
+    const bctx = await browser.newContext({ viewport: { width: 1100, height: 900 } });
+    const bp = await bctx.newPage();
+    const bfehler = []; bp.on("pageerror", (e) => bfehler.push(String(e)));
+    const gelesen = []; bctx.on("request", (r) => { const u = new URL(r.url()); if (u.pathname.includes("/testdaten/") && !u.pathname.endsWith("dateien.json")) gelesen.push(decodeURIComponent(u.pathname)); });
+    const wert = () => bp.evaluate(() => Number(document.querySelector(".site-header [role=progressbar]")?.getAttribute("aria-valuenow") || -1));
+    await bp.goto(basis + "#ordner");
+    await bp.locator("[data-testordner]").click();
+    await bp.waitForFunction(() => Number(document.querySelector(".site-header [role=progressbar]")?.getAttribute("aria-valuenow") || 0) >= 62, null, { timeout: 120000 }).catch(() => {});
+    const vorAbsturz = await wert();
+    // Absturz: Seite weg mitten im zweiten Block, ohne „Anhalten“.
+    await bp.reload();
+    await bp.waitForSelector("[data-angefangen]", { timeout: 8000 }).catch(() => {});
+    const k1 = (await bp.locator("[data-angefangen]").innerText().catch(() => "")) || "";
+    soll("Nach Absturz mitten im 2. Block: „Einlesen angefangen“ mit 50 von 101 (erster Block gemerkt)", vorAbsturz >= 62 && /\b50 von 101 Dateien/.test(k1), `${vorAbsturz} · ${k1}`);
+    gelesen.length = 0;
+    await bp.locator("[data-weitermachen]").click();
+    await bp.waitForFunction(() => Number(document.querySelector(".site-header [role=progressbar]")?.getAttribute("aria-valuenow") || 0) >= 75, null, { timeout: 120000 }).catch(() => {});
+    await bp.locator("[data-anhalten]").click().catch(() => {});
+    await bp.waitForFunction(() => /Angehalten/.test(document.querySelector("[data-meldung]")?.textContent || ""), null, { timeout: 60000 }).catch(() => {});
+    const m2 = (await bp.locator("[data-meldung]").innerText().catch(() => "")) || "";
+    const n2 = Number(m2.match(/Angehalten: (\d+) von 101/)?.[1]);
+    soll("„Weitermachen“ ohne Auswahl-Fenster liest nur den Rest (erste 50 nicht noch einmal geholt)", gelesen.length > 0 && gelesen.length === n2 - 50, `${gelesen.length} geholt, Stand ${n2}`);
+    soll("„Anhalten“ hält an und merkt den Stand", n2 >= 75 && n2 < 101 && await bp.locator("[data-angefangen]").isVisible().catch(() => false), m2);
+    gelesen.length = 0;
+    await bp.locator("[data-weitermachen]").click();
+    await bp.waitForFunction(() => /Dateien im Eingang/.test(document.querySelector("[data-meldung]")?.textContent || ""), null, { timeout: 120000 }).catch(() => {});
+    const m3 = (await bp.locator("[data-meldung]").innerText().catch(() => "")) || "";
+    soll("Fortgesetzt fertig: dasselbe Ergebnis wie in einem Zug (Anzahl, 3 auffällig, 3 doppelt)", m3.includes(`${gesamt} Dateien im Eingang`) && /3 auffällig, 3 doppelt/.test(m3) && m3.includes(`fortgesetzt: ${n2} schon gelesen`), m3);
+    soll("Zweites Weitermachen holt nur die restlichen Dateien", gelesen.length === 101 - n2, `${gelesen.length} statt ${101 - n2}`);
+    soll("Nach dem Ende ist kein Lauf mehr angefangen", await bp.locator("[data-angefangen]").count() === 0);
+    // Verwerfen: anhalten, verwerfen – der nächste Lauf beginnt von vorn.
+    await bp.locator("[data-testordner]").click();
+    await bp.waitForFunction(() => Number(document.querySelector(".site-header [role=progressbar]")?.getAttribute("aria-valuenow") || 0) >= 5, null, { timeout: 60000 }).catch(() => {});
+    await bp.locator("[data-anhalten]").click().catch(() => {});
+    await bp.waitForSelector("[data-lauf-verwerfen]", { timeout: 30000 }).catch(() => {});
+    await bp.locator("[data-lauf-verwerfen]").click().catch(() => {});
+    await bp.waitForTimeout(300);
+    soll("„Verwerfen“ nimmt den angefangenen Lauf weg, die Liste bleibt", await bp.locator("[data-angefangen]").count() === 0 && (((await bp.locator('[data-zahl="gesamt"]').innerText().catch(() => "")) || "").startsWith(`${gesamt} `)));
+    soll("Blöcke: keine Fehler in der Seite", bfehler.length === 0, bfehler.slice(0, 3).join(" | "));
+    await bctx.close();
+  }
   soll("Keine Fehler in der Konsole", fehler.length === 0, fehler.slice(0, 3).join(" | "));
 } finally {
   await browser.close(); server.close();

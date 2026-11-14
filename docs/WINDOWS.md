@@ -35,8 +35,7 @@ der öffentliche Teil steht in `DesktopUpdates.SCHLUESSEL` **und** `UpdateFeed.S
 festen Dateinamen, prüft Größe und SHA-256, startet das Setup und schließt sich. Ein Tipp auf Fähnchen oder Fassung lädt direkt
 (gleiche Bedienung wie Android, `src/nativ.ts`).
 
-⚠ **Der öffentliche Schlüssel fehlt noch** (`SCHLUESSEL = ""`): bis dahin meldet die App „noch nicht eingerichtet“, fragt nichts im Netz und
-installiert nie etwas; `windows-release.yml` bricht im ersten Schritt ab.
+✅ **Öffentlicher Schlüssel eingetragen** (Klaus 14.11.2026), gleich wie unter Android; die Geheimnisse liegen im Repo.
 
 ## Prüfen
 

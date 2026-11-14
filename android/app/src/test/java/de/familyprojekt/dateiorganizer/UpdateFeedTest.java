@@ -7,7 +7,7 @@ import java.nio.charset.StandardCharsets;
 import org.junit.Test;
 
 /** Updates vom eigenen Server: Unterschriften wie aus dem Veröffentlichungs-Lauf (openssl pkeyutl -sign -rawin, Base64), erzeugt mit
- *  Wegwerf-Schlüsseln nur für diese Probe (nicht Klaus' Schlüssel; der fehlt noch, UpdateFeed.SCHLUESSEL ist ein Platzhalter). */
+ *  Wegwerf-Schlüsseln nur für diese Probe (nicht Klaus' Schlüssel; dessen öffentlicher Teil steht in UpdateFeed.SCHLUESSEL). */
 public class UpdateFeedTest {
     static final String PUB = "MCowBQYDK2VwAyEA6645RpjrlMSpVlNikh41DF25EL/qbKhySobmrCppygA=";
     static final String SHA = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";

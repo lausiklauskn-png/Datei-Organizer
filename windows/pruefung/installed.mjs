@@ -29,7 +29,13 @@ try{
   ok('kein Service Worker in der App',await page.evaluate(async()=>!(await navigator.serviceWorker?.getRegistration?.())));
   ok('Aufruf ohne Sitzungsschlüssel wird verweigert',await page.evaluate(async()=>{try{await __TAURI_INTERNALS__.invoke('do_call',{plugin:'DoDateien',method:'appInfo',options:{}});return false;}catch(e){return String(e).includes('NOT_ALLOWED');}}));
   ok('Methode außerhalb der Verträge wird verweigert',(await call('FamilyFolders','loeschen')).fehler==='NOT_ALLOWED');
-  ok('Updates ohne eingetragenen Schlüssel: „nicht eingerichtet“, nie ein Download',/UPDATE_NICHT_EINGERICHTET|UPDATE_NICHT_ERREICHBAR|UPDATE_UNTERSCHRIFT_FALSCH/.test((await call('DoUpdates','pruefen')).fehler||'aktuell'));
+  // Seit 14.11. ist der öffentliche Schlüssel eingetragen. Vor der ersten Veröffentlichung liegt kein (oder kein unterschriebener) Feed auf dem Server:
+  // dann muss die Prüfung mit einem UPDATE_-Fehler enden, nie mit einem Angebot – und „installieren“ ohne geprüftes Angebot wird verweigert.
+  // Nach der ersten Veröffentlichung meldet ein Prüfbau derselben Fassung „aktuell“. Der echte Wert steht im Bericht.
+  { const u=await call('DoUpdates','pruefen'); report.update=u; console.log('Update-Prüfung meldet: '+JSON.stringify(u));
+    ok('Updates: Fehler UPDATE_… oder „aktuell“, nie ein Angebot für einen Prüfbau',(typeof u.fehler==='string'&&/^UPDATE_/.test(u.fehler))||(u.aktuell===true&&!u.neu));
+    const i=await call('DoUpdates','installieren'); report.installieren=i; console.log('Installieren meldet: '+JSON.stringify(i));
+    ok('Updates: „installieren“ ohne geprüftes Angebot wird verweigert, nie ein Download',typeof i.fehler==='string'&&/^UPDATE_/.test(i.fehler)); }
   if(phase==='erste'){
     await page.evaluate(()=>{location.hash='ordner';});
     const knopf=page.locator('[data-nativ-ordner]');await knopf.waitFor({state:'visible',timeout:30000});

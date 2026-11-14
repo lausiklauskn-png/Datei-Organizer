@@ -18,6 +18,10 @@ export type Quelle = {
   schreiben?: (name: string, text: string) => Promise<void>;
   /** Vorhandenen Index lesen, falls da. */
   indexLesen?: () => Promise<string | null>;
+  /** Ordner am PC: das Handle zum Merken (Weitermachen nach Abbruch ohne Auswahl-Fenster). */
+  handle?: unknown;
+  /** Gemerkter Ordner der App (Datei-Organizer Pro): Kennung für „Zuletzt“ und Weitermachen. */
+  merkId?: string;
 };
 
 export const INDEX_NAME = "organizer-index.json";
@@ -39,7 +43,7 @@ export async function ordnerWaehlen(): Promise<Quelle | null> {
 
 export function ausHandle(h: DirHandle): Quelle {
   return {
-    art: "ordner", name: h.name,
+    art: "ordner", name: h.name, handle: h,
     async dateien() {
       const aus: QuellDatei[] = [];
       const lauf = async (d: DirHandle, pfad: string, tiefe: number) => {
@@ -153,7 +157,7 @@ export async function nativGemerkt(): Promise<GemerkterOrdner[]> {
 export async function nativWieder(id: string): Promise<Quelle> {
   const p = nativerOrdner();
   if (!p?.wiederOeffnen) throw new Error("Diese App kann sich keinen Ordner merken.");
-  try { const r = await p.wiederOeffnen({ id }); return nativeQuelle(p, r.token, r.name); }
+  try { const r = await p.wiederOeffnen({ id }); return { ...nativeQuelle(p, r.token, r.name), merkId: id }; }
   catch { throw new Error("Der Ordner ist nicht mehr erreichbar (verschoben, umbenannt oder Speicherkarte entfernt). Bitte neu wählen."); }
 }
 export async function nativVergessen(id: string) { try { await nativerOrdner()?.vergessen?.({ id }); } catch { /* egal */ } }
