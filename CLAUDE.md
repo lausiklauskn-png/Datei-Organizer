@@ -9,13 +9,12 @@ oder Altbestand kommen in **einen** Ordner; der Organizer sortiert sie Klick fü
 Nummern → Absender → Inhalt) und zeigt sie als Baum nach vielen Gesichtspunkten. Zuerst für die Familienakte gemacht: der Ordner
 wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). Plan und alle Entscheidungen: `docs/PLAN.md`.
 
-## Veröffentlicht (14.11.2026, Klaus' Wort): Datei-Organizer 0.4.3 – nicht erneut ausgeben
+## Veröffentlicht (14.11.2026 abends, Klaus' Wort „ich gebe alles frei“): Datei-Organizer 0.4.4 – nicht erneut ausgeben
 
-- **Android** `Datei-Organizer-Pro-0.4.3.apk` (Code 43, SHA-256 `7e34f5bc…80eb`, Zertifikat `594e44df…365d`), **Windows**
-  `Datei-Organizer-Pro-Windows-0.4.3-x64-setup.exe`, beide auf `family-projekt.de/updates/datei-organizer/` (das Repo ist **privat** –
-  GitHub-Release-Links gehen ohne Anmeldung nicht; in der Geschenkbox stehen deshalb die Server-Links), **Basic** über Pages.
-  Nachweis `docs/VEROEFFENTLICHUNG-0.4.3.json`. Geschenkbox (Familienakte `docs/geschenk/`, Artefakt XeUMGuSZ49FzsJYjwQznM7) mit Datei-Organizer.
-  Nächste Ausgabe: **0.4.4** (Windows 0.4.3 ist vor #20 gebaut, sonst gleich). Updates kommen ab jetzt über das Fähnchen in der App.
+- **Android** `Datei-Organizer-Pro-0.4.4.apk` (Code 44, SHA-256 `29732221…7593`, Zertifikat `594e44df…365d`, Lauf 43641660355), **Windows**
+  `Datei-Organizer-Pro-Windows-0.4.4-x64-setup.exe` (25.165.106 B, Lauf 43642094461), beide auf `family-projekt.de/updates/datei-organizer/`
+  (Repo privat), **Basic** über Pages. Inhalt: Absender aus Scans/Fotos (Kern `079dd6d`), 3D-App-Symbol. Nachweis `docs/VEROEFFENTLICHUNG-0.4.4.json`.
+  Nächste Ausgabe: **0.4.5**. Updates über das Fähnchen. Vorher veröffentlicht: 0.4.3 (`docs/VEROEFFENTLICHUNG-0.4.3.json`).
 
 ## Stand (14.11.2026): Pseudonymisierer 0.1.0 (PWA, zweite Seite in diesem Repo)
 
@@ -34,7 +33,9 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   Text und Nebenfelder nicht schlechter. Kern `079dd6d` (`ocrRand`, `KEIN_ABSENDER` in `lib/erkennen.ts`). Alles: `docs/TRAINING-WOCHENENDE-ERGEBNISSE.md`
   (letzter Abschnitt), Regeln und Rollen `docs/PRUEFSTAPEL-TRAINING-WOCHENENDE-REGELN.md`. Werkzeuge: `scripts/absender-lernstand.mjs`, `kopf-zeigen.mjs`,
   `absender-nachweis.mjs`. Nächster Schritt: in die anderen Apps (Familienakte erst nach der Pseudonymisierungs-Sitzung, mit Klaus' Ja).
-- **App-Symbol in 3D** (Klaus 14.11.): Vorschau `docs/symbol/symbol-vorschau-3d.png`, Quelle `scripts/symbol-bauen.mjs` – noch **nicht** eingesetzt, wartet auf Ja.
+- **App-Symbol in 3D** (Klaus 14.11.: Ja, runde Ecken, kein Außenrand): Quelle `scripts/symbol-bauen.mjs` (`--schreiben` setzt PWA, Windows, Android), eingesetzt (#31), ausgegeben mit 0.4.4.
+- **Nachgezogen:** BookLedgerPro #474 und BookLedger Basic #53 (Sortier-Kern `079dd6d`, nicht veröffentlicht). **Familienakte noch nicht:** 14.11. abends liefen dort noch
+  Pseudonymisierungs-Sitzungen („Pseudo-Fenster Weiterentwicklung“, „Datei-Pseudonymisierer Tool“) – erst nachziehen, wenn sie fertig sind.
 
 ## Stand (14.11.2026, Trainings-Wochenende Teil 1, nicht veröffentlicht)
 
