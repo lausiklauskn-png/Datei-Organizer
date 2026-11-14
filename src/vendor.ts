@@ -1,5 +1,6 @@
 import type { BildLeser, KernLeser } from "../lib/einlesen.ts";
 import type { DateiArt } from "../lib/typen.ts";
+import { grauAusRgba, rgbaAusGrau, vorverarbeiten } from "./vorverarbeitung.ts";
 
 /**
  * Bausteine aus src/public/vendor/ (byte-gleich mit Pin, scripts/vendor-nachziehen.mjs): der Prüfkern des Auslieferungsprüfers und die
@@ -43,7 +44,24 @@ export const bildLeser: BildLeser = async (bytes: Uint8Array) => {
   }));
   arbeiter.catch(() => { arbeiter = null; });
   const w = await arbeiter;
+  const bild = await vorbereitet(bytes).catch(() => new Blob([bytes as BlobPart]));
   const frist = new Promise<never>((_, nein) => setTimeout(() => nein(new Error("Texterkennung dauerte zu lange")), 60000));
-  const r = await Promise.race([w.recognize(new Blob([bytes as BlobPart])), frist]);
+  const r = await Promise.race([w.recognize(bild), frist]);
   return r.data.text || "";
 };
+
+/** Vorverarbeitung vor der Texterkennung (src/vorverarbeitung.ts): Schatten und Verlauf herausrechnen, Kontrast strecken.
+ *  Bild dekodieren, auf eine Leinwand zeichnen, Graustufen bearbeiten, als PNG an die Erkennung. Geht etwas schief, bekommt die Erkennung das Original. */
+async function vorbereitet(bytes: Uint8Array): Promise<Blob> {
+  const bm = await createImageBitmap(new Blob([bytes as BlobPart]));
+  try {
+    const c = document.createElement("canvas"); c.width = bm.width; c.height = bm.height;
+    const ctx = c.getContext("2d", { willReadFrequently: true })!; ctx.drawImage(bm, 0, 0);
+    const g = vorverarbeiten(grauAusRgba(ctx.getImageData(0, 0, c.width, c.height).data, c.width, c.height));
+    c.width = g.b; c.height = g.h;
+    ctx.putImageData(new ImageData(rgbaAusGrau(g), g.b, g.h), 0, 0);
+    const blob = await new Promise<Blob | null>((ok) => c.toBlob(ok, "image/png"));
+    if (!blob) throw new Error("kein Bild");
+    return blob;
+  } finally { bm.close(); }
+}
