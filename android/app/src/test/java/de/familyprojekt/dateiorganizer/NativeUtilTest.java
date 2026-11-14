@@ -27,6 +27,13 @@ public class NativeUtilTest {
         assertFalse(NativeUtil.schreibNameGueltig(".json"));
         assertFalse(NativeUtil.schreibNameGueltig(".."));
     }
+    @Test public void schreibenAuchDirektImArbeitsordner() {
+        assertTrue(NativeUtil.schreibPfadGueltig("organizer-index.json"));
+        assertTrue(NativeUtil.schreibPfadGueltig("Datei-Organizer-Arbeit/stand.json"));
+        for (String p : new String[] { null, "Datei-Organizer-Arbeit/Unter/stand.json", "Anderer/stand.json", "Datei-Organizer-Arbeit/Brief.pdf",
+            "Datei-Organizer-Arbeit/", "Datei-Organizer-Arbeit/../x.json", "Datei-Organizer-Arbeit/.json", "Datei-Organizer-Arbeitx/stand.json" })
+            assertFalse(p, NativeUtil.schreibPfadGueltig(p));
+    }
     @Test public void hexUndAdressen() {
         assertEquals("00ff10", NativeUtil.hex(new byte[] { 0, (byte) 255, 16 }));
         assertTrue(NativeUtil.eigeneAdresse("https", "lausiklauskn-png.github.io"));

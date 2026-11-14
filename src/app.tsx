@@ -13,12 +13,14 @@ import { indexLesen, organizerIndex, INDEX_DATEI } from "../lib/index-format.ts"
 import { pdfLeser } from "./pdf.ts";
 import { ausHandle, eingangAbholen, erlaubnisPruefen, herunterladen, nativerEingang, nativGemerkt, nativSpeichern, nativWieder, testOrdner, type Quelle, type QuellDatei } from "./quellen.ts";
 import { laden, laufLaden, laufLoeschen, laufSpeichern, loeschen, ordnerHolen, ordnerMerken, speichern } from "./zustand.ts";
-import { BLOCK, fortsetzen, passt, schluessel, type Lauf } from "./lauf.ts";
+import { fortsetzen, passt, schluessel, type Lauf } from "./lauf.ts";
+import { erkenneArt } from "../lib/dateiart.ts";
+import { ArbeitSpeicher, arbeitAnzeige, arbeitFehler, arbeitFrei, arbeitGemerkt, arbeitMoeglich, arbeitVergessen, arbeitWaehlen, blockBedarf, leistungMessen, leistungText, mbText, schlank, speicherReicht, type Arbeitsordner, type Leistung } from "./arbeit.ts";
 import { OrdnerSeite, SortierenSeite, FindenSeite, VerlaufSeite, AkteSeite, HilfeSeite } from "./seiten.tsx";
 import { LandkarteSeite } from "./landkarte.tsx";
 import { APP_NAME, direktLaden, istNativ, nativeUpdates, stillPruefen } from "./nativ.ts";
 
-export const FASSUNG = "0.4.2";
+export const FASSUNG = "0.4.3";
 // Ladeanzeige: „suchen“ = Ordner wird durchgesehen (Zahl noch unbekannt), „lesen“ = Datei für Datei, „stand“ = gemerkter Stand beim Start.
 export type Fortschritt = { phase: "stand" | "suchen" | "lesen"; fertig: number; gesamt: number; name?: string };
 const luft = () => new Promise<void>((r) => setTimeout(r)); // dem Browser Zeit zum Zeichnen geben
@@ -51,21 +53,57 @@ function useOrganizer() {
   // Angefangenes Einlesen (große Mengen in Blöcken): gemerkt nach jedem Block, „Weitermachen“ liest den Rest.
   const [angefangen, setAngefangen] = useState<Lauf | null>(null);
   const anhaltenRef = useRef(false);
+  // Große Ordner (0.4.3): Leistung des Geräts, Arbeitsordner (nur App), lange Texte dort.
+  const [leistung] = useState<Leistung>(() => leistungMessen());
+  const [arbeit, setArbeit] = useState<Arbeitsordner | null>(() => (arbeitMoeglich() ? arbeitGemerkt() : null));
+  const [arbeitFehlt, setArbeitFehlt] = useState("");
+  const arbeitRef = useRef<ArbeitSpeicher | null>(null);
+  if (arbeit && arbeitRef.current?.a.id !== arbeit.id) arbeitRef.current = new ArbeitSpeicher(arbeit);
+  if (!arbeit) arbeitRef.current = null;
+  const langeTexte = useRef<Record<string, string>>({});
+  // Stand des Einlesens: im Arbeitsordner, wenn es einen gibt, sonst im App-Speicher.
+  const laufHolen = useCallback(async (): Promise<Lauf | null> => (arbeitRef.current ? arbeitRef.current.laufLaden<Lauf>() : laufLaden()), []);
+  const laufMerken = useCallback(async (l: Lauf) => { if (arbeitRef.current) await arbeitRef.current.laufSpeichern(l); else await laufSpeichern(l); }, []);
+  const laufWeg = useCallback(async () => { if (arbeitRef.current) await arbeitRef.current.laufEnde().catch(() => {}); await laufLoeschen(); }, []);
   const stapel = useRef<Datei[][]>([]);
   const originale = useRef(new Map<string, QuellDatei | { blob: Uint8Array }>());
 
   // gemerkten Stand holen
   useEffect(() => { (async () => {
     const z = await laden();
-    setAngefangen(await laufLaden());
-    if (z) { setDateien(z.dateien); setStufe(z.stufe); setVerlauf(z.verlauf); setRegeln(z.regeln); setOrdnerName(z.ordnerName); setQuelleArt(z.quelle); }
+    if (arbeitRef.current) {
+      // Arbeitsordner: Liste und Stand kommen von dort (Karte, Festplatte), nicht aus dem App-Speicher.
+      try {
+        const st = await arbeitRef.current.laden();
+        const quelle = st || z;
+        if (quelle) { setDateien(quelle.dateien); setStufe(quelle.stufe); setVerlauf(quelle.verlauf as Korrektur[]); setRegeln(quelle.regeln as Lernregel[]); setOrdnerName(quelle.ordnerName); setQuelleArt(quelle.quelle); }
+        langeTexte.current = (st?.langeTexte as Record<string, string>) || {};
+        setAngefangen(await arbeitRef.current.laufLaden<Lauf>());
+      } catch (e) {
+        // Nicht erreichbar: nichts überschreiben, bis er wieder da ist.
+        setArbeitFehlt(arbeitFehler(e)); setMeldung({ text: arbeitFehler(e), art: "fehler" });
+      }
+    } else {
+      setAngefangen(await laufLaden());
+      if (z) { setDateien(z.dateien); setStufe(z.stufe); setVerlauf(z.verlauf); setRegeln(z.regeln); setOrdnerName(z.ordnerName); setQuelleArt(z.quelle); }
+    }
     setGeladen(true); setFortschritt((f) => (f?.phase === "stand" ? null : f));
   })(); }, []);
   useEffect(() => {
-    if (!geladen) return;
-    const t = setTimeout(() => { void speichern({ fassung: 1, ordnerName, quelle: quelleArt, stufe, dateien, verlauf, regeln, zeit: new Date().toISOString() }); }, 400);
+    if (!geladen || arbeitFehlt) return;
+    const zeit = new Date().toISOString(), ar = arbeitRef.current;
+    if (ar) {
+      // Im Arbeitsordner: nur geänderte Teile schreiben; der App-Speicher behält nur einen leeren Stand (schlank, übersteht nichts Wichtiges).
+      const t = setTimeout(() => {
+        void ar.speichern({ ordnerName, quelle: quelleArt, stufe, dateien, verlauf, regeln, zeit, langeTexte: langeTexte.current })
+          .catch((e) => setMeldung({ text: `Speichern im Arbeitsordner fehlgeschlagen: ${arbeitFehler(e)}`, art: "fehler" }));
+        void speichern({ fassung: 1, ordnerName, quelle: quelleArt, stufe, dateien: [], verlauf: [], regeln, zeit });
+      }, 1500);
+      return () => clearTimeout(t);
+    }
+    const t = setTimeout(() => { void speichern({ fassung: 1, ordnerName, quelle: quelleArt, stufe, dateien, verlauf, regeln, zeit }); }, 400);
     return () => clearTimeout(t);
-  }, [geladen, dateien, stufe, verlauf, regeln, ordnerName, quelleArt]);
+  }, [geladen, arbeitFehlt, arbeit, dateien, stufe, verlauf, regeln, ordnerName, quelleArt]);
 
   const einlesenAus = useCallback(async (q: Quelle, dazu = false) => {
     setMeldung({ text: `Lese „${q.name}“ …` });
@@ -77,7 +115,7 @@ function useOrganizer() {
     let neu: Datei[] = [];
     if (!dazu) originale.current.clear();
     // Große Mengen in Blöcken: ein passender angefangener Lauf wird fortgesetzt, schon Gelesenes übersprungen.
-    const alt = await laufLaden();
+    const alt = await laufHolen().catch(() => null);
     let erledigt = new Set<string>(), fortgesetzt = 0;
     if (alt && passt(alt, q, liste, dazu)) { const f = fortsetzen(alt, liste); neu = [...f.fertig]; erledigt = f.erledigt; fortgesetzt = erledigt.size; }
     if (q.handle) void ordnerMerken(q.handle);
@@ -86,31 +124,65 @@ function useOrganizer() {
       erledigt: [...erledigt], dateien: neu, begonnen: fortgesetzt && alt ? alt.begonnen : jetzt(), zeit: jetzt() });
     anhaltenRef.current = false;
     setFortschritt({ phase: "lesen", fertig: erledigt.size, gesamt: liste.length });
-    let gezeichnet = performance.now(), seitBlock = 0;
-    for (const qd of liste) {
-      if (erledigt.has(schluessel(qd))) { originale.current.set(qd.pfad, qd); continue; }
+    let gezeichnet = performance.now(), seitBlock = 0, ganzGeladen = 0, stueckweise = 0, speicherHalt = "";
+    const ar = arbeitRef.current;
+    let blockTexte: Record<string, string> = {};
+    const texteAblegen = async () => {
+      if (!ar || !Object.keys(blockTexte).length) return;
+      const datei = await ar.texte(blockTexte);
+      for (const p of Object.keys(blockTexte)) langeTexte.current[p] = datei;
+      blockTexte = {};
+    };
+    const offen = liste.filter((qd) => !erledigt.has(schluessel(qd)));
+    for (const [i, qd] of offen.entries()) {
       if (anhaltenRef.current) break;
+      // D: vor jedem Block prüfen, ob der Speicher reicht (Arbeitsordner bzw. App-Speicher). Unbekannt → weiter, aber gesagt.
+      if (seitBlock === 0) {
+        const noetig = blockBedarf(offen.slice(i, i + leistung.block).map((x) => x.groesse || 0));
+        const frei = ar ? await arbeitFrei(ar.a) : await navigator.storage?.estimate?.().then((e) => (e.quota !== undefined && e.usage !== undefined ? e.quota - e.usage : null)).catch(() => null) ?? null;
+        if (!speicherReicht(frei, noetig)) { speicherHalt = `Zu wenig Speicher ${ar ? `im Arbeitsordner (${arbeitAnzeige(ar.a)})` : "in der App"}: frei ${mbText(frei!)}, für den nächsten Block gebraucht ${mbText(noetig)}.`; break; }
+      }
       if (performance.now() - gezeichnet > 80) { setFortschritt({ phase: "lesen", fertig: erledigt.size, gesamt: liste.length, name: qd.name }); await luft(); gezeichnet = performance.now(); }
       try {
-        const bytes = await qd.lesen();
-        const teile = await einlesen({ pfad: qd.pfad, name: qd.name, geaendert: qd.geaendert, bytes }, lesePdf, 0, bildLeser, kernLeser);
+        let teile: Datei[];
+        // A: große Dateien nicht ganz laden – nur Kopf (für die Art) und Prüfsumme Stück für Stück (in der App am Ort).
+        // Starke Geräte laden bis leistung.vollBis ganz. Text wird ohnehin nur bis 30 MB gelesen (lib/einlesen.ts); vollBis ist nie kleiner.
+        if (qd.groesse !== undefined && qd.groesse > leistung.vollBis && qd.kopf && qd.pruefsumme) {
+          const kopf = await qd.kopf(600), art = erkenneArt(qd.name, kopf);
+          teile = [{ pfad: qd.pfad, name: qd.name, groesse: qd.groesse, geaendert: qd.geaendert, art: art.art, artText: art.artText, auffaellig: art.auffaellig,
+            stufe: 1, felder: {}, sha256: await qd.pruefsumme(), textQuelle: "keiner" }];
+          stueckweise++;
+        } else {
+          const bytes = await qd.lesen();
+          teile = await einlesen({ pfad: qd.pfad, name: qd.name, geaendert: qd.geaendert, bytes }, lesePdf, 0, bildLeser, kernLeser);
+          ganzGeladen++;
+        }
         originale.current.set(qd.pfad, qd);
+        // C: mit Arbeitsordner bleibt im Speicher nur der Anfang langer Texte; der ganze Text kommt in den Arbeitsordner.
+        if (ar) teile = teile.map((t) => { const s = schlank(t); if (s.lang) blockTexte[t.pfad] = s.lang; return s.d; });
         neu.push(...teile);
       } catch (e) {
         neu.push({ pfad: qd.pfad, name: qd.name, groesse: 0, geaendert: qd.geaendert, stufe: 1, felder: { schriftstueck: { wert: "Unklar", sicher: false, grund: `nicht lesbar: ${(e as Error).message}`, quelle: "regel" } } });
       }
       erledigt.add(schluessel(qd));
       // Nach jedem Block merken: bricht es danach ab, ist höchstens ein Block verloren.
-      if (liste.length > BLOCK && ++seitBlock >= BLOCK && erledigt.size < liste.length) { seitBlock = 0; await laufSpeichern(laufStand()); }
+      if (++seitBlock >= leistung.block) {
+        seitBlock = 0;
+        await texteAblegen();
+        if (liste.length > leistung.block && erledigt.size < liste.length) await laufMerken(laufStand());
+      }
     }
+    await texteAblegen().catch((e) => setMeldung({ text: `Lange Texte nicht abgelegt: ${arbeitFehler(e)}`, art: "fehler" }));
     if (erledigt.size < liste.length) {
-      const l = laufStand(); await laufSpeichern(l); setAngefangen(l); setFortschritt(null);
-      setMeldung({ text: `Angehalten: ${erledigt.size} von ${liste.length} Dateien aus „${q.name}“ gelesen. „Weitermachen“ liest nur den Rest – auch nach dem Schließen der App.`, art: "halt" });
+      const l = laufStand(); await laufMerken(l); setAngefangen(l); setFortschritt(null);
+      setMeldung({ text: `${speicherHalt || "Angehalten:"} ${erledigt.size} von ${liste.length} Dateien aus „${q.name}“ gelesen. „Weitermachen“ liest nur den Rest – auch nach dem Schließen der App.`, art: "halt" });
       return;
     }
-    await laufLoeschen(); setAngefangen(null);
+    await laufWeg(); setAngefangen(null);
+    void ganzGeladen;
+    const grossText = stueckweise ? ` · ${stueckweise} große Datei${stueckweise === 1 ? "" : "en"} Stück für Stück geprüft` : "";
     setFortschritt({ phase: "lesen", fertig: liste.length, gesamt: liste.length }); await luft();
-    const weiter = fortgesetzt ? ` · fortgesetzt: ${fortgesetzt} schon gelesen, ${liste.length - fortgesetzt} neu gelesen` : "";
+    const weiter = (fortgesetzt ? ` · fortgesetzt: ${fortgesetzt} schon gelesen, ${liste.length - fortgesetzt} neu gelesen` : "") + grossText;
     if (dazu) {
       // Hinzufügen (Drag and Drop): Vorhandenes bleibt; gleiche Pfade werden ersetzt, gleiche Inhalte als doppelt markiert.
       // Neue Stücke laufen durch dieselben Siebe wie der Bestand.
@@ -152,7 +224,7 @@ function useOrganizer() {
     setQuelle(q); setOrdnerName(q.name); setQuelleArt(q.art); setDateien(fertig); setStufe(1); setRegeln(alteRegeln); setVerlauf(alterVerlauf); setFortschritt(null);
     const auff = fertig.filter((d) => d.auffaellig).length, dopp = fertig.filter((d) => d.doppeltVon).length;
     setMeldung({ text: `${fertig.length} Dateien im Eingang · Sieb 1 fertig: ${auff} auffällig, ${dopp} doppelt${ausIndex ? ` · ${ausIndex} aus dem gespeicherten Index wiedererkannt` : ""}${weiter}.`, art: auff ? "halt" : undefined });
-  }, [dateien, stufe, regeln, ordnerName]);
+  }, [dateien, stufe, regeln, ordnerName, leistung, laufHolen, laufMerken, laufWeg]);
 
   // Geteilt an die App (Android) bzw. „Öffnen mit“ (Windows): Kopien kommen zum Bestand dazu, wie beim Hineinziehen.
   // Abgeholt beim Start, wenn die App meldet, dass etwas kam, und beim Zurückholen der App.
@@ -179,7 +251,7 @@ function useOrganizer() {
   const anhalten = useCallback(() => { anhaltenRef.current = true; }, []);
   /** Angefangenes Einlesen fortsetzen: dieselbe Quelle ohne Auswahl-Fenster, wo das geht – sonst die Bitte, sie noch einmal zu wählen. */
   const weitermachen = useCallback(async () => {
-    const l = angefangen ?? (await laufLaden());
+    const l = angefangen ?? (await laufHolen());
     if (!l) return;
     let q: Quelle | null = null;
     if (l.quelleArt === "test") q = testOrdner();
@@ -192,7 +264,27 @@ function useOrganizer() {
     await einlesenAus(q, l.dazu);
   }, [angefangen, einlesenAus]);
   /** Angefangenes Einlesen verwerfen (das bisher Gelesene wird nicht übernommen). */
-  const laufVerwerfen = useCallback(async () => { await laufLoeschen(); setAngefangen(null); setMeldung({ text: "Angefangenes Einlesen verworfen." }); }, []);
+  const laufVerwerfen = useCallback(async () => { await laufWeg(); setAngefangen(null); setMeldung({ text: "Angefangenes Einlesen verworfen." }); }, [laufWeg]);
+  /** B: Laufwerk wählen → Arbeitsordner anlegen; die aktuelle Liste wird dorthin geschrieben (nächstes Speichern). */
+  const arbeitEinrichten = useCallback(async () => {
+    try {
+      const a = await arbeitWaehlen();
+      if (!a) return;
+      const st = await new ArbeitSpeicher(a).laden().catch(() => null);
+      setArbeitFehlt("");
+      setArbeit(a);
+      if (st && st.dateien.length && !dateien.length) {
+        // Vorhandener Arbeitsordner mit Liste (z. B. nach Neuinstallation): übernehmen.
+        setDateien(st.dateien); setStufe(st.stufe); setVerlauf(st.verlauf as Korrektur[]); setRegeln(st.regeln as Lernregel[]); setOrdnerName(st.ordnerName); setQuelleArt(st.quelle);
+        langeTexte.current = (st.langeTexte as Record<string, string>) || {};
+        setMeldung({ text: `Arbeitsordner ${arbeitAnzeige(a)}: ${st.dateien.length} Dateien aus dem gespeicherten Stand übernommen.` });
+      } else setMeldung({ text: `Arbeitsordner ist jetzt ${arbeitAnzeige(a)}. Liste, Texte und Sortierung liegen ab jetzt dort.` });
+    } catch (e) { setMeldung({ text: arbeitFehler(e), art: "fehler" }); }
+  }, [dateien.length]);
+  const arbeitAus = useCallback(() => {
+    arbeitVergessen(); setArbeit(null); setArbeitFehlt("");
+    setMeldung({ text: "Arbeitsordner nicht mehr genutzt. Was dort liegt, bleibt; ab jetzt speichert die App wieder im App-Speicher." });
+  }, []);
 
   const pcOrdnerWieder = useCallback(async () => {
     const h = await ordnerHolen();
@@ -317,7 +409,7 @@ function useOrganizer() {
     setMeldung({ text: `${was || (n === 1 ? "1 Datei" : `${n} Dateien`)} aus dem Organizer genommen. ${n === 1 ? "Das Original ist" : "Die Originale sind"} unverändert. „Zurück“ auf der Seite Sortieren holt sie wieder.` });
   }, [dateien]);
 
-  return { dateien, stufe, verlauf, regeln, ordnerName, quelleArt, quelle, meldung, setMeldung, fortschritt, einlesenAus, angefangen, anhalten, weitermachen, laufVerwerfen, pcOrdnerWieder, naechstes, zurueck, aendern, rueckgaengig, nummern, indexSichern, indexText, original, neuBeginnen, leeren, entfernen, ordnerMerken, kannZurueck: () => stapel.current.length > 0 };
+  return { dateien, stufe, verlauf, regeln, ordnerName, quelleArt, quelle, meldung, setMeldung, fortschritt, einlesenAus, angefangen, anhalten, weitermachen, laufVerwerfen, leistung, arbeit, arbeitFehlt, arbeitEinrichten, arbeitAus, pcOrdnerWieder, naechstes, zurueck, aendern, rueckgaengig, nummern, indexSichern, indexText, original, neuBeginnen, leeren, entfernen, ordnerMerken, kannZurueck: () => stapel.current.length > 0 };
 }
 
 async function einlesenTeile(bytes: Uint8Array, pfad: string) {

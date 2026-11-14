@@ -44,6 +44,14 @@ final class NativeUtil {
         return nameGueltig(name) && name.endsWith(".json") && !name.startsWith(".");
     }
 
+    /** Arbeitsordner (Klaus 14.11.: „nur das Laufwerk wählen, der richtige Ordner entsteht von selbst“). Gleich in DesktopOrdner und src/arbeit.ts. */
+    static final String ARBEIT = "Datei-Organizer-Arbeit";
+    /** Schreiben: eine .json direkt im Ordner (organizer-index.json) oder eine .json direkt im Arbeitsordner – sonst nichts, nie tiefer. */
+    static boolean schreibPfadGueltig(String pfad) {
+        if (schreibNameGueltig(pfad)) return true;
+        return pfad != null && pfad.startsWith(ARBEIT + "/") && schreibNameGueltig(pfad.substring(ARBEIT.length() + 1));
+    }
+
     /** Klaus' eigene Apps unter lausiklauskn-png.github.io dürfen auch ohne Tipp im Browser geöffnet werden. */
     static boolean eigeneAdresse(String scheme, String host) {
         return "https".equals(scheme) && "lausiklauskn-png.github.io".equals(host);

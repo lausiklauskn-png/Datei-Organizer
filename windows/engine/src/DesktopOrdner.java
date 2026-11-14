@@ -13,7 +13,8 @@ import org.json.*;
 /**
  * Ordner am PC für große Mengen – derselbe Vertrag „FamilyFolders“ wie unter Android (android/…/DoOrdnerPlugin.java) und in der
  * Familienakte Pro, damit src/quellen.ts unverändert läuft. Die Seite bekommt nur eine Kennung, nie einen Pfad.
- * Gelesen wird in Stücken bis 1 MiB; geschrieben wird nur eine .json-Datei direkt im gewählten Ordner (organizer-index.json),
+ * Gelesen wird in Stücken bis 1 MiB; geschrieben wird nur eine .json-Datei direkt im gewählten Ordner (organizer-index.json) oder direkt
+ * im Arbeitsordner „Datei-Organizer-Arbeit“ (0.4.3),
  * atomar über eine Zwischendatei. Originale werden nie verändert, nichts wird gelöscht.
  * Gemerkt (dauerhaft, Klaus' Wunsch „Ordnerfreigabe merken“): die zuletzt gewählten Ordner (höchstens 5) mit Namen und Pfad in
  * ordner-v1.json im App-Datenordner. Wieder öffnen geht nur, wenn der Ordner noch da ist und keine Verweise auf dem Weg liegen.
@@ -42,6 +43,9 @@ final class DesktopOrdner {
             case "dateiBeginn" -> beginn(o);
             case "dateiAnhaengen" -> anhaengen(o);
             case "dateiFertig" -> fertig(o);
+            case "pruefsumme" -> pruefsumme(o);
+            case "speicherFrei" -> new JSONObject().put("frei",frei(wurzel(o)));
+            case "arbeitsordner" -> arbeitsordner(o);
             default -> throw new IOException("INVALID_INPUT");
         };
     }
@@ -57,6 +61,13 @@ final class DesktopOrdner {
         return true;
     }
     static boolean schreibNameGueltig(String name){return nameGueltig(name)&&name.endsWith(".json")&&!name.startsWith(".");}
+    /** Arbeitsordner (Klaus 14.11.): gleich wie NativeUtil.ARBEIT unter Android und src/arbeit.ts. */
+    static final String ARBEIT="Datei-Organizer-Arbeit";
+    /** Schreiben: eine .json direkt im Ordner oder direkt im Arbeitsordner – nie tiefer. */
+    static boolean schreibPfadGueltig(String p){
+        if(schreibNameGueltig(p))return true;
+        return p!=null&&p.startsWith(ARBEIT+"/")&&schreibNameGueltig(p.substring(ARBEIT.length()+1));
+    }
 
     private Path wurzel(JSONObject o)throws IOException {
         Path w=offen.get(o.optString("token",""));if(w==null)throw new IOException("DO_ORDNER_NICHT_ERREICHBAR");return w;
@@ -162,11 +173,14 @@ final class DesktopOrdner {
     // ---------- Schreiben (nur organizer-index.json o. ä. direkt im Ordner) ----------
     private JSONObject beginn(JSONObject o)throws Exception {
         Path w=wurzel(o);String name=o.optString("pfad","");
-        if(!schreibNameGueltig(name))throw new IOException("DO_NICHT_ERLAUBT");
-        Path ziel=w.resolve(name);DesktopFiles.noLinks(ziel);
+        if(!schreibPfadGueltig(name))throw new IOException("DO_NICHT_ERLAUBT");
+        Path ziel=w.resolve(name.replace('/',File.separatorChar)).normalize();
+        if(!ziel.startsWith(w))throw new IOException("DO_NICHT_ERLAUBT");
+        DesktopFiles.noLinks(ziel);
+        if(!Files.isDirectory(ziel.getParent(),LinkOption.NOFOLLOW_LINKS))throw new IOException("DO_NICHT_GEFUNDEN");
         if(Files.isDirectory(ziel,LinkOption.NOFOLLOW_LINKS))throw new IOException("DO_NICHT_ERLAUBT");
         Schreiben s=new Schreiben();s.ziel=ziel;s.sha=MessageDigest.getInstance("SHA-256");
-        try{s.teil=Files.createTempFile(w,".do-",".tmp");s.out=Files.newOutputStream(s.teil);}
+        try{s.teil=Files.createTempFile(ziel.getParent(),".do-",".tmp");s.out=Files.newOutputStream(s.teil);}
         catch(IOException nein){throw new IOException("DO_SCHREIBEN_FEHLT");}
         String id=UUID.randomUUID().toString();schreiben.put(id,s);
         return new JSONObject().put("id",id);
@@ -189,6 +203,31 @@ final class DesktopOrdner {
         }finally{Files.deleteIfExists(s.teil);}
         return new JSONObject().put("size",s.groesse).put("sha256",DesktopFiles.hex(s.sha.digest()));
     }
+    // ---------- Große Ordner (0.4.3, Klaus 14.11.) ----------
+    /** Fingerabdruck am Ort, Stück für Stück – die Bytes gehen nie durch die Brücke. */
+    private JSONObject pruefsumme(JSONObject o)throws Exception {
+        Path f=ordner(o,false);if(Files.isDirectory(f,LinkOption.NOFOLLOW_LINKS))throw new IOException("DO_NICHT_GEFUNDEN");
+        MessageDigest sha=MessageDigest.getInstance("SHA-256");long n=0;
+        try(InputStream in=Files.newInputStream(f,LinkOption.NOFOLLOW_LINKS)){
+            byte[] b=new byte[STUECK];int r;while((r=in.read(b))>0){sha.update(b,0,r);n+=r;}
+        }catch(AccessDeniedException nein){throw new IOException("DO_FREIGABE_FEHLT");}
+        return new JSONObject().put("sha256",DesktopFiles.hex(sha.digest())).put("groesse",n);
+    }
+    static long frei(Path w){try{return Files.getFileStore(w).getUsableSpace();}catch(IOException unbekannt){return -1;}}
+    /** Im gewählten Laufwerk/Ordner entsteht „Datei-Organizer-Arbeit“ (heißt der gewählte Ordner schon so, gilt er selbst); nie im Pro-Tresor. */
+    private JSONObject arbeitsordner(JSONObject o)throws IOException {
+        Path w=wurzel(o);
+        if(Files.exists(w.resolve("tresorordner.json"),LinkOption.NOFOLLOW_LINKS))throw new IOException("DO_TRESOR_ORDNER");
+        if(w.getFileName()!=null&&ARBEIT.equals(w.getFileName().toString()))return new JSONObject().put("pfad","").put("neu",false);
+        Path a=w.resolve(ARBEIT);DesktopFiles.noLinks(a);
+        if(Files.exists(a,LinkOption.NOFOLLOW_LINKS)){
+            if(!Files.isDirectory(a,LinkOption.NOFOLLOW_LINKS))throw new IOException("DO_NICHT_ERLAUBT");
+            return new JSONObject().put("pfad",ARBEIT).put("neu",false);
+        }
+        try{Files.createDirectory(a);}catch(IOException nein){throw new IOException("DO_SCHREIBEN_FEHLT");}
+        return new JSONObject().put("pfad",ARBEIT).put("neu",true);
+    }
+
     private void abbrechen(String id){
         Schreiben s=schreiben.remove(id);if(s==null)return;
         try{s.out.close();}catch(IOException egal){/* weiter */}

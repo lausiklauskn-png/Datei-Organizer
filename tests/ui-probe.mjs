@@ -389,6 +389,7 @@ try {
   {
     console.log("Einlesen in Blöcken, Weitermachen nach Abbruch");
     const bctx = await browser.newContext({ viewport: { width: 1100, height: 900 } });
+    await bctx.addInitScript(() => { Object.defineProperty(navigator, "deviceMemory", { value: 4 }); Object.defineProperty(navigator, "hardwareConcurrency", { value: 6 }); });
     const bp = await bctx.newPage();
     const bfehler = []; bp.on("pageerror", (e) => bfehler.push(String(e)));
     const gelesen = []; bctx.on("request", (r) => { const u = new URL(r.url()); if (u.pathname.includes("/testdaten/") && !u.pathname.endsWith("dateien.json")) gelesen.push(decodeURIComponent(u.pathname)); });
@@ -428,6 +429,114 @@ try {
     soll("„Verwerfen“ nimmt den angefangenen Lauf weg, die Liste bleibt", await bp.locator("[data-angefangen]").count() === 0 && (((await bp.locator('[data-zahl="gesamt"]').innerText().catch(() => "")) || "").startsWith(`${gesamt} `)));
     soll("Blöcke: keine Fehler in der Seite", bfehler.length === 0, bfehler.slice(0, 3).join(" | "));
     await bctx.close();
+  }
+  // Große Ordner (0.4.3, Klaus 14.11.: A Stück für Stück, B Arbeitsordner auf dem Laufwerk, C schlanke Liste, D Speicherprüfung).
+  // Gestellte App mit einem Laufwerk im Speicher (überdauert Neuladen über sessionStorage); kein echtes Gerät.
+  {
+    console.log("Große Ordner: Stück für Stück, Arbeitsordner, schlank, Speicherprüfung");
+    const { createHash } = await import("node:crypto");
+    const GROSS = 35 * 1024 * 1024;
+    const grossBytes = (() => { const b = Buffer.alloc(GROSS); b.write("%PDF-1.7\n"); for (let i = 9; i < GROSS; i++) b[i] = (i * 31 + (i >> 8)) & 255; return b; })();
+    const grossSha = createHash("sha256").update(grossBytes).digest("hex");
+    const stellen = (opt) => {
+      const o = window.__opt = JSON.parse(sessionStorage.getItem("opt") || "null") || opt;
+      sessionStorage.setItem("opt", JSON.stringify(o));
+      Object.defineProperty(navigator, "deviceMemory", { value: o.mem }); Object.defineProperty(navigator, "hardwareConcurrency", { value: o.kerne });
+      const enc = new TextEncoder(), b64 = (u) => { let s = ""; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode(...u.subarray(i, i + 0x8000)); return btoa(s); };
+      const fs = JSON.parse(sessionStorage.getItem("fs") || "null") || { "Eingang/Brief.txt": "Stadtwerke Musterstadt\nAbschlag Strom Januar 2026", "Eingang/Lang.txt": "Musterbank eG\nKontoauszug " + "Umsatz Miete 850,00 EUR. ".repeat(1500) };
+      const merk = () => sessionStorage.setItem("fs", JSON.stringify(fs));
+      const log = window.__log = { gelesen: 0, pruef: 0, grossGelesen: 0 };
+      const GROSS = o.gross, gross = (off, n) => { const u = new Uint8Array(n); const kopf = enc.encode("%PDF-1.7\n"); for (let k = 0; k < n; k++) { const i = off + k; u[k] = i < 9 ? kopf[i] : (i * 31 + (i >> 8)) & 255; } return u; };
+      const groessen = (p) => p === "Eingang/Gross.pdf" ? GROSS : enc.encode(fs[p] ?? "").length;
+      const wurzel = (t) => (t === "e" ? "Eingang" : t === "l" ? "" : t === "t" ? "Family-Projekt" : "?");
+      const voll = (t, p) => [wurzel(t), p].filter(Boolean).join("/");
+      const kinder = (t, p) => { const basis = voll(t, p); const pre = basis ? basis + "/" : ""; const m = new Map();
+        const alle = [...Object.keys(fs), ...(o.gross ? ["Eingang/Gross.pdf"] : []), ...(t === "t" ? ["Family-Projekt/tresorordner.json"] : []), ...(fs.__ordner || [])];
+        for (const k of alle) { if (typeof k !== "string" || !k.startsWith(pre)) continue; const rest = k.slice(pre.length); if (!rest) continue; const [kopf, ...w] = rest.split("/");
+          m.set(kopf, w.length || (fs.__ordner || []).includes(k) ? { name: kopf, art: "ordner", groesse: 0 } : { name: kopf, art: "datei", groesse: groessen(k), geaendert: 1767225600000 }); }
+        return [...m.values()].filter((e) => e.name !== "__ordner"); };
+      const offen = {};
+      let wahl = 0;
+      window.Capacitor = { isNativePlatform: () => true, getPlatform: () => "android", Plugins: {
+        FamilyFolders: {
+          ordnerWaehlen: async () => { const z = (o.wahlen || [])[wahl++] || "e"; return { token: z, name: z === "e" ? "Eingang" : z === "t" ? "Family-Projekt" : "SD-Karte", id: "id-" + z }; },
+          gemerkt: async () => ({ ordner: [{ id: "id-l", name: "SD-Karte", da: true }, { id: "id-e", name: "Eingang", da: true }] }),
+          wiederOeffnen: async ({ id }) => { const z = id.slice(3); return { token: z, name: z === "e" ? "Eingang" : "SD-Karte" }; },
+          ordnerListe: async ({ token, pfad }) => ({ eintraege: kinder(token, pfad) }),
+          dateiLesen: async ({ token, pfad, offset, laenge }) => { const p = voll(token, pfad); log.gelesen += laenge;
+            if (p === "Eingang/Gross.pdf") { log.grossGelesen += Math.min(laenge, GROSS - offset); return { data: b64(gross(offset, Math.max(0, Math.min(laenge, GROSS - offset)))) }; }
+            return { data: b64(enc.encode(fs[p] ?? "").subarray(offset, offset + laenge)) }; },
+          ...(o.ohnePruefsumme ? {} : { pruefsumme: async ({ token, pfad }) => { log.pruef++; const d = new Uint8Array(await crypto.subtle.digest("SHA-256", gross(0, GROSS))); return { sha256: [...d].map((x) => x.toString(16).padStart(2, "0")).join(""), groesse: GROSS }; } }),
+          speicherFrei: async () => ({ frei: o.frei }),
+          arbeitsordner: async ({ token }) => { if (token === "t") throw Object.assign(new Error("DO_TRESOR_ORDNER"), { code: "DO_TRESOR_ORDNER" });
+            const a = voll(token, "Datei-Organizer-Arbeit"); fs.__ordner = [...new Set([...(fs.__ordner || []), a])]; merk(); return { pfad: "Datei-Organizer-Arbeit", neu: true }; },
+          dateiBeginn: async ({ token, pfad }) => { const id = Math.random().toString(36); offen[id] = { p: voll(token, pfad), t: "" }; return { id }; },
+          dateiAnhaengen: async ({ id, data }) => { offen[id].t += new TextDecoder().decode(Uint8Array.from(atob(data), (c) => c.charCodeAt(0)), { stream: true }); return { size: 0 }; },
+          dateiFertig: async ({ id }) => { fs[offen[id].p] = offen[id].t; merk(); return { size: 0, sha256: "" }; },
+        },
+        DoUpdates: { pruefen: async () => { throw Object.assign(new Error("UPDATE_NICHT_EINGERICHTET"), { code: "UPDATE_NICHT_EINGERICHTET" }); } },
+      } };
+    };
+    const neueSeite = async (opt) => {
+      const c = await browser.newContext({ viewport: { width: 1100, height: 900 } });
+      await c.addInitScript(stellen, opt); const pg = await c.newPage(); const f = []; pg.on("pageerror", (e) => f.push(String(e)));
+      await pg.goto(basis + "#ordner"); await pg.waitForSelector("[data-nativ-ordner]", { timeout: 8000 }).catch(() => {}); return { c, pg, f };
+    };
+    const meldungNach = async (pg, re, ms = 60000) => { await pg.waitForFunction((r) => new RegExp(r).test(document.querySelector("[data-meldung]")?.textContent || ""), re.source, { timeout: ms }).catch(() => {}); return (await pg.locator("[data-meldung]").innerText().catch(() => "")) || ""; };
+
+    // A + B + C: kleines Gerät (vollBis 30 MB), große Datei 35 MB, Arbeitsordner auf der „SD-Karte“.
+    { const { c, pg, f } = await neueSeite({ mem: 2, kerne: 4, gross: GROSS, frei: 8 * 1024 ** 3, wahlen: ["t", "l", "e"] });
+      soll("A: Leistung des Geräts wird angezeigt (klein: Blöcke zu 25, bis 30 MB ganz)", /Kleines Gerät: Blöcke zu 25, Dateien bis 30 MB/.test(await pg.locator("[data-leistung]").innerText().catch(() => "")));
+      await pg.locator("[data-arbeit-waehlen]").click();
+      soll("B: Pro-Tresor als Laufwerk gewählt → abgewiesen mit Erklärung", /Pro-Tresor/.test(await meldungNach(pg, /Tresor/)) && await pg.locator("[data-arbeit-pfad]").count() === 0);
+      await pg.locator("[data-arbeit-waehlen]").click();
+      await pg.waitForSelector("[data-arbeit-pfad]", { timeout: 5000 }).catch(() => {});
+      soll("B: Laufwerk gewählt → Arbeitsordner SD-Karte/Datei-Organizer-Arbeit, freier Speicher genannt", /SD-Karte\/Datei-Organizer-Arbeit/.test(await pg.locator("[data-arbeit-pfad]").innerText().catch(() => "")) && /frei 8 GB/.test(await pg.locator("[data-arbeit-pfad]").innerText().catch(() => "")));
+      soll("B: das Laufwerk erscheint nicht unter „Zuletzt“ als Quelle", !((await pg.locator("[data-gemerkt]").innerText().catch(() => "")) || "").includes("SD-Karte"));
+      await pg.locator("[data-nativ-ordner]").click();
+      const m = await meldungNach(pg, /Dateien im Eingang/);
+      const log = await pg.evaluate(() => window.__log);
+      soll("A: große Datei (35 MB) Stück für Stück: nur der Kopf über die Brücke, Prüfsumme am Ort", /1 große Datei Stück für Stück/.test(m) && log.grossGelesen <= 4096 && log.pruef === 1, `${m} · ${JSON.stringify(log)}`);
+      await pg.waitForTimeout(2500);
+      const fs = await pg.evaluate(() => JSON.parse(sessionStorage.getItem("fs")));
+      const liste = JSON.parse(fs["Datei-Organizer-Arbeit/liste-0001.json"] || "[]"), gross = liste.find((d) => d.name === "Gross.pdf");
+      soll("A: Fingerabdruck und Art der großen Datei stimmen (SHA-256 wie node:crypto, PDF)", gross?.sha256 === grossSha && gross?.art === "pdf" && gross?.groesse === GROSS, JSON.stringify(gross));
+      soll("B: Liste und Stand liegen im Arbeitsordner (stand.json, liste-0001.json)", !!fs["Datei-Organizer-Arbeit/stand.json"] && liste.length === 3);
+      const lang = liste.find((d) => d.name === "Lang.txt"), texte = Object.keys(fs).filter((k) => /^Datei-Organizer-Arbeit\/texte-.*\.json$/.test(k));
+      soll("C: schlank – langer Text im Speicher gekürzt (20 000 Zeichen), ganzer Text im Arbeitsordner", lang?.volltext?.length === 20000 && texte.length === 1 && JSON.parse(fs[texte[0]])["Lang.txt"]?.length > 30000, `${lang?.volltext?.length} · ${texte.join(",")} · ${Object.keys(fs).join(",")}`);
+      const idb = await pg.evaluate(() => new Promise((ok) => { const r = indexedDB.open("DateiOrganizer1"); r.onsuccess = () => { const g = r.result.transaction("kv").objectStore("kv").get("zustand"); g.onsuccess = () => ok(g.result?.dateien?.length ?? -1); }; }));
+      soll("B: im App-Speicher bleibt nur ein leerer Stand (die Liste liegt auf dem Laufwerk)", idb === 0, String(idb));
+      // „Neuinstallation“: App-Speicher weg, Laufwerk bleibt → nach Wahl des Laufwerks ist der Stand wieder da.
+      await pg.evaluate(() => new Promise((ok) => { localStorage.clear(); const r = indexedDB.deleteDatabase("DateiOrganizer1"); r.onsuccess = r.onerror = r.onblocked = () => ok(); }));
+      await pg.evaluate(() => { const o = JSON.parse(sessionStorage.getItem("opt")); o.wahlen = ["l"]; sessionStorage.setItem("opt", JSON.stringify(o)); });
+      await pg.reload(); await pg.waitForSelector("[data-arbeit-waehlen]", { timeout: 8000 }).catch(() => {});
+      soll("B: nach „Neuinstallation“ ohne Arbeitsordner und leer", await pg.locator("[data-arbeit-pfad]").count() === 0 && (await pg.locator("[data-ordner-pill]").innerText()).includes("Kein Ordner"));
+      await pg.locator("[data-arbeit-waehlen]").click();
+      soll("B: Laufwerk wieder gewählt → Stand aus dem Arbeitsordner übernommen (3 Dateien)", /3 Dateien aus dem gespeicherten Stand übernommen/.test(await meldungNach(pg, /übernommen/, 8000)) && (await pg.locator('[data-zahl="gesamt"]').innerText().catch(() => "")).startsWith("3 "));
+      await pg.reload(); await pg.waitForFunction(() => /^3 /.test(document.querySelector('[data-zahl="gesamt"]')?.textContent || ""), null, { timeout: 8000 }).catch(() => {});
+      soll("B: beim nächsten Start kommt die Liste ohne Auswahl vom Laufwerk", (await pg.locator('[data-zahl="gesamt"]').innerText().catch(() => "")).startsWith("3 "));
+      soll("Große Ordner: keine Fehler in der Seite", f.length === 0, f.slice(0, 3).join(" | "));
+      await c.close(); }
+
+    // A ohne Prüfsummen-Aufruf (Familienakte): Rückfall über Stücke, gleiches Ergebnis. Starkes Gerät lädt die 35 MB dagegen ganz.
+    { const { c, pg } = await neueSeite({ mem: 2, kerne: 4, gross: GROSS, frei: -1, ohnePruefsumme: true });
+      await pg.locator("[data-nativ-ordner]").click(); await meldungNach(pg, /Dateien im Eingang/);
+      await pg.locator("[data-nav=finden]").click().catch(() => {});
+      const log = await pg.evaluate(() => window.__log);
+      soll("A: ohne Prüfsummen-Aufruf der App (Familienakte) Stück für Stück über die Brücke, ohne Absturz", log.pruef === 0 && log.grossGelesen >= GROSS && log.grossGelesen <= GROSS + 4096, JSON.stringify(log));
+      await c.close(); }
+    { const { c, pg } = await neueSeite({ mem: 16, kerne: 12, gross: GROSS, frei: -1 });
+      soll("A: starkes Gerät (16 GB, 12 Kerne) lädt bis 256 MB ganz", /Starkes Gerät: Blöcke zu 100, Dateien bis 256 MB/.test(await pg.locator("[data-leistung]").innerText().catch(() => "")));
+      await pg.locator("[data-nativ-ordner]").click(); const m = await meldungNach(pg, /Dateien im Eingang/);
+      soll("A: starkes Gerät – die große Datei wird ganz geladen (kein Stück-für-Stück-Weg)", !/Stück für Stück/.test(m) && (await pg.evaluate(() => window.__log.pruef)) === 0, m);
+      await c.close(); }
+    // D: zu wenig frei im Arbeitsordner → anhalten mit Meldung, Stand bleibt, nichts gelesen.
+    { const { c, pg } = await neueSeite({ mem: 4, kerne: 6, gross: 0, frei: 10 * 1024 * 1024, wahlen: ["l", "e"] });
+      await pg.locator("[data-arbeit-waehlen]").click(); await pg.waitForSelector("[data-arbeit-pfad]", { timeout: 5000 }).catch(() => {});
+      await pg.locator("[data-nativ-ordner]").click();
+      const m = await meldungNach(pg, /Zu wenig Speicher/, 20000);
+      soll("D: zu wenig frei im Arbeitsordner → hält vor dem Block an, nennt frei und gebraucht", /Zu wenig Speicher im Arbeitsordner \(SD-Karte\/Datei-Organizer-Arbeit\): frei 10 MB, für den nächsten Block gebraucht 50 MB\. 0 von 2/.test(m), m);
+      await c.close(); }
   }
   soll("Keine Fehler in der Konsole", fehler.length === 0, fehler.slice(0, 3).join(" | "));
 } finally {

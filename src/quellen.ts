@@ -9,7 +9,17 @@
  * 3 Dateien oder Ordner wählen (jeder Browser, auch am Handy): nur lesen, der Index wird heruntergeladen.
  * 4 Testordner: die erfundenen Testdaten aus dem Repo.
  */
-export type QuellDatei = { pfad: string; name: string; geaendert: number; lesen: () => Promise<Uint8Array> };
+export type QuellDatei = {
+  pfad: string; name: string; geaendert: number; lesen: () => Promise<Uint8Array>;
+  /** Große Ordner (0.4.3): Größe vorab, Dateikopf und Prüfsumme ohne die ganze Datei zu laden. Fehlt das, wird ganz gelesen. */
+  groesse?: number; kopf?: (n: number) => Promise<Uint8Array>; pruefsumme?: () => Promise<string>;
+};
+/** Eine Browser-Datei (File) als Quelldatei: Kopf und Prüfsumme über Stücke (file.slice), nie die ganze Datei auf einmal. */
+function ausFile(pfad: string, f: File): QuellDatei {
+  return { pfad, name: f.name, geaendert: f.lastModified, groesse: f.size, lesen: async () => new Uint8Array(await f.arrayBuffer()),
+    kopf: async (n) => new Uint8Array(await f.slice(0, n).arrayBuffer()),
+    pruefsumme: () => sha256Stueckweise(f.size, async (o, l) => new Uint8Array(await f.slice(o, o + l).arrayBuffer())) };
+}
 export type Quelle = {
   art: "ordner" | "nativ" | "auswahl" | "test";
   name: string;
@@ -26,6 +36,7 @@ export type Quelle = {
 
 export const INDEX_NAME = "organizer-index.json";
 import { ueberspringen as UEBERSPRINGEN } from "../lib/einlesen.ts";
+import { sha256Stueckweise } from "./sha256.ts";
 
 // ---------- 1 Ordner am PC ----------
 type DirHandle = { name: string; kind: "directory"; values: () => AsyncIterable<FileHandle | DirHandle>; getFileHandle: (n: string, o?: { create?: boolean }) => Promise<FileHandle>; queryPermission?: (o: { mode: string }) => Promise<string>; requestPermission?: (o: { mode: string }) => Promise<string> };
@@ -52,7 +63,7 @@ export function ausHandle(h: DirHandle): Quelle {
           if (UEBERSPRINGEN(e.name)) continue;
           const p = pfad ? `${pfad}/${e.name}` : e.name;
           if (e.kind === "directory") await lauf(e, p, tiefe + 1);
-          else { const fh = e; const f = await fh.getFile(); aus.push({ pfad: p, name: e.name, geaendert: f.lastModified, lesen: async () => new Uint8Array(await (await fh.getFile()).arrayBuffer()) }); }
+          else { const f = await e.getFile(); aus.push(ausFile(p, f)); }
         }
       };
       await lauf(h, "", 0);
@@ -80,6 +91,10 @@ type OrdnerPlugin = {
   dateiBeginn(a: { token: string; pfad: string }): Promise<{ id: string }>;
   dateiAnhaengen(a: { id: string; offset: number; data: string }): Promise<{ size: number }>;
   dateiFertig(a: { id: string; size: number }): Promise<{ size: number; sha256: string }>;
+  /** Große Ordner (Datei-Organizer Pro 0.4.3; fehlt in der Familienakte → Rückfall über Stücke). */
+  pruefsumme?(a: { token: string; pfad: string }): Promise<{ sha256: string; groesse: number }>;
+  speicherFrei?(a: { token: string }): Promise<{ frei: number }>;
+  arbeitsordner?(a: { token: string }): Promise<{ pfad: string; neu: boolean }>;
   /** Dauerhafte Freigabe (Datei-Organizer Pro 0.4.1; die Familienakte kennt sie noch nicht → fehlt dort). */
   gemerkt?(): Promise<{ ordner: GemerkterOrdner[] }>;
   wiederOeffnen?(a: { id: string }): Promise<{ token: string; name: string }>;
@@ -122,7 +137,11 @@ function nativeQuelle(p: OrdnerPlugin, token: string, name: string): Quelle {
           if (UEBERSPRINGEN(e.name)) continue;
           const pp = pfad ? `${pfad}/${e.name}` : e.name;
           if (e.art === "ordner") await lauf(pp, tiefe + 1);
-          else aus.push({ pfad: pp, name: e.name, geaendert: typeof e.geaendert === "number" ? e.geaendert : 0, lesen: () => lesen(pp, e.groesse) });
+          else aus.push({ pfad: pp, name: e.name, geaendert: typeof e.geaendert === "number" ? e.geaendert : 0, groesse: e.groesse, lesen: () => lesen(pp, e.groesse),
+            kopf: async (n) => b64zuBytes((await p.dateiLesen({ token, pfad: pp, offset: 0, laenge: Math.min(n, e.groesse) })).data),
+            // Die App rechnet am Ort (die Bytes gehen nicht durch die Brücke); ohne diesen Aufruf (Familienakte) über Stücke.
+            pruefsumme: p.pruefsumme ? async () => (await p.pruefsumme!({ token, pfad: pp })).sha256
+              : () => sha256Stueckweise(e.groesse, async (offset, laenge) => b64zuBytes((await p.dateiLesen({ token, pfad: pp, offset, laenge: Math.min(laenge, STUECK) })).data), STUECK) });
         }
       };
       await lauf("", 0);
@@ -175,8 +194,10 @@ export async function eingangAbholen(): Promise<Quelle | null> {
   return {
     art: "auswahl", name: dateien.length === 1 ? dateien[0].name : "Geteilte Dateien",
     async dateien() {
-      return dateien.map((d) => ({ pfad: d.name, name: d.name, geaendert: typeof d.geaendert === "number" ? d.geaendert : Date.now(),
-        lesen: () => stueckweise(d.groesse, async (offset, laenge) => (await p.lesen({ stapel, name: d.name, offset, laenge })).data) }));
+      const stueck = (name: string) => async (offset: number, laenge: number) => b64zuBytes((await p.lesen({ stapel, name, offset, laenge: Math.min(laenge, STUECK) })).data);
+      return dateien.map((d) => ({ pfad: d.name, name: d.name, geaendert: typeof d.geaendert === "number" ? d.geaendert : Date.now(), groesse: d.groesse,
+        lesen: () => stueckweise(d.groesse, async (offset, laenge) => (await p.lesen({ stapel, name: d.name, offset, laenge })).data),
+        kopf: (n: number) => stueck(d.name)(0, Math.min(n, d.groesse)), pruefsumme: () => sha256Stueckweise(d.groesse, stueck(d.name), STUECK) }));
     },
   };
 }
@@ -198,7 +219,7 @@ export function ausAuswahl(liste: FileList | File[], name: string): Quelle {
       return dateien.filter((f) => !UEBERSPRINGEN(f.name)).map((f) => {
         const rel = (f as File & { webkitRelativePath?: string }).webkitRelativePath;
         const pfad = rel ? rel.split("/").slice(1).join("/") || f.name : f.name;
-        return { pfad, name: f.name, geaendert: f.lastModified, lesen: async () => new Uint8Array(await f.arrayBuffer()) };
+        return ausFile(pfad, f);
       }).sort((a, b) => a.pfad.localeCompare(b.pfad, "de"));
     },
     async indexLesen() { const f = dateien.find((x) => x.name === INDEX_NAME); return f ? f.text() : null; },
@@ -226,7 +247,7 @@ export async function ausZiehen(dt: DataTransfer): Promise<Quelle | null> {
   return {
     art: "auswahl", name,
     async dateien() {
-      return gefunden.filter((g) => !UEBERSPRINGEN(g.datei.name)).map((g) => ({ pfad: g.pfad, name: g.datei.name, geaendert: g.datei.lastModified, lesen: async () => new Uint8Array(await g.datei.arrayBuffer()) })).sort((a, b) => a.pfad.localeCompare(b.pfad, "de"));
+      return gefunden.filter((g) => !UEBERSPRINGEN(g.datei.name)).map((g) => ausFile(g.pfad, g.datei)).sort((a, b) => a.pfad.localeCompare(b.pfad, "de"));
     },
   };
 }
