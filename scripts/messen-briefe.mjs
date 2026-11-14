@@ -93,4 +93,6 @@ if (SETZEN) { erg.jeForm = {};
   await leser.beenden(); }
 // --zeilen datei: je Stück und Feld, ob der neue Kern richtig liegt (für Vergleiche zweier Lesewege, z. B. mit/ohne Vorverarbeitung)
 if (arg("--zeilen")) writeFileSync(resolve(WURZEL, arg("--zeilen")), JSON.stringify(zeilen.map((z) => ({ datei: z.d, ...Object.fromEntries(FELDER.filter((f) => z.soll[f] !== undefined && !(f === "person" && z.soll[f] === null)).map((f) => [f, z.neu.wert[f] === z.soll[f]])) }))));
+// --stuecke datei: je Stück Soll, alt und neu in allen Feldern (für Bootstrap nach Absender, Absender-Runde 14.11.2026)
+if (arg("--stuecke")) writeFileSync(resolve(WURZEL, arg("--stuecke")), JSON.stringify(zeilen.map((z) => ({ datei: z.d, soll: z.soll, neu: z.neu?.wert, alt: z.alt?.wert }))));
 if (arg("--json")) writeFileSync(resolve(WURZEL, arg("--json")), JSON.stringify(erg, null, 1));

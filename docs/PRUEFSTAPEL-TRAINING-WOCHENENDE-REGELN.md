@@ -133,7 +133,8 @@ Lehren aus `docs/PRUEFBERICHT-EHRLICHKEIT-2026-11-14.md` sind eingearbeitet.
 **Vermerke vor der Messung:** (a) Beim Prüfen des Fortschritts wurden einmal die ersten 10 Dateinamen des Nachweisstapels gesehen (`ls | head`),
 keine Inhalte; keine Regel danach ausgerichtet. (b) Abzug-Probe: „ : “ als Trennpunkt ohne Beitrag (Setzer 542 = 542, Simulator 1 412 = 412) →
 entfernt; „Stelle mitnennen“ (Text +10/−9) → verworfen. (c) Lernwerte (keine Nachweise): Text 79,7 → 79,7 %, eigener Setzer 40,4 → 55,9 %,
-Simulator 1 22,7 → 41,2 %.
+Simulator 1 22,7 → 41,2 %. (d) Der erste Messlauf wurde abgebrochen, bevor ein Ergebnis gelesen war, um im Messwerkzeug den Export je Stück
+(`--stuecke`, für den Bootstrap) zu ergänzen; der Kern blieb `079dd6d`. Ausgewertet wird nur der zweite Lauf (`scripts/absender-nachweis.mjs`).
 
 **Auftrag an den Autor (wörtlich vergeben):** „Schreibe 200 erfundene Schriftstücke für fünf neue Haushalte (eine Familie mit Kindern,
 ein älteres Paar, eine Alleinlebende mit Nebenjob, eine Wohngemeinschaft, ein Selbstständiger mit Familie) über ein Jahr, Mischung wie im
