@@ -148,6 +148,15 @@ Organisationen), BookLedgerPro (Stammdaten, Weitere Namen, `namensmuster.js`), P
     **echten** Dateien und übernimmt erst nach Bestätigung. Jede Bestätigung oder Korrektur ist zugleich **Lehrdatum** für das
     Wortmodell (pseudonymisiert) → Training ohne Einzelklicks über hunderte Dateien. Erst kleine Stichprobe, dann alles.
 
+21. **Vorlage Briefweg der Familienakte (Klaus 14.11.2026):** `lib/brief-antwort.ts`/`app/brief-antwort.tsx` gibt es schon:
+    Brief pseudonymisieren (Namen aus der Akte + eigene Zusatzwörter), Auftrag „Antwort“ oder „Gegenlesen“ mit eigenem Wunsch
+    (Ton: formaler, strenger, freundlicher …), dann kopieren/Direktlink zu jeder KI oder mit eigenem Schlüssel an Mistral (EU);
+    Antwort zurück → Platzhalter wieder ersetzt. Ausbau: **Ordner-Weg** – die App legt den Auftrag (pseudonymisierter Brief + Ton)
+    als Datei in den freigegebenen Ordner; Claude Code (Remote Control) oder ChatGPT (Datei hochladen) schreibt die Antwort-Datei
+    zurück; die App holt sie ab, führt zurück und zeigt den Entwurf. Optional eigene Schlüssel auch für Claude/ChatGPT wie heute
+    für Mistral (Schlüssel nur in der App, nie im Chat). Ton-Wahl als feste Knöpfe statt nur Freitext. Gleicher Baustein für alle
+    Pro-Apps (Punkt 17).
+
 ## Startauftrag zum Einfügen
 
 ```
@@ -158,7 +167,7 @@ Ziel: Plan „Pseudonymisieren in allen Pro-Apps“ – Knopf „Pseudonymisiere
 Pro-Tresor (aus der Familienakte übernehmen oder selbst anlegen, verschlüsselt, Nummern nur als Fingerabdruck),
 Mail mit Anhängen samt OCR, Export und Kopieren-Knopf (Doppelblatt-Symbol) für jede KI, Training des Datei-Organizers nur aus pseudonymisierten Daten (ganze App pseudonymisiert exportieren → KI legt Sortier-Datei zurück → App übernimmt nach Bestätigung).
 Reihenfolge: zuerst Marktcheck (aktuell recherchieren), dann das Beste übernehmen, dann Modul 25 verbessern und in alle
-Apps nachziehen, nie doppelt pseudonymisieren, Landkarten nachziehen. Punkte 1–20 aus dem Brief; Klaus sagt je Punkt Ja.
+Apps nachziehen, nie doppelt pseudonymisieren, Landkarten nachziehen. Punkte 1–21 aus dem Brief; Klaus sagt je Punkt Ja.
 Ergebnis: docs/PLAN_PSEUDONYMISIEREN.md + HTML-Vorschau der sichtbaren Teile.
 Nicht: echte Dokumente oder pseudonymisierte Texte ins Repo (öffentlich), keine Schlüssel/PINs im Chat oder in Dateien,
 Gmail-Konnektor nicht als Quelle (liest Klartext), kein neues Repo, nichts veröffentlichen.
