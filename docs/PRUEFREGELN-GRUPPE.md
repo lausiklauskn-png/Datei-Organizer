@@ -133,3 +133,11 @@ Mit Codex als drittem Einordner (Aufträge 011, 012) wurden „Familie mit drei 
 gerechnet (`ergebnisse/*-drei.json`). Zwei Urteile kippten: Bereich der Familienakte nicht mehr gesichert (77 → 83 %, p = 0,06), Rechnungsnummer
 BookLedgerPro jetzt unter der Grenze (2 % falsch statt vorläufig 5,6 %). Lehre: **vorläufige Zahlen mit zwei Einordnern nicht ausgeben** – erst
 mit dem dritten entscheiden. Ausgaben danach siehe `docs/BRIEF_ABSCHLUSS_2026-11-13_PUNKTE-3-9.md`.
+
+## Trainings-Wochenende 14.11.2026: Runden C, D, E, F und ein ungesehener Rest
+
+Ohne Codex (Klaus 14.11.): je Runde drei unabhängige Claude-Einordner (zwei Sonnet, ein Opus), Soll = Mehrheit, Autor nur bei drei
+verschiedenen Urteilen; Abweichung von Regel 3 („mindestens einer aus einem anderen KI-System“) mit Klaus' Wort. Kern `05c7ef0` gegen
+0.2.0 (`534cc08`): C Bereich gesichert besser (85,3 %), E gesetzt nichts gesichert, D Schriftstück gesichert schlechter (77,3 %), F kein
+Unterschied. Nach dem Lernen (Block 5) am ungesehenen Rest: Absender aus Scans/Fotos gesichert besser (34,1 → 42,7 %), sonst gleich.
+Einzelheiten und Rollen: `docs/TRAINING-WOCHENENDE-ERGEBNISSE.md`. Offen: G (echte Stichprobe über die Maske).
