@@ -60,15 +60,37 @@ soll('FileProvider gibt nur update/ frei', [...pfade.matchAll(/<(\w+-path)/g)].l
 console.log('Plugins');
 const main = await lies(JAVA + 'MainActivity.java'), ordner = await lies(JAVA + 'DoOrdnerPlugin.java'), upd = await lies(JAVA + 'DoUpdatesPlugin.java'), feed = await lies(JAVA + 'UpdateFeed.java');
 soll('MainActivity meldet Ordner- und Update-Plugin an', main.includes('registerPlugin(DoOrdnerPlugin.class)') && main.includes('registerPlugin(DoUpdatesPlugin.class)'));
-soll('Ordner-Plugin heißt „FamilyFolders“ wie in src/quellen.ts', ordner.includes('@CapacitorPlugin(name = "FamilyFolders")') && (await lies('src/quellen.ts')).includes('Plugins?.FamilyFolders'));
+soll('Ordner-Plugin heißt „FamilyFolders“ wie in src/quellen.ts', ordner.includes('@CapacitorPlugin(name = "FamilyFolders")') && (await lies('src/quellen.ts')).includes('?.FamilyFolders'));
 for (const m of ['ordnerWaehlen', 'ordnerListe', 'dateiLesen', 'dateiBeginn', 'dateiAnhaengen', 'dateiFertig'])
   soll('Ordner-Plugin kann ' + m + ' (Aufruf in src/quellen.ts)', ordner.includes('public void ' + m + '(PluginCall call)'));
-soll('nie call.getLong (kleine Zahlen kommen als Integer)', ![ordner, upd].some((t) => /call\.getLong\(/.test(t)));
+for (const m of ['gemerkt', 'wiederOeffnen', 'vergessen'])
+  soll('Ordner-Plugin merkt dauerhaft: ' + m + ' (Aufruf in src/quellen.ts)', ordner.includes('public void ' + m + '(PluginCall call)') && new RegExp('\\.' + m + '\\??\\.?\\(').test(await lies('src/quellen.ts')));
+soll('dauerhafte Ordnerfreigabe (takePersistableUriPermission, höchstens 5)', ordner.includes('takePersistableUriPermission') && ordner.includes('FLAG_GRANT_PERSISTABLE_URI_PERMISSION') && ordner.includes('releasePersistableUriPermission'));
+const eing = await lies(JAVA + 'DoEingangPlugin.java'), dat = await lies(JAVA + 'DoDateienPlugin.java');
+soll('MainActivity meldet Eingang (Teilen/Öffnen mit) und Speichern unter an', main.includes('registerPlugin(DoEingangPlugin.class)') && main.includes('registerPlugin(DoDateienPlugin.class)'));
+soll('Eingang-Plugin „DoEingang“ mit abholen/lesen wie src/quellen.ts', eing.includes('@CapacitorPlugin(name = "DoEingang")') && ['abholen', 'lesen'].every((m) => eing.includes('public void ' + m + '(PluginCall call)')) && (await lies('src/quellen.ts')).includes('DoEingang'));
+soll('Speichern-Plugin „DoDateien“ mit speichern (Zwischenspeicher vor dem Dialog)', dat.includes('@CapacitorPlugin(name = "DoDateien")') && dat.includes('public void speichern(PluginCall call)') && dat.includes('ACTION_CREATE_DOCUMENT') && dat.includes('getCacheDir()'));
+soll('Manifest: Teilen (SEND/SEND_MULTIPLE) und „Öffnen mit“ (VIEW, nur content:)', manifest.includes('android.intent.action.SEND_MULTIPLE') && /action\.VIEW[\s\S]*?android:scheme="content"/.test(manifest));
+soll('nie call.getLong (kleine Zahlen kommen als Integer)', ![ordner, upd, eing, dat].some((t) => /call\.getLong\(/.test(t)));
 soll('Update-Plugin heißt „DoUpdates“ wie in src/nativ.ts', upd.includes('@CapacitorPlugin(name = "DoUpdates")') && (await lies('src/nativ.ts')).includes('DoUpdates'));
 soll('Feed-Adresse family-projekt.de/updates/datei-organizer/', feed.includes('"https://family-projekt.de/updates/datei-organizer/"'));
 const schluessel = (/static final String SCHLUESSEL = "([^"]*)"/.exec(feed) || [])[1];
 soll('Update-Schlüssel: Platzhalter leer oder gültiger Ed25519-Schlüssel', schluessel === '' || /^MCowBQYDK2VwAyEA[A-Za-z0-9+/]{43}=$/.test(schluessel));
 if (schluessel === '') console.log('  · Hinweis: öffentlicher Update-Schlüssel fehlt noch (Klaus, docs/ANDROID.md Schritt b) – Updates melden „nicht eingerichtet“.');
+
+console.log('Windows (gleiche Verträge wie Android)');
+{
+  const vertr = JSON.parse(await lies('windows/bridge/contracts.json'));
+  const tauri = JSON.parse(await lies('windows/src-tauri/tauri.conf.json')), cargo = await lies('windows/src-tauri/Cargo.toml'), wpkg = JSON.parse(await lies('windows/package.json'));
+  soll('Windows-Fassung = Fassung (tauri.conf, Cargo.toml, windows/package.json)', tauri.version === fassung && cargo.includes(`version = "${fassung}"`) && wpkg.version === fassung, [tauri.version, wpkg.version].join(' / '));
+  soll('Windows heißt „Datei-Organizer Pro“, Kennung wie Android', tauri.productName === 'Datei-Organizer Pro' && tauri.identifier === 'de.familyprojekt.dateiorganizer');
+  const java = { FamilyFolders: ordner, DoUpdates: upd, DoEingang: eing, DoDateien: dat };
+  for (const [plugin, methoden] of Object.entries(vertr)) for (const m of methoden)
+    soll(`Windows-Vertrag ${plugin}.${m} gibt es auch unter Android`, (java[plugin] || '').includes('public void ' + m + '(PluginCall call)'));
+  const wSchl = (/static final String SCHLUESSEL = "([^"]*)"/.exec(await lies('windows/engine/src/DesktopUpdates.java')) || [])[1];
+  soll('Update-Schlüssel unter Windows = Android (ein Schlüssel für beide)', wSchl === schluessel);
+  soll('Windows-Updates aus dem eigenen Ordner', (await lies('windows/engine/src/DesktopUpdates.java')).includes('"https://family-projekt.de/updates/datei-organizer/"'));
+}
 
 console.log('Update-Feed');
 {

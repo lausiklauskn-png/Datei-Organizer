@@ -298,6 +298,93 @@ try {
     soll("App: keine Fehler in der Seite", nfehler.length === 0, nfehler.slice(0, 3).join(" | "));
     await nctx.close();
   }
+  // Datei-Organizer Pro für Windows gestellt (0.4.1): Ordner am PC mit dauerhafter Freigabe, „Öffnen mit“, „Speichern unter“.
+  // Die Brücke ist erfunden (Ordner im Speicher), keine echte Hülle – die echte prüft windows.yml installiert.
+  {
+    const wctx = await browser.newContext({ viewport: { width: 1100, height: 900 } });
+    await wctx.addInitScript(() => {
+      const b64 = (t) => btoa(String.fromCharCode(...new TextEncoder().encode(t)));
+      const ordner = { "Strom 2026.txt": "Stadtwerke Musterstadt\nAbschlag Strom Januar 2026", "Bank/Auszug 01.txt": "Musterbank eG\nKontoauszug 1/2026" };
+      const log = (window.__winLog = JSON.parse(sessionStorage.getItem("winLog") || "[]"));
+      const merk = () => sessionStorage.setItem("winLog", JSON.stringify(log));
+      const eingang = (window.__eingang = { stapel: [], hoerer: [] });
+      const gespeichert = (window.__gespeichert = []);
+      const liste = (pfad) => { const aus = new Map(); for (const [p, t] of Object.entries(ordner)) { if (pfad && !p.startsWith(pfad + "/")) continue; const rest = pfad ? p.slice(pfad.length + 1) : p; const [kopf, ...weiter] = rest.split("/"); aus.set(kopf, weiter.length ? { name: kopf, art: "ordner", groesse: 0 } : { name: kopf, art: "datei", groesse: new TextEncoder().encode(t).length, geaendert: 1767225600000 }); } return [...aus.values()]; };
+      window.Capacitor = { isNativePlatform: () => true, getPlatform: () => "windows", Plugins: {
+        FamilyFolders: {
+          ordnerWaehlen: async () => { log.push("waehlen"); merk(); sessionStorage.setItem("winGemerkt", "1"); return { token: "t1", name: "Probeordner", id: "g1" }; },
+          gemerkt: async () => ({ ordner: sessionStorage.getItem("winGemerkt") ? [{ id: "g1", name: "Probeordner", da: true }] : [] }),
+          wiederOeffnen: async ({ id }) => { log.push("wieder:" + id); merk(); return { token: "t2", name: "Probeordner" }; },
+          vergessen: async () => { sessionStorage.removeItem("winGemerkt"); return {}; },
+          ordnerListe: async ({ pfad }) => ({ eintraege: liste(pfad) }),
+          dateiLesen: async ({ pfad, offset, laenge }) => ({ data: b64(ordner[pfad].slice(offset, offset + laenge)) }),
+          dateiBeginn: async () => { throw Object.assign(new Error("DO_NICHT_ERLAUBT"), { code: "DO_NICHT_ERLAUBT" }); },
+        },
+        DoEingang: {
+          abholen: async () => { const s = eingang.stapel.shift(); return s ? { stapel: "1-abcdef12.abgeholt", dateien: s.map(([name, t]) => ({ name, groesse: new TextEncoder().encode(t).length })), weitere: eingang.stapel.length } : { stapel: "", dateien: [] }; },
+          lesen: async ({ name, offset, laenge }) => ({ data: b64((window.__eingangText[name] || "").slice(offset, offset + laenge)) }),
+          addListener: async (_n, f) => { eingang.hoerer.push(f); return { remove: () => {} }; },
+        },
+        DoDateien: { speichern: async (a) => { gespeichert.push(a); return { gespeichert: true }; } },
+        DoUpdates: { pruefen: async () => { throw Object.assign(new Error("UPDATE_NICHT_EINGERICHTET"), { code: "UPDATE_NICHT_EINGERICHTET" }); }, installieren: async () => ({}) },
+      } };
+      window.__eingangText = {};
+    });
+    const wp = await wctx.newPage();
+    const wfehler = []; wp.on("pageerror", (e) => wfehler.push(String(e)));
+    await wp.goto(basis + "#ordner");
+    await wp.waitForSelector("[data-nativ-ordner]", { timeout: 8000 }).catch(() => {});
+    soll("Windows-App: Knopf heißt „Ordner am PC“, kein zweiter Browser-Ordnerknopf", (await wp.locator("[data-nativ-ordner]").innerText().catch(() => "")).includes("Ordner am PC") && await wp.locator("[data-pc-ordner]").count() === 0);
+    await wp.locator("[data-nativ-ordner]").click();
+    await wp.waitForFunction(() => /^2 /.test(document.querySelector('[data-zahl="gesamt"]')?.textContent || ""), null, { timeout: 20000 }).catch(() => {});
+    soll("Windows-App: Ordner mit Unterordner eingelesen (2 Dateien)", ((await wp.locator('[data-zahl="gesamt"]').innerText().catch(() => "")) || "").startsWith("2 "));
+    await wp.waitForSelector("[data-ordner-wieder]", { timeout: 5000 }).catch(() => {});
+    soll("Gemerkter Ordner steht unter „Zuletzt“", ((await wp.locator("[data-ordner-wieder]").innerText().catch(() => "")) || "").includes("Probeordner"));
+    await wp.evaluate(() => { location.hash = "akte"; });
+    await wp.waitForSelector("[data-index-sichern]", { timeout: 5000 }).catch(() => {});
+    soll("Ordner der App: der Index wird in den Ordner geschrieben (Knopf „In den Ordner schreiben“)", ((await wp.locator("[data-index-sichern]").innerText().catch(() => "")) || "").includes("In den Ordner schreiben"));
+    // Neu laden wie nach einem Neustart: der gemerkte Ordner öffnet ohne Auswahl-Fenster.
+    await wp.waitForTimeout(600); await wp.goto(basis + "#ordner"); await wp.reload();
+    await wp.waitForSelector("[data-ordner-wieder]", { timeout: 8000 }).catch(() => {});
+    await wp.locator("[data-ordner-wieder]").first().click().catch(() => {});
+    await wp.waitForTimeout(800);
+    soll("Nach Neustart: ein Tipp auf „Zuletzt“ öffnet den Ordner ohne Auswahl-Fenster", JSON.stringify(await wp.evaluate(() => JSON.parse(sessionStorage.getItem("winLog") || "[]"))) === JSON.stringify(["waehlen", "wieder:g1"]));
+    // „Öffnen mit“: die App meldet „neu“, die Seite holt den Stapel und nimmt ihn zum Bestand dazu.
+    await wp.evaluate(() => { window.__eingangText["Brief-Öffnen-mit.txt"] = "Muster Versicherung AG\nBeitragsrechnung 2026"; window.__eingang.stapel.push([["Brief-Öffnen-mit.txt", window.__eingangText["Brief-Öffnen-mit.txt"]]]); window.__eingang.hoerer.forEach((f) => f({ neu: 1 })); });
+    await wp.waitForFunction(() => /^3 /.test(document.querySelector('[data-zahl="gesamt"]')?.textContent || ""), null, { timeout: 15000 }).catch(() => {});
+    soll("„Öffnen mit“/Teilen: Datei kommt zum Bestand dazu (2 → 3)", ((await wp.locator('[data-zahl="gesamt"]').innerText().catch(() => "")) || "").startsWith("3 "));
+    soll("Windows-App: keine Fehler in der Seite", wfehler.length === 0, wfehler.slice(0, 3).join(" | "));
+    await wctx.close();
+    // Nur geteilte Dateien, kein Ordner: der Index geht über „Speichern unter …“ der App, nie über einen Download.
+    const actx = await browser.newContext({ viewport: { width: 400, height: 800 } });
+    await actx.addInitScript(() => {
+      const b64 = (t) => btoa(String.fromCharCode(...new TextEncoder().encode(t)));
+      const text = "Stadtwerke Musterstadt\nAbschlag Strom 2026";
+      let einmal = true;
+      window.__gespeichert = [];
+      window.Capacitor = { isNativePlatform: () => true, getPlatform: () => "android", Plugins: {
+        FamilyFolders: { ordnerWaehlen: async () => ({ cancelled: true }), gemerkt: async () => ({ ordner: [] }) },
+        DoEingang: { abholen: async () => { if (!einmal) return { stapel: "", dateien: [] }; einmal = false; return { stapel: "1-abcdef12.abgeholt", dateien: [{ name: "Geteilt.txt", groesse: new TextEncoder().encode(text).length }] }; },
+          lesen: async ({ offset, laenge }) => ({ data: b64(text.slice(offset, offset + laenge)) }) },
+        DoDateien: { speichern: async (a) => { window.__gespeichert.push(a); return { gespeichert: true }; } },
+      } };
+    });
+    const ap = await actx.newPage();
+    const afehler = []; ap.on("pageerror", (e) => afehler.push(String(e)));
+    await ap.goto(basis + "#ordner");
+    await ap.waitForFunction(() => /^1 /.test(document.querySelector('[data-zahl="gesamt"]')?.textContent || ""), null, { timeout: 15000 }).catch(() => {});
+    soll("Android-App: geteilte Datei kommt beim Start an (Teilen an die App)", ((await ap.locator('[data-zahl="gesamt"]').innerText().catch(() => "")) || "").startsWith("1 "));
+    await ap.evaluate(() => { location.hash = "akte"; });
+    await ap.waitForSelector("[data-index-sichern]", { timeout: 5000 }).catch(() => {});
+    soll("Ohne Ordner heißt der Knopf „Speichern unter …“", ((await ap.locator("[data-index-sichern]").innerText().catch(() => "")) || "").includes("Speichern unter"));
+    let download = false; ap.on("download", () => { download = true; });
+    await ap.locator("[data-index-sichern]").click().catch(() => {});
+    await ap.waitForTimeout(500);
+    const g = await ap.evaluate(() => window.__gespeichert);
+    soll("„Speichern unter …“: organizer-index.json als JSON an die App, kein Download", g.length === 1 && g[0].name === "organizer-index.json" && g[0].mime === "application/json" && atob(g[0].data).includes("Geteilt.txt") && !download);
+    soll("Android-App: keine Fehler in der Seite", afehler.length === 0, afehler.slice(0, 3).join(" | "));
+    await actx.close();
+  }
   soll("Keine Fehler in der Konsole", fehler.length === 0, fehler.slice(0, 3).join(" | "));
 } finally {
   await browser.close(); server.close();

@@ -9,6 +9,19 @@ oder Altbestand kommen in **einen** Ordner; der Organizer sortiert sie Klick fü
 Nummern → Absender → Inhalt) und zeigt sie als Baum nach vielen Gesichtspunkten. Zuerst für die Familienakte gemacht: der Ordner
 wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). Plan und alle Entscheidungen: `docs/PLAN.md`.
 
+## Stand (14.11.2026 nachts, Fassung 0.4.1, Windows-App und Android-Lücken, nicht veröffentlicht)
+
+- **Datei-Organizer Pro für Windows** (Auftrag aus dem Brief vom 13.11.): `windows/` nach dem Muster von BookLedgerPro – Tauri 2 + Java-Engine
+  (`windows/engine/src/`: `DesktopOrdner` = Vertrag `FamilyFolders`, `DesktopEingang` = „Öffnen mit“, `DesktopUpdates` = eigener Server,
+  Speichern unter), Brücke `windows/bridge/` (Verträge in `contracts.json`), Installer (NSIS, „Öffnen mit“ nur für diesen Benutzer),
+  `windows.yml` (Prüfbau installiert, zweimal gestartet) und `windows-release.yml` (nur von Hand, Feld „ja“). Alles in `docs/WINDOWS.md`.
+- **Android-Lücken geschlossen:** dauerhafte Ordnerfreigabe („Zuletzt: …“, die letzten 5), Teilen an die App und „Öffnen mit“ (`DoEingangPlugin`,
+  Kopie in einen Stapel, `EingangStapel`), „Speichern unter …“ (`DoDateienPlugin`) – gleiche Verträge wie Windows; Oberfläche in `src/quellen.ts`/`src/app.tsx`.
+- **Ein Update-Schlüssel für Android und Windows** (`UpdateFeed.SCHLUESSEL` = `DesktopUpdates.SCHLUESSEL`, geprüft) – noch leer, bis Klaus ihn gibt
+  (Anleitung Schritt für Schritt im Chat; Block in `docs/ANDROID.md` (b)).
+- ⚠ Kein Windows-PC, kein Android-Gerät, kein Rust- oder Gradle-Bau in der Sitzung: erst `windows.yml`/`android.yml` zeigen, ob es baut.
+  Offen: große Mengen in Blöcken mit Weitermachen (Klaus: die nächsten 2–3 Wochen). Brief: `docs/BRIEF_ABSCHLUSS_2026-11-14_ORGANIZER-PRO-WINDOWS.md`.
+
 ## Stand (13.11.2026 nachts, Fassung 0.4.0, Android-App, nicht veröffentlicht)
 
 - **Freibrief zum Mergen (Klaus 13.11. nachts, „auch an die neue Sitzung weitergeben“):** eigene geprüfte PRs (CI und Proben grün) selbst
@@ -22,7 +35,7 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   **Namen (Klaus 13.11.):** Web-App „Datei-Organizer Basic“, App „Datei-Organizer Pro“ – festgelegt nur in `src/nativ.ts` (`APP_VARIANTE`);
   Speicher-Namen nicht umbenennen. Alles Weitere, Proben und **was Klaus einmalig tun muss** (Signier-Freigabe `DO_SIGNING_UNLOCK`,
   Update-Server, öffentlicher Schlüssel – bis dahin Platzhalter, Updates „nicht eingerichtet“): `docs/ANDROID.md`.
-  ⚠ Kein Android-Bau, kein Gerät in der Sitzung – erst `android.yml` zeigt, ob Gradle/Lint bestehen. Offen: Speichern unter, Teilen an die App, Windows.
+  ⚠ Kein Android-Bau, kein Gerät in der Sitzung – erst `android.yml` zeigt, ob Gradle/Lint bestehen. (Speichern unter, Teilen, Windows: seit 0.4.1, oben.)
 
 ## Stand (13.11.2026 nachts, Fassung 0.3.4, nicht veröffentlicht)
 

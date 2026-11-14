@@ -11,13 +11,13 @@ import { korrigieren as korrigiereDatei, lernen, regelnAufAlle } from "../lib/le
 import { archivnummernVergeben } from "../lib/archivnummer.ts";
 import { indexLesen, organizerIndex, INDEX_DATEI } from "../lib/index-format.ts";
 import { pdfLeser } from "./pdf.ts";
-import { ausHandle, erlaubnisPruefen, herunterladen, type Quelle, type QuellDatei } from "./quellen.ts";
+import { ausHandle, eingangAbholen, erlaubnisPruefen, herunterladen, nativerEingang, nativSpeichern, type Quelle, type QuellDatei } from "./quellen.ts";
 import { laden, loeschen, ordnerHolen, ordnerMerken, speichern } from "./zustand.ts";
 import { OrdnerSeite, SortierenSeite, FindenSeite, VerlaufSeite, AkteSeite, HilfeSeite } from "./seiten.tsx";
 import { LandkarteSeite } from "./landkarte.tsx";
 import { APP_NAME, direktLaden, istNativ, nativeUpdates, stillPruefen } from "./nativ.ts";
 
-export const FASSUNG = "0.4.0";
+export const FASSUNG = "0.4.1";
 // Ladeanzeige: „suchen“ = Ordner wird durchgesehen (Zahl noch unbekannt), „lesen“ = Datei für Datei, „stand“ = gemerkter Stand beim Start.
 export type Fortschritt = { phase: "stand" | "suchen" | "lesen"; fertig: number; gesamt: number; name?: string };
 const luft = () => new Promise<void>((r) => setTimeout(r)); // dem Browser Zeit zum Zeichnen geben
@@ -128,6 +128,27 @@ function useOrganizer() {
     setMeldung({ text: `${fertig.length} Dateien im Eingang · Sieb 1 fertig: ${auff} auffällig, ${dopp} doppelt${ausIndex ? ` · ${ausIndex} aus dem gespeicherten Index wiedererkannt` : ""}.`, art: auff ? "halt" : undefined });
   }, [dateien, stufe, regeln, ordnerName]);
 
+  // Geteilt an die App (Android) bzw. „Öffnen mit“ (Windows): Kopien kommen zum Bestand dazu, wie beim Hineinziehen.
+  // Abgeholt beim Start, wenn die App meldet, dass etwas kam, und beim Zurückholen der App.
+  const einlesenRef = useRef(einlesenAus); einlesenRef.current = einlesenAus;
+  const anzahlRef = useRef(0); anzahlRef.current = dateien.length;
+  useEffect(() => {
+    const p = nativerEingang();
+    if (!geladen || !p) return;
+    let weg = false, laeuft = false;
+    const holen = async () => {
+      if (laeuft) return; laeuft = true;
+      try { for (let i = 0; i < 20 && !weg; i++) { const q = await eingangAbholen(); if (!q) break; await einlesenRef.current(q, anzahlRef.current > 0); await new Promise((r) => setTimeout(r, 60)); /* neu zeichnen lassen: der nächste Stapel braucht den neuen Bestand */ } }
+      catch { /* nichts geteilt oder App ohne Eingang */ } finally { laeuft = false; }
+    };
+    void holen();
+    const sicht = () => { if (document.visibilityState === "visible") void holen(); };
+    document.addEventListener("visibilitychange", sicht);
+    let hoerer: { remove?: () => unknown } | null = null;
+    void Promise.resolve(p.addListener?.("neu", () => void holen())).then((h) => { if (weg) h?.remove?.(); else hoerer = h || null; });
+    return () => { weg = true; document.removeEventListener("visibilitychange", sicht); hoerer?.remove?.(); };
+  }, [geladen]);
+
   const pcOrdnerWieder = useCallback(async () => {
     const h = await ordnerHolen();
     if (!h || !(await erlaubnisPruefen(h as never))) return false;
@@ -205,7 +226,12 @@ function useOrganizer() {
     const text = indexText(mitText);
     try {
       if (quelle?.schreiben) { await quelle.schreiben(INDEX_DATEI, text); setMeldung({ text: `${INDEX_DATEI} liegt jetzt im Ordner „${quelle.name}“.` }); }
-      else { herunterladen(INDEX_DATEI, text); setMeldung({ text: `${INDEX_DATEI} heruntergeladen. Lege sie in den Ordner neben die Dateien.` }); }
+      else {
+        // In der App gibt es kein Herunterladen (WebView): „Speichern unter …“ des Systems.
+        const gespeichert = await nativSpeichern(INDEX_DATEI, text);
+        if (gespeichert === null) { herunterladen(INDEX_DATEI, text); setMeldung({ text: `${INDEX_DATEI} heruntergeladen. Lege sie in den Ordner neben die Dateien.` }); }
+        else setMeldung({ text: gespeichert ? `${INDEX_DATEI} gespeichert. Lege sie in den Ordner neben die Dateien.` : "Nicht gespeichert." });
+      }
     } catch (e) { setMeldung({ text: `Speichern nicht möglich: ${(e as Error).message}`, art: "fehler" }); }
   }, [indexText, quelle]);
 
