@@ -16,6 +16,8 @@ public class MainActivity extends BridgeActivity {
     @Override public void onCreate(Bundle state) {
         registerPlugin(DoOrdnerPlugin.class);
         registerPlugin(DoUpdatesPlugin.class);
+        registerPlugin(DoEingangPlugin.class);
+        registerPlugin(DoDateienPlugin.class);
         super.onCreate(state);
         if (bridge == null) return;
         // Wie BookLedgerPro: die WebView übernimmt sonst die Systemschrift (textZoom) und die App wirkt größer als die PWA.

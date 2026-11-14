@@ -1,7 +1,7 @@
 import { innenKurz } from "../lib/innen.ts";
 import { ausZiehen } from "./quellen.ts";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Archive, Check, Download, File, FileImage, FileText, FolderOpen, FolderTree, HelpCircle, History, ListChecks, Mail, Pencil, Eye, RotateCcw, Search, Share2, Trash2, Upload, ShieldAlert, Smartphone, Undo2 } from "lucide-react";
+import { Archive, Check, Download, File, FileImage, FileText, FolderOpen, FolderTree, HelpCircle, History, ListChecks, Mail, Pencil, Eye, RotateCcw, Search, Share2, Trash2, Upload, ShieldAlert, Smartphone, Monitor, Undo2, X } from "lucide-react";
 import type { Datei, FeldName } from "../lib/typen.ts";
 import { STUFEN, offeneFelder, gesperrt, istUnsicher } from "../lib/siebe.ts";
 import { SICHTEN, baum, dateienUnter, suche, type BaumKnoten } from "../lib/sichten.ts";
@@ -11,7 +11,7 @@ import { offeneFuerNummer } from "../lib/archivnummer.ts";
 import { stichprobe, anteilText } from "../lib/stichprobe.ts";
 import { deutsch, kurzfassung, INDEX_DATEI } from "../lib/index-format.ts";
 import { Ablaufbild, FesterBaum, Info, OrdnerBaum, Seitentitel, type Schritt } from "./ui.tsx";
-import { ausAuswahl, nativWaehlen, nativerOrdner, ordnerWaehlen, ordnerWahlMoeglich, testOrdner } from "./quellen.ts";
+import { ausAuswahl, nativGemerkt, nativPlattform, nativVergessen, nativSpeichernMoeglich, nativWaehlen, nativWieder, nativerOrdner, ordnerWaehlen, ordnerWahlMoeglich, testOrdner, type GemerkterOrdner } from "./quellen.ts";
 import { heute, Ladebalken, type AppZustand, type FindenZiel, type SeitenId } from "./app.tsx";
 
 export type P = { z: AppZustand; gehe: (s: SeitenId) => void; oeffne?: (sicht: string, knoten?: string) => void; ziel?: FindenZiel };
@@ -58,7 +58,11 @@ export function OrdnerSeite({ z, gehe }: P) {
   const dateiWahl = useRef<HTMLInputElement>(null), ordnerWahl = useRef<HTMLInputElement>(null);
   const [laeuft, setLaeuft] = useState(false);
   const los = async (f: () => Promise<unknown>) => { setLaeuft(true); try { await f(); } catch (e) { z.setMeldung({ text: (e as Error).message, art: "fehler" }); } finally { setLaeuft(false); } };
-  const nativ = nativerOrdner(), pc = ordnerWahlMoeglich();
+  // In der App (Android/Windows) der eigene Ordnerweg; der Browser-Ordnerweg nur ohne App (WebView2 hätte ihn auch – doppelt wäre verwirrend).
+  const nativ = nativerOrdner(), pc = !nativ && ordnerWahlMoeglich(), amPc = nativPlattform() === "windows";
+  // Gemerkte Ordner der App (dauerhafte Freigabe): ein Tipp liest wieder ein, ohne Auswahl-Fenster.
+  const [gemerkt, setGemerkt] = useState<GemerkterOrdner[]>([]);
+  useEffect(() => { if (nativ) void nativGemerkt().then(setGemerkt); }, [nativ, z.ordnerName]);
   const [ziehtDrueber, setZiehtDrueber] = useState(false);
   const zahlen = useMemo(() => ({
     gesamt: z.dateien.length, auff: z.dateien.filter((d) => d.auffaellig).length, dopp: z.dateien.filter((d) => d.doppeltVon).length, aehnl: z.dateien.filter((d) => d.aehnlich).length,
@@ -75,17 +79,25 @@ export function OrdnerSeite({ z, gehe }: P) {
       <div className="card-heading"><h2>{z.ordnerName ? `Ordner: ${z.ordnerName}` : "Ordner wählen"}</h2>
         <Info titel="Welcher Weg?" punkte={[
           "Handy/Tablet mit Datei-Organizer Pro oder Familienakte Pro: „Ordner auf dem Gerät“ – auch SD-Karte.",
+          "Datei-Organizer Pro merkt sich den Ordner: beim nächsten Mal reicht ein Tipp unter „Zuletzt“.",
           "PC mit Chrome oder Edge: „Ordner am PC“ – lesen und Sortierung zurückschreiben.",
           "Jeder Browser: „Dateien wählen“ – nur lesen, die Sortierung wird heruntergeladen.",
           "„Testordner“: 101 erfundene Dateien zum Ausprobieren.",
         ]}/></div>
       <div className="button-row">
-        {nativ && <button type="button" className="button primary" disabled={laeuft} onClick={() => los(async () => { const q = await nativWaehlen(); if (q) await z.einlesenAus(q); })}><Smartphone size={18}/>Ordner auf dem Gerät</button>}
+        {nativ && <button type="button" className="button primary" disabled={laeuft} data-nativ-ordner onClick={() => los(async () => { const q = await nativWaehlen(); if (q) await z.einlesenAus(q); })}>{amPc ? <><Monitor size={18}/>Ordner am PC</> : <><Smartphone size={18}/>Ordner auf dem Gerät</>}</button>}
         {pc && <button type="button" className={`button ${nativ ? "" : "primary"}`} disabled={laeuft} onClick={() => los(async () => { const q = await ordnerWaehlen(); if (q) { await z.einlesenAus(q); } })} data-pc-ordner><FolderOpen size={18}/>Ordner am PC</button>}
         <button type="button" className="button" disabled={laeuft} onClick={() => ordnerWahl.current?.click()}><FolderTree size={18}/>Ordner hochladen</button>
         <button type="button" className="button" disabled={laeuft} onClick={() => dateiWahl.current?.click()}><File size={18}/>Dateien wählen</button>
         <button type="button" className="button" disabled={laeuft} onClick={() => los(() => z.einlesenAus(testOrdner()))} data-testordner><Archive size={18}/>Testordner</button>
       </div>
+      {gemerkt.some((g) => g.da) && <div className="chips" data-gemerkt style={{ marginTop: 10 }}>
+        <span className="leise">Zuletzt:</span>
+        {gemerkt.filter((g) => g.da).slice(0, 3).map((g) => <span key={g.id} className="chip">
+          <button type="button" className="text-link" disabled={laeuft} data-ordner-wieder onClick={() => los(async () => { await z.einlesenAus(await nativWieder(g.id)); })}><FolderOpen size={15}/>{g.name}</button>
+          <button type="button" className="text-link" aria-label={`„${g.name}“ vergessen`} title="Vergessen (der Ordner selbst bleibt)" onClick={() => void nativVergessen(g.id).then(nativGemerkt).then(setGemerkt)}><X size={14}/></button>
+        </span>)}
+      </div>}
       <input ref={dateiWahl} type="file" multiple hidden onChange={(e) => { const l = e.target.files; if (l?.length) void los(() => z.einlesenAus(ausAuswahl(l, "Ausgewählte Dateien"))); else z.setMeldung({ text: `Der Browser hat keine Dateien übergeben${z.ordnerName ? ` – angezeigt wird weiter „${z.ordnerName}“` : ""}. Bitte „Ordner am PC“ oder „Dateien wählen“ nehmen.`, art: "halt" }); e.target.value = ""; }}/>
       <input ref={ordnerWahl} type="file" multiple hidden {...{ webkitdirectory: "" }} onChange={(e) => { const l = e.target.files; if (l?.length) { const n = (l[0] as File & { webkitRelativePath?: string }).webkitRelativePath?.split("/")[0] || "Ordner"; void los(() => z.einlesenAus(ausAuswahl(l, n))); } else z.setMeldung({ text: `Der Browser hat keine Dateien übergeben${z.ordnerName ? ` – angezeigt wird weiter „${z.ordnerName}“` : ""}. Bitte „Ordner am PC“ oder „Dateien wählen“ nehmen.`, art: "halt" }); e.target.value = ""; }}/>
       <Ladebalken f={z.fortschritt}/>
@@ -417,7 +429,7 @@ export function AkteSeite({ z, gehe }: P) {
       ]}/></div>
       <label className="titel-zeile"><input type="checkbox" checked={mitText} onChange={(e) => setMitText(e.target.checked)} data-mit-text/>Erkannten Text mitgeben</label>
       <div className="button-row" style={{ marginTop: 12 }}>
-        <button type="button" className="button primary" disabled={!z.dateien.length} onClick={() => z.indexSichern(mitText)} data-index-sichern><Download size={18}/>{z.quelle?.schreiben ? "In den Ordner schreiben" : "Herunterladen"}</button>
+        <button type="button" className="button primary" disabled={!z.dateien.length} onClick={() => z.indexSichern(mitText)} data-index-sichern><Download size={18}/>{z.quelle?.schreiben ? "In den Ordner schreiben" : nativSpeichernMoeglich() ? "Speichern unter …" : "Herunterladen"}</button>
       </div>
       <Meldung z={z} gehe={gehe}/>
     </section>

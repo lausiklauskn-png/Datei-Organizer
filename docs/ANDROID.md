@@ -1,7 +1,7 @@
-# Datei-Organizer Pro – die Android-App (Fassung 0.4.0, Klaus 13.11.2026)
+# Datei-Organizer Pro – die Android-App (Fassung 0.4.1, Klaus 13.11.2026)
 
 Klaus 13.11.2026: „die APK-App und die Windows-App mit der Download-Funktion genau wie bei den anderen oder Update-Funktionen“.
-Dieser Stand ist **Android**; Windows folgt. Vorbild in allem: BookLedgerPro (`docs/ANDROID.md`, `docs/UPDATES-EIGENER-SERVER.md` dort).
+Dieser Stand ist **Android**; Windows: `docs/WINDOWS.md` (gleiche Verträge, gleicher Update-Schlüssel). Vorbild in allem: BookLedgerPro (`docs/ANDROID.md`, `docs/UPDATES-EIGENER-SERVER.md` dort).
 
 | Fassung | Name | Wo |
 |---|---|---|
@@ -35,7 +35,13 @@ Speicher-Namen bleiben in beiden gleich (IndexedDB, Vorrat `datei-organizer-v…
 - **Ordner auf dem Gerät** (Knopf auf der Seite Ordner, nur in der App): Androids Ordnerwahl (Gerätespeicher, SD-Karte, USB).
   Eine Ordnerliste ist **eine** Abfrage je Ordner (Name, Art, Größe, Änderungsdatum zusammen), Dateien werden in Stücken bis 1 MiB
   gelesen – für große Mengen gedacht. Geschrieben wird nur eine `.json`-Datei direkt im gewählten Ordner (`organizer-index.json`);
-  Originale werden nie verändert, nichts wird gelöscht. Die Freigabe gilt, solange die App läuft. Zahlen nie über `call.getLong`
+  Originale werden nie verändert, nichts wird gelöscht. **Dauerhafte Freigabe (0.4.1):** die App nimmt Androids dauerhafte Freigabe und
+  merkt sich die letzten 5 Ordner; „Zuletzt: …“ auf der Seite Ordner liest ohne Auswahl-Fenster wieder ein (✕ = vergessen, gibt die
+  Freigabe an Android zurück). Ist der Ordner weg (SD-Karte entfernt), steht er nicht unter „Zuletzt“.
+- **Teilen an die App / „Öffnen mit“ (0.4.1, `DoEingangPlugin`, rein `EingangStapel`):** jede Dateiart über Teilen, PDF/Bilder/Mail/Text/Office über
+  „Öffnen mit“. Die App kopiert die Dateien sofort in einen Stapel im App-Speicher, die Seite nimmt sie zum Bestand dazu (wie Hineinziehen).
+- **Speichern unter (0.4.1, `DoDateienPlugin`):** ohne Ordner (Dateien wählen, Teilen, Testordner) heißt der Knopf „Speichern unter …“ und öffnet
+  Androids Speichern-Fenster; Inhalt vorher im Zwischenspeicher (BookLedgerPro-Befund: sonst bleiben leere Dateien stehen). Zahlen nie über `call.getLong`
   (Familienakte-Befund 11.11.: kleine Zahlen kommen als Integer) – `NativeUtil.zahl`.
 - **Testordner** liegt im App-Paket unter `testdaten/` (101 erfundene Dateien), damit der Knopf auch in der App geht.
 
@@ -58,7 +64,7 @@ Speicher-Namen bleiben in beiden gleich (IndexedDB, Vorrat `datei-organizer-v…
 ### Fassungsnummern
 
 `package.json` = `src/public/version.json` = `FASSUNG` in `src/app.tsx` = `versionName` in `android/app/build.gradle`;
-`versionCode` = Haupt × 1000 + Neben × 10 + Flick (0.4.0 → 40). `test-native.mjs` prüft beides. `VORRAT` in `src/public/sw.js` bei jeder
+`versionCode` = Haupt × 1000 + Neben × 10 + Flick (0.4.1 → 41). `test-native.mjs` prüft beides. `VORRAT` in `src/public/sw.js` bei jeder
 Fassung erhöhen (PWA).
 
 ## Proben
@@ -105,10 +111,10 @@ echo "== öffentlicher Schlüssel:"; openssl pkey -in signatur.pem -pubout | sed
 ```
 
 Danach die **eine ausgegebene Zeile** nach „öffentlicher Schlüssel:“ (beginnt mit `MCowBQYDK2VwAyEA`, öffentlich, kein Geheimnis) an
-Claude geben; sie kommt in `UpdateFeed.SCHLUESSEL`. `signatur.pem` bleibt nur in Termux (verschlüsselt sichern, z. B. `age -p`).
+Claude geben; sie kommt in `UpdateFeed.SCHLUESSEL` (Android) **und** `DesktopUpdates.SCHLUESSEL` (Windows) – ein Schlüssel für beide. `signatur.pem` bleibt nur in Termux (verschlüsselt sichern, z. B. `age -p`).
 
 **(c) Veröffentlichen** (erst nach a und b, nur auf Klaus' Wort): Actions → „Datei-Organizer Pro Android veröffentlichen“ auf `main`,
-Tag `v0.4.0` (= `versionName`), voller main-Commit (Check „android“ grün), Feld `bestaetigung` = `ja`. Der Lauf baut, signiert, prüft im
+Tag `v0.4.1` (= `versionName`), voller main-Commit (Check „android“ grün), Feld `bestaetigung` = `ja`. Der Lauf baut, signiert, prüft im
 Emulator (Testordner einlesen, überinstallieren, Stand noch da), veröffentlicht auf GitHub, prüft den Download, unterschreibt den Feed,
 prüft ihn gegen den Schlüssel in der App und lädt nach `family-projekt.de/updates/datei-organizer/` hoch.
 
@@ -116,10 +122,8 @@ prüft ihn gegen den Schlüssel in der App und lädt nach `family-projekt.de/upd
 
 - **Nicht am Gerät, kein Emulator-Lauf, kein Android-Bau in dieser Sitzung** (kein Android-SDK im Behälter). Ob Java, Manifest und
   Gradle bauen und Lint besteht, zeigt erst `android.yml`. Lokal geprüft: JVM-Proben (17), Node-Probe, Browser mit gestellter Brücke.
-- **Ordner auf dem Gerät** ungeprüft am Gerät (SD-Karte, Cloud-Anbieter ohne suchbaren Kanal → Strom-Lesen); keine dauerhafte Freigabe
-  (nach Neustart neu wählen); Schreiben nur mit Kürzen („wt“) – kann ein Anbieter das nicht, wird nicht geschrieben.
-- **Herunterladen** (Index ohne Ordner, „Dateien wählen“): `<a download>` geht in der WebView nicht. Mit „Ordner auf dem Gerät“ wird
-  der Index in den Ordner geschrieben; ein „Speichern unter“ wie in BookLedgerPro (`BlpFilesPlugin`) ist der nächste Schritt.
-- Teilen an die App / „Öffnen mit“ gibt es noch nicht (BookLedgerPro: `BlpIncomingPlugin`).
+- **Ordner auf dem Gerät** ungeprüft am Gerät (SD-Karte, Cloud-Anbieter ohne suchbaren Kanal → Strom-Lesen); dauerhafte Freigabe,
+  Teilen und Speichern unter nur mit gestellter Brücke und JVM-Proben (`EingangStapelTest`) geprüft; Schreiben nur mit Kürzen („wt“).
+- Wird das Fenster nach einem Anzeige-Ausfall neu aufgebaut, kann ein eben geteilter Stapel ein zweites Mal ankommen (dann als doppelt markiert).
 - Kein echter Update-Server, keine echte Unterschrift gemessen (nur Wegwerf-Schlüssel in der Probe).
 - Windows-App (Tauri + Updates wie BookLedgerPro `windows/`) ist der nächste Auftrag.

@@ -9,6 +9,9 @@ import android.os.ParcelFileDescriptor;
 import android.provider.DocumentsContract;
 import android.util.Base64;
 import androidx.activity.result.ActivityResult;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.UriPermission;
 import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
@@ -33,7 +36,10 @@ import java.util.UUID;
  * Androids Speicherzugriff (ACTION_OPEN_DOCUMENT_TREE); die Seite bekommt nur eine Kennung, nie eine Adresse. Eine Ordnerliste ist
  * EINE Abfrage je Ordner (Name, Art, Größe, Änderungsdatum zusammen); Dateien werden in Stücken bis 1 MiB gelesen. Geschrieben wird
  * nur eine .json-Datei direkt im gewählten Ordner (organizer-index.json). Originale werden nie verändert, nichts wird gelöscht.
- * Die Freigabe gilt, solange die App läuft. Zahlen nie über call.getLong (NativeUtil.zahl).
+ * Dauerhafte Freigabe (0.4.1, Klaus' Liste „Ordnerfreigabe merken“): die App nimmt Androids dauerhafte Freigabe
+ * (takePersistableUriPermission) und merkt sich die zuletzt gewählten Ordner (höchstens 5, OrdnerMerkliste) mit Namen; „gemerkt“
+ * zeigt sie, „wiederOeffnen“ öffnet ohne Auswahl-Fenster, „vergessen“ gibt die Freigabe an Android zurück.
+ * Zahlen nie über call.getLong (NativeUtil.zahl).
  */
 @CapacitorPlugin(name = "FamilyFolders")
 public final class DoOrdnerPlugin extends Plugin {
@@ -71,7 +77,8 @@ public final class DoOrdnerPlugin extends Plugin {
     private static long zahl(PluginCall call, String name, long ersatz) { return NativeUtil.zahl(call.getData().opt(name), ersatz); }
 
     @PluginMethod public void ordnerWaehlen(PluginCall call) {
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
         startActivityForResult(call, intent, "ordnerGewaehlt");
     }
     @ActivityCallback private void ordnerGewaehlt(PluginCall call, ActivityResult result) {
@@ -80,13 +87,76 @@ public final class DoOrdnerPlugin extends Plugin {
         if (result.getResultCode() != Activity.RESULT_OK || data == null || data.getData() == null) { call.resolve(new JSObject().put("cancelled", true)); return; }
         Uri uri = data.getData();
         arbeit(call, () -> {
-            String wurzel = DocumentsContract.getTreeDocumentId(uri);
-            Baum b = new Baum(uri, wurzel);
-            liste(b, ""); // Probe: lesbar
-            String token = UUID.randomUUID().toString(); ordner.put(token, b);
-            String name = wurzel; int i = name.lastIndexOf(':'); if (i >= 0) name = name.substring(i + 1);
-            i = name.lastIndexOf('/'); if (i >= 0) name = name.substring(i + 1);
-            return new JSObject().put("token", token).put("name", name.isEmpty() ? "Speicher" : name);
+            JSObject aus = oeffnen(uri);
+            // Dauerhaft merken (übersteht Neustart); geht es nicht (Anbieter ohne dauerhafte Freigabe), gilt sie nur bis zum Schließen.
+            boolean dauer = true;
+            try { cr().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION); }
+            catch (SecurityException nurLesen) {
+                try { cr().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION); } catch (SecurityException keinDauer) { dauer = false; }
+            }
+            if (dauer) aus.put("id", merken(uri, aus.getString("name")));
+            return aus;
+        });
+    }
+    private JSObject oeffnen(Uri uri) throws IOException {
+        String wurzel = DocumentsContract.getTreeDocumentId(uri);
+        Baum b = new Baum(uri, wurzel);
+        liste(b, ""); // Probe: lesbar
+        String token = UUID.randomUUID().toString(); ordner.put(token, b);
+        String name = wurzel; int i = name.lastIndexOf(':'); if (i >= 0) name = name.substring(i + 1);
+        i = name.lastIndexOf('/'); if (i >= 0) name = name.substring(i + 1);
+        return new JSObject().put("token", token).put("name", name.isEmpty() ? "Speicher" : name);
+    }
+
+    // ---------- Gemerkte Ordner (SharedPreferences: Reihenfolge der Kennungen, je Kennung Name und Adresse) ----------
+    private SharedPreferences prefs() { return getContext().getSharedPreferences("do_ordner_v1", Context.MODE_PRIVATE); }
+    private synchronized String merken(Uri uri, String name) {
+        SharedPreferences p = prefs();
+        java.util.List<String> alt = OrdnerMerkliste.trennen(p.getString("liste", ""));
+        String id = null;
+        for (String a : alt) if (uri.toString().equals(p.getString("uri_" + a, null))) id = a;
+        if (id == null) id = UUID.randomUUID().toString();
+        java.util.List<String> neu = OrdnerMerkliste.vorn(alt, id);
+        SharedPreferences.Editor e = p.edit().putString("liste", OrdnerMerkliste.verbinden(neu)).putString("uri_" + id, uri.toString()).putString("name_" + id, name);
+        for (String weg : OrdnerMerkliste.heraus(alt, neu)) { freigeben(p.getString("uri_" + weg, null)); e.remove("uri_" + weg).remove("name_" + weg); }
+        e.apply();
+        return id;
+    }
+    private void freigeben(String uri) {
+        if (uri == null) return;
+        try { cr().releasePersistableUriPermission(Uri.parse(uri), Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION); }
+        catch (SecurityException schonWeg) { /* nichts zu tun */ }
+    }
+    private boolean freigabeDa(String uri) {
+        if (uri == null) return false;
+        for (UriPermission f : cr().getPersistedUriPermissions()) if (f.getUri().toString().equals(uri) && f.isReadPermission()) return true;
+        return false;
+    }
+    @PluginMethod public void gemerkt(PluginCall call) {
+        arbeit(call, () -> {
+            SharedPreferences p = prefs(); JSArray aus = new JSArray();
+            for (String id : OrdnerMerkliste.trennen(p.getString("liste", ""))) {
+                String uri = p.getString("uri_" + id, null);
+                aus.put(new JSObject().put("id", id).put("name", p.getString("name_" + id, "Ordner")).put("da", freigabeDa(uri)));
+            }
+            return new JSObject().put("ordner", aus);
+        });
+    }
+    @PluginMethod public void wiederOeffnen(PluginCall call) {
+        arbeit(call, () -> {
+            String id = call.getString("id", ""), uri = id.isEmpty() ? null : prefs().getString("uri_" + id, null);
+            if (!freigabeDa(uri)) throw new IOException("DO_FREIGABE_FEHLT");
+            try { JSObject aus = oeffnen(Uri.parse(uri)); merken(Uri.parse(uri), aus.getString("name")); return aus.put("id", id); }
+            catch (IOException | SecurityException | IllegalArgumentException weg) { throw new IOException("DO_FREIGABE_FEHLT"); }
+        });
+    }
+    @PluginMethod public void vergessen(PluginCall call) {
+        arbeit(call, () -> {
+            String id = call.getString("id", ""); SharedPreferences p = prefs();
+            java.util.List<String> alt = OrdnerMerkliste.trennen(p.getString("liste", "")), neu = new java.util.ArrayList<>(alt);
+            neu.remove(id);
+            if (alt.contains(id)) { freigeben(p.getString("uri_" + id, null)); p.edit().putString("liste", OrdnerMerkliste.verbinden(neu)).remove("uri_" + id).remove("name_" + id).apply(); }
+            return new JSObject().put("vergessen", alt.size() - neu.size());
         });
     }
 

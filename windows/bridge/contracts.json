@@ -1,0 +1,6 @@
+{
+  "FamilyFolders": ["ordnerWaehlen", "gemerkt", "wiederOeffnen", "vergessen", "ordnerListe", "dateiInfo", "dateiLesen", "dateiBeginn", "dateiAnhaengen", "dateiFertig"],
+  "DoEingang": ["abholen", "lesen"],
+  "DoDateien": ["speichern", "appInfo"],
+  "DoUpdates": ["pruefen", "installieren"]
+}

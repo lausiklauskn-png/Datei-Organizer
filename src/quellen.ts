@@ -3,8 +3,9 @@
  * höchstens organizer-index.json (und nur, wo der Ordner das erlaubt).
  *
  * 1 Ordner am PC (Chrome/Edge): Ordnerwahl des Browsers, lesen und schreiben.
- * 2 Datei-Organizer Pro bzw. Familienakte Pro (Android): der Ordnerzugriff der App (Plugin „FamilyFolders“, Android-Ordnerwahl,
- *   auch SD-Karte; in Datei-Organizer Pro android/…/DoOrdnerPlugin.java mit denselben Aufrufen). Am Gerät noch ungeprüft.
+ * 2 Datei-Organizer Pro bzw. Familienakte Pro (Android, Windows): der Ordnerzugriff der App (Plugin „FamilyFolders“, Android-Ordnerwahl
+ *   auch SD-Karte bzw. Windows-Ordnerdialog; android/…/DoOrdnerPlugin.java und windows/engine/…/DesktopOrdner.java mit denselben
+ *   Aufrufen). Datei-Organizer Pro merkt sich die zuletzt gewählten Ordner (gemerkt/wiederOeffnen). Am Gerät noch ungeprüft.
  * 3 Dateien oder Ordner wählen (jeder Browser, auch am Handy): nur lesen, der Index wird heruntergeladen.
  * 4 Testordner: die erfundenen Testdaten aus dem Repo.
  */
@@ -65,38 +66,50 @@ export async function erlaubnisPruefen(h: DirHandle): Promise<boolean> {
   } catch { return false; }
 }
 
-// ---------- 2 Familienakte Pro: nativer Ordnerzugriff ----------
+// ---------- 2 Datei-Organizer Pro / Familienakte Pro: nativer Ordnerzugriff (Android und Windows) ----------
 type Eintrag = { name: string; art: "datei" | "ordner"; groesse: number; geaendert?: number };
+export type GemerkterOrdner = { id: string; name: string; da: boolean };
 type OrdnerPlugin = {
-  ordnerWaehlen(a: { titel?: string }): Promise<{ token?: string; name?: string; cancelled?: boolean }>;
+  ordnerWaehlen(a: { titel?: string }): Promise<{ token?: string; name?: string; id?: string; cancelled?: boolean }>;
   ordnerListe(a: { token: string; pfad: string }): Promise<{ eintraege: Eintrag[] }>;
   dateiLesen(a: { token: string; pfad: string; offset: number; laenge: number }): Promise<{ data: string }>;
   dateiBeginn(a: { token: string; pfad: string }): Promise<{ id: string }>;
   dateiAnhaengen(a: { id: string; offset: number; data: string }): Promise<{ size: number }>;
   dateiFertig(a: { id: string; size: number }): Promise<{ size: number; sha256: string }>;
+  /** Dauerhafte Freigabe (Datei-Organizer Pro 0.4.1; die Familienakte kennt sie noch nicht → fehlt dort). */
+  gemerkt?(): Promise<{ ordner: GemerkterOrdner[] }>;
+  wiederOeffnen?(a: { id: string }): Promise<{ token: string; name: string }>;
+  vergessen?(a: { id: string }): Promise<unknown>;
 };
-type CapFenster = Window & { Capacitor?: { isNativePlatform?: () => boolean; Plugins?: { FamilyFolders?: OrdnerPlugin } } };
-export const nativerOrdner = (): OrdnerPlugin | null => {
+/** „Teilen an die App“ (Android) bzw. „Öffnen mit“ (Windows): Kopien im App-Speicher, abgeholt als Stapel. */
+type EingangPlugin = {
+  abholen(): Promise<{ stapel: string; dateien: Array<{ name: string; groesse: number; geaendert?: number }>; weitere?: number }>;
+  lesen(a: { stapel: string; name: string; offset: number; laenge: number }): Promise<{ data: string }>;
+  addListener?(name: "neu", f: () => void): Promise<{ remove?: () => unknown }> | { remove?: () => unknown };
+};
+type DateienPlugin = { speichern(a: { name: string; mime?: string; data: string }): Promise<{ gespeichert: boolean }> };
+type CapPlugins = { FamilyFolders?: OrdnerPlugin; DoEingang?: EingangPlugin; DoDateien?: DateienPlugin };
+type CapFenster = Window & { Capacitor?: { isNativePlatform?: () => boolean; getPlatform?: () => string; Plugins?: CapPlugins } };
+const capPlugins = (): CapPlugins | null => {
   const cap = typeof window !== "undefined" ? (window as CapFenster).Capacitor : undefined;
-  return cap?.isNativePlatform?.() && cap.Plugins?.FamilyFolders?.ordnerWaehlen ? cap.Plugins.FamilyFolders : null;
+  return cap?.isNativePlatform?.() ? cap.Plugins || null : null;
 };
+export const nativerOrdner = (): OrdnerPlugin | null => { const p = capPlugins()?.FamilyFolders; return p?.ordnerWaehlen ? p : null; };
+/** Windows-App: der Ordner liegt „am PC“, sonst „auf dem Gerät“. */
+export const nativPlattform = (): string => (typeof window !== "undefined" ? (window as CapFenster).Capacitor?.getPlatform?.() || "" : "");
 const STUECK = 1024 * 1024;
 const b64zuBytes = (s: string) => { const bin = atob(s); const o = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) o[i] = bin.charCodeAt(i); return o; };
 const bytesZuB64 = (b: Uint8Array) => { let s = ""; for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode(...b.subarray(i, i + 0x8000)); return btoa(s); };
+async function stueckweise(groesse: number, holen: (offset: number, laenge: number) => Promise<string>) {
+  const o = new Uint8Array(groesse); let k = 0;
+  for (let off = 0; off < groesse; off += STUECK) { const t = b64zuBytes(await holen(off, Math.min(STUECK, groesse - off))); o.set(t.subarray(0, groesse - k), k); k += t.length; }
+  return k < groesse ? o.subarray(0, k) : o;
+}
 
-export async function nativWaehlen(): Promise<Quelle | null> {
-  const p = nativerOrdner();
-  if (!p) return null;
-  const r = await p.ordnerWaehlen({ titel: "Ordner „Datei-Organizer“ wählen (z. B. auf der SD-Karte)" });
-  if (r.cancelled || !r.token) return null;
-  const token = r.token;
-  const lesen = async (pfad: string, groesse: number) => {
-    const teile: Uint8Array[] = [];
-    for (let off = 0; off < groesse; off += STUECK) teile.push(b64zuBytes((await p.dateiLesen({ token, pfad, offset: off, laenge: Math.min(STUECK, groesse - off) })).data));
-    const o = new Uint8Array(groesse); let k = 0; for (const t of teile) { o.set(t, k); k += t.length; } return o;
-  };
+function nativeQuelle(p: OrdnerPlugin, token: string, name: string): Quelle {
+  const lesen = (pfad: string, groesse: number) => stueckweise(groesse, async (offset, laenge) => (await p.dateiLesen({ token, pfad, offset, laenge })).data);
   return {
-    art: "nativ", name: r.name || "Ordner",
+    art: "nativ", name: name || "Ordner",
     async dateien() {
       const aus: QuellDatei[] = [];
       const lauf = async (pfad: string, tiefe: number) => {
@@ -121,6 +134,55 @@ export async function nativWaehlen(): Promise<Quelle | null> {
       try { const e = (await p.ordnerListe({ token, pfad: "" })).eintraege.find((x) => x.name === INDEX_NAME); return e ? new TextDecoder().decode(await lesen(INDEX_NAME, e.groesse)) : null; } catch { return null; }
     },
   };
+}
+
+export async function nativWaehlen(): Promise<Quelle | null> {
+  const p = nativerOrdner();
+  if (!p) return null;
+  const r = await p.ordnerWaehlen({ titel: "Ordner „Datei-Organizer“ wählen (z. B. auf der SD-Karte)" });
+  if (r.cancelled || !r.token) return null;
+  return nativeQuelle(p, r.token, r.name || "Ordner");
+}
+/** Zuletzt gewählte Ordner (dauerhafte Freigabe), neueste zuerst; leer, wo die App das nicht kann. */
+export async function nativGemerkt(): Promise<GemerkterOrdner[]> {
+  const p = nativerOrdner();
+  if (!p?.gemerkt) return [];
+  try { return ((await p.gemerkt()).ordner || []).filter((o) => o && typeof o.id === "string"); } catch { return []; }
+}
+/** Gemerkten Ordner ohne Auswahl-Fenster wieder öffnen. Ist die Freigabe weg (Ordner verschoben, SD-Karte fehlt), kommt ein Fehler. */
+export async function nativWieder(id: string): Promise<Quelle> {
+  const p = nativerOrdner();
+  if (!p?.wiederOeffnen) throw new Error("Diese App kann sich keinen Ordner merken.");
+  try { const r = await p.wiederOeffnen({ id }); return nativeQuelle(p, r.token, r.name); }
+  catch { throw new Error("Der Ordner ist nicht mehr erreichbar (verschoben, umbenannt oder Speicherkarte entfernt). Bitte neu wählen."); }
+}
+export async function nativVergessen(id: string) { try { await nativerOrdner()?.vergessen?.({ id }); } catch { /* egal */ } }
+
+/** Geteilte bzw. mit „Öffnen mit“ übergebene Dateien als Quelle (Kopien im App-Speicher); null, wenn nichts wartet. */
+export const nativerEingang = (): EingangPlugin | null => { const p = capPlugins()?.DoEingang; return p?.abholen ? p : null; };
+export async function eingangAbholen(): Promise<Quelle | null> {
+  const p = nativerEingang();
+  if (!p) return null;
+  const r = await p.abholen();
+  if (!r.stapel || !r.dateien?.length) return null;
+  const { stapel } = r;
+  const dateien = r.dateien.filter((d) => !UEBERSPRINGEN(d.name));
+  if (!dateien.length) return null;
+  return {
+    art: "auswahl", name: dateien.length === 1 ? dateien[0].name : "Geteilte Dateien",
+    async dateien() {
+      return dateien.map((d) => ({ pfad: d.name, name: d.name, geaendert: typeof d.geaendert === "number" ? d.geaendert : Date.now(),
+        lesen: () => stueckweise(d.groesse, async (offset, laenge) => (await p.lesen({ stapel, name: d.name, offset, laenge })).data) }));
+    },
+  };
+}
+
+export const nativSpeichernMoeglich = (): boolean => !!capPlugins()?.DoDateien?.speichern;
+/** „Speichern unter …“ der App (WebView kann kein <a download>). null = nicht verfügbar (Browser), sonst gespeichert ja/nein. */
+export async function nativSpeichern(name: string, text: string, mime = "application/json"): Promise<boolean | null> {
+  const p = capPlugins()?.DoDateien;
+  if (!p?.speichern) return null;
+  return !!(await p.speichern({ name, mime, data: bytesZuB64(new TextEncoder().encode(text)) })).gespeichert;
 }
 
 // ---------- 3 Auswahl ----------
