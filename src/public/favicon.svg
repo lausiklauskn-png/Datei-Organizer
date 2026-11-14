@@ -12,8 +12,8 @@
     <linearGradient id="strich" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#d6e6f4"/></linearGradient>
     <filter id="weich" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="0.55"/></filter>
   </defs>
-    <rect x="0" y="0" width="64" height="64" rx="0" fill="url(#verlauf)"/>
-    <rect x="0" y="0" width="64" height="64" rx="0" fill="url(#glanz)"/>
+    <rect x="0" y="0" width="64" height="64" rx="14.08" fill="url(#verlauf)"/>
+    <rect x="0" y="0" width="64" height="64" rx="14.08" fill="url(#glanz)"/>
 
   <g transform="translate(10.239999999999998 12.191999999999998) scale(1.8133333333333335)" fill="none" stroke="#04182b" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity="0.45" filter="url(#weich)"><path d="M20 10a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-2.5a1 1 0 0 1-.8-.4l-.9-1.2A1 1 0 0 0 15 3h-2a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z"/><path d="M20 21a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-2.9a1 1 0 0 1-.88-.55l-.42-.85a1 1 0 0 0-.92-.6H13a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z"/><path d="M3 5a2 2 0 0 0 2 2h3"/><path d="M3 3v13a2 2 0 0 0 2 2h3"/></g>
   <g transform="translate(10.239999999999998 11.249066666666666) scale(1.8133333333333335)" fill="none" stroke="#06223d" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"><path d="M20 10a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-2.5a1 1 0 0 1-.8-.4l-.9-1.2A1 1 0 0 0 15 3h-2a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z"/><path d="M20 21a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-2.9a1 1 0 0 1-.88-.55l-.42-.85a1 1 0 0 0-.92-.6H13a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z"/><path d="M3 5a2 2 0 0 0 2 2h3"/><path d="M3 3v13a2 2 0 0 0 2 2h3"/></g>

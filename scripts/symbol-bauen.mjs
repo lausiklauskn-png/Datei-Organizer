@@ -16,8 +16,8 @@ const ZEICHEN = [
 
 /** form: "kachel" (gerundetes Quadrat), "rund" (Kreis), "voll" (randlos, für „maskable“), "vorne" (nur Zeichen, Android-Vordergrund), "hinten" (nur Verlauf) */
 export function symbolSvg(form = "kachel", groesse = 1024) {
-  // Klaus 14.11.: kein Außenrand, komplett ausgefüllt – Kachel randlos bis an die Kante (das System rundet selbst), keine helle Kante
-  const g = groesse, r = form === "rund" ? g / 2 : 0, randlos = form !== "rund";
+  // Klaus 14.11.: runde Ecken (Kachel), aber keine helle Außenkante; „voll“ (maskable) und „hinten“ (Android) randlos, das System schneidet selbst zu
+  const g = groesse, r = form === "rund" ? g / 2 : g * 0.22, randlos = form === "hinten" || form === "voll";
   const flaeche = form === "vorne" ? "" : `
     <rect x="0" y="0" width="${g}" height="${g}" rx="${randlos ? 0 : r}" fill="url(#verlauf)"/>
     <rect x="0" y="0" width="${g}" height="${g}" rx="${randlos ? 0 : r}" fill="url(#glanz)"/>
