@@ -6,7 +6,9 @@ import { fileURLToPath } from "node:url";
 const D = join(dirname(fileURLToPath(import.meta.url)), "../beispiele-2026-11-14");
 const RANG = { verkehrt: 0, fehlt: 1, teilweise: 2, getroffen: 3 }, PUNKT = { verkehrt: 0, fehlt: 0, teilweise: 0.5, getroffen: 1 };
 const erg = {};
-for (const app of readdirSync(D).filter((x) => existsSync(join(D, x, "REFERENZ.json")))) {
+/* K4 (Nachbesserung): je App ein Unterordner k4/ mit eigener Referenz-Kopie, Bauplan und zwei Bewertungen */
+const ordner = readdirSync(D).filter((x) => existsSync(join(D, x, "REFERENZ.json"))).flatMap((x) => existsSync(join(D, x, "k4", "bewertung-1.json")) ? [x, x + "/k4"] : [x]);
+for (const app of ordner) {
   const ref = JSON.parse(readFileSync(join(D, app, "REFERENZ.json"), "utf8"));
   const bw = [1, 2].map((n) => join(D, app, `bewertung-${n}.json`)).filter(existsSync).map((p) => JSON.parse(readFileSync(p, "utf8")));
   if (bw.length < 2) { erg[app] = { offen: `${bw.length} von 2 Bewertungen` }; continue; }
