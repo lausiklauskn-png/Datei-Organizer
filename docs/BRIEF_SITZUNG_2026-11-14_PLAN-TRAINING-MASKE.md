@@ -139,6 +139,15 @@ Organisationen), BookLedgerPro (Stammdaten, Weitere Namen, `namensmuster.js`), P
     Blätter, im Stil der vorhandenen Strichgrafiken), damit man den pseudonymisierten Text in eine beliebige KI einfügen kann.
     Kopiert/exportiert wird nur die pseudonymisierte Fassung, nie das Original; Marke „pseudonymisiert“ bleibt dabei (Punkt 16).
 
+20. **Ganze App pseudonymisieren → KI sortiert → zurück (Klaus 14.11.2026):** Knopf „Alles pseudonymisieren“ exportiert den
+    ganzen Inhalt der gerade benutzten App (je App verschieden) als pseudonymisierten Ordner mit Inhaltsliste und Marke.
+    Weg zur KI: ein über Remote Control freigegebener Ordner am Rechner (Claude Code liest nur diesen Ordner) oder eine Datei,
+    die man in eine Sitzung hochlädt; **nie** ein öffentliches Repo (auch nicht der Codex-Briefkasten `docs/fremdpruefung/`,
+    der liegt öffentlich – für Codex ein privater Weg klären). Die KI legt eine **Sortier-Datei** zurück (je Datei: Bereich, Art,
+    Absender-Rolle, Frist, Wichtigkeit; nur Platzhalter, keine Klarnamen). Die App liest sie ein, zeigt die Vorschläge an den
+    **echten** Dateien und übernimmt erst nach Bestätigung. Jede Bestätigung oder Korrektur ist zugleich **Lehrdatum** für das
+    Wortmodell (pseudonymisiert) → Training ohne Einzelklicks über hunderte Dateien. Erst kleine Stichprobe, dann alles.
+
 ## Startauftrag zum Einfügen
 
 ```
@@ -147,9 +156,9 @@ Zuerst lesen: CLAUDE.md, docs/BRIEF_SITZUNG_2026-11-14_PLAN-TRAINING-MASKE.md (g
 docs/PLAN.md, docs/PRUEFREGELN-GRUPPE.md; in Private Brain Pro docs/KI-BEIM-SCHREIBEN.md, docs/AUFRAEUMEN-NEWSLETTER.md.
 Ziel: Plan „Pseudonymisieren in allen Pro-Apps“ – Knopf „Pseudonymisieren“/„Zurückführen“ in jeder App, Profile im
 Pro-Tresor (aus der Familienakte übernehmen oder selbst anlegen, verschlüsselt, Nummern nur als Fingerabdruck),
-Mail mit Anhängen samt OCR, Export und Kopieren-Knopf (Doppelblatt-Symbol) für jede KI, Training des Datei-Organizers nur aus pseudonymisierten Daten.
+Mail mit Anhängen samt OCR, Export und Kopieren-Knopf (Doppelblatt-Symbol) für jede KI, Training des Datei-Organizers nur aus pseudonymisierten Daten (ganze App pseudonymisiert exportieren → KI legt Sortier-Datei zurück → App übernimmt nach Bestätigung).
 Reihenfolge: zuerst Marktcheck (aktuell recherchieren), dann das Beste übernehmen, dann Modul 25 verbessern und in alle
-Apps nachziehen, nie doppelt pseudonymisieren, Landkarten nachziehen. Punkte 1–19 aus dem Brief; Klaus sagt je Punkt Ja.
+Apps nachziehen, nie doppelt pseudonymisieren, Landkarten nachziehen. Punkte 1–20 aus dem Brief; Klaus sagt je Punkt Ja.
 Ergebnis: docs/PLAN_PSEUDONYMISIEREN.md + HTML-Vorschau der sichtbaren Teile.
 Nicht: echte Dokumente oder pseudonymisierte Texte ins Repo (öffentlich), keine Schlüssel/PINs im Chat oder in Dateien,
 Gmail-Konnektor nicht als Quelle (liest Klartext), kein neues Repo, nichts veröffentlichen.
