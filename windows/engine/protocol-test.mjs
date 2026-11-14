@@ -36,7 +36,10 @@ try{
   const l=await call('FamilyFolders','ordnerListe',{token:w.token,pfad:'Unterordner'});assert.equal(l.eintraege[0].name,'brief.txt');
   const d=await call('FamilyFolders','dateiLesen',{token:w.token,pfad:'Unterordner/brief.txt',offset:0,laenge:100});
   assert.equal(Buffer.from(d.data,'base64').toString(),'Hallo Probe');
-  await assert.rejects(call('DoUpdates','pruefen'),/UPDATE_/);
+  // Seit der ersten Veröffentlichung (0.4.3) gibt es einen echten Feed: dann „aktuell“ (gleiche Fassung), ohne Netz ein UPDATE_-Fehler –
+  // nie ein Angebot für die Fassung, die gerade läuft.
+  const u=await call('DoUpdates','pruefen').then((r)=>r,(e)=>({fehler:String(e&&e.message||e)}));
+  assert.ok((u.aktuell===true&&!u.neu)||/UPDATE_/.test(u.fehler||''),'Updates: aktuell oder UPDATE_-Fehler, nie ein Angebot – '+JSON.stringify(u));
   await assert.rejects(call('Unbekannt','x'),/INVALID_INPUT/);
   console.log('PASS echter Kindprozess: Start, Ordner-Dialog über die Hülle, Liste und Lesen, Updates nur mit Schlüssel');
 }finally{clearTimeout(frist);child.stdin.end();await exited;await rm(test,{recursive:true,force:true});}
