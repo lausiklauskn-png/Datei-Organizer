@@ -17,6 +17,16 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   Nachweis `docs/VEROEFFENTLICHUNG-0.4.3.json`. Geschenkbox (Familienakte `docs/geschenk/`, Artefakt XeUMGuSZ49FzsJYjwQznM7) mit Datei-Organizer.
   Nächste Ausgabe: **0.4.4** (Windows 0.4.3 ist vor #20 gebaut, sonst gleich). Updates kommen ab jetzt über das Fähnchen in der App.
 
+## Stand (14.11.2026): Pseudonymisierer 0.1.0 (PWA, zweite Seite in diesem Repo)
+
+- **Pseudonymisierer** (Klaus 14.11.): Ordner/Dateien → pseudonymisierte Fassung für jede KI → Antwort zurückführen; Bilder mit frei setzbaren
+  schwarzen Flächen (Bedienung wie Kontur-Werkzeug Tomys Hub), Bild zurück mit Original an den Stellen. Seite `app/pseudonymisierer.html`
+  (Quelle `src/pseudonymisierer.html`, `src/pseudo/`, Kern `lib/pseudo/`), Kurzadresse `/pseudonymisierer/`. **Maske byte-gleich aus der
+  Familienakte** in `lib/maske/` + `src/public/vendor/maske/` (Pin, nur `node scripts/maske-nachziehen.mjs`, im Bau geprüft) – nie von Hand.
+  Proben `scripts/run-pseudo-tests.mjs` (im Bau), `tests/pseudo-probe.mjs` (CI). Alles: `docs/PSEUDONYMISIERER.md`, Brief
+  `docs/BRIEF_ABSCHLUSS_2026-11-14_PSEUDONYMISIERER.md`. APK/Windows erst mit eigenem Repo (Klaus legt es an). Fassung steht in
+  `src/pseudo/app.tsx` (`FASSUNG`), unabhängig vom Datei-Organizer.
+
 ## Stand (14.11.2026, Trainings-Wochenende Teil 1, nicht veröffentlicht)
 
 - **Training (Freibrief, ohne Codex):** Block 0 (Setzer `scripts/setzen-komplex.py`, Generator `--komplex` mit 26 Haushalten, lange Bons,
