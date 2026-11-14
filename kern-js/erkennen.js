@@ -25,7 +25,6 @@ ${kopf.slice(0, 700)}`);
   for (const r of ART_REGELN) if (r.muster.test(vorne)) return w(r.art, true, `\u201E${r.wort}\u201C im Kopf oder Betreff`);
   for (const r of ART_REGELN) if (r.muster.test(alles)) return w(r.art, false, `\u201E${r.wort}\u201C erst weiter unten im Text`);
   if (/sehr geehrte|liebe |hallo /.test(alles)) return w("Brief", false, "Anrede gefunden, aber kein klares Wort f\xFCr die Art");
-  if ((alles.match(/[a-zäöüß]{3,}/g) || []).length >= 12) return w("Brief", false, "Text ohne klares Wort f\xFCr die Art");
   return w(UNKLAR, false, "kein Merkmal f\xFCr die Art gefunden");
 }
 const MONATE = ["januar", "februar", "m\xE4rz", "april", "mai", "juni", "juli", "august", "september", "oktober", "november", "dezember"];

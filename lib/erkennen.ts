@@ -34,8 +34,6 @@ export function erkenneSchriftstueck(kopf: string, betreff = ""): Wert {
   for (const r of ART_REGELN) if (r.muster.test(vorne)) return w(r.art, true, `„${r.wort}“ im Kopf oder Betreff`);
   for (const r of ART_REGELN) if (r.muster.test(alles)) return w(r.art, false, `„${r.wort}“ erst weiter unten im Text`);
   if (/sehr geehrte|liebe |hallo /.test(alles)) return w("Brief", false, "Anrede gefunden, aber kein klares Wort für die Art");
-  // Mitteilungen ohne Anrede (Portal-Benachrichtigung, Vordruck, Kurzmitteilung): mit genug Text ein Brief, nicht „unklar“ (Runde D, 14.11.2026)
-  if ((alles.match(/[a-zäöüß]{3,}/g) || []).length >= 12) return w("Brief", false, "Text ohne klares Wort für die Art");
   return w(UNKLAR, false, "kein Merkmal für die Art gefunden");
 }
 

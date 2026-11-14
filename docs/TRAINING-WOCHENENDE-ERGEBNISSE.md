@@ -185,3 +185,48 @@ Schriftstück 74,0 → 68,7 % (**p = 0,008, gesichert schlechter**), Absender 28
 (p = 0,65), Schriftstück 75,3 → 76,7 %, Absender 56,0 %, Person 80,4 %, Frist 90,0 %. Schlechte Scans je Runde: Bereich 29 % (D) und 53 % (F).
 
 Zahlen: `ergebnisse/training/runde-{d,f}-{kern,kern-gesetzt,einordner}.json`.
+
+## Block 5 – Lernen und ungesehener Rest (14.11., einmal gemessen, verbraucht)
+
+**Gelernt** nur an verbrauchten Stapeln (C, D, E, F, A, B, H, Briefe-2) und Generator-Daten, erst nach allen Messungen:
+
+1. **Wortmodell neu abgestimmt** mit den vier neuen Stapeln (`scripts/briefmodell-abstimmen.mjs`, liest jetzt auch `SOLL.json`). Reihum
+   ausgelassen (je eine Runde nicht mitgelernt, an ihr gemessen): Bereich und Schriftstück je Runde ±1 Stück, nichts gesichert →
+   **nicht übernommen**.
+2. **Absender säubern** (`lib/erkennen.ts`): Kopfzeilen von Bildschirmfotos und Portalen übergehen (Uhrzeit, „Posteingang“, „Neue
+   Nachricht“, „Vorgangs-Nr.“), „Von:“ in Mail-Ansichten, Logo-Kürzel vor dem Namen („BB Bühlstrom …“, „Zn …“, „NB Nordstrom Beispiel“;
+   echte Kürzel wie „SV Talheim“ bleiben), Lesereste dahinter („®“, „Ins]“, lose Buchstaben – Rechtsformen und „e. V.“ bleiben), Kopfthema
+   in Formularköpfen („… KRAFTFAHRZEUGSTEUER“, „… Terminerinnerung“, „… App“), „Kundenportal“ davor.
+3. **Fehler behoben:** „Zwischensumme“ ist kein Betrag (Generator: Bon-Betrag 73 → 86 %, falsch und sicher 55 → 22); ein PDF ohne lesbaren
+   Text heißt nicht mehr „eigenes Foto“ (sicher), sondern „unbekannt“ (offen).
+4. „Brief statt unklar“ bei Mitteilungen ohne Anrede: am Rest nicht gesichert (2 Stücke) → **wieder herausgenommen** (Regel 7).
+
+Kontrolle an den verbrauchten Stapeln (kein Nachweis): nirgends schlechter; D Absender 54 → 68 %, gesetzt C/E Absender 40 → 44 % / 44 → 54 %.
+Eingefroren `156bd4c` (mit Punkt 4), Endstand ohne Punkt 4.
+
+**Nachweis am ungesehenen Stapel `pruefstapel-rest/`** (vergeben nach dem Einfrieren):
+
+| Rolle | Wer | Umfang |
+|---|---|---|
+| Stapel-Autor | Claude-Agent (Opus), ohne Repo-Zugang | 200 Stücke, 4 Haushalte: Landfamilie mit vier Kindern (Älteste studiert, eigene Verträge), Witwer mit Post aus 2001–2012 und 2024–2026, Paar mit fast nur Portal-Mitteilungen und Vordrucken, selbstständige Alleinerziehende mit vielen Bons. Formen: 45 Briefe, 43 Vordrucke/Portal, 31 Vorgänge, 31 alte Jahre, 15 Rechnungen, 18 Bons (5 lang, 5 App), 7 Mails, Rest |
+| Paket | Claude-Agent (Haiku), nur ein Befehl | Satz-Hinweise abtrennen, 15 Paare „zwei in einem Scan“, zwei Hälften |
+| Einordner E1, E2 | je 2 Claude-Agenten (Sonnet) | je 200 |
+| Einordner E3 | 2 Claude-Agenten (Opus) | 200 |
+
+8 Agenten, rund 1,14 Mio. Token, 22 Minuten. Einigkeit (Kappa): Bereich 0,93 · Schriftstück 0,95 · Absender 0,81 · Person 0,89 · Frist 0,97;
+nichts strittig, Autor musste nie entscheiden. (Ein erster Start mit dem Skript von Runde E wurde nach Sekunden abgebrochen, weil er
+in den falschen Ordner geschrieben hätte; es entstand nichts.)
+
+| Feld | 05c7ef0 (eingefroren) | neu (156bd4c / Endstand) | McNemar |
+|---|---|---|---|
+| **Absender, gesetzt** (n = 185) | 34,1 % (28–41) | **42,7 % (36–50)** | **p = 0,0004 – gesichert besser** (18 nur neu, 2 nur alt); falsch und sicher 36 → 21 |
+| Bereich, gesetzt | 75,1 % | 75,1 % | gleich |
+| Schriftstück, gesetzt | 65,4 % | 66,5 % (Endstand 65,4 %) | p = 0,50 |
+| Person, gesetzt | 64,9 % | 64,9 % | gleich |
+| Frist, gesetzt | 83,8 % | 83,8 % | gleich |
+| Absender, Text (n = 200) | 81,0 % | 80,5 % | p = 1,0 (3 nur alt, 2 nur neu) |
+| Bereich / Schriftstück / Person / Frist, Text | 85,5 / 78,5 / 87,1 / 93,5 % | 85,5 / 79,5 (Endstand 78,5) / 87,1 / 93,5 % | nicht verschieden |
+
+**Übernommen:** Punkte 2 und 3 (Endstand). Gesichert besser ist **nur der Absender aus gelesenen Seiten**; am reinen Text ändert sich
+nichts. Grenzen: Absender aus Scans und Fotos bleibt schwach (43 %, schlechte Scans 12 %), zwei Stücke in einem Scan 27 % Bereich, schlechte
+Scans Bereich 48 %. Zahlen: `ergebnisse/training/rest-{kern-text,kern-gesetzt,kern-gesetzt-endstand,einordner}.json`.
