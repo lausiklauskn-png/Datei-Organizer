@@ -109,6 +109,20 @@ Organisationen), BookLedgerPro (Stammdaten, Weitere Namen, `namensmuster.js`), P
   bei Bild/Scan läuft die Texterkennung (OCR) darüber, dann werden die Daten pseudonymisiert und können weiterverarbeitet werden.
   Gilt für empfangene und selbst gesendete Mails.
 
+- **Profile im Pro-Tresor, in jeder App wählbar:** In der Familienakte, BookLedgerPro und allen Pro-Apps kann man Profile anlegen.
+  Damit es keine Doppelungen gibt, fragt jede App: **„Profile aus einer anderen Pro-App übernehmen“ oder „selbst anlegen“**.
+  Profile dürfen Gesundheits- und Bankdaten enthalten.
+- **Verschlüsseln und kein Anschein von Datenabfluss** (Vorschläge Claude, je Punkt Klaus' Ja):
+  a) nur im Pro-Tresor, verschlüsselt wie dort (AES-256-GCM, Schlüssel nur auf dem Gerät), nie im Klartext, nie in einem Repo;
+  b) **nur Fingerabdrücke statt Klartext** für Nummern: IBAN, Versicherten-, Steuer-, Kundennummer werden als gesalzener
+     Fingerabdruck gespeichert; die Maske erkennt sie im Text, ohne dass das Profil die Nummer selbst enthält; angezeigt nur
+     „DE…1234“. Zurückführen braucht sie nicht (der Originaltext liegt ohnehin auf dem Gerät);
+  c) der Profil-Baustein hat **keinen Netzweg** (keinen Abruf, keine KI); die App sagt das sichtbar („Profile verlassen dieses
+     Gerät nie“) und zeigt, dass beim Pseudonymisieren nichts gesendet wird; Proben belegen es (kein Netzaufruf);
+  d) IBAN muss man gar nicht eintragen: Muster mit Prüfziffer erkennt jede IBAN auch ohne Profil – Profile braucht es vor allem
+     für Namen, Anschriften, eigene Nummern;
+  e) Nachweis für Dritte: der Quelltext ist einsehbar, eine kurze Seite „Was mit deinen Profilen passiert“.
+
 ## Startauftrag zum Einfügen
 
 ```
