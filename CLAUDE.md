@@ -9,6 +9,13 @@ oder Altbestand kommen in **einen** Ordner; der Organizer sortiert sie Klick fü
 Nummern → Absender → Inhalt) und zeigt sie als Baum nach vielen Gesichtspunkten. Zuerst für die Familienakte gemacht: der Ordner
 wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). Plan und alle Entscheidungen: `docs/PLAN.md`.
 
+## Offen (Klaus 14.11.2026)
+
+- **Sehr große Ordner** (Arbeitsordner auf SD-Karte, große Dateien nie ganz laden, Speicherprüfung): Vorschau `docs/PLAN_GROSSE-ORDNER.md`,
+  wartet auf Klaus' Ja je Punkt und die Wahl des Arbeitsordners. Erst danach veröffentlichen (Empfehlung).
+- **Signier-Identität der APK** steht (#17, Fingerabdruck `594e44df…365d`); Update-Schlüssel eingetragen (#16). Geheimnisse bei Klaus im Tresor.
+- **Browser-Tresor → Tresor-APK:** Plan `docs/PLAN_MEIN-TRESOR-APK.md` (später, eigenes Repo).
+
 ## Stand (14.11.2026 nachts, Fassung 0.4.2, große Mengen in Blöcken, nicht veröffentlicht)
 
 - **Große Mengen in Blöcken mit Weitermachen nach Abbruch** (Auftrag aus dem Brief vom 14.11., Klaus: „Schritt für Schritt“): das Einlesen merkt nach
