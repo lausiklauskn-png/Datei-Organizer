@@ -47,3 +47,14 @@ nachgewiesen ist (Prüfbericht 14.11., Befund 2); Workflow-PDF hat ohnehin schon
 
 Vorsicht: In allen drei Repos laufen Zweige anderer Sitzungen („nicht veröffentlicht“, Pro-Verbund, Tresor); die Pseudonymisierung betrifft
 die Familienakte (in Private Brain gibt es `modules/25_pseudonym.js`, unabhängig von der Texterkennung). Veröffentlichungen nur mit Klaus' Wort.
+
+## Umgesetzt und gemessen (14.11.2026 abends, Klaus: „weiterarbeiten, auch mit Private Brain“)
+
+- **Private Brain (#141, nicht veröffentlicht):** Arbeiter bleibt 3 Minuten statt 30 s bereit, beim Wechsel in den Hintergrund sofort frei.
+- **Sprachsatz – Messung zur Entscheidung (nicht umgesetzt):** 40 deutsche Scans/Fotos (Rest-Stapel, eigener Setzer), tesseract.js 5.1.1 in Node,
+  tessdata_fast derselben Herkunft wie Private Brain (Pin `87416418…`, SHA-256 `deu` gleich): 4 Sprachen **1,37 s** je Bild, Wortfund 71,8 % ·
+  Deutsch+Englisch **0,94 s** (−31 %), 72,1 % · nur Deutsch **0,73 s** (−47 %), 72,3 %. Ein Zweistufen-Weg (erst Deutsch+Englisch, bei über 50 %
+  unsicheren Zeilen nochmal mit allen vier) würde bei 5 von 57 Setzer-Bildern, aber 23 von 60 Bildern des fremden Simulators nachlesen – dort im Mittel
+  langsamer als heute. Der Gewinn kommt also nur, wenn Russisch/Polnisch bei deutscher Oberfläche entfallen; das nimmt eine veröffentlichte Fähigkeit
+  (Probe `test-ocr.mjs` mit russischem Bild) und liegt bei Klaus. Grenzen: Node statt WebView, andere tesseract.js-Fassung als die App (7.0.0), nur deutsche Vorlagen.
+- **Gegenlesen von Text-PDFs** im Prüfkern bleibt (Sicherheitsprüfung auf versteckten Text); zwei Arbeiter nebeneinander nicht gebaut (Speicher am Handy mit vier Sprachen).
