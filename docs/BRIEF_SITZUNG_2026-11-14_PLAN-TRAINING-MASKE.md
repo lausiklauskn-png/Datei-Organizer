@@ -83,6 +83,17 @@ Organisationen), BookLedgerPro (Stammdaten, Weitere Namen, `namensmuster.js`), P
 12. **Stellen:** Krankenkasse, Bank, Vermieter als Firmen stehen lassen (wichtig fürs Sortieren) oder verdecken? Je Profil wählbar.
 13. **Profile teilen:** zwischen Private Brain, Familienakte, BookLedgerPro und Datei-Organizer über den gemeinsamen Pro-Tresor?
 
+**Reihenfolge (Klaus 14.11.2026: „Genauso machen wir das“)**
+
+14. **Erst Marktcheck:** was es schon gibt (Microsoft Presidio, Google Sensitive Data Protection, Private AI, Tonic, Browser-
+    Erweiterungen, Schwärzen in PDF-Programmen …), aktuell recherchiert, mit Stärken und Grenzen. Dann **das Beste übernehmen**
+    (Erkennungsregeln, deutsche Nummernformate, Umkehr-Verfahren) – Lizenzen prüfen, nichts blind kopieren.
+15. **Dann Modul 25 verbessern** (Quelle bleibt Sage, byte-gleich mit Pin) und **in alle Apps nachziehen**, die es enthalten oder nutzen
+    (Familienakte `lib/ki-auftrag.ts`, Private Brain, BookLedgerPro, weitere) – je App eine Probe und Gegenprobe.
+16. **Nie doppelt pseudonymisieren:** schon pseudonymisierte Dateien müssen sicher erkennbar sein (z. B. feste Marke im Kopf/Metadaten
+    und einheitliche Platzhalter-Form wie `⟦Person A⟧`), damit der Pseudo-Ordner sie nicht ein zweites Mal verarbeitet und
+    Platzhalter nicht selbst für Namen hält. Probe: eine pseudonymisierte Datei erneut hineinziehen → unverändert.
+
 ## Startauftrag zum Einfügen
 
 ```
@@ -90,7 +101,7 @@ Repo lausiklauskn-png/Datei-Organizer (eigener Zweig). PLANSITZUNG – nichts ba
 Zuerst lesen: CLAUDE.md, docs/BRIEF_SITZUNG_2026-11-14_PLAN-TRAINING-MASKE.md, docs/PLAN.md,
 docs/PRUEFREGELN-GRUPPE.md; in Private Brain Pro docs/KI-BEIM-SCHREIBEN.md und docs/AUFRAEUMEN-NEWSLETTER.md.
 Ziel: Plan „Training mit echten, pseudonymisierten Dokumenten über eine Maske in Private Brain“ mit den
-Fragen 1–13 aus dem Brief (mit Nachtrag Pseudo-Ordner und Profile); Klaus sagt je Punkt Ja. Plan als docs/PLAN_TRAINING-MASKE.md + Vorschau (HTML) wenn sichtbar.
+Fragen 1–16 aus dem Brief (Reihenfolge: Marktcheck → Bestes übernehmen → Modul 25 → nachziehen) (mit Nachtrag Pseudo-Ordner und Profile); Klaus sagt je Punkt Ja. Plan als docs/PLAN_TRAINING-MASKE.md + Vorschau (HTML) wenn sichtbar.
 Nicht: echte Dokumente oder pseudonymisierte Texte ins Repo (öffentlich), keine Schlüssel/PINs im Chat oder in Dateien,
 Gmail-Konnektor nicht als Trainingsquelle (liest Klartext), nichts veröffentlichen.
 ```
