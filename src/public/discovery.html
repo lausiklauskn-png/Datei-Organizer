@@ -163,6 +163,14 @@ section>.rand>p.vor{color:var(--leise);max-width:68ch;margin-bottom:18px}
 @media (max-width:860px){.schleife{grid-template-columns:1fr}}
 canvas.kugeln{display:block;width:100%;touch-action:pan-y;cursor:grab;-webkit-tap-highlight-color:transparent}
 canvas.kugeln.zeigt{cursor:pointer}
+.kreis-wahl{display:flex;gap:8px;margin:0 0 10px;flex-wrap:wrap}
+.kreis-wahl button{font:inherit;font-size:13.5px;font-weight:600;padding:7px 14px;border-radius:999px;border:1px solid var(--linie,#8aa);background:transparent;color:inherit;cursor:pointer}
+.kreis-wahl button[aria-pressed="true"]{background:#167a5f;border-color:#167a5f;color:#fff}
+.kreis-film{position:relative}.kreis-film[hidden],#schleifeBild[hidden]{display:none!important}
+.kreis-film video{display:block;width:100%;height:auto;border-radius:14px;background:#141a2c}
+.kreis-film .lade{position:absolute;left:12px;right:12px;bottom:54px;height:22px;border-radius:999px;background:rgba(0,0,0,.6);overflow:hidden;pointer-events:none}
+.kreis-film .lade[hidden]{display:none}.kreis-film .lade i{position:absolute;left:0;top:0;bottom:0;width:0;background:#2fbf95;transition:width .3s}
+.kreis-film .lade span{position:relative;display:block;text-align:center;font:600 12.5px/22px system-ui;color:#fff}
 .kugel-tipp{font-size:12.5px;color:var(--leise);text-align:center;margin-top:2px}
 .schrittwahl{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
 .schrittwahl button{display:flex;align-items:center;gap:6px;background:var(--flaeche2);border:1px solid var(--linie);border-radius:999px;padding:4px 11px 4px 4px;font-size:13.5px;font-weight:600}
@@ -362,7 +370,7 @@ footer{padding:36px 0 48px;color:var(--leise);font-size:13.5px}
 <script>
 /* Leichte Ansicht (ohne 3D) und Fehleranzeige – für langsamere Geräte. */
 (function(){var ls=function(k){try{return localStorage.getItem(k)}catch(e){return null}};
-window.LEICHT=/[?&]2d=1/.test(location.search)||ls('tw-leicht')==='1';
+window.LEICHT=/[?&]2d=1/.test(location.search)||location.hash==='#2d'||(ls('tw-leicht')==='1'&&location.hash!=='#3d');
 window.MOBIL=matchMedia('(pointer:coarse)').matches||/Android|iPhone|iPad/.test(navigator.userAgent);
 /* Segmente (Klaus 15.11.): am Tablet/Handy ist immer nur EINE 3D-Fläche geladen. Die andere gibt ihre Grafik frei
    und wird bei Bedarf (in Sicht oder angetippt) nachgeladen – so bleibt alles in 3D, ohne das Gerät zu überfordern. */
@@ -393,7 +401,7 @@ window.addEventListener('error',function(e){if(e.message)zeig(e.message+' @'+(e.
 window.addEventListener('unhandledrejection',function(e){zeig(String(e.reason&&e.reason.message||e.reason))});
 document.addEventListener('DOMContentLoaded',function(){var r=document.createElement('a');r.href='./';r.textContent='‹ Datei-Organizer';r.setAttribute('data-zurueck','');r.style.cssText='position:fixed;left:10px;top:10px;z-index:9998;font:600 13px system-ui;padding:8px 12px;border-radius:999px;border:1px solid #8aa;background:#102030;color:#fff;opacity:.9;text-decoration:none';document.body.appendChild(r);var k=document.createElement('button');k.type='button';k.textContent=window.LEICHT?'3D-Ansicht einschalten':'Leichte Ansicht (ohne 3D)';
 k.style.cssText='position:fixed;right:10px;top:10px;z-index:9998;font:600 13px system-ui;padding:8px 12px;border-radius:999px;border:1px solid #8aa;background:#102030;color:#fff;opacity:.9';
-k.onclick=function(){try{localStorage.setItem('tw-leicht',window.LEICHT?'0':'1')}catch(e){}location.reload()};document.body.appendChild(k);
+k.onclick=function(){var neu=!window.LEICHT;try{localStorage.setItem('tw-leicht',neu?'1':'0')}catch(e){}try{location.hash=neu?'#2d':'#3d'}catch(e){}setTimeout(function(){location.reload()},50)};document.body.appendChild(k);
 })})();
 </script>
 <script src="discovery-three.min.js"></script><!-- three.js r128 (MIT), liegt bei: läuft auch ohne Netz und in den Apps -->
@@ -536,7 +544,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && App.gewaeh
   const box = $('#schleifeBild'), text = $('#schleifeText'), wahl = $('#schrittwahl');
   const FOLGE = [0, 1, 2, 3, 0, 1, 2, 3, 4, 5]; let pos = 0, pauseBis = 0, aktiv = 0, sicht = false, ansicht = null;
   ST.forEach((s, i) => { const b = el('button', '', `<i>${i + 1}</i>${s[0]}`); b.setAttribute('aria-pressed', 'false'); b.onclick = () => zeig(i, true); wahl.appendChild(b); });
-  function zeig(i, vonHand, opt) {
+  let zeig = function (i, vonHand, opt) {
     aktiv = i; opt = opt || {};
     text.innerHTML = `<h3>${i + 1}. ${ST[i][1]}</h3><p>${ST[i][2]}</p>`;
     [...wahl.children].forEach((b, j) => b.setAttribute('aria-pressed', j === i));
@@ -821,10 +829,49 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && App.gewaeh
     return { art: '3d', zeig(i, vonHand) { if (RUHIG) return stand(); if (vonHand) { if (i < 4) K[4].fest = false; if (haupt.ort !== i || haupt.phase === 'flug') flieg(haupt, i); else ankunft(haupt, i, true); } }, vor(s) { for (let n = Math.round(s * 30); n > 0; n--) male(1 / 30); } };
   }
 
-  if (Segmente.einzeln && window.THREE) {
-    box.style.minHeight = '320px'; zeig(0);
-    Segmente.spaeter('kugeln', box, () => { ansicht = glas() || flach(); box.style.minHeight = ''; zeig(aktiv); });
-  } else { ansicht = glas() || flach(); zeig(0); }
+  /* Film statt 3D (Klaus 15.11.): derselbe Kreislauf als fertiger Film mit Sprecher – Vorgabe auf Tablet und Handy,
+     am Rechner zur Wahl. Die 3D-Kugeln laden auf langsamen Geräten erst, wenn man sie ausdrücklich wählt. */
+  const FILM = { zeiten: [0, 11.07, 20.9, 30.43, 42.17, 49.63], adr: 'discovery-kreislauf.mp4', bild: 'discovery-kreislauf.jpg' };
+  const merk = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+  let filmArt = window.LEICHT ? false : (merk('tw-kreis') ? merk('tw-kreis') === 'film' : !!window.MOBIL), video = null, kugelnDa = false, tourBis = -1;
+  const wahlF = el('div', 'kreis-wahl'), bF = el('button', '', 'Als Film'), b3 = el('button', '', 'Interaktiv in 3D'), filmBox = el('div', 'kreis-film');
+  bF.type = b3.type = 'button'; bF.setAttribute('data-kreis-film', ''); b3.setAttribute('data-kreis-3d', ''); wahlF.append(bF, b3); box.before(wahlF, filmBox);
+  function ladeKugeln() {
+    if (kugelnDa) return; kugelnDa = true;
+    if (Segmente.einzeln && window.THREE) { box.style.minHeight = '320px'; Segmente.spaeter('kugeln', box, () => { ansicht = glas() || flach(); box.style.minHeight = ''; zeig(aktiv); }); Segmente.vor('kugeln'); }
+    else { ansicht = glas() || flach(); zeig(aktiv); }
+  }
+  function baueFilm() {
+    if (video) return;
+    filmBox.innerHTML = `<video playsinline controls preload="none" poster="${FILM.bild}" src="${FILM.adr}" aria-label="Film: der Kreislauf raten, Soll, lernen, reihum prüfen, einfrieren, messen – mit Sprecher"></video><div class="lade" hidden><i></i><span>Film lädt …</span></div>`;
+    video = filmBox.querySelector('video'); const lade = filmBox.querySelector('.lade'), strich = lade.querySelector('i'), wort = lade.querySelector('span');
+    const stand = () => { let e = 0; try { if (video.buffered.length) e = video.buffered.end(video.buffered.length - 1); } catch (x) { } const a = video.duration ? Math.min(1, e / video.duration) : 0; strich.style.width = (a * 100).toFixed(0) + '%'; wort.textContent = 'Film lädt … ' + (a * 100).toFixed(0) + ' %'; };
+    const zeigLade = an => { lade.hidden = !an; if (an) stand(); };
+    video.addEventListener('loadstart', () => zeigLade(true)); video.addEventListener('waiting', () => zeigLade(true)); video.addEventListener('progress', stand);
+    ['canplay', 'playing', 'canplaythrough'].forEach(n => video.addEventListener(n, () => zeigLade(false)));
+    video.addEventListener('error', () => { lade.hidden = false; wort.textContent = 'Der Film ließ sich nicht laden.'; });
+    video.addEventListener('play', () => { if (tourBis < 0) video.muted = false; });
+    video.addEventListener('timeupdate', () => {
+      const t = video.currentTime; if (tourBis >= 0 && t >= tourBis) { video.pause(); tourBis = -1; }
+      let i = 0; FILM.zeiten.forEach((z, k) => { if (t >= z - .05) i = k; }); if (i !== aktiv) zeig(i, false, { vomFilm: true });
+    });
+  }
+  function setzArt(film, merken) {
+    filmArt = film; bF.setAttribute('aria-pressed', film); b3.setAttribute('aria-pressed', !film); filmBox.hidden = !film; box.hidden = film;
+    if (merken) { try { localStorage.setItem('tw-kreis', film ? 'film' : '3d'); } catch (e) { } }
+    if (film) { baueFilm(); } else { if (video) video.pause(); ladeKugeln(); }
+  }
+  bF.onclick = () => setzArt(true, true); b3.onclick = () => setzArt(false, true);
+  App.kreisFilm = { an: () => filmArt, video: () => video };
+  /* Führung und Schritt-Knöpfe im Film-Modus: der Film springt stumm zum Schritt und läuft bis zu dessen Ende mit. */
+  const zeigAlt = zeig; zeig = function (i, vonHand, opt) {
+    zeigAlt(i, vonHand, opt);
+    if (filmArt && video && vonHand && !(opt && opt.vomFilm)) { const bis = FILM.zeiten[i + 1] || 1e9; try { video.muted = true; video.currentTime = FILM.zeiten[i] + .02; tourBis = bis - .05; const pr = video.play(); if (pr && pr.catch) pr.catch(() => { }); } catch (e) { } }
+  };
+  if (window.LEICHT) { wahlF.hidden = true; filmBox.hidden = true; ansicht = flach(); kugelnDa = true; zeig(0); }
+  else if (true) {
+    zeig(0); setzArt(filmArt, false);
+  }
   $('#bausteine').innerHTML = BEHALTEN.map(v => `<div class="baustein"><b>${esc(v.name)}</b><span>${esc(v.ergebnis)}</span></div>`).join('');
   $('#versuche').innerHTML = D.versuche_reihum.map(v => `<li class="${v.verworfen ? 'weg' : ''}"><span class="stempel ${v.verworfen ? 'nein' : 'ja'}">${v.verworfen ? 'verworfen' : 'behalten'}</span><span class="n">${esc(v.name)}</span><span class="e zahl">${esc(v.ergebnis)}</span></li>`).join('');
 })();
@@ -1438,7 +1485,8 @@ App.szene = function (key, titel) { if (App.tour || !Ton.an()) return; Sprecher.
     const F = FILME[nr], meins = ++sprLauf; tempo = 1; if (!Ton.an()) { gesagt = true; return; } gesagt = false;
     Sprecher.sag(F.key, { start: d => { if (meins === sprLauf && d > 0) tempo = Math.max(.4, Math.min(1, (F.dauer - Math.max(0, t)) / (d + .3))); }, fertig: () => { if (meins === sprLauf) { gesagt = true; tempo = 1; } } });
   }
-  function fertig() { laeuft = begonnen = false; dann = (nr + 1) % FILME.length; knoepfe(nr < FILME.length - 1 ? 'Nächster Film' : 'Noch einmal von vorn'); }
+  function fertig() { if (nr < FILME.length - 1) return spiele(nr + 1);   // lückenlos: der nächste Film schließt ohne Halt und ohne Knopf an
+    laeuft = begonnen = false; dann = 0; knoepfe('Noch einmal von vorn'); }
   function spiele(n) {
     Ton.bereit(); nr = n; t = RUHIG ? -1 : 0; klangNr = 0; FILME[nr].klang.sort((a, b) => a[0] - b[0]); laeuft = begonnen = true; zuletzt = RUHIG ? -9999 : performance.now();
     spruch.textContent = SPRECHTEXTE[FILME[nr].key]; [...kap.children].forEach((b, i) => b.setAttribute('aria-pressed', i === nr)); knoepfe(); sprich(); requestAnimationFrame(tick);
@@ -1446,7 +1494,7 @@ App.szene = function (key, titel) { if (App.tour || !Ton.an()) return; Sprecher.
   function halt() { laeuft = false; Sprecher.pause(); knoepfe('Weiter'); }
   function weiter() { laeuft = true; zuletzt = RUHIG ? -9999 : performance.now(); Sprecher.weiter(); knoepfe(); requestAnimationFrame(tick); }
   const schalt = () => { if (laeuft) halt(); else if (begonnen) weiter(); else spiele(dann); };
-  FILME.forEach((F, i) => { const b = el('button', '', `<b>${i + 1}. ${esc(F.titel)}</b><span>${esc(F.unter)}</span>`); b.setAttribute('aria-pressed', i === 0); b.onclick = () => spiele(i); kap.appendChild(b); });
+  FILME.forEach((F, i) => { const b = el('button', '', `<b>${esc(F.titel)}</b><span>${esc(F.unter)}</span>`); b.setAttribute('aria-pressed', i === 0); b.onclick = () => spiele(i); kap.appendChild(b); });
   startB.onclick = schalt; pauseB.onclick = schalt; cv.onclick = schalt;
   App.tonHoerer.push(an => { if (!an) { sprLauf++; gesagt = true; tempo = 1; } });
   standbild(); knoepfe('Film abspielen');

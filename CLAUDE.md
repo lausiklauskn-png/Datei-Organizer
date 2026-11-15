@@ -35,6 +35,9 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   Objekt `SPRECHTEXTE` der Seite – bei Textänderung neu vertonen), sonst Browserstimme. three.js r128 liegt bei (`discovery-three.min.js`, MIT),
   keine fremden Quellen. **Segmente:** am Tablet/Handy ist immer nur eine 3D-Fläche geladen (`window.Segmente`: die andere gibt ihre Grafik
   frei, lädt in Sicht oder auf Tipp nach) – Grund: das Galaxy Tab S6 zeigte mit zwei 3D-Flächen fehlende Schrift und schwarze Flächen.
+  **Kreislauf als Film** (`discovery-kreislauf.mp4`, 64 s, mit den Tonspuren; Knöpfe „Als Film“/„Interaktiv in 3D“, am Tablet/Handy ist der
+  Film vorgewählt, Ladebalken; aufgenommen Bild für Bild aus der 3D-Fassung – bei geänderten Kugeln oder Tonspuren neu aufnehmen). Die drei
+  Kurzfilme laufen lückenlos hintereinander, ohne Ansage „Erster Film“.
   Knopf „Leichte Ansicht (ohne 3D)“ als Notausgang, Rückweg „‹ Datei-Organizer“. Zahlen stammen aus der eingebetteten Messdatei (`const D`) –
   nicht von Hand ändern. UI-Probe 126 (4 neu). Dasselbe als Artefakt: https://claude.ai/artifact/1G6GPbK29HpWaTCGV5bBCk.
   ⚠ Nicht am Gerät: ob die Segmente am Tab S6 reichen, Klang von Musik und Stimme zusammen.
