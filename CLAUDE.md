@@ -83,6 +83,13 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   das große Video am Stück** (`discovery-geschichte.mp4`, 75 s, Ton eingebrannt, `App.stadtFilm.gross`); die Schritt-Führung bleibt der 3D-Ansicht.
   Leichte Ansicht (2D) bleibt der Notausgang. **Ladebalken an jedem Film** (`ladeBalken`). **Die alten
   gezeichneten Kurzfilme werden nicht mehr gezeigt** (Klaus: „grottenschlecht“; kein Rückfall mehr, der Zeichen-Code steht nur noch ungenutzt in der Seite).
+  **Vorschlag für eine klare Reihenfolge (15.11. nachts, von Klaus nur zur Kenntnis genommen – „merke das erstmal“, NICHT gebaut, erst nach seinem
+  Ja):** vier Abschnitte – (1) Die Geschichte: Baum-Bild, ein Knopf „Geschichte abspielen“ statt „Führung starten“ und „Stadtfilm“, 3D und einfache
+  Ansicht als kleine Wahlknöpfe; (2) So lernt der Kern: Kugel-Film mit den sechs Schritten; (3) Runde für Runde mit den Ergebnissen darunter;
+  (4) Zum Schmunzeln: Kurzfilme. Dafür entfielen die 43-s-Kurzform und der Strafzettel bei den Kurzfilmen. Außerdem offen (nur als Drehbuch, nichts
+  drehen ohne Ja): ein neues drittes Kurzvideo mit denselben Figuren (Poststelle, andere Geschichte) und die Runden 1–3 als Filmfolgen zum Antippen
+  der Murmeln. Klaus sah am 15.11. nachts auf dem Tablet noch eine alte Fassung (App 0.4.7 oder Vorrat des Browsers) – vor weiteren Wünschen erst
+  sicherstellen, dass er den aktuellen Stand sieht.
   **Idee von Klaus für den nächsten Umbau (15.11., nichts ändern ohne sein Wort):** Stadtname nach
   dem Einblenden wieder verschwinden lassen; Rollen-Namen nicht dauernd mitfliegen lassen, sobald die Rolle bekannt ist (die Murmel/der Punkt
   wird größer, wenn sie gerade erklärt wird). Discovery-Ordner jetzt rund 50 MB – **Paketgröße von APK/Windows vor der nächsten Ausgabe prüfen.**
