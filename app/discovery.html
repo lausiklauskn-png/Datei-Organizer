@@ -366,17 +366,27 @@ window.LEICHT=/[?&]2d=1/.test(location.search)||ls('tw-leicht')==='1';
 window.MOBIL=matchMedia('(pointer:coarse)').matches||/Android|iPhone|iPad/.test(navigator.userAgent);
 /* Segmente (Klaus 15.11.): am Tablet/Handy ist immer nur EINE 3D-Fläche geladen. Die andere gibt ihre Grafik frei
    und wird bei Bedarf (in Sicht oder angetippt) nachgeladen – so bleibt alles in 3D, ohne das Gerät zu überfordern. */
-window.Segmente=(function(){var L=[],einzeln=window.MOBIL&&!window.LEICHT;
-function decke(g,an){if(!g.decke){var d=document.createElement('button');d.type='button';d.setAttribute('data-segment-laden',g.name);d.textContent='Antippen: 3D-Ansicht laden';
+window.Segmente=(function(){var L=[],einzeln=window.MOBIL&&!window.LEICHT,halte=0;
+function finde(n){for(var i=0;i<L.length;i++)if(L[i].name===n)return L[i];return null}
+function decke(g,an,text){if(!g.decke){var d=document.createElement('button');d.type='button';d.setAttribute('data-segment-laden',g.name);
 d.style.cssText='position:absolute;inset:0;z-index:5;display:none;place-items:center;border:0;border-radius:inherit;font:600 16px system-ui;color:#fff;background:rgba(16,32,48,.72);cursor:pointer';
-if(getComputedStyle(g.el).position==='static')g.el.style.position='relative';g.el.appendChild(d);d.onclick=function(){vor(g.name)};g.decke=d}g.decke.style.display=an?'grid':'none'}
-function aus(g){if(g.aus||!g.renderer)return;g.aus=true;g.gewollt=true;try{g.renderer.forceContextLoss()}catch(e){}decke(g,true)}
-function an(g){if(!g.aus)return;g.aus=false;if(g.renderer){try{g.renderer.forceContextRestore()}catch(e){}}decke(g,false);if(g.wecke)g.wecke()}
-function vor(name){if(!einzeln)return;L.forEach(function(g){if(g.name!==name)aus(g)});L.forEach(function(g){if(g.name===name)an(g)})}
-function melde(name,el,renderer,wecke){var g={name:name,el:el,renderer:renderer,wecke:wecke,aus:false};L.push(g);
-if(renderer&&renderer.domElement)renderer.domElement.addEventListener('webglcontextlost',function(){if(!g.gewollt){g.aus=true;decke(g,true)}g.gewollt=false});
-if(einzeln&&'IntersectionObserver' in window)new IntersectionObserver(function(e){var x=e[e.length-1];if(x.intersectionRatio>=.5||x.intersectionRect.height>=innerHeight*.5)vor(name)},{threshold:[0,.1,.2,.3,.4,.5,.6,.8,1]}).observe(el);return g}
-return{melde:melde,vor:vor,einzeln:einzeln,stand:function(){return L.map(function(g){return g.name+':'+(g.aus?'aus':'an')})}}})();
+if(getComputedStyle(g.el).position==='static')g.el.style.position='relative';g.el.appendChild(d);d.onclick=function(){halte=Date.now()+8000;vor(g.name)};g.decke=d}
+g.decke.textContent=text||'Antippen: 3D-Ansicht laden';g.decke.style.display=an?'grid':'none'}
+function aus(g){if(g.aus)return;g.aus=true;if(g.renderer){g.gewollt=true;try{g.renderer.forceContextLoss()}catch(e){}}decke(g,true)}
+function an(g){if(!g.aus)return;g.aus=false;
+if(g.lade){var l=g.lade;g.lade=null;decke(g,true,'3D-Ansicht lädt …');setTimeout(function(){try{l()}catch(e){decke(g,true,'3D-Ansicht ging nicht: '+(e&&e.message||e));g.aus=true;return}decke(g,false)},60);return}
+if(g.renderer){try{g.renderer.forceContextRestore()}catch(e){}}decke(g,false)}
+function vor(name){if(!einzeln)return;L.forEach(function(g){if(g.name!==name)aus(g)});var g=finde(name);if(g)an(g)}
+function sicht(g){var r=g.el.getBoundingClientRect();return Math.max(0,Math.min(r.bottom,innerHeight)-Math.max(r.top,0))}
+/* Ein Schiedsrichter statt mehrerer Beobachter: an ist die Fläche, von der am meisten zu sehen ist (mit Abstand, damit nichts hin- und herspringt). */
+function fern(g){var r=g.el.getBoundingClientRect();return Math.abs((r.top+r.bottom)/2-innerHeight/2)}
+function waehle(){if(!einzeln||Date.now()<halte||!L.length)return;var akt=null,best=null,bf=1e9;L.forEach(function(g){if(!g.aus)akt=g;if(sicht(g)<80)return;var f=fern(g);if(f<bf){bf=f;best=g}});
+if(!best)return;if(!akt){vor(best.name);return}if(best!==akt&&(sicht(akt)<80||bf<fern(akt)-60))vor(best.name)}
+function melde(name,el,renderer){var g=finde(name);if(g){g.renderer=renderer}else{g={name:name,el:el,renderer:renderer,aus:false};L.push(g)}
+if(renderer&&renderer.domElement)renderer.domElement.addEventListener('webglcontextlost',function(){if(!g.gewollt){g.aus=true;decke(g,true)}g.gewollt=false});return g}
+function spaeter(name,el,lade){var g={name:name,el:el,renderer:null,lade:lade,aus:true};L.push(g);decke(g,true);return g}
+if(einzeln){addEventListener('scroll',waehle,{passive:true});addEventListener('resize',waehle);setInterval(waehle,700)}
+return{melde:melde,spaeter:spaeter,vor:vor,einzeln:einzeln,stand:function(){return L.map(function(g){return g.name+':'+(g.aus?'aus':'an')})}}})();
 var fehler=[];function zeig(t){fehler.push(t);var b=document.getElementById('tw-fehler');if(!b){b=document.createElement('div');b.id='tw-fehler';b.style.cssText='position:fixed;left:8px;right:8px;bottom:8px;z-index:9999;background:#7a1f16;color:#fff;font:13px/1.4 system-ui;padding:10px 12px;border-radius:10px;max-height:40vh;overflow:auto';(document.body||document.documentElement).appendChild(b)}
 b.textContent='Fehler auf der Seite (bitte Bildschirmfoto schicken): '+fehler.slice(-3).join(' | ')}
 window.addEventListener('error',function(e){if(e.message)zeig(e.message+' @'+(e.lineno||''))});
@@ -811,10 +821,9 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && App.gewaeh
     return { art: '3d', zeig(i, vonHand) { if (RUHIG) return stand(); if (vonHand) { if (i < 4) K[4].fest = false; if (haupt.ort !== i || haupt.phase === 'flug') flieg(haupt, i); else ankunft(haupt, i, true); } }, vor(s) { for (let n = Math.round(s * 30); n > 0; n--) male(1 / 30); } };
   }
 
-  const ladeKugeln = () => { ansicht = glas() || flach(); zeig(aktiv); };
-  if (Segmente.einzeln && window.THREE && 'IntersectionObserver' in window) {
-    box.style.minHeight = '320px'; const io = new IntersectionObserver(e => { const x = e[e.length - 1]; if (x.intersectionRatio < .5 && x.intersectionRect.height < innerHeight * .5) return; io.disconnect(); Segmente.vor('kugeln'); ladeKugeln(); box.style.minHeight = ''; }, { threshold: [0, .1, .2, .3, .4, .5, .6, .8, 1] }); io.observe(box);
-    zeig(0);
+  if (Segmente.einzeln && window.THREE) {
+    box.style.minHeight = '320px'; zeig(0);
+    Segmente.spaeter('kugeln', box, () => { ansicht = glas() || flach(); box.style.minHeight = ''; zeig(aktiv); });
   } else { ansicht = glas() || flach(); zeig(0); }
   $('#bausteine').innerHTML = BEHALTEN.map(v => `<div class="baustein"><b>${esc(v.name)}</b><span>${esc(v.ergebnis)}</span></div>`).join('');
   $('#versuche').innerHTML = D.versuche_reihum.map(v => `<li class="${v.verworfen ? 'weg' : ''}"><span class="stempel ${v.verworfen ? 'nein' : 'ja'}">${v.verworfen ? 'verworfen' : 'behalten'}</span><span class="n">${esc(v.name)}</span><span class="e zahl">${esc(v.ergebnis)}</span></li>`).join('');
