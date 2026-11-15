@@ -60,13 +60,16 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   in der Einzeldatei nur die Standbilder. **Drehbuch (Klaus' Ja 15.11. nachts: „Drehbuch passt, Baum als Ende, Bewohner wie der Briefträger“), zwei Geschichten:**
   (1) **oben im Rahmen, interaktiv** (`App.stadtFilm`, Tabelle `CLIPS`, Führung in dieser Reihenfolge): Baum mit vier Städten (`discovery-stadt-baum.mp4`,
   zum Text `begruessung`) → Recherche in 3D → die Städte leben, Bewohner = bunte Figuren mit Beinen im Stil des Briefträgers (`…-leben-1/2.mp4`,
-  `welten`) → die Murmeln (= die Agenten, schwebend) teilen sich auf die vier Städte auf, Zoom in die Hafenstadt (`…-flug.mp4`, neuer Text
+  `welten`) → Zwischenszene Strafzettel (derselbe Film wie der dritte Kurzfilm, Klaus' Wunsch) → die Murmeln (= die Agenten, schwebend) teilen sich auf die vier Städte auf, Zoom in die Hafenstadt (`…-flug.mp4`, neuer Text
   `stadt_agenten`) → Landung und Aufgaben (`…-landung.mp4`, `stadt_punkte` neu gesprochen), dann die Punkte zum Antippen → sechs Kugeln →
   Finale: die Murmeln verschmelzen zu einer und liefern im Archivhaus in der Baummitte ab (`…-finale.mp4`, `schluss` neu gesprochen, beginnt jetzt
   mit „Aus vier Städten kommt alles wieder zusammen.“). 15 Tonspuren. Die Filme sind stumm, Arthur kommt aus den Tonspuren; allein über den Knopf
   „Stadtfilm“ wartet jede Szene, bis Film und Text zu Ende sind. (2) **unter dem Rahmen die Kurzform** nur mit den Murmeln:
   `discovery-kurzgeschichte.mp4` (43 s, Ton eingebrannt, älteres Finale und ältere Texte – so von Klaus gelobt, nicht neu schneiden ohne sein Wort;
   einzige Änderung auf seinen Wunsch: der Satz beginnt mit „Wir haben Städte erfunden.“ statt „Dann haben wir …“, auch in `welten`).
+  Die Führung wartet, bis der laufende Erzähl-Film zu Ende ist (`App.stadtFilm.wartet`).
+  **Offen (Klaus 15.11. spät):** das Kurzvideo unten soll erklären, dass der Test in vielen Runden mit immer neuen Welten wiederholt wurde und der Kern
+  so besser wurde, ohne eine echte Akte – und dass er danach mit den eigenen Akten weiterlernt; dafür erst ein Drehbuch, dann sein Ja.
   Weitere Filme nur nach Drehbuch und Klaus' Ja; Übergänge durch Überblenden statt Neudreh. Discovery-Ordner rund 40 MB.
   **Idee von Klaus für den nächsten Umbau (15.11., nichts ändern ohne sein Wort):** Stadtname nach
   dem Einblenden wieder verschwinden lassen; Rollen-Namen nicht dauernd mitfliegen lassen, sobald die Rolle bekannt ist (die Murmel/der Punkt

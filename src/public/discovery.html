@@ -1479,7 +1479,7 @@ App.szene = function (key, titel) { if (App.tour || !Ton.an()) return; Sprecher.
     i = n; const [key, titel, tun] = SCHRITTE[n], text = SPRECHTEXTE[key], t0 = Date.now();
     Sprecher.stopp();
     Unter.zeig(`Führung · ${n + 1} von ${SCHRITTE.length} · ${titel}`, text, () => schritt(i + 1), ende); tun();
-    const weiter = () => { if (meins !== lauf) return; clearTimeout(uhr); uhr = setTimeout(() => { if (meins === lauf) schritt(n + 1); }, Math.max(900, 2600 - (Date.now() - t0))); };
+    const weiter = () => App.stadtFilm.wartet(() => { if (meins !== lauf) return; clearTimeout(uhr); uhr = setTimeout(() => { if (meins === lauf) schritt(n + 1); }, Math.max(900, 2600 - (Date.now() - t0))); });
     if (Ton.an()) Sprecher.sag(key, { fertig: weiter }); else { Sprecher.stopp(true); uhr = setTimeout(weiter, Sprecher.lesezeit(key) * 1000 + 1500); }
   }
   function ende() { lauf++; clearTimeout(uhr); Sprecher.stopp(true); i = -1; App.tour = false; App.kreisBuehne.weg(); App.stadtFilm.weg(); Unter.weg(); App.kreis.frei(); b.setAttribute('aria-pressed', 'false'); b.innerHTML = IK.spiel + 'Führung starten'; }
@@ -1492,7 +1492,7 @@ App.szene = function (key, titel) { if (App.tour || !Ton.an()) return; Sprecher.
 (function () {
   const ST = STAEDTE.slice(0, 4), BILD = window.DISCOVERY_STADTBILDER || ST.map((w, i) => `discovery-stadt-${i}.jpg`), VID = RUHIG ? [] : (window.DISCOVERY_STADTFILME || (window.EINZELDATEI ? [] : ST.map((w, i) => `discovery-stadt-${i}.mp4`)));
   // Erzähl-Filme (Klaus 15.11.): Flug am Baum entlang durch die vier Städte, Landung der Murmeln in einer Stadt, Finale in der Familienakte.
-  const CLIPS = (RUHIG || window.EINZELDATEI) ? {} : Object.assign({ baum: 'discovery-stadt-baum.mp4', leben1: 'discovery-stadt-leben-1.mp4', leben2: 'discovery-stadt-leben-2.mp4', flug: 'discovery-stadt-flug.mp4', landung: 'discovery-stadt-landung.mp4', finale: 'discovery-stadt-finale.mp4' }, window.DISCOVERY_CLIPS || {});
+  const CLIPS = (RUHIG || window.EINZELDATEI) ? {} : Object.assign({ baum: 'discovery-stadt-baum.mp4', leben1: 'discovery-stadt-leben-1.mp4', leben2: 'discovery-stadt-leben-2.mp4', zettel: 'discovery-film-strafzettel.mp4', flug: 'discovery-stadt-flug.mp4', landung: 'discovery-stadt-landung.mp4', finale: 'discovery-stadt-finale.mp4' }, window.DISCOVERY_CLIPS || {});
   const box = el('div', 'stadt-film'); box.hidden = true;
   box.innerHTML = `<div class="sf-bilder">${ST.map((w, i) => `<div class="sf-szene" data-i="${i}"><img alt="" data-src="${BILD[i]}"></div>`).join('')}<div class="sf-szene sf-landung"></div></div>
     <div class="sf-punkte"></div><div class="sf-titel"><b></b><span></span></div>
@@ -1517,6 +1517,7 @@ App.szene = function (key, titel) { if (App.tour || !Ton.an()) return; Sprecher.
     box.querySelectorAll('.sf-wahl button').forEach(b => b.setAttribute('aria-pressed', b.dataset.i === String(nr)));
     clipAn = null; landBox.classList.remove('an'); if (landV) landV.pause(); titel(ST[nr].kurz, (ST[nr].d.art || '').split(',')[0]); punkte(nr);
   }
+  const warter = []; function frei() { warter.splice(0).forEach(f => f()); }
   function titel(a, b) { [tB, tS].forEach(e => { e.style.animation = 'none'; void e.offsetWidth; e.style.animation = ''; }); tB.textContent = a; tB.style.fontSize = `clamp(16px, ${Math.min(6.2, 80 / (a.length * .94)).toFixed(2)}vw, 68px)`; tS.textContent = b; }
   // spielt einen Erzähl-Film; danach `dann()` – ohne `dann` bleibt das letzte Bild stehen. Fehlt der Film, geht es gleich weiter (bzw. `sonst()`).
   function clip(key, a, b, dann, sonst) {
@@ -1524,7 +1525,7 @@ App.szene = function (key, titel) { if (App.tour || !Ton.an()) return; Sprecher.
     if (!CLIPS[key]) return weiterOhne();
     if (!landV) { landV = document.createElement('video'); landV.muted = true; landV.playsInline = true; landV.preload = 'auto'; landBox.appendChild(landV); }
     const meins = ++lauf; let aus = false;
-    const fertig = () => { if (aus) return; aus = true; if (meins !== lauf) return; if (dann) { clipAn = null; landBox.classList.remove('an'); dann(); } else { laeuft = false; knopf(); } };
+    const fertig = () => { if (aus) return; aus = true; if (meins !== lauf) return; if (dann) { clipAn = null; landBox.classList.remove('an'); dann(); } else { laeuft = false; knopf(); } if (!dann || !clipAn) frei(); };
     landV.onended = fertig; landV.onerror = () => { if (aus) return; aus = true; CLIPS[key] = ''; if (meins === lauf) weiterOhne(); };
     clipAn = key; laeuft = true; knopf(); pBox.innerHTML = ''; szenen.forEach(z => { z.classList.remove('an'); const v = z.querySelector('video'); if (v) v.pause(); }); landBox.classList.add('an');
     box.querySelectorAll('.sf-wahl button').forEach(x => x.setAttribute('aria-pressed', x.dataset.clip === key)); titel(a, b);
@@ -1532,13 +1533,13 @@ App.szene = function (key, titel) { if (App.tour || !Ton.an()) return; Sprecher.
   }
   function knopf() { spielB.innerHTML = laeuft ? IK.pause : IK.spiel; }
   function takt(dauer, rest, dann) { clearTimeout(uhr); const meins = lauf; if (rest <= 0) { if (dann) dann(); return; } uhr = setTimeout(() => { if (meins !== lauf || !laeuft) return; szene(nr + 1); takt(dauer, rest - 1, dann); }, dauer); }
-  function halt() { laeuft = false; if (!clipAn) lauf++; clearTimeout(uhr); if (landV) landV.pause(); szenen.forEach(z => { const v = z.querySelector('video'); if (v) v.pause(); }); knopf(); }
+  function halt() { frei(); laeuft = false; if (!clipAn) lauf++; clearTimeout(uhr); if (landV) landV.pause(); szenen.forEach(z => { const v = z.querySelector('video'); if (v) v.pause(); }); knopf(); }
   function teil(punkteAn, dauer, dann) { mitPunkten = punkteAn; laeuft = true; lauf++; knopf(); szene(0); takt(dauer, ST.length - 1, () => { uhr = setTimeout(() => { if (dann) dann(); else { laeuft = false; knopf(); } }, dauer); }); }
   function zeig(art) {
     box.hidden = false; $('#buehne').classList.add('mit-stadtfilm'); $('#bStadtfilm').setAttribute('aria-pressed', 'true'); if (App.gewaehlt) App.close();
     // Drehbuch (Klaus 15.11.): Baum → die Städte leben → die Murmeln teilen sich auf → Aufgaben in einer Stadt → Punkte → (Kugeln) → Finale
     const baum = dann => clip('baum', 'Die Test-Welten', 'vier Städte an einem Baum', dann, dann || (() => weg()));
-    const leben = dann => clip('leben1', 'Die Städte leben', 'Ämter, Firmen, Familien', () => clip('leben2', 'Die Städte leben', 'Ämter, Firmen, Familien', dann), () => teil(false, 5000, dann));
+    const leben = dann => clip('leben1', 'Die Städte leben', 'Ämter, Firmen, Familien', () => clip('leben2', 'Die Städte leben', 'Ämter, Firmen, Familien', () => clip('zettel', 'Seltene Post', 'ja, auch Strafzettel', dann, dann)), () => teil(false, 5000, dann));
     const flug = dann => clip('flug', 'Die Agenten', 'sie teilen sich auf vier Städte auf', dann, dann);
     const land = () => clip('landung', 'Die Aufgaben', 'jeder Punkt eine Aufgabe', () => teil(true, 4000));
     if (art === 'baum') return baum(null);
@@ -1556,7 +1557,7 @@ App.szene = function (key, titel) { if (App.tour || !Ton.an()) return; Sprecher.
   box.querySelectorAll('.sf-wahl button').forEach(b => b.onclick = () => { if (b.dataset.clip) { if (!App.tour) { Sprecher.stopp(true); if (Ton.an()) Sprecher.sag('schluss', {}); } return zeig('finale'); } clipAn = null; halt(); mitPunkten = true; szene(+b.dataset.i); });
   box.querySelector('.sf-3d').onclick = () => { if (!App.tour) Sprecher.stopp(true); weg(); };
   $('#bStadtfilm').onclick = () => { if (!box.hidden && !App.tour) { Sprecher.stopp(true); return weg(); } zeig('alles'); };
-  knopf(); App.stadtFilm = { zeig, weg, an: () => !box.hidden };
+  knopf(); App.stadtFilm = { zeig, weg, an: () => !box.hidden, wartet: f => { if (!box.hidden && clipAn && laeuft) warter.push(f); else f(); } };
 })();
 
 /* ---------- Kurzfilme (gezeichnet) ---------- */
