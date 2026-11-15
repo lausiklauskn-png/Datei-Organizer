@@ -44,8 +44,14 @@ function mitModell(regel, modell, text) {
   return regel;
 }
 const bereichMitModell = (regel, text) => mitModell(regel, WORTMODELL_BEREICH, text);
+function englischerText(text) {
+  const t = text.slice(0, 3e3).toLowerCase(), z = (r) => (t.match(r) || []).length;
+  const en = z(/\b(the|and|you|your|of|for|from|to|is|are|this|with|amount|paid|due|date|total)\b/g), de = z(/\b(der|die|das|und|sie|ihr|ihre|ist|nicht|mit|für|von|zu|den|dem|bitte|wir)\b/g);
+  return en >= 4 && en > 2 * de;
+}
 function artMitModell(regel, text) {
   if (!wortmodellSchalter.an) return regel;
+  if (regel?.sicher && englischerText(text)) return regel;
   const v = artVorhersage(text);
   if (!v) return regel;
   if (regel?.sicher && regel.wert === v.wert) return regel;
@@ -62,6 +68,7 @@ export {
   artMitModell,
   artMitWortmodell,
   bereichMitModell,
+  englischerText,
   merkmale,
   mitModell,
   vorhersage,
