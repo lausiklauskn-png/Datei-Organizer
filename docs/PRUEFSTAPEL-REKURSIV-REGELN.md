@@ -42,7 +42,13 @@ Eingecheckt, **bevor** die Prüfstadt existiert. Auftrag: `docs/BRIEF_SITZUNG_20
     der Prüfstadt einmal gemessen. Die neue Methode gilt erst dann als besser als das alte Vorgehen, wenn sie dort auch dieses
     schlägt (gleicher Test wie Punkt 8).
 11. **Übertragung:** In die Familienakte nur nach Punkt 8 **und** 10 und mit Klaus' Ja. Veröffentlicht wird nichts ohne sein Wort.
-12. **Grenze:** erfundene Unterlagen von Claude-Agenten, reiner Text (kein Scan in dieser Runde). Die Zahlen gelten für diese Machart.
+12. **Gesetzte Fassung (Nachtrag 15.11., Klaus: „die Dokumente müssen genauso aufgebaut sein wie heutige, mit Barcode oder QR-Code“;
+    eingetragen, bevor die Prüfstadt gelesen oder gemessen ist):** Ein eigener Agent (Simulator 3, kennt weder Repo noch Kern noch die
+    früheren Simulatoren) setzt jedes Stück der Prüfstadt als Seitenbild nach heutigem Aufbau: Briefkopf mit Logo, Anschriftfeld,
+    Infoblock, Tabellen, Fußzeile, **Barcodes und QR-Codes** (Überweisungs-QR, Sendungs- und Kundencodes, Datamatrix-Frankierung),
+    Stempel und Handnotizen; Ausgabe als PDF-Scan und Handyfoto in drei Güten. Gemessen mit der Texterkennung der App
+    (`scripts/leser-node.mjs`, `--gesetzt`), alt gegen neu, gleicher Test wie Punkt 8 – als **Nebenzahl**, die Hauptzahl bleibt der Text.
+13. **Grenze:** erfundene Unterlagen von Claude-Agenten. Die Zahlen gelten für diese Machart.
 
 ## Eingefroren
 

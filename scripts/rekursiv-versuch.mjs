@@ -61,6 +61,7 @@ export function wortmodell(stapel) {
 // ---- Kern laufen lassen ----
 const L = (f) => import(join(KERN, "lib", f));
 const [{ einlesen }, { siebe }, { absenderVereinheitlichen }, { personZuordnen }] = await Promise.all([L("einlesen.ts"), L("siebe.ts"), L("abgleich.ts"), L("personen.ts")]);
+export const KERN_PFAD = KERN;
 export async function lauf(s, modell) {
   globalThis.__WM = modell || undefined;
   const o = ordnerVon(s), soll = sollVon(s);
@@ -68,13 +69,15 @@ export async function lauf(s, modell) {
   const e = new Map(JSON.parse(readFileSync(join(o, "ERWARTUNG.json"), "utf8")).dateien.map((x) => [x.datei, x]));
   const ds = []; let i = 0;
   for (const d of soll.keys()) { if (!existsSync(join(o, d))) continue; const t = await einlesen({ pfad: d, name: d, geaendert: Date.UTC(2026, 10, 1) + i++, bytes: new Uint8Array(readFileSync(join(o, d))) }, async () => "", 0, async () => ""); t[0].pfad = d; ds.push(...t); }
-  const org = new Map(absenderVereinheitlichen(ds.map((d) => siebe(d, 5, []))).map((d) => [d.pfad, d]));
+  const rec = {}; let cur; globalThis.__REC = (f, r, t) => { (rec[cur] ||= {})[f] = { wert: r ? FORM[f]({ [f]: r.wert }) : null, sicher: !!r?.sicher, roh: r?.wert ?? null, text: t }; };
+  const org = new Map(absenderVereinheitlichen(ds.map((d) => { cur = d.pfad; return siebe(d, 5, []); })).map((d) => [d.pfad, d]));
+  globalThis.__REC = undefined;
   globalThis.__WM = undefined;
   return [...soll].filter(([d]) => org.has(d)).map(([d, sw]) => { const x = org.get(d), f = x.felder || {}, h = hh[e.get(d)?.haushalt];
     const p = h ? personZuordnen(`${x.email?.an || ""}\n${x.volltext || ""}`, f.betrifft?.wert, h) : undefined;
     const w = { bereich: f.kategorie, schriftstueck: f.schriftstueck, absender: f.absender, person: p, frist: f.frist };
     const rat = Object.fromEntries(FELDER.map((k) => [k, FORM[k]({ [k]: w[k]?.wert })]));
-    return { stapel: s, datei: d, soll: sw, rat, text: x.volltext || readFileSync(join(o, d), "utf8") }; });
+    return { stapel: s, datei: d, soll: sw, rat, regel: rec[d] || {}, text: x.volltext || readFileSync(join(o, d), "utf8") }; });
 }
 
 // ---- Zählen ----
