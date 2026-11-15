@@ -16,7 +16,7 @@ const ordnerVon = (s) => s.startsWith("/") ? s : join(W, "pruefstapel-" + s);
 const cache = new Map();
 export function belege(s) {
   if (cache.has(s)) return cache.get(s);
-  const o = ordnerVon(s), b = [...V.sollVon(s)].filter(([d, x]) => x.schriftstueck && existsSync(join(o, d))).map(([d, x]) => ({ g: s, datei: d, y: x.schriftstueck, x: artMerkmale(readFileSync(join(o, d), "utf8")) }));
+  const o = ordnerVon(s), b = [...V.sollVon(s)].filter(([d, x]) => x.schriftstueck && x.schriftstueck !== "Foto" && existsSync(join(o, d))).map(([d, x]) => ({ g: s, datei: d, y: x.schriftstueck, x: artMerkmale(readFileSync(join(o, d), "utf8")) }));
   cache.set(s, b); return b;
 }
 const LO = join(W, "lehrdaten-briefe");

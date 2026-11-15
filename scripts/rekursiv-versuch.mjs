@@ -55,7 +55,8 @@ const OPT = { minGruppen: 2, proKlasse: 250 };
 export function wortmodell(stapel) {
   const bel = [...lehrBel, ...stapel.flatMap(nbBelege)];
   const t = (feld, extra) => trainiere([...bel, ...extra].filter((b) => b[feld]).map((b) => ({ gruppe: b.gruppe, konto: b[feld], merkmale: b.merkmale })), OPT);
-  return { bereich: t("bereich", []), art: t("art", genBel) };
+  // „Foto“ ist eine Form, keine Art aus dem Text (ein einziges Stück in der Lernstadt kippte sonst das ganze Wortmodell)
+  return { bereich: t("bereich", []), art: trainiere([...bel, ...genBel].filter((b) => b.art && b.art !== "Foto").map((b) => ({ gruppe: b.gruppe, konto: b.art, merkmale: b.merkmale })), OPT) };
 }
 
 // ---- Kern laufen lassen ----
