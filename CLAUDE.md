@@ -74,6 +74,22 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   Verschmelzen und Archivhaus (ohne echten Brief, rund 4.700 erfundene Stücke) → zu Hause: eigene Unterlagen, die App lernt aus Korrekturen
   (neu gedreht). Zahlen aus `const D`. Offen bei Klaus: ob es die Kurzform ersetzen soll; ob die Strafzettel-Murmel Beine bekommen soll.
   Weitere Filme nur nach Drehbuch und Klaus' Ja; Übergänge durch Überblenden statt Neudreh. Discovery-Ordner rund 50 MB.
+  **Film-Ansicht der Bühne (Klaus 15.11. nachts, nach #47, nicht ausgegeben):** der Baum als Standbild (`discovery-kurzgeschichte.jpg`) ist der
+  Hintergrund der Bühne, die vier Städte und die Familienakte darin sind antippbar (`start()` in `App.stadtFilm`), die Erklärfilme laufen im selben
+  Rahmen; „In 3D erkunden“ schaltet auf die 3D-Ansicht. Vorgewählt am Tablet/Handy; am Rechner misst die Seite den Bildabstand der 3D-Bühne
+  (`messeB`, über 40 ms → Film-Ansicht mit Hinweis, gemerkt `tw-buehne-schwach`, Wahl `tw-buehne`); solange die Film-Ansicht die Bühne deckt, ruht
+  die 3D-Schleife (`App.buehneRuht`); ist die Film-Ansicht vorgewählt, wird die 3D-Welt gar nicht erst gebaut (`App.baue3D`, erst auf „In 3D
+  erkunden“; Klaus: das Tablet stürzt bei 3D ab), am Tablet rechnet sie mit einfacher Auflösung. **„Führung starten“ spielt in der Film-Ansicht
+  das große Video am Stück** (`discovery-geschichte.mp4`, 75 s, Ton eingebrannt, `App.stadtFilm.gross`); die Schritt-Führung bleibt der 3D-Ansicht.
+  Leichte Ansicht (2D) bleibt der Notausgang. **Ladebalken an jedem Film** (`ladeBalken`). **Die alten
+  gezeichneten Kurzfilme werden nicht mehr gezeigt** (Klaus: „grottenschlecht“; kein Rückfall mehr, der Zeichen-Code steht nur noch ungenutzt in der Seite).
+  **Vorschlag für eine klare Reihenfolge (15.11. nachts, von Klaus nur zur Kenntnis genommen – „merke das erstmal“, NICHT gebaut, erst nach seinem
+  Ja):** vier Abschnitte – (1) Die Geschichte: Baum-Bild, ein Knopf „Geschichte abspielen“ statt „Führung starten“ und „Stadtfilm“, 3D und einfache
+  Ansicht als kleine Wahlknöpfe; (2) So lernt der Kern: Kugel-Film mit den sechs Schritten; (3) Runde für Runde mit den Ergebnissen darunter;
+  (4) Zum Schmunzeln: Kurzfilme. Dafür entfielen die 43-s-Kurzform und der Strafzettel bei den Kurzfilmen. Außerdem offen (nur als Drehbuch, nichts
+  drehen ohne Ja): ein neues drittes Kurzvideo mit denselben Figuren (Poststelle, andere Geschichte) und die Runden 1–3 als Filmfolgen zum Antippen
+  der Murmeln. Klaus sah am 15.11. nachts auf dem Tablet noch eine alte Fassung (App 0.4.7 oder Vorrat des Browsers) – vor weiteren Wünschen erst
+  sicherstellen, dass er den aktuellen Stand sieht.
   **Idee von Klaus für den nächsten Umbau (15.11., nichts ändern ohne sein Wort):** Stadtname nach
   dem Einblenden wieder verschwinden lassen; Rollen-Namen nicht dauernd mitfliegen lassen, sobald die Rolle bekannt ist (die Murmel/der Punkt
   wird größer, wenn sie gerade erklärt wird). Discovery-Ordner jetzt rund 50 MB – **Paketgröße von APK/Windows vor der nächsten Ausgabe prüfen.**
