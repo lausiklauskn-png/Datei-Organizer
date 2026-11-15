@@ -88,6 +88,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 .tipp.weg{opacity:0}
 .untertitel{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);width:min(700px,calc(100% - 24px));box-shadow:0 8px 30px rgba(0,0,0,.45);background:rgba(10,14,28,.86);color:#fff;border-radius:14px;padding:10px 14px;font-size:15px;line-height:1.4;z-index:4;display:none}
 .untertitel.an{display:block;z-index:50}
+.untertitel.an.stumm{display:none}
+#bWeiter[hidden]{display:none}
 .untertitel .ut-k{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
 .untertitel .ut-k button{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:999px;padding:4px 12px;font-size:13.5px;font-weight:600}
 .ik{width:1em;height:1em;vertical-align:-.13em;margin-right:.4em;flex:none}
@@ -305,6 +307,8 @@ footer{padding:36px 0 48px;color:var(--leise);font-size:13.5px}
     <div class="oben">
       <button class="fuehr" id="bFuehrung" aria-pressed="false">Führung starten</button>
       <button id="bTon" data-ton aria-pressed="true">Ton an</button>
+      <button id="bUnter" aria-pressed="false" title="Untertitel: den gesprochenen Text unten mitlesen">Untertitel</button>
+      <button id="bWeiter" hidden title="Zum nächsten Schritt der Führung">Weiter</button>
       <details class="zeichen stimmwahl"><summary>Stimme</summary><div class="stimme" data-stimme></div></details>
       <button id="bLicht" class="nur3d">Abend</button>
       <details class="zeichen" id="zeichen"><summary>Zeichen</summary><ul id="zeichenListe"></ul></details>
@@ -1380,10 +1384,16 @@ const Unter = (function () {
   const e = $('#untertitel'); document.body.appendChild(e);
   e.innerHTML = '<b></b><span></span><div class="ut-k"><button type="button" data-w>Weiter</button><button type="button" data-h>' + IK.halt + 'Anhalten</button></div>';
   const [kopf, txt, knopf] = e.children; let weiter = null, halt = null;
+  /* Untertitel sind ab Werk aus (Klaus 15.11.: der Text unten stört im Bild); einschaltbar mit dem Knopf „Untertitel“, gemerkt.
+     Ist der Ton aus, erscheinen sie von selbst – sonst liefe die Führung stumm und ohne Text. */
+  const bU = $('#bUnter'), bW = $('#bWeiter'); let utAn = false; try { utAn = localStorage.getItem('tw-untertitel') === '1'; } catch (x) { }
+  const sicht = () => { const zeigen = utAn || !Ton.an(); e.classList.toggle('stumm', !zeigen); bU.setAttribute('aria-pressed', utAn); };
+  bU.onclick = () => { utAn = !utAn; try { localStorage.setItem('tw-untertitel', utAn ? '1' : '0'); } catch (x) { } sicht(); };
+  bW.onclick = () => weiter && weiter(); App.tonHoerer.push(() => sicht());
   knopf.children[0].onclick = () => weiter && weiter(); knopf.children[1].onclick = () => halt && halt();
   return {
-    zeig(titel, text, w, h) { kopf.textContent = titel; txt.textContent = text; weiter = w || null; halt = h || (() => { Sprecher.stopp(true); Unter.weg(); }); knopf.children[0].style.display = w ? '' : 'none'; knopf.children[1].innerHTML = w ? IK.halt + 'Anhalten' : 'Schließen'; e.classList.add('an'); },
-    weg() { e.classList.remove('an'); }
+    zeig(titel, text, w, h) { kopf.textContent = titel; txt.textContent = text; weiter = w || null; halt = h || (() => { Sprecher.stopp(true); Unter.weg(); }); knopf.children[0].style.display = w ? '' : 'none'; knopf.children[1].innerHTML = w ? IK.halt + 'Anhalten' : 'Schließen'; e.classList.add('an'); bW.hidden = !w; sicht(); },
+    weg() { e.classList.remove('an'); bW.hidden = true; }
   };
 })();
 // Eine einzelne Szene (z. B. Tipp auf eine Kugel): nur wenn der Ton an ist
