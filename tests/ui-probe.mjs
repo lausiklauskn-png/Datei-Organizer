@@ -226,6 +226,18 @@ try {
     await page.locator("[data-entfernen-liste]").click(); await page.waitForTimeout(300);
     soll("„Entfernen“ über der Liste nimmt alle Treffer heraus", await zahl() === vorher, `${await zahl()}`);
   }
+  // ---------- Discovery (Klaus 15.11.): Knopf im Kopf öffnet die Seite „so wurde der Kern trainiert“, mit Rückweg ----------
+  {
+    await page.setViewportSize({ width: 1280, height: 900 }); await page.goto(basis + "#ordner"); await page.waitForTimeout(300);
+    const knopf = page.locator("[data-discovery-knopf]");
+    soll("Discovery-Knopf steht im Kopf", await knopf.count() === 1 && (await knopf.getAttribute("aria-label")) === "Discovery");
+    await knopf.click(); await page.waitForLoadState("domcontentloaded"); await page.waitForTimeout(600);
+    soll("Discovery-Seite öffnet sich mit Kreislauf und Sprechtexten", /discovery\.html$/.test(page.url()) && await page.locator("#schleifeBild").count() === 1 && await page.evaluate(() => Object.keys(SPRECHTEXTE).length) === 13, page.url());
+    const ton = await page.evaluate(async () => (await fetch("discovery-ton/kreis_raten.mp3")).ok);
+    soll("Discovery: Tonspur liegt neben der Seite", ton === true);
+    await page.locator("[data-zurueck]").click(); await page.waitForLoadState("domcontentloaded"); await page.waitForTimeout(400);
+    soll("Discovery: Rückweg führt in den Datei-Organizer", await page.locator("[data-discovery-knopf]").count() === 1, page.url());
+  }
   // ---------- Landkarte und Dashboard (Klaus 13.11.): Kästen sind Links, an jeder Datei Auge, Stift, Papierkorb ----------
   {
     await page.setViewportSize({ width: 1280, height: 900 }); await page.goto(basis + "#ordner"); await page.waitForTimeout(300);
