@@ -108,3 +108,11 @@ R3-4. Ziel nebenbei: Art-Modell kleiner (App-Paket), ohne dass die Abstimmung re
   gelernt fiel der Testordner unter die Grenze (89 statt ≥ 90 %). Kombination Art-Modell + Wortmodell verworfen (reihum nur +0,05).
 - **Zusätzliche Frage an Welt 4 (Nachtrag vor der Messung):** Hält der Gewinn von Runde 2 an einer zweiten unabhängigen Welt?
   Gemessen `4cba044` gegen 0.4.4, gleicher Test wie R2-3. Das ist die Wiederholung, die die Recherche verlangt.
+
+### Runde 3 gemessen (15.11.2026, einmal, Welt 4)
+
+- **Wiederholung:** Kern `main` (Runde 2, `4cba044`) gegen 0.4.4: Text+gesetzt +2,06 Punkte (68,83 → 70,90 %, 90-%-Spanne +1,11 bis +3,03) –
+  zum zweiten Mal an einer unabhängigen Welt gesichert; kein Feld schlechter (Text: Art 69,0 → 75,0, Bereich 75,5 → 78,5, Absender 74,2 → 75,8,
+  Frist 92,5 → 93,5; gesetzt: Art 55,0 → 58,0, Absender 43,4 → 45,5, Frist 79,5 → 81,5, Bereich 62,5 → 64,0).
+- **Runde 3** gegen Runde 2: 0,00 Punkte (Spanne −0,20 bis +0,23) – mehr Lernmaterial aus Welt 3 bringt nichts Messbares. Nicht schlechter.
+- Welt 4 ist verbraucht. Zahlen in `pruefstapel-stadt-4/`.

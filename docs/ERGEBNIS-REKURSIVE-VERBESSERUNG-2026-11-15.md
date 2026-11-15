@@ -5,6 +5,8 @@ Regeln vorab und Einfrieren: `docs/PRUEFSTAPEL-REKURSIV-REGELN.md`. Nichts verö
 
 ## Kurz
 
+- **Zweiter unabhängiger Nachweis (Welt 4 „Musterhausen am Rhein“, digitale Post, Barcode/QR):** der Kern auf `main` schlägt 0.4.4 wieder
+  gesichert, +2,06 Punkte (68,83 → 70,90 %, Spanne +1,11 bis +3,03), kein Feld schlechter. Runde 3 (mehr Lernmaterial) brachte 0,00.
 - **Runde 2 ist nachgewiesen (Welt 3, einmal gemessen, Text und gesetzte Fassung mit Barcode/QR zusammen):**
   neu gegen 0.4.4 **+2,72 Punkte, gesichert** (76,18 → 78,89 % von 1 952 Feld-Urteilen, 90-%-Spanne +1,56 bis +3,70, p ≈ 0,0006);
   neu gegen das bisherige Vorgehen **+2,66 Punkte, gesichert** (Spanne +1,73 bis +3,63). **Kein Feld schlechter.**
