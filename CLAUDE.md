@@ -37,7 +37,7 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   **Kreislauf als Film** (`discovery-kreislauf.mp4`, 64 s, mit den Tonspuren; Knöpfe „Als Film“/„Interaktiv in 3D“, am Tablet/Handy ist der
   Film vorgewählt, Ladebalken; aufgenommen Bild für Bild aus der 3D-Fassung – bei geänderten Kugeln oder Tonspuren neu aufnehmen). Die drei
   Kurzfilme laufen lückenlos hintereinander, ohne Ansage „Erster Film“.
-  Knopf „Leichte Ansicht (ohne 3D)“ als Notausgang, Rückweg „‹ Datei-Organizer“. Zahlen stammen aus der eingebetteten Messdatei (`const D`) –
+  Knopf „Leichte Ansicht (ohne 3D)“ als Notausgang, Rückweg „‹ Zurück“ (im Rahmen einer anderen App ohne Knopf). Zahlen stammen aus der eingebetteten Messdatei (`const D`) –
   nicht von Hand ändern. UI-Probe 126 (4 neu). Dasselbe als Artefakt: https://claude.ai/artifact/1G6GPbK29HpWaTCGV5bBCk.
   **Nach 0.4.6 (auf main, nicht in den Apps):** Schilder blenden sich aus, wenn eine andere Stadt davor steht; **Einzeldatei zum Versenden**
   `node scripts/discovery-einzeldatei.mjs [ziel]` (≈ 8 MB, alles eingebettet, nicht ins Repo legen). Klaus 15.11. am Galaxy Tab S6: „läuft alles“
