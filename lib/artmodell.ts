@@ -23,6 +23,7 @@ export function artMerkmale(text: string): string[] {
   for (const x of kopf) m.add("k:" + x);
   for (const x of w(betr.join(" "))) m.add("b:" + x);
   for (const x of [...kopf, ...rumpf]) m.add("t:" + x);
+  for (const x of w(zeilen.slice(-6).join(" "))) m.add("e:" + x);   // Briefende: Gruß, Rechtsbehelf, Zahlungsaufforderung (Runde 2)
   if (an >= 0) m.add("x:anrede"); if (/^(von|from):/im.test(text)) m.add("x:mail");
   if (/(?<![\d,.])19(?:[.,]0{1,2})?\s?%/.test(text)) m.add("x:19"); if (/(?<![\d,.])7(?:[.,]0{1,2})?\s?%/.test(text)) m.add("x:7");
   if (/\d+[.,]\d{2}\s*(€|eur)/i.test(text)) m.add("x:betrag"); if (zeilen.length < 15) m.add("x:kurz"); else if (zeilen.length > 60) m.add("x:lang");
@@ -37,12 +38,12 @@ export function artVorhersage(text: string, modell: Artmodell = ARTMODELL as Art
   let a = 0; for (let k = 1; k < s.length; k++) if (s[k] > s[a]) a = k;
   let b = a ? 0 : 1; for (let k = 0; k < s.length; k++) if (k !== a && s[k] > s[b]) b = k;
   const anteil = (f: string) => { const g = modell.gewichte[f]; for (let i = 0; i < g.length; i += 2) if (g[i] === a) return g[i + 1]; return 0; };
-  const grund = treffer.map((f) => [f, anteil(f)] as const).sort((x, y) => y[1] - x[1]).slice(0, 3).filter(([, v]) => v > 0).map(([f]) => f.slice(2));
+  const grund = treffer.filter((f) => !f.startsWith("e:")).map((f) => [f, anteil(f)] as const).sort((x, y) => y[1] - x[1]).slice(0, 3).filter(([, v]) => v > 0).map(([f]) => f.slice(2));
   return { wert: modell.klassen[a], zweites: modell.klassen[b], abstand: s[a] - s[b], grund };
 }
 
-/** Ab diesem Abstand überstimmt das Modell eine sichere Regel; ab dem zweiten gilt es als sicher (reihum an verbrauchten Stapeln gewählt: ab 15 sind 96 % richtig). */
+/** Ab diesem Abstand überstimmt das Modell eine sichere Regel; ab dem zweiten gilt es als sicher (reihum an verbrauchten Stapeln gewählt: Runde 2 mit Briefende-Wörtern: ab 25 sind 96,7 % richtig). */
 export const ARTMODELL_VOR_REGEL = 8;
 /** Eine unsichere Regel (auch „Unklar“) überstimmt das Modell erst ab diesem Abstand (reihum 86,99 statt 87,01 %, dafür bleibt der Testordner bei 93 %). */
 export const ARTMODELL_MIN = 2;
-export const ARTMODELL_SICHER = 15;
+export const ARTMODELL_SICHER = 25;

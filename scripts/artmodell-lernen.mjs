@@ -11,7 +11,9 @@ const arg = (n, v) => { const i = process.argv.indexOf(n); return i > 0 ? proces
 const { artMerkmale } = await import("../lib/artmodell.ts");
 const M = await import("./rekursiv-modell.mjs");
 const V = await import("./rekursiv-versuch.mjs");
-export const STAPEL = ["unabhaengig", "briefe-2", "briefe-a", "briefe-b", "briefe-h", "vermieterin", "vermieterin-2026", "familie-k3", "runde-c", "runde-d", "runde-e", "runde-f", "rest", "absender"];
+export const STAPEL = ["unabhaengig", "briefe-2", "briefe-a", "briefe-b", "briefe-h", "vermieterin", "vermieterin-2026", "familie-k3", "runde-c", "runde-d", "runde-e", "runde-f", "rest", "absender",
+  // Runde 2: verbrauchte Prüfstadt (Text und so, wie die App die gesetzten Stücke liest) und ältere Stapel als gelesener Text
+  "stadt-pruef", "stadt-pruef-ocr", "familie-k3-ocr", "vermieterin-ocr", "vermieterin-2026-ocr"];
 const ordnerVon = (s) => s.startsWith("/") ? s : join(W, "pruefstapel-" + s);
 const cache = new Map();
 export function belege(s) {
@@ -28,7 +30,7 @@ if (process.argv[1].endsWith("artmodell-lernen.mjs")) {
   const alle = [...STAPEL, ...mit].filter((s) => s !== arg("--ohne"));
   if (process.argv.includes("--reihum")) {
     let ok = 0, n = 0;
-    for (const t of alle) { const m = lerne(alle.filter((x) => x !== t)); const b = belege(t); const a = b.filter((x) => M.rateKompakt(m, x.x).wert === x.y).length; ok += a; n += b.length; console.log(t.padEnd(18), `${(100 * a / b.length).toFixed(1)} %`); }
+    for (const t of alle) { const m = lerne(alle.filter((x) => x.replace(/-ocr$/, "") !== t.replace(/-ocr$/, ""))); const b = belege(t); const a = b.filter((x) => M.rateKompakt(m, x.x).wert === x.y).length; ok += a; n += b.length; console.log(t.padEnd(18), `${(100 * a / b.length).toFixed(1)} %`); }
     console.log(`reihum (Modell allein): ${(100 * ok / n).toFixed(2)} % von ${n}`);
   }
   if (arg("--aus")) {

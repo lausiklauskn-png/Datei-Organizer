@@ -9,7 +9,9 @@ const W = fileURLToPath(new URL("..", import.meta.url));
 const arg = (n, v) => { const i = process.argv.indexOf(n); return i > 0 ? process.argv[i + 1] : v; };
 const A = await import("../lib/absenderwahl.ts"), E = await import("../lib/erkennen.ts"), { KOPF_ZEICHEN } = await import("../lib/siebe.ts").catch(() => ({}));
 const V = await import("./rekursiv-versuch.mjs");
-export const STAPEL = ["unabhaengig", "briefe-2", "briefe-a", "briefe-b", "briefe-h", "vermieterin", "vermieterin-2026", "familie-k3", "runde-c", "runde-d", "runde-e", "runde-f", "rest", "absender"];
+export const STAPEL = ["unabhaengig", "briefe-2", "briefe-a", "briefe-b", "briefe-h", "vermieterin", "vermieterin-2026", "familie-k3", "runde-c", "runde-d", "runde-e", "runde-f", "rest", "absender",
+  // Runde 2: verbrauchte Prüfstadt (Text und so, wie die App die gesetzten Stücke liest) und ältere Stapel als gelesener Text
+  "stadt-pruef", "stadt-pruef-ocr", "familie-k3-ocr", "vermieterin-ocr", "vermieterin-2026-ocr"];
 const norm = (s) => s == null || s === "" ? null : String(s).toLowerCase().replace(/\b(gmbh|ag|e\.?\s?k\.?|kg|ohg|mbh|e\.?\s?v\.?|co\.?|&|und)\b/g, " ").replace(/[^a-zäöüß0-9]+/g, " ").trim() || null;
 const ordnerVon = (s) => s.startsWith("/") ? s : join(W, "pruefstapel-" + s);
 const cache = new Map();
@@ -32,7 +34,7 @@ export function lerne(stapel, runden = 10) {
 if (process.argv[1].endsWith("absenderwahl-lernen.mjs")) {
   const mit = (arg("--mit", "") || "").split(",").filter(Boolean), alle = [...STAPEL, ...mit].filter((s) => s !== arg("--ohne"));
   if (process.argv.includes("--reihum")) { let n = 0, a = 0, b = 0;
-    for (const t of alle) { const m = lerne(alle.filter((x) => x !== t)); let ra = 0, rb = 0;
+    for (const t of alle) { const m = lerne(alle.filter((x) => x.replace(/-ocr$/, "") !== t.replace(/-ocr$/, ""))); let ra = 0, rb = 0;
       for (const d of daten(t)) { const r = d.regel.kopf || d.regel.gruss; const rw = norm(r?.wert || "unbekannt"); if (rw === d.soll) ra++; const w = r?.sicher ? rw : norm(A.absenderWaehlen("", d.regel, m) && (() => { let best, bs = -Infinity; for (const x of d.liste) { const s = x.f.reduce((q, y) => q + (m.gewichte[y] || 0), 0); if (s > bs) { bs = s; best = x; } } return best?.wert; })()); if (w === d.soll) rb++; }
       n += daten(t).length; a += ra; b += rb; console.log(t.padEnd(18), `Regel ${(100 * ra / daten(t).length).toFixed(1)} · mit Wahl ${(100 * rb / daten(t).length).toFixed(1)}`); }
     console.log(`reihum: Regel ${(100 * a / n).toFixed(2)} · mit Wahl ${(100 * b / n).toFixed(2)} (n=${n})`); }

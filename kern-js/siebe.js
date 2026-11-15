@@ -4,6 +4,7 @@ import { absenderAusGruss, erkenneAbsender, erkenneBetrag, erkenneBetrifft, erke
 import { FOTOS } from "./kategorien.js";
 import { absenderName } from "./eml.js";
 import { absenderWaehlen } from "./absenderwahl.js";
+import { fristWaehlen } from "./fristwahl.js";
 import { lernregelAnwenden } from "./lernen.js";
 import { artMitModell, bereichMitModell } from "./wortmodell.js";
 const STUFEN = [
@@ -63,7 +64,8 @@ ${voll}`));
       const weitere = erkenneNummern(voll).filter((n) => !d.felder.nummern?.some((x) => x.art === n.art && x.wert === n.wert));
       d.felder.nummern = [...d.felder.nummern || [], ...weitere];
       setze(d, "betrifft", erkenneBetrifft(voll) || { wert: "unbekannt", sicher: false, grund: "keine Anrede, kein Anschriftfeld", quelle: "regel" });
-      setze(d, "frist", erkenneFrist(voll, d.felder.datum?.wert, d.felder.datum?.sicher !== false));
+      const fr = erkenneFrist(voll, d.felder.datum?.wert, d.felder.datum?.sicher !== false);
+      setze(d, "frist", fr?.sicher ? fr : fristWaehlen(voll, fr, d.felder.datum));
       setze(d, "betrag", erkenneBetrag(voll));
       const g = gehaltLesen(voll);
       if (g) {

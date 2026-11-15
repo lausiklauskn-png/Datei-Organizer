@@ -4,6 +4,7 @@ import { absenderAusGruss, erkenneAbsender, erkenneBetrag, erkenneBetrifft, erke
 import { FOTOS } from "./kategorien.ts";
 import { absenderName } from "./eml.ts";
 import { absenderWaehlen } from "./absenderwahl.ts";
+import { fristWaehlen } from "./fristwahl.ts";
 import { lernregelAnwenden } from "./lernen.ts";
 import { artMitModell, bereichMitModell } from "./wortmodell.ts";
 import type { Lernregel } from "./typen.ts";
@@ -76,7 +77,9 @@ export function siebe(datei: Datei, stufe: number, regeln: Lernregel[] = []): Da
       const weitere = erkenneNummern(voll).filter((n) => !d.felder.nummern?.some((x) => x.art === n.art && x.wert === n.wert));
       d.felder.nummern = [...(d.felder.nummern || []), ...weitere];
       setze(d, "betrifft", erkenneBetrifft(voll) || { wert: "unbekannt", sicher: false, grund: "keine Anrede, kein Anschriftfeld", quelle: "regel" });
-      setze(d, "frist", erkenneFrist(voll, d.felder.datum?.wert, d.felder.datum?.sicher !== false));
+      // Feste Regel zuerst; ist sie nicht sicher, wählt die gelernte Frist-Wahl unter den Daten im Text oder „keine Frist“ (lib/fristwahl.ts)
+      const fr = erkenneFrist(voll, d.felder.datum?.wert, d.felder.datum?.sicher !== false);
+      setze(d, "frist", fr?.sicher ? fr : fristWaehlen(voll, fr, d.felder.datum));
       setze(d, "betrag", erkenneBetrag(voll));
       const g = gehaltLesen(voll);
       if (g) { d.gehalt = g; if (g.auszahlung) setze(d, "betrag", { wert: `${g.auszahlung} €`, sicher: true, grund: "Auszahlungsbetrag der Gehaltsabrechnung", quelle: "regel" }); }

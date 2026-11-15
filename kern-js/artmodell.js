@@ -13,6 +13,7 @@ function artMerkmale(text) {
   for (const x of kopf) m.add("k:" + x);
   for (const x of w(betr.join(" "))) m.add("b:" + x);
   for (const x of [...kopf, ...rumpf]) m.add("t:" + x);
+  for (const x of w(zeilen.slice(-6).join(" "))) m.add("e:" + x);
   if (an >= 0) m.add("x:anrede");
   if (/^(von|from):/im.test(text)) m.add("x:mail");
   if (/(?<![\d,.])19(?:[.,]0{1,2})?\s?%/.test(text)) m.add("x:19");
@@ -40,12 +41,12 @@ function artVorhersage(text, modell = ARTMODELL) {
     for (let i = 0; i < g.length; i += 2) if (g[i] === a) return g[i + 1];
     return 0;
   };
-  const grund = treffer.map((f) => [f, anteil(f)]).sort((x, y) => y[1] - x[1]).slice(0, 3).filter(([, v]) => v > 0).map(([f]) => f.slice(2));
+  const grund = treffer.filter((f) => !f.startsWith("e:")).map((f) => [f, anteil(f)]).sort((x, y) => y[1] - x[1]).slice(0, 3).filter(([, v]) => v > 0).map(([f]) => f.slice(2));
   return { wert: modell.klassen[a], zweites: modell.klassen[b], abstand: s[a] - s[b], grund };
 }
 const ARTMODELL_VOR_REGEL = 8;
 const ARTMODELL_MIN = 2;
-const ARTMODELL_SICHER = 15;
+const ARTMODELL_SICHER = 25;
 export {
   ARTMODELL_MIN,
   ARTMODELL_SICHER,
