@@ -14,8 +14,9 @@ Regeln vorab und Einfrieren: `docs/PRUEFSTAPEL-REKURSIV-REGELN.md`. Nichts verö
   **+1,17 Punkte, gesichert** (Spanne +0,12 bis +2,25, p ≈ 0,04).
 - Getragen von der **Art: 74,5 → 80,5 %** (McNemar 11 gegen 23, p = 0,058). Absender +0,5, Bereich **−1** (das neu gelernte
   Wortmodell; das bisherige Vorgehen verliert dort genauso), Person und Frist unverändert.
-- Nach den vorab festgelegten Regeln (Punkt 8 **und** 10) darf das **nicht** in die Familienakte. Der Kern dieses Zweigs bleibt
-  ein Kandidat; ein zweiter unabhängiger Nachweis wäre nötig.
+- **Gesetzte Fassung mit Barcode/QR, Scan und Foto (Nebenzahl):** neu gegen 0.4.4 **+2,56 Punkte, gesichert**, Absender 31,5 → 39,0 %.
+- Nach den vorab festgelegten Regeln (Hauptzahl Punkt 8 **und** Punkt 10) ist die Übernahme in die Familienakte **nicht** gedeckt:
+  die Hauptzahl verfehlt die Grenze knapp. Der Kern dieses Zweigs bleibt ein Kandidat; ein zweiter unabhängiger Nachweis wäre nötig.
 
 ## Was gemacht wurde
 
@@ -50,7 +51,22 @@ Regeln vorab und Einfrieren: `docs/PRUEFSTAPEL-REKURSIV-REGELN.md`. Nichts verö
 
 ## Gesetzte Fassung (Nebenzahl, Simulator 3 mit Barcode/QR)
 
-(folgt)
+Ein eigener Agent (Simulator 3, `pruefstapel-stadt-pruef/sim3/`) hat die 200 Stücke wie heutige Unterlagen gesetzt: Briefkopf mit
+Wort- und Bildmarke, Anschriftfeld, Infoblock, Tabellen, Fußzeilen; **103 Stücke mit Codes** (Code128 47, Datamatrix-Frankierung 39,
+Überweisungs-QR 34, Strichcode auf Bescheiden 25, QR-Link 12); 111 PDF-Scans, 89 Handyfotos, Güte gut 66 / mittel 63 / schlecht 71.
+Gelesen mit der Texterkennung der App, einmal gemessen:
+
+| Vergleich | alt | neu | Differenz | 90-%-Spanne | Ergebnis |
+| --- | --- | --- | --- | --- | --- |
+| neu gegen 0.4.4 | 67,66 % | 70,22 % | **+2,56** | +1,01 bis +4,10 | gesichert (p ≈ 0,003) |
+| neu gegen bisheriges Vorgehen | 67,98 % | 70,22 % | **+2,24** | +0,95 bis +3,48 | gesichert (p ≈ 0,005) |
+
+Je Feld (neu gegen 0.4.4): **Absender 31,5 → 39,0 %** (17 gegen 2, p < 0,001), Art 72,5 → 75,5 %, Bereich 77,5 → 79,0 %,
+Person und Frist gleich. Der Absender aus Scans und Fotos bleibt trotzdem schwach (39 %); die Lesegüte ist die Grenze
+(Wortfehler 19–57 % je Form und Güte).
+
+**Einordnung:** Die Hauptzahl (Text) ist nach den Regeln nicht gesichert gegen 0.4.4; die gesetzte Fassung ist es. Beides zusammen
+ist ein deutlicher Hinweis, aber kein Freibrief: Hauptzahl war vorab der Text.
 
 ## Nächste Schritte (Vorschlag)
 
