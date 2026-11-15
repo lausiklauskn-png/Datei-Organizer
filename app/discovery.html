@@ -892,7 +892,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && App.gewaeh
   App.kreisBuehne = {
     zeig(i) {
       if (window.LEICHT && !FILM.adr) return;
-      if (!bVideo) { bBox.innerHTML = `<video playsinline muted preload="auto" poster="${FILM.bild}" src="${FILM.adr}" aria-label="Film: der Lern-Kreislauf in sechs Kugeln"></video>`; bVideo = bBox.querySelector('video'); bVideo.addEventListener('timeupdate', () => { if (bBis >= 0 && bVideo.currentTime >= bBis) bVideo.pause(); }); }
+      if (!bVideo) { bBox.innerHTML = `<video playsinline muted preload="metadata" poster="${FILM.bild}" src="${FILM.adr}" aria-label="Film: der Lern-Kreislauf in sechs Kugeln"></video>`; bVideo = bBox.querySelector('video'); bVideo.addEventListener('timeupdate', () => { if (bBis >= 0 && bVideo.currentTime >= bBis) bVideo.pause(); }); }
       bBox.hidden = false; bBis = (FILM.zeiten[i + 1] || 1e9) - .05;
       try { bVideo.muted = true; bVideo.currentTime = FILM.zeiten[i] + .02; const pr = bVideo.play(); if (pr && pr.catch) pr.catch(() => { }); } catch (e) { }
     },
@@ -1339,7 +1339,8 @@ const Sprecher = (function () {
     const adr = TONSPUREN[key] || (/^(https?|file):$/.test(location.protocol) && TON_ORDNER ? TON_ORDNER + key + TON_ENDUNG : '');
     return spur[key] = !adr ? Promise.resolve(null) : new Promise(ja => {
       const a = new Audio(); let fertig = false; const ende = v => { if (!fertig) { fertig = true; ja(v); } };
-      a.preload = 'auto'; a.addEventListener('loadedmetadata', () => ende(a)); a.addEventListener('error', () => ende(null)); setTimeout(() => ende(null), 2500); a.src = adr;
+      a.preload = 'auto'; a.addEventListener('loadedmetadata', () => ende(a)); a.addEventListener('error', () => ende(null)); setTimeout(() => ende(null), 9000); a.src = adr;
+    }).then(a => { if (!a) delete spur[key]; return a;   // ein Fehlversuch (langsames Netz) gilt nicht für immer – beim nächsten Mal wieder versuchen
     });
   }
   function schluss(meins, o, still) { if (meins !== lauf) return; lauf++; clearTimeout(wd); audio = null; offen = null; halten = []; Ton.leiser(false); if (!still && o.fertig) o.fertig(); }
@@ -1375,7 +1376,9 @@ const Sprecher = (function () {
   if (sy) { lade(); if (sy.addEventListener) sy.addEventListener('voiceschanged', lade); else sy.onvoiceschanged = lade; setTimeout(lade, 800); }
   addEventListener('pagehide', () => stopp(true));
   document.querySelectorAll('[data-stimme]').forEach(bedienung);
-  return { sag, stopp, pause, weiter, lesezeit, stimmen: () => liste.map(v => v.name), note };
+  /* Alle Tonspuren im Voraus holen (Start der Führung): sonst wartet ein Schritt auf seine Tonspur, während der Film lädt, und bleibt stumm. */
+  const vorladen = () => Object.keys(SPRECHTEXTE).reduce((p, k) => p.then(() => spurHolen(k)).catch(() => null), Promise.resolve());
+  return { sag, stopp, pause, weiter, lesezeit, vorladen, stimmen: () => liste.map(v => v.name), note };
 })();
 App.tonHoerer.push(an => { if (!an) Sprecher.stopp(); });
 
@@ -1423,7 +1426,7 @@ App.szene = function (key, titel) { if (App.tour || !Ton.an()) return; Sprecher.
   }
   function ende() { lauf++; clearTimeout(uhr); Sprecher.stopp(true); i = -1; App.tour = false; App.kreisBuehne.weg(); Unter.weg(); App.kreis.frei(); b.setAttribute('aria-pressed', 'false'); b.innerHTML = IK.spiel + 'Führung starten'; }
   b.innerHTML = IK.spiel + 'Führung starten';
-  b.onclick = () => { if (i >= 0) return ende(); Ton.bereit(); App.tour = true; b.setAttribute('aria-pressed', 'true'); b.innerHTML = IK.halt + 'Führung anhalten'; $('#tipp').classList.add('weg'); schritt(0); };
+  b.onclick = () => { if (i >= 0) return ende(); Ton.bereit(); Sprecher.vorladen(); App.tour = true; b.setAttribute('aria-pressed', 'true'); b.innerHTML = IK.halt + 'Führung anhalten'; $('#tipp').classList.add('weg'); schritt(0); };
   App.tonHoerer.push(an => { if (i >= 0) schritt(i); });   // Ton während der Führung umgeschaltet: Schritt neu ansetzen (mit oder ohne Stimme)
 })();
 
