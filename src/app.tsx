@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Archive, FolderOpen, FolderTree, HelpCircle, History, ListChecks, Download, Map as KarteSymbol, RefreshCw, Search } from "lucide-react";
+import { Archive, FolderOpen, FolderTree, HelpCircle, History, ListChecks, Download, Map as KarteSymbol, RefreshCw, Search, Telescope } from "lucide-react";
 import type { Datei, FeldName, Korrektur, Lernregel } from "../lib/typen.ts";
 import { einlesen, doppelteMarkieren } from "../lib/einlesen.ts";
 import { aehnlicheFinden } from "../lib/aehnlich.ts";
@@ -21,7 +21,7 @@ import { OrdnerSeite, SortierenSeite, FindenSeite, VerlaufSeite, AkteSeite, Hilf
 import { LandkarteSeite } from "./landkarte.tsx";
 import { APP_NAME, direktLaden, istNativ, nativeUpdates, stillPruefen } from "./nativ.ts";
 
-export const FASSUNG = "0.4.5";
+export const FASSUNG = "0.4.6";
 // Ladeanzeige: „suchen“ = Ordner wird durchgesehen (Zahl noch unbekannt), „lesen“ = Datei für Datei, „stand“ = gemerkter Stand beim Start.
 export type Fortschritt = { phase: "stand" | "suchen" | "lesen"; fertig: number; gesamt: number; name?: string };
 const luft = () => new Promise<void>((r) => setTimeout(r)); // dem Browser Zeit zum Zeichnen geben
@@ -544,6 +544,7 @@ export function App() {
             return <span className={`ordner-pill ${z.ordnerName ? "verbunden" : ""}`} data-ordner-pill title={z.ordnerName || "Kein Ordner gewählt"} aria-label={pille}>{pille}</span>; })()}
           <button type="button" className="info-knopf" aria-label="Aktualisieren" title="Aktualisieren: App neu laden (neueste Fassung). Die Sortierung bleibt gemerkt." data-aktualisieren onClick={() => void aktualisieren(!!z.fortschritt && z.fortschritt.phase !== "stand")}><RefreshCw size={18}/></button>
           <button type="button" className={`info-knopf ${seite === "landkarte" ? "aktiv" : ""}`} aria-label="Landkarte und Dashboard" title="Landkarte und Dashboard: was sortiert wurde, wohin es geht, wie die App arbeitet" onClick={() => gehe("landkarte")} data-landkarte-knopf><KarteSymbol size={18}/></button>
+          <a className="info-knopf" href="discovery.html" aria-label="Discovery" title="Discovery: so wurde der Sortier-Kern trainiert – Test-Welten, Kugeln, Filme mit Ton" data-discovery-knopf><Telescope size={18}/></a>
           <button type="button" className="info-knopf" aria-label="Suchen" onClick={() => gehe("finden")}><Search size={18}/></button>
         </div>
       </div>

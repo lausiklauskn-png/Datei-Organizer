@@ -26,6 +26,22 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   Nachweis `docs/VEROEFFENTLICHUNG-0.4.5.json`. Nächste Ausgabe: **0.4.6**. Updates über das Fähnchen.
   Vorher veröffentlicht: 0.4.4, 0.4.3 (`docs/VEROEFFENTLICHUNG-0.4.4.json`, `-0.4.3.json`).
 
+## Stand (15.11.2026, Fassung 0.4.6, Discovery – nicht als APK/Windows veröffentlicht)
+
+- **Discovery (Klaus 15.11.: „mache aus der Doku einen Teil des Repos, Button Discovery“):** Fernrohr-Knopf im Kopf (`data-discovery-knopf`,
+  `src/app.tsx`) öffnet `src/public/discovery.html` – die interaktive Doku „so wurde der Sortier-Kern trainiert“: 3D-Baum mit den Test-Welten,
+  Kreislauf aus sechs Glaskugeln (Raten, Soll, Lernen, Reihum, Einfrieren, Messen), Führung, drei Kurzfilme, Musik/Geräusche (Web Audio).
+  Sprecher: 13 Tonspuren `src/public/discovery-ton/<schluessel>.mp3` (Klaus hat sie mit einem Sprachgenerator erzeugt, Tempo 0,9; Texte im
+  Objekt `SPRECHTEXTE` der Seite – bei Textänderung neu vertonen), sonst Browserstimme. three.js r128 liegt bei (`discovery-three.min.js`, MIT),
+  keine fremden Quellen. **Segmente:** am Tablet/Handy ist immer nur eine 3D-Fläche geladen (`window.Segmente`: die andere gibt ihre Grafik
+  frei, lädt in Sicht oder auf Tipp nach) – Grund: das Galaxy Tab S6 zeigte mit zwei 3D-Flächen fehlende Schrift und schwarze Flächen.
+  **Kreislauf als Film** (`discovery-kreislauf.mp4`, 64 s, mit den Tonspuren; Knöpfe „Als Film“/„Interaktiv in 3D“, am Tablet/Handy ist der
+  Film vorgewählt, Ladebalken; aufgenommen Bild für Bild aus der 3D-Fassung – bei geänderten Kugeln oder Tonspuren neu aufnehmen). Die drei
+  Kurzfilme laufen lückenlos hintereinander, ohne Ansage „Erster Film“.
+  Knopf „Leichte Ansicht (ohne 3D)“ als Notausgang, Rückweg „‹ Datei-Organizer“. Zahlen stammen aus der eingebetteten Messdatei (`const D`) –
+  nicht von Hand ändern. UI-Probe 126 (4 neu). Dasselbe als Artefakt: https://claude.ai/artifact/1G6GPbK29HpWaTCGV5bBCk.
+  ⚠ Nicht am Gerät: ob die Segmente am Tab S6 reichen, Klang von Musik und Stimme zusammen.
+
 ## Stand (14.11.2026): Pseudonymisierer 0.1.0 (PWA, zweite Seite in diesem Repo)
 
 - **Pseudonymisierer** (Klaus 14.11.): Ordner/Dateien → pseudonymisierte Fassung für jede KI → Antwort zurückführen; Bilder mit frei setzbaren
