@@ -12,7 +12,7 @@ const kopf = `<script>window.EINZELDATEI=true;window.TONSPUREN=${JSON.stringify(
 const filme = Object.fromEntries(readdirSync(Q).filter((f) => /^discovery-film-.*\.mp4$/.test(f)).map((f) => [f, b64(f)]));
 const kopf2 = `<script>(function(){var F=${JSON.stringify(filme)},K={"discovery-film-brieftraeger.mp4":"film_brieftraeger","discovery-film-kern.mp4":"film_kern_raet","discovery-film-strafzettel.mp4":"film_strafzettel"};window.DISCOVERY_FILME={};
 for(var f in F){var z=atob(F[f]),n=z.length,u=new Uint8Array(n);for(var i=0;i<n;i++)u[i]=z.charCodeAt(i);window.DISCOVERY_FILME[K[f]]=URL.createObjectURL(new Blob([u],{type:"video/mp4"}));}
-window.DISCOVERY_FILMBILDER={film_brieftraeger:"data:image/jpeg;base64,${b64("discovery-film-brieftraeger.jpg")}"};})();</script>\n`;
+window.DISCOVERY_STADTBILDER=${JSON.stringify([0,1,2,3].map((i) => "data:image/jpeg;base64," + b64(`discovery-stadt-${i}.jpg`)))};\nwindow.DISCOVERY_FILMBILDER={film_brieftraeger:"data:image/jpeg;base64,${b64("discovery-film-brieftraeger.jpg")}"};})();</script>\n`;
 const marke = '<script src="discovery-three.min.js"></script>';
 if (!s.includes(marke)) { console.error("ABBRUCH: three.js-Einbindung nicht gefunden."); process.exit(2); }
 const i = s.indexOf("<script");
