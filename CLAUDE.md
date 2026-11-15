@@ -17,15 +17,15 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   16 deutsche Prüfstapel (2.892 Stücke): Art, Bereich, Absender, Frist unverändert; Probe in `run-kern-tests.mjs` (4 neu, Gegenprobe 3/3).
   Auftrag aus Private Brain Pro (Brief dort `BRIEF_SITZUNG_2026-11-15_SUCHE-SORTIERKERN.md`). Familienakte und BookLedgerPro noch nicht nachgezogen.
 
-## Veröffentlicht (15.11.2026, Klaus' Wort „0.4.6 veröffentlichen“): Datei-Organizer 0.4.6 – nicht erneut ausgeben
+## Veröffentlicht (15.11.2026, Klaus' Wort „0.4.7 mit den Änderungen veröffentlichen“): Datei-Organizer 0.4.7 – nicht erneut ausgeben
 
-- **Android** `Datei-Organizer-Pro-0.4.6.apk` (Code 46, 16.321.178 B, SHA-256 `d9e683e5…1109`, Zertifikat `594e44df…365d`, Lauf 43735720040), **Windows**
-  `Datei-Organizer-Pro-Windows-0.4.6-x64-setup.exe` (31.018.398 B, SHA-256 `39461b99…b146`, Lauf 43735733108), beide auf
-  `family-projekt.de/updates/datei-organizer/`, **Basic** über Pages. Inhalt: Discovery (unten). Stand `f36f8a3`; die Schilder, die sich
-  hinter einer vorderen Stadt ausblenden (#43), sind **nicht** in den Apps. Nachweis `docs/VEROEFFENTLICHUNG-0.4.6.json`.
-  Nächste Ausgabe: **0.4.7**. Vorher veröffentlicht: 0.4.5, 0.4.4, 0.4.3 (Nachweise `docs/VEROEFFENTLICHUNG-<fassung>.json`).
+- **Android** `Datei-Organizer-Pro-0.4.7.apk` (Code 47, 16.321.178 B, SHA-256 `5fd03f02…22e4`, Zertifikat `594e44df…365d`, Lauf 43741529454), **Windows**
+  `Datei-Organizer-Pro-Windows-0.4.7-x64-setup.exe` (31.017.932 B, SHA-256 `df35132d…fbbb`, Lauf 43741150828), beide auf
+  `family-projekt.de/updates/datei-organizer/`, **Basic** über Pages. Stand `dfcceaa`. Inhalt: Discovery mit Film im Stadt-Rahmen, vorgeladenen
+  Tonspuren, Untertitel-Knopf, Leistungsprüfung. **Nicht** in den Apps: Kurzfilme wie ein Video, Briefträger am Boden (0.4.8 auf main).
+  Nachweis `docs/VEROEFFENTLICHUNG-0.4.7.json`. Nächste Ausgabe: **0.4.8** (steht schon in den Quellen). Vorher: 0.4.6, 0.4.5, 0.4.4, 0.4.3.
 
-## Stand (15.11.2026, Fassung 0.4.6, Discovery – veröffentlicht, siehe oben)
+## Stand (15.11.2026, Discovery – 0.4.6/0.4.7 veröffentlicht, 0.4.8 auf main)
 
 - **Discovery (Klaus 15.11.: „mache aus der Doku einen Teil des Repos, Button Discovery“):** Fernrohr-Knopf im Kopf (`data-discovery-knopf`,
   `src/app.tsx`) öffnet `src/public/discovery.html` – die interaktive Doku „so wurde der Sortier-Kern trainiert“: 3D-Baum mit den Test-Welten,
