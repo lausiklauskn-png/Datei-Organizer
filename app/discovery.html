@@ -169,6 +169,8 @@ canvas.kugeln.zeigt{cursor:pointer}
 .kreis-links{min-width:0}
 .stadt-film{position:absolute;inset:0;z-index:2;border-radius:inherit;overflow:hidden;background:#0b1020;color:#fff}
 .stadt-film[hidden]{display:none}
+.buehne.mit-stadtfilm .oben>button,.buehne.mit-stadtfilm .oben details,.buehne.mit-stadtfilm .oben summary{background:none!important;border-color:transparent!important;box-shadow:none;color:rgba(255,255,255,.8)!important;font-weight:300;letter-spacing:.06em;text-shadow:0 1px 4px rgba(0,0,0,.8)}
+.buehne.mit-stadtfilm .oben>button[aria-pressed="true"]{color:#fff!important;text-shadow:0 0 12px rgba(255,255,255,.85),0 1px 4px rgba(0,0,0,.8)}
 .buehne.mit-stadtfilm .knoepfe,.buehne.mit-stadtfilm .tipp,.buehne.mit-stadtfilm .schilder,.buehne.mit-stadtfilm #bLicht,.buehne.mit-stadtfilm #zeichen{display:none}
 .sf-bilder,.sf-szene{position:absolute;inset:0}
 .sf-szene{opacity:0;transition:opacity 1.1s ease}
@@ -182,19 +184,23 @@ canvas.kugeln.zeigt{cursor:pointer}
 .stadt-film::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,10,24,.5),transparent 30%,transparent 60%,rgba(6,10,24,.72));pointer-events:none}
 .sf-punkte{position:absolute;inset:0;z-index:1;pointer-events:none}
 .sf-punkt{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:6px;background:none;border:0;color:#fff;font:700 13px var(--sans);cursor:pointer;padding:6px;pointer-events:auto;animation:sfAuf .7s ease both,sfSchweb 3.2s ease-in-out infinite alternate;text-shadow:0 1px 4px #000}
-.sf-punkt i{width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,var(--f) 55%);box-shadow:0 0 0 4px rgba(255,255,255,.25),0 0 22px 6px var(--f)}
-.sf-punkt span{background:rgba(6,10,24,.62);border-radius:999px;padding:2px 8px;white-space:nowrap}
+.sf-punkt i{width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,var(--f) 55%);box-shadow:0 0 0 4px rgba(255,255,255,.25),0 0 22px 6px var(--f)}
+.sf-punkt span{white-space:nowrap;font:300 clamp(13px,1.7vw,18px) var(--sans);letter-spacing:.08em;color:rgba(255,255,255,.92);text-shadow:0 0 10px var(--f),0 1px 3px rgba(0,0,0,.75);mix-blend-mode:screen}
 .sf-punkt:hover i,.sf-punkt:focus-visible i{box-shadow:0 0 0 6px rgba(255,255,255,.5),0 0 30px 10px var(--f)}
 @keyframes sfAuf{from{opacity:0;margin-top:40px}to{opacity:1;margin-top:0}}
 @keyframes sfSchweb{from{translate:0 -4px}to{translate:0 5px}}
-.sf-titel{position:absolute;left:14px;bottom:62px;z-index:1;text-shadow:0 2px 8px #000;max-width:55%}
-.sf-titel b{display:block;font:800 clamp(18px,3.2vw,30px) var(--sans)}
-.sf-titel span{font-size:13px;opacity:.92}
-.sf-wahl{position:absolute;right:12px;bottom:62px;z-index:1;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:42%}
-.sf-wahl button,.sf-leiste button{background:rgba(10,14,28,.62);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:999px;padding:6px 12px;font:600 13px var(--sans);cursor:pointer}
-.sf-wahl button[aria-pressed="true"]{background:#fff;color:#0b1020}
+.sf-titel{position:absolute;left:0;right:0;top:14%;z-index:1;text-align:center;perspective:800px;pointer-events:none}
+.sf-titel b{display:inline-block;white-space:nowrap;font:200 clamp(24px,6.2vw,68px) var(--sans);letter-spacing:.34em;margin-right:-.34em;text-transform:uppercase;color:rgba(255,255,255,.86);text-shadow:0 0 28px rgba(255,255,255,.35),0 2px 14px rgba(0,0,20,.45);transform-origin:50% 100%;animation:sfSchrift 7s cubic-bezier(.2,.7,.2,1) both}
+.sf-titel span{display:block;margin-top:.5em;font:300 clamp(10px,1.4vw,14px) var(--sans);letter-spacing:.38em;text-transform:uppercase;color:rgba(255,255,255,.8);text-shadow:0 1px 6px rgba(0,0,20,.7);animation:sfSchrift2 7s ease both}
+@keyframes sfSchrift{from{opacity:0;letter-spacing:.8em;transform:rotateX(38deg) translateY(26px) scale(1.12)}18%{opacity:.9}to{opacity:.86;letter-spacing:.34em;transform:rotateX(12deg) translateY(0) scale(1)}}
+@keyframes sfSchrift2{from,22%{opacity:0;letter-spacing:.9em}to{opacity:.85;letter-spacing:.38em}}
+@media (prefers-reduced-motion:reduce){.sf-titel b,.sf-titel span{animation:none}}
+.sf-wahl{position:absolute;right:12px;bottom:12px;z-index:1;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:42%}
+.sf-wahl button,.sf-leiste button{background:none;color:rgba(255,255,255,.72);border:0;padding:6px 8px;font:300 14px var(--sans);letter-spacing:.08em;cursor:pointer;text-shadow:0 1px 4px rgba(0,0,0,.8);transition:color .3s,text-shadow .3s}
+.sf-wahl button:hover,.sf-leiste button:hover,.sf-wahl button:focus-visible,.sf-leiste button:focus-visible{color:#fff;text-shadow:0 0 12px rgba(255,255,255,.8),0 1px 4px rgba(0,0,0,.8)}
+.sf-wahl button[aria-pressed="true"]{color:#fff;text-shadow:0 0 14px rgba(255,255,255,.9),0 1px 4px rgba(0,0,0,.8)}
 .sf-leiste{position:absolute;left:12px;right:12px;bottom:12px;z-index:1;display:flex;gap:8px;align-items:center}
-.sf-leiste .sf-spiel{width:40px;height:40px;padding:0;display:grid;place-items:center;font-size:0}
+.sf-leiste .sf-spiel{width:36px;height:36px;padding:0;display:grid;place-items:center;font-size:0;opacity:.85}
 .sf-spiel svg{width:18px;height:18px;margin:0}
 .sf-3d{margin-left:0}
 #karteInhalt li.sf-hell{outline:2px solid var(--akzent);border-radius:8px}
@@ -1474,21 +1480,22 @@ App.szene = function (key, titel) { if (App.tour || !Ton.an()) return; Sprecher.
 
 /* ---------- Stadtfilm: vier Städte in vier Bildwelten, darüber die Punkte = Aufgaben der Agenten (Klaus 15.11.) ---------- */
 (function () {
-  const ST = STAEDTE.slice(0, 4), BILD = window.DISCOVERY_STADTBILDER || ST.map((w, i) => `discovery-stadt-${i}.jpg`), VID = window.DISCOVERY_STADTFILME || [];
+  const ST = STAEDTE.slice(0, 4), BILD = window.DISCOVERY_STADTBILDER || ST.map((w, i) => `discovery-stadt-${i}.jpg`), VID = RUHIG ? [] : (window.DISCOVERY_STADTFILME || (window.EINZELDATEI ? [] : ST.map((w, i) => `discovery-stadt-${i}.mp4`)));
   const box = el('div', 'stadt-film'); box.hidden = true;
-  box.innerHTML = `<div class="sf-bilder">${ST.map((w, i) => `<div class="sf-szene" data-i="${i}"><img alt="" data-src="${BILD[i]}"></div>`).join('')}</div>
+  box.innerHTML = `<div class="sf-bilder">${ST.map((w, i) => `<div class="sf-szene" data-i="${i}"><img alt="" data-src="${BILD[i]}"></div>`).join('')}<div class="sf-szene sf-landung"></div></div>
     <div class="sf-punkte"></div><div class="sf-titel"><b></b><span></span></div>
     <div class="sf-wahl">${ST.map((w, i) => `<button type="button" data-i="${i}" aria-pressed="false">${esc(w.kurz)}</button>`).join('')}</div>
     <div class="sf-leiste"><button type="button" class="sf-spiel" aria-label="Abspielen oder anhalten"></button><button type="button" class="sf-3d">Selbst erkunden: 3D-Ansicht</button></div>`;
   $('#buehne').appendChild(box);
-  const szenen = [...box.querySelectorAll('.sf-szene')], pBox = box.querySelector('.sf-punkte'), tB = box.querySelector('.sf-titel b'), tS = box.querySelector('.sf-titel span'), spielB = box.querySelector('.sf-spiel');
+  const LAND = RUHIG ? '' : (window.DISCOVERY_LANDUNG || (window.EINZELDATEI ? '' : 'discovery-stadt-landung.mp4')), landBox = box.querySelector('.sf-landung'); let landV = null, landOk = !!LAND;
+  const szenen = [...box.querySelectorAll('.sf-szene:not(.sf-landung)')], pBox = box.querySelector('.sf-punkte'), tB = box.querySelector('.sf-titel b'), tS = box.querySelector('.sf-titel span'), spielB = box.querySelector('.sf-spiel');
   let nr = 0, mitPunkten = false, laeuft = false, uhr = null, lauf = 0, geladen = false;
-  function laden() { if (geladen) return; geladen = true; szenen.forEach((z, i) => { const b = z.querySelector('img'); b.src = b.dataset.src; if (VID[i]) { const v = document.createElement('video'); v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'metadata'; v.src = VID[i]; z.appendChild(v); } }); }
+  function laden() { if (geladen) return; geladen = true; szenen.forEach((z, i) => { const b = z.querySelector('img'); b.src = b.dataset.src; if (VID[i]) { const v = document.createElement('video'); v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'metadata'; v.onerror = () => v.remove(); v.src = VID[i]; z.appendChild(v); } }); }
   function punkte(i) {
     pBox.innerHTML = ''; if (!mitPunkten) return;
     const a = ST[i].d.agenten, ks = Object.keys(a).filter(k => a[k] > 0);
     ks.forEach((k, j) => { const r = ROLLEN[k] || [k, '', '--alt'], b = el('button', 'sf-punkt', `<i></i><span>${esc(r[0])} · ${a[k]}</span>`);
-      b.type = 'button'; b.style.setProperty('--f', `var(${r[2]})`); b.style.left = (ks.length > 1 ? 14 + 72 * j / (ks.length - 1) : 50) + '%'; b.style.top = (24 + (j % 2) * 13) + '%'; b.style.animationDelay = (j * .18) + 's,' + (j * .4) + 's';
+      b.type = 'button'; b.style.setProperty('--f', `var(${r[2]})`); b.style.left = (ks.length > 1 ? 14 + 72 * j / (ks.length - 1) : 50) + '%'; b.style.top = (40 + (j % 2) * 11) + '%'; b.style.animationDelay = (j * .18) + 's,' + (j * .4) + 's';
       b.title = r[1]; b.onclick = () => { halt(); App.open(ST[i].id); const li = document.querySelector(`#karteInhalt li[data-rolle="${k}"]`); if (li) { li.classList.add('sf-hell'); li.scrollIntoView({ block: 'nearest' }); } };
       pBox.appendChild(b); });
   }
@@ -1496,23 +1503,32 @@ App.szene = function (key, titel) { if (App.tour || !Ton.an()) return; Sprecher.
     nr = (i + ST.length) % ST.length; laden();
     szenen.forEach((z, k) => { const an = k === nr; if (an && !z.classList.contains('an')) { const b = z.querySelector('img'); b.style.animation = 'none'; void b.offsetWidth; b.style.animation = ''; } z.classList.toggle('an', an); const v = z.querySelector('video'); if (v) { if (an && laeuft) { const pr = v.play(); if (pr && pr.catch) pr.catch(() => { }); } else v.pause(); } });
     box.querySelectorAll('.sf-wahl button').forEach((b, k) => b.setAttribute('aria-pressed', k === nr));
-    tB.textContent = ST[nr].kurz; tS.textContent = ST[nr].d.art || ''; punkte(nr);
+    [tB, tS].forEach(e => { e.style.animation = 'none'; void e.offsetWidth; e.style.animation = ''; }); tB.textContent = ST[nr].kurz; tB.style.fontSize = `clamp(16px, ${Math.min(6.2, 80 / (ST[nr].kurz.length * .94)).toFixed(2)}vw, 68px)`; tS.textContent = (ST[nr].d.art || '').split(',')[0]; punkte(nr);
+  }
+  // Die Murmeln landen in der Stadt und übernehmen die Aufgaben der Agenten (Klaus 15.11.): läuft zum Sprechtext „Die Punkte“, danach die Stadt mit den Punkten zum Antippen.
+  function landung(dann) {
+    if (!landOk) return dann();
+    if (!landV) { landV = document.createElement('video'); landV.muted = true; landV.playsInline = true; landV.preload = 'auto'; landV.poster = window.DISCOVERY_LANDUNGBILD || 'discovery-stadt-landung.jpg'; landV.onerror = () => { landOk = false; if (landBox.classList.contains('an')) fertigL(); }; landV.src = LAND; landBox.appendChild(landV); }
+    const meins = ++lauf; let aus = false; const fertigL = () => { if (aus) return; aus = true; landBox.classList.remove('an'); if (meins === lauf) dann(); };
+    landV.onended = fertigL; laeuft = true; knopf(); pBox.innerHTML = ''; szenen.forEach(z => z.classList.remove('an')); landBox.classList.add('an');
+    [tB, tS].forEach(e => { e.style.animation = 'none'; void e.offsetWidth; e.style.animation = ''; }); tB.style.fontSize = ''; tB.textContent = 'Die Agenten'; tS.textContent = 'jeder Punkt eine Aufgabe';
+    try { landV.currentTime = 0; const pr = landV.play(); if (pr && pr.catch) pr.catch(() => fertigL()); } catch (e) { fertigL(); }
   }
   function knopf() { spielB.innerHTML = laeuft ? IK.pause : IK.spiel; }
   function takt(dauer, rest, dann) { clearTimeout(uhr); const meins = lauf; if (rest <= 0) { if (dann) dann(); return; } uhr = setTimeout(() => { if (meins !== lauf || !laeuft) return; szene(nr + 1); takt(dauer, rest - 1, dann); }, dauer); }
-  function halt() { laeuft = false; lauf++; clearTimeout(uhr); szenen.forEach(z => { const v = z.querySelector('video'); if (v) v.pause(); }); knopf(); }
+  function halt() { laeuft = false; lauf++; clearTimeout(uhr); if (landV) { landV.pause(); landBox.classList.remove('an'); if (!szenen.some(z => z.classList.contains('an'))) { mitPunkten = true; szene(0); } } szenen.forEach(z => { const v = z.querySelector('video'); if (v) v.pause(); }); knopf(); }
   function teil(punkteAn, dauer, dann) { mitPunkten = punkteAn; laeuft = true; lauf++; knopf(); szene(0); takt(dauer, ST.length - 1, () => { uhr = setTimeout(() => { if (dann) dann(); else { laeuft = false; knopf(); } }, dauer); }); }
   function zeig(art) {
     box.hidden = false; $('#buehne').classList.add('mit-stadtfilm'); $('#bStadtfilm').setAttribute('aria-pressed', 'true'); if (App.gewaehlt) App.close();
-    if (art === 'staedte') return teil(false, 4300);
-    if (art === 'punkte') return teil(true, 3700);
+    if (art === 'staedte') return teil(false, 5000);
+    if (art === 'punkte') return landung(() => teil(true, 4000));
     // allein abgespielt: erst die Städte, dann die Punkte, mit dem Sprecher
     Ton.bereit(); const meins = lauf + 1;
-    const zwei = () => { teil(true, 3700); if (Ton.an() && !App.tour) Sprecher.sag('stadt_punkte', {}); };
-    teil(false, 4300, zwei); if (Ton.an() && !App.tour) Sprecher.sag('welten', {});
+    const zwei = () => { landung(() => teil(true, 4000)); if (Ton.an() && !App.tour) Sprecher.sag('stadt_punkte', {}); };
+    teil(false, 5000, zwei); if (Ton.an() && !App.tour) Sprecher.sag('welten', {});
   }
   function weg() { if (box.hidden) return; halt(); box.hidden = true; $('#buehne').classList.remove('mit-stadtfilm'); $('#bStadtfilm').setAttribute('aria-pressed', 'false'); }
-  spielB.onclick = () => { if (laeuft) { halt(); if (!App.tour) Sprecher.pause(); } else { laeuft = true; lauf++; knopf(); if (!App.tour) Sprecher.weiter(); takt(3700, 99); } };
+  spielB.onclick = () => { if (laeuft) { halt(); if (!App.tour) Sprecher.pause(); } else { laeuft = true; lauf++; knopf(); if (!App.tour) Sprecher.weiter(); takt(4000, 99); } };
   box.querySelectorAll('.sf-wahl button').forEach(b => b.onclick = () => { halt(); mitPunkten = true; szene(+b.dataset.i); });
   box.querySelector('.sf-3d').onclick = () => { if (!App.tour) Sprecher.stopp(true); weg(); };
   $('#bStadtfilm').onclick = () => { if (!box.hidden && !App.tour) { Sprecher.stopp(true); return weg(); } zeig('alles'); };

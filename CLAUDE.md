@@ -47,12 +47,17 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   **Kurzfilme als echte Filme (15.11. abends, Higgsfield, nicht ausgegeben):** „Der Briefträger“ und „Der Kern rät“ laufen als Video
   (`discovery-film-brieftraeger.mp4`, `discovery-film-kern.mp4`, je 8 s, ohne Ton – gesprochen wird weiter über die Tonspuren; Figuren mit
   Gesicht, Klaus: „absolut cool“); fehlt die Datei oder ist „weniger Bewegung“ gewünscht, läuft die gezeichnete Fassung (`filmAdr`, `zeigVideo`).
-  „Der Strafzettel“ seit 15.11. spät ebenfalls als Film (`discovery-film-strafzettel.mp4`, 5 s auf 7,5 s gedehnt). Die Einzeldatei bettet die Filme mit ein.
-  **Stadtfilm (15.11. spät, nicht ausgegeben):** Knopf „Stadtfilm“ im Rahmen und Führungsschritte „Die Welten“/„Die Punkte“ zeigen vier Stadtbilder
-  in vier Bildwelten (`discovery-stadt-0…3.jpg`: Hafen am Abend, Landstädtchen am Morgen, Steampunk-Großstadt, Zukunftsstadt am Fluss) mit Kamerafahrt;
-  darüber schweben die Punkte = Aufgaben der Agenten je Stadt (aus `D.welten[].agenten`), Antippen öffnet die Karte der Stadt (`App.stadtFilm`,
-  14. Tonspur `stadt_punkte`). Die Bilder sind Standbilder; echte Filmsequenzen (Klaus' Wunsch) kommen über `window.DISCOVERY_STADTFILME` bzw. als
-  `<video>` in der Szene, sobald Higgsfield-Guthaben da ist. Offen: Kugel-Film im Murmel-Stil.
+  „Der Strafzettel“ ebenfalls als Film (`discovery-film-strafzettel.mp4`, 10 s, Murmel schwebt). Die Einzeldatei bettet die Kurzfilme mit ein.
+  **Kreislauf-Film im Murmel-Stil (15.11. nachts, nicht ausgegeben):** `discovery-kreislauf.mp4` ist jetzt aus sechs Higgsfield-Filmen geschnitten
+  (je Kugel eine Murmel mit Gesicht: Raten türkis, Soll orange, Lernen violett, Reihum grün, Einfrieren eisblau, Messen rosa), Längen genau wie
+  `FILM.zeiten`, Tonspur = die sechs `kreis_*`-Tonspuren, schwebender Titel je Schritt eingebrannt; zeigt keine Zahlen mehr (die stehen im Text daneben).
+  Die interaktive 3D-Fassung der Kugeln ist unverändert.
+  **Stadtfilm (15.11. nachts, nicht ausgegeben):** Knopf „Stadtfilm“ im Rahmen und Führungsschritte „Die Welten“/„Die Punkte“ (`App.stadtFilm`,
+  14. Tonspur `stadt_punkte`): vier Städte in vier Bildwelten als Filmsequenzen (`discovery-stadt-0…3.mp4`, Standbild `.jpg` als Ersatz: Hafen am
+  Abend, Landstädtchen am Morgen, Steampunk-Großstadt, Zukunftsstadt am Fluss), Stadtname als große dünne Filmschrift im Bild (Klaus: keine
+  Knopf-Optik, Schrift soll sich ins Bild einfügen); dann `discovery-stadt-landung.mp4` (die Murmeln landen in der Hafenstadt und übernehmen die
+  Aufgaben der Agenten), danach die Punkte je Stadt (aus `D.welten[].agenten`) – Antippen öffnet die Karte der Stadt. Bei „weniger Bewegung“ und
+  in der Einzeldatei nur die Standbilder. Discovery-Ordner jetzt rund 22 MB – **Paketgröße von APK/Windows vor der nächsten Ausgabe prüfen.**
   **Leistungsprüfung:** im Hintergrund wird gemessen, wie flüssig das Gerät zeichnet (`messe`); zu langsam, ruckelnde oder abgebrochene
   Kugeln → Hinweis „geht auf diesem Gerät nicht flüssig“, Film statt 3D, gemerkt (`tw-kugeln-schwach`), „Trotzdem versuchen“.
   **Nach 0.4.6 (auf main, nicht in den Apps):** Schilder blenden sich aus, wenn eine andere Stadt davor steht; **Einzeldatei zum Versenden**
