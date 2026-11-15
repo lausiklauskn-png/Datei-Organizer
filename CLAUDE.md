@@ -74,6 +74,12 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   Verschmelzen und Archivhaus (ohne echten Brief, rund 4.700 erfundene Stücke) → zu Hause: eigene Unterlagen, die App lernt aus Korrekturen
   (neu gedreht). Zahlen aus `const D`. Offen bei Klaus: ob es die Kurzform ersetzen soll; ob die Strafzettel-Murmel Beine bekommen soll.
   Weitere Filme nur nach Drehbuch und Klaus' Ja; Übergänge durch Überblenden statt Neudreh. Discovery-Ordner rund 50 MB.
+  **Film-Ansicht der Bühne (Klaus 15.11. nachts, nach #47, nicht ausgegeben):** der Baum als Standbild (`discovery-kurzgeschichte.jpg`) ist der
+  Hintergrund der Bühne, die vier Städte und die Familienakte darin sind antippbar (`start()` in `App.stadtFilm`), die Erklärfilme laufen im selben
+  Rahmen; „In 3D erkunden“ schaltet auf die 3D-Ansicht. Vorgewählt am Tablet/Handy; am Rechner misst die Seite den Bildabstand der 3D-Bühne
+  (`messeB`, über 40 ms → Film-Ansicht mit Hinweis, gemerkt `tw-buehne-schwach`, Wahl `tw-buehne`); solange die Film-Ansicht die Bühne deckt, ruht
+  die 3D-Schleife (`App.buehneRuht`). Leichte Ansicht (2D) bleibt der Notausgang. **Ladebalken an jedem Film** (`ladeBalken`). **Die alten
+  gezeichneten Kurzfilme werden nicht mehr gezeigt** (Klaus: „grottenschlecht“; kein Rückfall mehr, der Zeichen-Code steht nur noch ungenutzt in der Seite).
   **Idee von Klaus für den nächsten Umbau (15.11., nichts ändern ohne sein Wort):** Stadtname nach
   dem Einblenden wieder verschwinden lassen; Rollen-Namen nicht dauernd mitfliegen lassen, sobald die Rolle bekannt ist (die Murmel/der Punkt
   wird größer, wenn sie gerade erklärt wird). Discovery-Ordner jetzt rund 50 MB – **Paketgröße von APK/Windows vor der nächsten Ausgabe prüfen.**
