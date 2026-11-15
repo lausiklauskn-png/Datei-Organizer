@@ -39,6 +39,9 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   Kurzfilme laufen lückenlos hintereinander, ohne Ansage „Erster Film“.
   Knopf „Leichte Ansicht (ohne 3D)“ als Notausgang, Rückweg „‹ Zurück“ (im Rahmen einer anderen App ohne Knopf). Zahlen stammen aus der eingebetteten Messdatei (`const D`) –
   nicht von Hand ändern. UI-Probe 126 (4 neu). Dasselbe als Artefakt: https://claude.ai/artifact/1G6GPbK29HpWaTCGV5bBCk.
+  **Führung:** bei den sechs Kugel-Schritten läuft der Kreislauf-Film stumm im Rahmen der Stadt (`App.kreisBuehne`), kein Sprung nach unten.
+  **Leistungsprüfung:** im Hintergrund wird gemessen, wie flüssig das Gerät zeichnet (`messe`); zu langsam, ruckelnde oder abgebrochene
+  Kugeln → Hinweis „geht auf diesem Gerät nicht flüssig“, Film statt 3D, gemerkt (`tw-kugeln-schwach`), „Trotzdem versuchen“.
   **Nach 0.4.6 (auf main, nicht in den Apps):** Schilder blenden sich aus, wenn eine andere Stadt davor steht; **Einzeldatei zum Versenden**
   `node scripts/discovery-einzeldatei.mjs [ziel]` (≈ 8 MB, alles eingebettet, nicht ins Repo legen). Klaus 15.11. am Galaxy Tab S6: „läuft alles“
   (Artefakt Version 12: Film, Kurzfilme, Umschalter).

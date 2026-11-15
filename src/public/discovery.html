@@ -164,6 +164,13 @@ section>.rand>p.vor{color:var(--leise);max-width:68ch;margin-bottom:18px}
 @media (max-width:860px){.schleife{grid-template-columns:1fr}}
 canvas.kugeln{display:block;width:100%;touch-action:pan-y;cursor:grab;-webkit-tap-highlight-color:transparent}
 canvas.kugeln.zeigt{cursor:pointer}
+.kreis-links{min-width:0}
+.buehnen-film{position:absolute;inset:0;z-index:2;display:grid;place-items:center;background:rgba(12,16,30,.94);border-radius:inherit;padding:58px 12px 12px}
+.buehnen-film[hidden]{display:none}
+.buehnen-film video{position:absolute;left:12px;right:12px;top:58px;bottom:64px;width:calc(100% - 24px);height:calc(100% - 122px);object-fit:contain;display:block}
+.kreis-wahl button.gesperrt{opacity:.5;text-decoration:line-through}
+.kreis-hinweis{margin:0 0 10px;padding:8px 12px;border-radius:10px;font-size:13.5px;background:rgba(240,160,60,.16);border:1px solid rgba(240,160,60,.5)}
+.kreis-hinweis[hidden]{display:none}.kreis-hinweis button{font:inherit;font-size:13px;margin-left:6px;padding:3px 10px;border-radius:999px;border:1px solid currentColor;background:transparent;color:inherit;cursor:pointer}
 .kreis-wahl{display:flex;gap:8px;margin:0 0 10px;flex-wrap:wrap}
 .kreis-wahl button{font:inherit;font-size:13.5px;font-weight:600;padding:7px 14px;border-radius:999px;border:1px solid var(--linie,#8aa);background:transparent;color:inherit;cursor:pointer}
 .kreis-wahl button[aria-pressed="true"]{background:#167a5f;border-color:#167a5f;color:#fff}
@@ -392,10 +399,10 @@ function fern(g){var r=g.el.getBoundingClientRect();return Math.abs((r.top+r.bot
 function waehle(){if(!einzeln||Date.now()<halte||!L.length)return;var akt=null,best=null,bf=1e9;L.forEach(function(g){if(!g.aus)akt=g;if(sicht(g)<80)return;var f=fern(g);if(f<bf){bf=f;best=g}});
 if(!best)return;if(!akt){vor(best.name);return}if(best!==akt&&(sicht(akt)<80||bf<fern(akt)-60))vor(best.name)}
 function melde(name,el,renderer){var g=finde(name);if(g){g.renderer=renderer}else{g={name:name,el:el,renderer:renderer,aus:false};L.push(g)}
-if(renderer&&renderer.domElement)renderer.domElement.addEventListener('webglcontextlost',function(){if(!g.gewollt){g.aus=true;decke(g,true)}g.gewollt=false});return g}
+if(renderer&&renderer.domElement)renderer.domElement.addEventListener('webglcontextlost',function(){if(!g.gewollt){g.aus=true;decke(g,true);if(S.verlust)S.verlust(g.name)}g.gewollt=false});return g}
 function spaeter(name,el,lade){var g={name:name,el:el,renderer:null,lade:lade,aus:true};L.push(g);decke(g,true);return g}
 if(einzeln){addEventListener('scroll',waehle,{passive:true});addEventListener('resize',waehle);setInterval(waehle,700)}
-return{melde:melde,spaeter:spaeter,vor:vor,einzeln:einzeln,stand:function(){return L.map(function(g){return g.name+':'+(g.aus?'aus':'an')})}}})();
+var S={melde:melde,spaeter:spaeter,vor:vor,einzeln:einzeln,verlust:null,stand:function(){return L.map(function(g){return g.name+':'+(g.aus?'aus':'an')})}};return S})();
 var fehler=[];function zeig(t){fehler.push(t);var b=document.getElementById('tw-fehler');if(!b){b=document.createElement('div');b.id='tw-fehler';b.style.cssText='position:fixed;left:8px;right:8px;bottom:8px;z-index:9999;background:#7a1f16;color:#fff;font:13px/1.4 system-ui;padding:10px 12px;border-radius:10px;max-height:40vh;overflow:auto';(document.body||document.documentElement).appendChild(b)}
 b.textContent='Fehler auf der Seite (bitte Bildschirmfoto schicken): '+fehler.slice(-3).join(' | ')}
 window.addEventListener('error',function(e){if(e.message)zeig(e.message+' @'+(e.lineno||''))});
@@ -553,7 +560,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && App.gewaeh
     if (ansicht) ansicht.zeig(i, vonHand);
     if (vonHand && !opt.still) { if (App.ton) App.ton('klick'); if (App.szene) App.szene(KEYS[i], `${i + 1}. ${ST[i][1]}`); }
   }
-  App.kreis = { zeig: i => zeig(i, true, { lang: true, still: true }), frei() { pauseBis = Date.now() + 2500; }, stand: () => ({ aktiv, art: ansicht ? ansicht.art : '' }), vor(s) { if (ansicht && ansicht.vor) ansicht.vor(s); } };
+  App.kreis = { zeig: (i, o) => zeig(i, true, Object.assign({ lang: true, still: true }, o || {})), frei() { pauseBis = Date.now() + 2500; }, stand: () => ({ aktiv, art: ansicht ? ansicht.art : '' }), vor(s) { if (ansicht && ansicht.vor) ansicht.vor(s); } };
   $('#schleifeFelder').innerHTML = ['Art', 'Bereich', 'Absender', 'Frist'].map(f => `<span class="chip">${f}</span>`).join('');
   if ('IntersectionObserver' in window) new IntersectionObserver(e => sicht = e[0].isIntersecting).observe(box); else sicht = true;
 
@@ -834,9 +841,9 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && App.gewaeh
      am Rechner zur Wahl. Die 3D-Kugeln laden auf langsamen Geräten erst, wenn man sie ausdrücklich wählt. */
   const FILM = { zeiten: [0, 11.07, 20.9, 30.43, 42.17, 49.63], adr: window.DISCOVERY_FILM || 'discovery-kreislauf.mp4', bild: window.DISCOVERY_BILD || 'discovery-kreislauf.jpg' };
   const merk = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
-  let filmArt = window.LEICHT ? false : (merk('tw-kreis') ? merk('tw-kreis') === 'film' : !!window.MOBIL), video = null, kugelnDa = false, tourBis = -1;
+  let filmArt = window.LEICHT ? false : (merk('tw-kugeln-schwach') === '1' ? true : merk('tw-kreis') ? merk('tw-kreis') === 'film' : !!window.MOBIL), video = null, kugelnDa = false, tourBis = -1;
   const wahlF = el('div', 'kreis-wahl'), bF = el('button', '', 'Als Film'), b3 = el('button', '', 'Interaktiv in 3D'), filmBox = el('div', 'kreis-film');
-  bF.type = b3.type = 'button'; bF.setAttribute('data-kreis-film', ''); b3.setAttribute('data-kreis-3d', ''); wahlF.append(bF, b3); box.before(wahlF, filmBox);
+  bF.type = b3.type = 'button'; bF.setAttribute('data-kreis-film', ''); b3.setAttribute('data-kreis-3d', ''); wahlF.append(bF, b3); const linksK = el('div', 'kreis-links'); box.before(linksK); linksK.append(wahlF, filmBox, box);
   function ladeKugeln() {
     if (kugelnDa) return; kugelnDa = true;
     if (Segmente.einzeln && window.THREE) { box.style.minHeight = '320px'; Segmente.spaeter('kugeln', box, () => { ansicht = glas() || flach(); box.style.minHeight = ''; zeig(aktiv); }); Segmente.vor('kugeln'); }
@@ -857,17 +864,40 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && App.gewaeh
       let i = 0; FILM.zeiten.forEach((z, k) => { if (t >= z - .05) i = k; }); if (i !== aktiv) zeig(i, false, { vomFilm: true });
     });
   }
-  function setzArt(film, merken) {
+  function setzArt(film, merken, trotzdem) {
     filmArt = film; bF.setAttribute('aria-pressed', film); b3.setAttribute('aria-pressed', !film); filmBox.hidden = !film; box.hidden = film;
     if (merken) { try { localStorage.setItem('tw-kreis', film ? 'film' : '3d'); } catch (e) { } }
-    if (film) { baueFilm(); } else { if (video) video.pause(); ladeKugeln(); }
+    if (film) { baueFilm(); } else { if (video) video.pause(); ladeKugeln(); if (!RUHIG) setTimeout(wache, trotzdem ? 4000 : 1500); }
   }
-  bF.onclick = () => setzArt(true, true); b3.onclick = () => setzArt(false, true);
+  /* Leistungsprüfung (Klaus 15.11.): die Kugeln sind schwerer als die Stadt. Im Hintergrund wird gemessen, wie flüssig das Gerät zeichnet;
+     reicht es nicht, steht das gleich da und der Film läuft. Beim Laden der Kugeln wacht dieselbe Messung: ruckelt es oder bricht die
+     Grafik ab, geht es von selbst zurück zum Film. */
+  const hinweisK = el('p', 'kreis-hinweis'); hinweisK.hidden = true; wahlF.after(hinweisK);
+  let schwach = merk('tw-kugeln-schwach') === '1';
+  const messe = (dauer, fertig) => { const d = []; let z = 0, t0 = 0; const f = t => { if (!t0) t0 = t; if (z) d.push(t - z); z = t; if (t - t0 < dauer) requestAnimationFrame(f); else { d.sort((a, b) => a - b); fertig(d.length > 8 ? d[d.length >> 1] : 999); } }; requestAnimationFrame(f); };
+  const sagSchwach = text => { schwach = true; try { localStorage.setItem('tw-kugeln-schwach', '1'); } catch (e) { } b3.classList.add('gesperrt'); b3.title = 'Auf diesem Gerät zu langsam'; hinweisK.hidden = false; hinweisK.innerHTML = text + ' <button type="button" data-kreis-trotzdem>Trotzdem versuchen</button>'; hinweisK.querySelector('button').onclick = () => { hinweisK.hidden = true; b3.classList.remove('gesperrt'); setzArt(false, true, true); }; };
+  const SCHWACH_TEXT = 'Die 3D-Ansicht der Kugeln geht auf diesem Gerät nicht flüssig (zu wenig Grafikleistung). Dafür läuft der Film.';
+  if (schwach) sagSchwach(SCHWACH_TEXT);
+  else if (!window.LEICHT && !RUHIG && window.THREE) setTimeout(() => { if (document.hidden || schwach) return; messe(2500, m => { if (m > 40 && !kugelnDa) { sagSchwach(SCHWACH_TEXT); if (!filmArt) setzArt(true, false); } }); }, 2500);
+  const wache = () => messe(3000, m => { if (filmArt) return; if (m > 66) { sagSchwach(SCHWACH_TEXT); setzArt(true, true); } else if (schwach) { schwach = false; try { localStorage.removeItem('tw-kugeln-schwach'); } catch (e) { } b3.classList.remove('gesperrt'); b3.title = ''; hinweisK.hidden = true; } });
+  Segmente.verlust = name => { if (name === 'kugeln' && !filmArt) { sagSchwach('Die 3D-Ansicht der Kugeln ist auf diesem Gerät abgebrochen (zu wenig Grafikleistung). Dafür läuft der Film.'); setzArt(true, true); } };
+  bF.onclick = () => setzArt(true, true); b3.onclick = () => { if (schwach) { hinweisK.hidden = false; hinweisK.scrollIntoView({ block: 'nearest' }); return; } setzArt(false, true); };
   App.kreisFilm = { an: () => filmArt, video: () => video };
+  /* In der Führung läuft der Kreislauf-Film im selben Rahmen wie die Stadt (Klaus 15.11.): stumm, der Sprecher kommt von der Führung. */
+  let bVideo = null, bBis = -1; const bBox = el('div', 'buehnen-film'); bBox.hidden = true; $('#buehne').appendChild(bBox);
+  App.kreisBuehne = {
+    zeig(i) {
+      if (window.LEICHT && !FILM.adr) return;
+      if (!bVideo) { bBox.innerHTML = `<video playsinline muted preload="auto" poster="${FILM.bild}" src="${FILM.adr}" aria-label="Film: der Lern-Kreislauf in sechs Kugeln"></video>`; bVideo = bBox.querySelector('video'); bVideo.addEventListener('timeupdate', () => { if (bBis >= 0 && bVideo.currentTime >= bBis) bVideo.pause(); }); }
+      bBox.hidden = false; bBis = (FILM.zeiten[i + 1] || 1e9) - .05;
+      try { bVideo.muted = true; bVideo.currentTime = FILM.zeiten[i] + .02; const pr = bVideo.play(); if (pr && pr.catch) pr.catch(() => { }); } catch (e) { }
+    },
+    weg() { bBox.hidden = true; if (bVideo) bVideo.pause(); }, an: () => !bBox.hidden
+  };
   /* Führung und Schritt-Knöpfe im Film-Modus: der Film springt stumm zum Schritt und läuft bis zu dessen Ende mit. */
   const zeigAlt = zeig; zeig = function (i, vonHand, opt) {
     zeigAlt(i, vonHand, opt);
-    if (filmArt && video && vonHand && !(opt && opt.vomFilm)) { const bis = FILM.zeiten[i + 1] || 1e9; try { video.muted = true; video.currentTime = FILM.zeiten[i] + .02; tourBis = bis - .05; const pr = video.play(); if (pr && pr.catch) pr.catch(() => { }); } catch (e) { } }
+    if (filmArt && video && vonHand && !(opt && (opt.vomFilm || opt.nurText))) { const bis = FILM.zeiten[i + 1] || 1e9; try { video.muted = true; video.currentTime = FILM.zeiten[i] + .02; tourBis = bis - .05; const pr = video.play(); if (pr && pr.catch) pr.catch(() => { }); } catch (e) { } }
   };
   if (window.LEICHT) { wahlF.hidden = true; filmBox.hidden = true; ansicht = flach(); kugelnDa = true; zeig(0); }
   else if (true) {
@@ -1365,11 +1395,11 @@ App.szene = function (key, titel) { if (App.tour || !Ton.an()) return; Sprecher.
   const zurBuehne = () => $('#buehne').scrollIntoView(sanft), zumKreis = () => $('#schleifeBild').scrollIntoView(sanft);
   const KREIS = [['kreis_raten', 'Raten'], ['kreis_soll', 'Soll'], ['kreis_lernen', 'Lernen'], ['kreis_reihum', 'Reihum'], ['kreis_einfrieren', 'Einfrieren'], ['kreis_messen', 'Messen']];
   const SCHRITTE = [
-    ['begruessung', 'Willkommen', () => { zurBuehne(); if (App.gewaehlt) App.close(); Szene.fokus(null); }],
-    ['recherche', 'Recherche', () => { zurBuehne(); if (App.gewaehlt) App.close(); Szene.fokus('recherche'); }],
-    ['welten', 'Die Welten', () => { zurBuehne(); if (App.gewaehlt) App.close(); Szene.fokus(null); }]
-  ].concat(KREIS.map(([k, n], i) => [k, `Kreislauf · ${i + 1} ${n}`, () => { zumKreis(); App.kreis.zeig(i); }]), [
-    ['schluss', 'Familienakte', () => { zurBuehne(); if (App.gewaehlt) App.close(); Szene.fokus('akte'); }]
+    ['begruessung', 'Willkommen', () => { zurBuehne(); App.kreisBuehne.weg(); if (App.gewaehlt) App.close(); Szene.fokus(null); }],
+    ['recherche', 'Recherche', () => { zurBuehne(); App.kreisBuehne.weg(); if (App.gewaehlt) App.close(); Szene.fokus('recherche'); }],
+    ['welten', 'Die Welten', () => { zurBuehne(); App.kreisBuehne.weg(); if (App.gewaehlt) App.close(); Szene.fokus(null); }]
+  ].concat(KREIS.map(([k, n], i) => [k, `Kreislauf · ${i + 1} ${n}`, () => { zurBuehne(); if (App.gewaehlt) App.close(); App.kreisBuehne.zeig(i); App.kreis.zeig(i, { nurText: true }); }]), [
+    ['schluss', 'Familienakte', () => { zurBuehne(); App.kreisBuehne.weg(); if (App.gewaehlt) App.close(); Szene.fokus('akte'); }]
   ]);
   const b = $('#bFuehrung'); let i = -1, uhr = null, lauf = 0;
   function schritt(n) {
@@ -1381,7 +1411,7 @@ App.szene = function (key, titel) { if (App.tour || !Ton.an()) return; Sprecher.
     const weiter = () => { if (meins !== lauf) return; clearTimeout(uhr); uhr = setTimeout(() => { if (meins === lauf) schritt(n + 1); }, Math.max(900, 2600 - (Date.now() - t0))); };
     if (Ton.an()) Sprecher.sag(key, { fertig: weiter }); else { Sprecher.stopp(true); uhr = setTimeout(weiter, Sprecher.lesezeit(key) * 1000 + 1500); }
   }
-  function ende() { lauf++; clearTimeout(uhr); Sprecher.stopp(true); i = -1; App.tour = false; Unter.weg(); App.kreis.frei(); b.setAttribute('aria-pressed', 'false'); b.innerHTML = IK.spiel + 'Führung starten'; }
+  function ende() { lauf++; clearTimeout(uhr); Sprecher.stopp(true); i = -1; App.tour = false; App.kreisBuehne.weg(); Unter.weg(); App.kreis.frei(); b.setAttribute('aria-pressed', 'false'); b.innerHTML = IK.spiel + 'Führung starten'; }
   b.innerHTML = IK.spiel + 'Führung starten';
   b.onclick = () => { if (i >= 0) return ende(); Ton.bereit(); App.tour = true; b.setAttribute('aria-pressed', 'true'); b.innerHTML = IK.halt + 'Führung anhalten'; $('#tipp').classList.add('weg'); schritt(0); };
   App.tonHoerer.push(an => { if (i >= 0) schritt(i); });   // Ton während der Führung umgeschaltet: Schritt neu ansetzen (mit oder ohne Stimme)
