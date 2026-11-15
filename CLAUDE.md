@@ -42,6 +42,8 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   **Führung:** bei den sechs Kugel-Schritten läuft der Kreislauf-Film stumm im Rahmen der Stadt (`App.kreisBuehne`), kein Sprung nach unten.
   **Untertitel** (für Hörbehinderte) sind ab Werk aus: Knopf „Untertitel“ im Rahmen schaltet die Textleiste unten ein (gemerkt); ist der Ton aus,
   erscheint sie von selbst. „Weiter“ steht während der Führung oben neben „Führung anhalten“.
+  **Kurzfilme wie ein Video** (0.4.8, nicht ausgegeben): keine Überschrift, keine Kästen daneben; Abspielen und Lautsprecher als runde Knöpfe im
+  Bild, der Sprechtext darunter nur mit Untertiteln.
   **Leistungsprüfung:** im Hintergrund wird gemessen, wie flüssig das Gerät zeichnet (`messe`); zu langsam, ruckelnde oder abgebrochene
   Kugeln → Hinweis „geht auf diesem Gerät nicht flüssig“, Film statt 3D, gemerkt (`tw-kugeln-schwach`), „Trotzdem versuchen“.
   **Nach 0.4.6 (auf main, nicht in den Apps):** Schilder blenden sich aus, wenn eine andere Stadt davor steht; **Einzeldatei zum Versenden**

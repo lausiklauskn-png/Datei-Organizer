@@ -231,6 +231,14 @@ canvas.kugeln.zeigt{cursor:pointer}
 .leinwand .gross{position:absolute;inset:0;display:grid;place-items:center;background:rgba(10,14,28,.35);border:0;color:#fff;font:700 18px var(--sans)}
 .leinwand .gross span{display:inline-flex;align-items:center;background:var(--lern);color:#fff;padding:10px 18px;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,.4)}
 .leinwand .balken{position:absolute;left:0;top:0;height:4px;background:var(--lern);width:0}
+/* Kurzfilme wie ein Video (Klaus 15.11.): keine Überschrift, keine Kästen daneben – nur Bild, Abspielen und Lautsprecher im Bild. */
+#kino .kino{display:block}#kino .kino-seite{display:none}
+.film-leiste{position:absolute;left:10px;bottom:10px;display:flex;gap:8px;z-index:2}
+.film-leiste button{width:40px;height:40px;display:grid;place-items:center;padding:0;border-radius:50%;border:1px solid rgba(255,255,255,.4);background:rgba(10,14,28,.6);color:#fff;font-size:0;cursor:pointer}
+.film-leiste button svg{width:18px;height:18px;margin:0}
+.film-leiste button[aria-pressed="false"]#filmTon{opacity:.6}
+#kino .bildzeile{left:110px}
+body:not(.ut-an) #filmSpruch{display:none}
 .kapitel{display:grid;gap:8px;align-content:start}
 .kapitel button{text-align:left;background:var(--flaeche);border:1px solid var(--linie);border-radius:12px;padding:10px 12px}
 .kapitel button b{display:block;font-family:var(--serif);font-size:17px}
@@ -344,21 +352,19 @@ footer{padding:36px 0 48px;color:var(--leise);font-size:13.5px}
   </div>
 </div></section>
 
-<section id="kino"><div class="rand">
-  <h2>Kurzfilme aus den Test-Welten</h2>
-  <p class="vor">Drei kleine gezeichnete Szenen mit Musik, Geräuschen und Sprecher. Zum Schmunzeln – die Zahlen darin sind trotzdem echt.</p>
+<section id="kino" aria-label="Drei gezeichnete Kurzfilme"><div class="rand">
   <div class="kino">
     <div class="kino-links"><div class="leinwand">
       <canvas id="film" width="960" height="540" aria-label="Gezeichneter Kurzfilm"></canvas>
       <div class="balken" id="filmBalken"></div>
       <div class="bildzeile" id="filmZeile"></div>
       <button class="gross" id="filmStart" aria-label="Film abspielen"><span>Film abspielen</span></button>
+      <div class="film-leiste"><button type="button" id="filmPause" aria-pressed="false" aria-label="Abspielen oder anhalten" title="Abspielen oder anhalten">Start</button><button type="button" id="filmTon" data-ton aria-pressed="true" aria-label="Ton an oder aus" title="Ton an oder aus">Ton an</button></div>
     </div>
     <div class="spruch" id="filmSpruch" aria-live="polite"></div></div>
     <div class="kino-seite">
       <div class="kapitel" id="kapitel"></div>
       <div class="tonkasten">
-        <div class="reihe"><button type="button" id="filmPause" aria-pressed="false">Start</button><button type="button" id="filmTon" data-ton aria-pressed="true">Ton an</button></div>
         <div class="stimme" data-stimme></div>
       </div>
     </div>
@@ -1390,9 +1396,9 @@ const Unter = (function () {
   /* Untertitel sind ab Werk aus (Klaus 15.11.: der Text unten stört im Bild); einschaltbar mit dem Knopf „Untertitel“, gemerkt.
      Ist der Ton aus, erscheinen sie von selbst – sonst liefe die Führung stumm und ohne Text. */
   const bU = $('#bUnter'), bW = $('#bWeiter'); let utAn = false; try { utAn = localStorage.getItem('tw-untertitel') === '1'; } catch (x) { }
-  const sicht = () => { const zeigen = utAn || !Ton.an(); e.classList.toggle('stumm', !zeigen); bU.setAttribute('aria-pressed', utAn); };
+  const sicht = () => { const zeigen = utAn || !Ton.an(); e.classList.toggle('stumm', !zeigen); document.body.classList.toggle('ut-an', zeigen); bU.setAttribute('aria-pressed', utAn); };
   bU.onclick = () => { utAn = !utAn; try { localStorage.setItem('tw-untertitel', utAn ? '1' : '0'); } catch (x) { } sicht(); };
-  bW.onclick = () => weiter && weiter(); App.tonHoerer.push(() => sicht());
+  bW.onclick = () => weiter && weiter(); App.tonHoerer.push(() => sicht()); sicht();
   knopf.children[0].onclick = () => weiter && weiter(); knopf.children[1].onclick = () => halt && halt();
   return {
     zeig(titel, text, w, h) { kopf.textContent = titel; txt.textContent = text; weiter = w || null; halt = h || (() => { Sprecher.stopp(true); Unter.weg(); }); knopf.children[0].style.display = w ? '' : 'none'; knopf.children[1].innerHTML = w ? IK.halt + 'Anhalten' : 'Schließen'; e.classList.add('an'); bW.hidden = !w; sicht(); },
