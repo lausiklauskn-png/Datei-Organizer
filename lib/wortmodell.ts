@@ -53,10 +53,15 @@ export function mitModell(regel: Wert | undefined, modell: Wortmodell, text: str
 }
 export const bereichMitModell = (regel: Wert | undefined, text: string) => mitModell(regel, WORTMODELL_BEREICH as Wortmodell, text);
 /** Art: seit 15.11.2026 das gelernte Art-Modell (lib/artmodell.ts, reihum 80,4 → 85,1 % im ganzen Kern); das Wortmodell bleibt für den Bereich. */
+/** Art-Modell gilt als knapp unter diesem Abstand; das Wortmodell als deutlich ab diesem (reihum gewählt, Runde 3). */
+export const ARTMODELL_KNAPP = 15, WORTMODELL_DEUTLICH = 6;
 export function artMitModell(regel: Wert | undefined, text: string): Wert | undefined {
   if (!wortmodellSchalter.an) return regel;
-  const v = artVorhersage(text);
+  let v = artVorhersage(text);
   if (!v) return regel;
+  // Runde 3: ist das Art-Modell knapp, das Wortmodell aber deutlich, gilt das Wortmodell (beide lernen Verschiedenes)
+  const nb = vorhersage(WORTMODELL_ART as Wortmodell, merkmale(text));
+  if (nb && v.abstand < ARTMODELL_KNAPP && nb.abstand >= WORTMODELL_DEUTLICH && nb.wert !== v.wert) v = { wert: nb.wert, zweites: v.wert, abstand: v.abstand, grund: nb.grund };
   if (regel?.sicher && regel.wert === v.wert) return regel;
   if ((!regel?.sicher && v.abstand >= ARTMODELL_MIN) || v.abstand >= ARTMODELL_VOR_REGEL) {
     const wort = v.grund.length ? `gelernt: ${v.grund.map((g) => `„${g}“`).join(", ")}` : "gelerntes Art-Modell";

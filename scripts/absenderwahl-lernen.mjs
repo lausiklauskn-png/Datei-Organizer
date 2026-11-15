@@ -11,7 +11,9 @@ const A = await import("../lib/absenderwahl.ts"), E = await import("../lib/erken
 const V = await import("./rekursiv-versuch.mjs");
 export const STAPEL = ["unabhaengig", "briefe-2", "briefe-a", "briefe-b", "briefe-h", "vermieterin", "vermieterin-2026", "familie-k3", "runde-c", "runde-d", "runde-e", "runde-f", "rest", "absender",
   // Runde 2: verbrauchte Prüfstadt (Text und so, wie die App die gesetzten Stücke liest) und ältere Stapel als gelesener Text
-  "stadt-pruef", "stadt-pruef-ocr", "familie-k3-ocr", "vermieterin-ocr", "vermieterin-2026-ocr"];
+  "stadt-pruef", "stadt-pruef-ocr", "familie-k3-ocr", "vermieterin-ocr", "vermieterin-2026-ocr",
+  // Runde 3: Welt 3 (Text und gelesen)
+  "stadt-3", "stadt-3-ocr"];
 const norm = (s) => s == null || s === "" ? null : String(s).toLowerCase().replace(/\b(gmbh|ag|e\.?\s?k\.?|kg|ohg|mbh|e\.?\s?v\.?|co\.?|&|und)\b/g, " ").replace(/[^a-zäöüß0-9]+/g, " ").trim() || null;
 const ordnerVon = (s) => s.startsWith("/") ? s : join(W, "pruefstapel-" + s);
 const cache = new Map();

@@ -13,7 +13,9 @@ const M = await import("./rekursiv-modell.mjs");
 const V = await import("./rekursiv-versuch.mjs");
 export const STAPEL = ["unabhaengig", "briefe-2", "briefe-a", "briefe-b", "briefe-h", "vermieterin", "vermieterin-2026", "familie-k3", "runde-c", "runde-d", "runde-e", "runde-f", "rest", "absender",
   // Runde 2: verbrauchte Prüfstadt (Text und so, wie die App die gesetzten Stücke liest) und ältere Stapel als gelesener Text
-  "stadt-pruef", "stadt-pruef-ocr", "familie-k3-ocr", "vermieterin-ocr", "vermieterin-2026-ocr"];
+  "stadt-pruef", "stadt-pruef-ocr", "familie-k3-ocr", "vermieterin-ocr", "vermieterin-2026-ocr",
+  // Runde 3: Welt 3 (Text und gelesen)
+  "stadt-3", "stadt-3-ocr"];
 const ordnerVon = (s) => s.startsWith("/") ? s : join(W, "pruefstapel-" + s);
 const cache = new Map();
 export function belege(s) {
