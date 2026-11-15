@@ -77,3 +77,11 @@ R2-3. **Einmal messen**, Text und gesetzt. **Hauptzahl diesmal beide zusammen** 
 R2-4. **Alt** = 0.4.4 (`079dd6d`), **Gegenprobe** = bisheriges Vorgehen mit denselben Lerndaten, **Neu** = eingefrorener Kandidat der Runde 2.
       Übertragung in die Familienakte nur, wenn Neu sowohl 0.4.4 als auch die Gegenprobe gesichert schlägt (Hauptzahl) und an keinem
       Feld gesichert schlechter ist – und mit Klaus' Ja.
+
+### Runde 2 eingefroren (15.11.2026 gegen 02:10 Uhr, Welt 3 noch im Bau, nichts davon gelesen)
+
+- **Neu** = `a6e471d3bfb39168bfe6985bb697d850ebb561aa`: Art-Modell mit Briefende-Wörtern (ARTMODELL_SICHER 25), Absender-Wahl, **Frist-Wahl** (`lib/fristwahl.ts`, nur wenn die
+  Regel unsicher ist), alle gelernt auch an der Prüfstadt (Text und so, wie die App die gesetzten Stücke liest); Wortmodell mit allen
+  verbrauchten Stapeln einschließlich Prüfstadt. Lerndaten-Hash `cf02fc4004d11102`.
+- **Gegenprobe** = `1d21e2c`: Kern 0.4.4, Wortmodell byte-gleich mit Neu. **Alt** = `079dd6d`.
+- Abstimmung reihum (9 Teststapel inkl. gelesener Prüfstadt): alt 83,25 · Gegenprobe 83,88 · neu 85,45 %.
