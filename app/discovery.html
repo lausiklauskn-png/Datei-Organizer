@@ -82,6 +82,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .zeichen summary::-webkit-details-marker{display:none}
 .zeichen ul{list-style:none;margin:0;padding:0 10px 8px;display:grid;gap:3px}
 .punkt{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:baseline}
+.tipp[hidden]{display:none!important}
 .tipp{position:absolute;left:50%;bottom:58px;transform:translateX(-50%);background:rgba(0,0,0,.55);color:#fff;font-size:12.5px;padding:4px 10px;border-radius:999px;white-space:nowrap;transition:opacity .6s;pointer-events:none;z-index:2}
 .tipp.weg{opacity:0}
 .untertitel{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);width:min(700px,calc(100% - 24px));box-shadow:0 8px 30px rgba(0,0,0,.45);background:rgba(10,14,28,.86);color:#fff;border-radius:14px;padding:10px 14px;font-size:15px;line-height:1.4;z-index:4;display:none}
@@ -282,7 +283,7 @@ footer{padding:36px 0 48px;color:var(--leise);font-size:13.5px}
 <main>
 <div class="rand">
   <div class="buehne" id="buehne" data-licht="tag">
-    <canvas id="szene" tabindex="0" aria-label="3D-Baum mit den vier Welten. Pfeiltasten drehen, Plus und Minus zoomen."></canvas>
+    <canvas id="szene" title="Ziehen = drehen · Rad oder zwei Finger = näher · Antippen = Zahlen" tabindex="0" aria-label="3D-Baum mit den vier Welten. Pfeiltasten drehen, Plus und Minus zoomen."></canvas>
     <div class="schilder" id="schilder"></div>
     <div class="ersatz" id="ersatz"></div>
     <div class="oben">
@@ -292,7 +293,7 @@ footer{padding:36px 0 48px;color:var(--leise);font-size:13.5px}
       <button id="bLicht" class="nur3d">Abend</button>
       <details class="zeichen" id="zeichen"><summary>Zeichen</summary><ul id="zeichenListe"></ul></details>
     </div>
-    <div class="tipp nur3d" id="tipp">Ziehen = drehen · Rad oder zwei Finger = näher · Antippen = Zahlen</div>
+    <div class="tipp nur3d" id="tipp" hidden>Ziehen = drehen · Rad oder zwei Finger = näher · Antippen = Zahlen</div>
     <div class="untertitel" id="untertitel" aria-live="polite"></div>
     <div class="knoepfe nur3d">
       <button id="bMinus" aria-label="Weiter weg">−</button>
@@ -560,7 +561,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && App.gewaeh
     const T = THREE, cv = el('canvas', 'kugeln'); let renderer;
     try { renderer = new T.WebGLRenderer({ canvas: cv, antialias: !window.MOBIL, alpha: true }); } catch (e) { return null; }
     cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', 'Sechs Glaskugeln im Kreislauf: Raten, Soll, Lernen, Reihum, Einfrieren, Messen. Die Schritte lassen sich auch über die Knöpfe daneben wählen.');
-    Segmente.melde('kugeln', box, renderer); box.appendChild(cv); box.appendChild(el('p', 'kugel-tipp', 'Ziehen = drehen · Kugel antippen = Schritt wählen'));
+    Segmente.melde('kugeln', box, renderer); box.appendChild(cv); cv.title = 'Ziehen = drehen · Kugel antippen = Schritt wählen';
     renderer.setPixelRatio(Math.min(devicePixelRatio || 1, window.MOBIL ? 1.5 : 2)); renderer.setClearColor(0x000000, 0);
     const V = (x, y, z) => new T.Vector3(x, y, z), kl = (v, a, b) => Math.max(a, Math.min(b, v)), st = (t, a, b) => kl((t - a) / (b - a), 0, 1), weich = x => x * x * (3 - 2 * x);
     const nah = (ist, soll, dt, r) => RUHIG ? soll : ist + (soll - ist) * (1 - Math.exp(-dt * r));
