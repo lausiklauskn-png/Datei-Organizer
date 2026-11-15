@@ -6,7 +6,7 @@ Grenze ≥ 80 % der Kern-Merkmale, kein Kern-Merkmal verkehrt, strengere von zwe
 ## Ergebnis zuerst
 
 **Alle 13 Einzel-Beispiele bestehen** — 8 gleich im ersten Lauf (K3), 6 nach Nachbesserung (K4, darunter Workflow PDF Pro, das am
-13.11. bei 71 % hing). **Der Pro-Verbund gesamt besteht nicht (57 %)** — mit Absicht nicht nachgebessert, siehe unten.
+13.11. bei 71 % hing). **Der Pro-Verbund gesamt besteht nicht (57 %)** — mit Absicht nicht nachgebessert, siehe unten. **Klaus 15.11.: „Im Pro-Verbund lassen wir so.“** Das Beispiel beschreibt den Verbund; die Fachfunktionen stehen in den vier Einzel-Beispielen.
 
 | Beispiel | K3 | K4 (nachgebessert) |
 |---|---|---|
