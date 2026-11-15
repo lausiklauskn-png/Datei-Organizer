@@ -9,6 +9,14 @@ oder Altbestand kommen in **einen** Ordner; der Organizer sortiert sie Klick fü
 Nummern → Absender → Inhalt) und zeigt sie als Baum nach vielen Gesichtspunkten. Zuerst für die Familienakte gemacht: der Ordner
 wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). Plan und alle Entscheidungen: `docs/PLAN.md`.
 
+## Stand (15.11.2026): englische Rechnungen im Kern (für Private Brain)
+
+- Kern erkennt Belege von Online-Diensten auf Englisch („Invoice“, „Receipt from …“, „Amount due/paid“, „Total due“, „Bill to“) als Rechnung;
+  bei überwiegend englischem Text überstimmt das (deutsch gelernte) Art-Modell eine sichere Regel nicht mehr (`englischerText` in
+  `lib/wortmodell.ts`); englische Feldnamen („Date due“, „Bill to“) und US-Ortszeilen sind keine Absender (`englischesFeld`, `US_ORT`).
+  16 deutsche Prüfstapel (2.892 Stücke): Art, Bereich, Absender, Frist unverändert; Probe in `run-kern-tests.mjs` (4 neu, Gegenprobe 3/3).
+  Auftrag aus Private Brain Pro (Brief dort `BRIEF_SITZUNG_2026-11-15_SUCHE-SORTIERKERN.md`). Familienakte und BookLedgerPro noch nicht nachgezogen.
+
 ## Veröffentlicht (15.11.2026, Klaus' Wort „neue Fassung veröffentlichen“): Datei-Organizer 0.4.5 – nicht erneut ausgeben
 
 - **Android** `Datei-Organizer-Pro-0.4.5.apk` (Code 45, SHA-256 `3b6a3554…b5c5`, Zertifikat `594e44df…365d`, Lauf 43718716786), **Windows**

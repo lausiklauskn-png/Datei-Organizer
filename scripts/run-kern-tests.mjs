@@ -348,5 +348,17 @@ if (existsSync(fa)) {
   soll("Einlesen setzt die Kennung auch ohne Prüfkern", e.innen?.pdfKennung?.herkunft === A.toLowerCase(), JSON.stringify(e.innen));
 }
 
+
+// ---------- Englische Belege von Online-Diensten (15.11.2026, Private Brain: „Rechnungen von …“ wurden nicht gefunden) ----------
+{
+  const beleg = (n, t) => siebe({ pfad: n, name: n, art: "pdf", groesse: t.length, geaendert: 0, kopfText: t.slice(0, 1500), volltext: t, felder: {}, stufe: 1 }, 5).felder;
+  const quittung = beleg("Receipt-0001.pdf", "Nordlicht Labs, Inc.\n548 Market Street\nSan Francisco, CA 94104\n\nReceipt from Nordlicht Labs, Inc.\n\nAmount paid $20.00\nDate paid November 3, 2026\nPayment method Visa - 4242\n\nReceipt number 2817-0001\nInvoice number AB12CD-0001\n\nSummary\nPro plan, monthly $20.00\nTotal $20.00\nAmount paid $20.00\n\nIf you have any questions, contact us at support@nordlicht.example");
+  const rechnung = beleg("Invoice-0001.pdf", "Invoice\nInvoice number AB12CD-0001\nDate of issue November 3, 2026\nDate due November 3, 2026\n\nNordlicht Labs, Inc.\n548 Market Street\nSan Francisco, CA 94104\n\nBill to\nMax Mustermann\n\n$20.00 due November 3, 2026\n\nDescription Qty Unit price Amount\nPro plan 1 $20.00 $20.00\nSubtotal $20.00\nTotal $20.00\nAmount due $20.00");
+  soll("Englische Quittung („Receipt from …“, „Amount paid“) ist eine Rechnung", quittung.schriftstueck?.wert === "Rechnung" && quittung.schriftstueck.sicher, JSON.stringify(quittung.schriftstueck));
+  soll("Englische Rechnung („Invoice“) ist eine Rechnung", rechnung.schriftstueck?.wert === "Rechnung" && rechnung.schriftstueck.sicher, JSON.stringify(rechnung.schriftstueck));
+  soll("Absender der englischen Belege ist die Firma, nicht „Date due“ oder der Ort", /^Nordlicht Labs/.test(quittung.absender?.wert || "") && /^Nordlicht Labs/.test(rechnung.absender?.wert || ""), `${quittung.absender?.wert} / ${rechnung.absender?.wert}`);
+  soll("Deutscher Brief mit „Bill“ im Namen bleibt unberührt", erkenneSchriftstueck("Sehr geehrter Herr Bill,\nanbei Ihre Rechnung Nr. 5").wert === "Rechnung");
+}
+
 console.log(`Kern: ${gruen} grün · ${rot} ROT`);
 process.exit(rot ? 1 : 0);

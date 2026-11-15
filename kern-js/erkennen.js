@@ -10,7 +10,7 @@ const ART_REGELN = [
   { art: "Bescheid", muster: /\bbescheid\b|steuerbescheid|bewilligungsbescheid/, wort: "Bescheid" },
   { art: "K\xFCndigung", muster: /\bkündigung\b|kündigungsbestätigung/, wort: "K\xFCndigung" },
   { art: "Befund", muster: /\bbefund|arztbrief|laborwerte|laborbefund|entlassungsbrief/, wort: "Befund" },
-  { art: "Rechnung", muster: /\brechnung\b|rechnungsnummer|rechnungsbetrag|beitragsrechnung|rechnungsdatum|zahlbar bis|your receipt/, wort: "Rechnung" },
+  { art: "Rechnung", muster: /\brechnung\b|rechnungsnummer|rechnungsbetrag|beitragsrechnung|rechnungsdatum|zahlbar bis|your receipt|\binvoice\b|\breceipt (from|number|no\b|#)|amount (due|paid)|total due|bill to\b/, wort: "Rechnung" },
   { art: "Termin", muster: /terminbestätigung|\beinladung\b|ihr termin|terminvereinbarung|\btermin am\b/, wort: "Termin/Einladung" },
   { art: "Aufforderung", muster: /bitte teilen sie uns|aufforderung|wir bitten sie,? (uns|bis)|bitte reichen sie|bitte senden sie/, wort: "Aufforderung" },
   { art: "Vertrag", muster: /\b\w*vertrag\b|vertragsbestätigung|vertragsunterlagen|versicherungsschein/, wort: "Vertrag" },
@@ -161,7 +161,7 @@ function erkenneKategorie(text, absender = "", art = "") {
 const FIRMA = /\b(gmbh|ag|kg|ggmbh|e\.\s?v\.|e\.\s?k\.|eg|ohg|mbh|ug|se|mvz|vvag|partg|a\.\s?g\.|stadtwerke|dr\.|zahnarzt|kita|hort|markt|stadt|gemeinde|landkreis|landesbetrieb|jobcenter|agentur|universität|hochschule|notariat|studierendenwerk|gewerkschaft|apotheke|optik|inkasso|auskunftei|tankstelle|bäckerei|drogerie|baumarkt|discount|frischmarkt|magistrat|rechtsanwälte|rechtsanwalt|elektro|physio)\b|(amt|kasse|schule|gymnasium|gericht|werke|versicherung|gesellschaft|zentrum|stelle|behörde|kammer|genossenschaft|service|praxis|klinik|klinikum|labor|verein|verband|büro|institut|kanzlei|beratung|verwaltung|bank|sparkasse|verlag|haus|therapie|rentenversicherung|stiftung|kolleg|bibliothek|stätte|betrieb|dienst|handel|versand|markt|technik|werkstatt|hotel|hostel|bahn|energie|assekuranz|gärtnerei|tischlerei|pflege|leasing)\b/i;
 const RECHTSFORM = /\b(gmbh|ag|kg|ggmbh|e\.\s?v\.|e\.\s?k\.|eg|ohg|mbh|ug|se|vvag|partg|a\.\s?g\.|aps|s\.p\.a\.)(?=$|[\s,.·|)])/i;
 const STRASSE = /\s*[.,·•|'°:–-]?\s+[A-ZÄÖÜa-zäöüß][\wäöüß-]*(straße|strasse|str\.|weg|platz|ring|kai|allee|gasse|damm|hof|markt|chaussee|stieg|wall|fleet|passage)\s*\d+.*$/i;
-const TITEL = /^(meldebescheinigung|gehaltsabrechnung|abrechnung|ausdruck|rechnung|bescheid|kontoauszug|bescheinigung|lohnsteuer|vertrag|befund|einladung|mahnung|angebot)\b/i;
+const TITEL = /^(meldebescheinigung|gehaltsabrechnung|abrechnung|ausdruck|rechnung|bescheid|kontoauszug|bescheinigung|lohnsteuer|vertrag|befund|einladung|mahnung|angebot|invoice|receipt|statement|order confirmation)\b/i;
 const kuerze = (z) => z.replace(STRASSE, "").replace(/\s*[.,·•|'°:–-]\s*$/, "").trim();
 const ANREDE_ZEILE = /^(sehr geehrte|liebe|lieber|liebes|hallo|hi\b|hey\b|guten (tag|morgen|abend)|moin|servus|werte|mein(e)? liebe|grüß)/i;
 const EMPFAENGER_ZEILE = /^(herrn|herr|frau|familie|eheleute|an|firma)\b|^(fam\.|z\.\s?hd)/i;
@@ -206,8 +206,10 @@ function ocrRand(zeile) {
   return s.replace(/\s+[|\]}]+\s*$/, "").trim();
 }
 const OBERFLAECHE = /^(?:\S{1,3}\s+)?zeichen\b|^(vorname|nachname|name|versicherungsschein|vorgangs)\b|^(posteingang|mitteilungen|benachrichtigungen|nachrichten|neue nachricht|startseite|übersicht|menü|einstellungen|zurück|suche|profil|mein konto|meine daten|kassenbon|digitaler kassenbon|ihr schreiben|ihre nachricht|ihre anfrage|ihr antrag|unser zeichen|ihr zeichen)\b/i;
+const englischesFeld = (n) => /^(date|invoice|receipt|bill to|bill\b|ship to|sold to|amount|total|subtotal|payment|description|qty|quantity|summary|due|order)\b/i.test(n.trim());
 const KEIN_ABSENDER = (n) => {
   const worte = n.split(/\s+/), kurz = worte.filter((x) => /^\p{L}{1,2}$/u.test(x) && !RECHTSFORM_KURZ.test(x) && !/^(dr|st|am|an|im|in|zu|zum|zur)$/i.test(x)).length;
+  if (englischesFeld(n)) return true;
   return /^[A-ZÄÖÜ][\wäöüß.-]*(straße|strasse|str\.|weg|platz|ring|allee|gasse|damm|chaussee|ufer|steig|pfad)\s*\d/i.test(n) || /^postfach\b/i.test(n) || !/\p{L}{3}/u.test(n) || OBERFLAECHE.test(n) || /\bi{2,}\b|(?<![\p{L}])(\p{L})\1{2,}(?![\p{L}])/iu.test(n) || worte.length >= 3 && kurz * 2 >= worte.length;
 };
 function nameAusZeile(zeile, fuss = false) {
@@ -472,6 +474,7 @@ export {
   absenderAusGruss,
   datumeImText,
   dringlichkeit,
+  englischesFeld,
   erkenneAbsender,
   erkenneBetrag,
   erkenneBetrifft,
