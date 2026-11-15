@@ -211,6 +211,7 @@ canvas.kugeln.zeigt{cursor:pointer}
 @media (max-width:860px){.kino{grid-template-columns:1fr}}
 .leinwand{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--linie);background:#101425;aspect-ratio:16/9}
 .leinwand canvas{width:100%;height:100%;display:block}
+.leinwand video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#101425;cursor:pointer}
 .kino-links{display:grid;gap:8px;align-content:start;min-width:0}
 .kino .spruch{background:var(--flaeche);border:1px solid var(--linie);border-left:4px solid var(--lern);border-radius:12px;padding:10px 14px;font-size:16px;line-height:1.45;min-height:46px}
 .leinwand .bildzeile{position:absolute;left:8px;right:8px;bottom:8px;background:rgba(0,0,0,.62);color:#fff;border-radius:10px;padding:5px 10px;font-size:14px;text-align:center;pointer-events:none}
@@ -356,6 +357,7 @@ footer{padding:36px 0 48px;color:var(--leise);font-size:13.5px}
   <div class="kino">
     <div class="kino-links"><div class="leinwand">
       <canvas id="film" width="960" height="540" aria-label="Gezeichneter Kurzfilm"></canvas>
+      <video id="filmVideo" muted playsinline preload="metadata" hidden aria-label="Kurzfilm"></video>
       <div class="balken" id="filmBalken"></div>
       <div class="bildzeile" id="filmZeile"></div>
       <button class="gross" id="filmStart" aria-label="Film abspielen"><span>Film abspielen</span></button>
@@ -1470,7 +1472,7 @@ App.szene = function (key, titel) { if (App.tour || !Ton.an()) return; Sprecher.
   const NE = W[1].d.agenten.einordner, FARB = ['#1fa971', '#35c08a', '#5fd8b2', '#1fa971', '#35c08a', '#5fd8b2', '#1fa971', '#35c08a'];
   const kurzEreignis = (W[1].d.beispiel_ereignisse.find(e => /bescheid/i.test(e)) || W[1].d.beispiel_ereignisse[0]).split(' ')[0];
   const FILME = [
-    { key: 'film_brieftraeger', titel: 'Der Briefträger-Agent', unter: 'Post für die Einordner', dauer: 15,
+    { key: 'film_brieftraeger', video: 'discovery-film-brieftraeger.mp4', bild0: 'discovery-film-brieftraeger.jpg', titel: 'Der Briefträger-Agent', unter: 'Post für die Einordner', dauer: 15,
       spruch: [[0, `Post für ${W[1].kurz}! ${W[1].d.stuecke} Schriftstücke warten.`], [3.4, 'Der Briefträger-Agent bringt jedem Einordner dasselbe Stück.'], [7.4, 'Jeder ordnet für sich ein. Abschreiben gilt nicht.'], [11.4, 'Aus ihren Antworten wird das Soll.']],
       klang: [[.2, 'klick'], [11.6, 'richtig'], [13, 'aha']].concat(Array.from({ length: NE }, (_, i) => [2.4 + i * 1.3, 'hops']), Array.from({ length: Math.floor((NE * 1.3 + .6) / .32) }, (_, i) => [1.4 + i * .32, 'schritt']), Array.from({ length: NE }, (_, i) => [2.9 + i * 1.3, 'brief'])),
       bild(t) {
@@ -1481,7 +1483,7 @@ App.szene = function (key, titel) { if (App.tour || !Ton.an()) return; Sprecher.
         if (t > 11.4) { const u = weich(st(t, 11.4, 13)); for (let i = 0; i < NE; i++) brief(x0 + i * dx + (BW / 2 - x0 - i * dx) * u, 382 - u * 262, u * 3.14 * 2, .6); if (u >= 1) { rr(BW / 2 - 90, 86, 180, 68, 14, '#fff', '#17725c'); txt('Das Soll ✓', BW / 2, 120, 30, '#17725c'); } }
         bote(bx, 360, t, t > 1.4 && t < 1.4 + NE * 1.3 + .6);
       } },
-    { key: 'film_kern_raet', titel: 'Der Kern rät', unter: 'raten → Korrektur → aha', dauer: 17.5,
+    { key: 'film_kern_raet', video: 'discovery-film-kern.mp4', titel: 'Der Kern rät', unter: 'raten → Korrektur → aha', dauer: 17.5,
       spruch: [[0, 'Ein Brief kommt. Der Kern rät.'], [4, '„Bestimmt eine Rechnung!“'], [6.6, 'Daneben. Das Soll der Einordner sagt: Bescheid.'], [9.2, 'Aha! Gelernt wird nur aus Fehlern.'], [11.8, 'Nächster Brief – diesmal sitzt es.'], [14.4, 'Richtig geraten heißt: nichts ändern. Nur Fehler machen ihn schlauer.']],
       klang: [[.3, 'brief'], [1.9, 'wirbel'], [6.6, 'falsch'], [9.2, 'aha'], [9.6, 'lern'], [11.9, 'brief'], [12.4, 'wirbel'], [13.4, 'richtig']],
       bild(t) {
@@ -1517,14 +1519,26 @@ App.szene = function (key, titel) { if (App.tour || !Ton.an()) return; Sprecher.
   ];
   const kap = $('#kapitel'), spruch = $('#filmSpruch'), zeile = $('#filmZeile'), balken = $('#filmBalken'), startB = $('#filmStart'), pauseB = $('#filmPause');
   let nr = 0, t = 0, laeuft = false, begonnen = false, zuletzt = 0, klangNr = 0, tempo = 1, gesagt = true, sprLauf = 0, dann = 0;
-  function mal() { const F = FILME[nr]; c.clearRect(0, 0, BW, BH); F.bild(t); let s = ''; F.spruch.forEach(([ab, tx]) => { if (t >= ab) s = tx; }); if (zeile.textContent !== s) zeile.textContent = s; zeile.style.display = s ? '' : 'none'; balken.style.width = (t / F.dauer * 100) + '%'; }
+  // Kurzfilme als echtes Video (Higgsfield, 15.11.): liegt für einen Film eine Datei vor, läuft sie statt der Zeichnung; fehlt sie
+  // oder ist „weniger Bewegung“ gewünscht, bleibt die gezeichnete Fassung.
+  const vid = $('#filmVideo'), VF = window.DISCOVERY_FILME || {}, VB = window.DISCOVERY_FILMBILDER || {}, kaputt = {};
+  const filmAdr = F => (RUHIG || kaputt[F.key]) ? '' : (VF[F.key] || F.video || '');
+  const mitVideo = () => !vid.hidden;
+  function zeigVideo(F) { const a = filmAdr(F); if (!a) { vid.hidden = true; try { vid.pause(); } catch (e) { } return false; }
+    if (vid.dataset.key !== F.key) { vid.dataset.key = F.key; const b = VB[F.key] || F.bild0; if (b) vid.poster = b; else vid.removeAttribute('poster'); vid.src = a; }
+    vid.hidden = false; return true; }
+  vid.addEventListener('error', () => { const k = vid.dataset.key; if (k) kaputt[k] = true; vid.hidden = true; if (!laeuft) standbild(); });
+  function mal() { const F = FILME[nr];
+    if (mitVideo()) { zeile.style.display = 'none'; balken.style.width = (vid.duration ? Math.min(1, vid.currentTime / vid.duration) * 100 : 0) + '%'; return; }
+    c.clearRect(0, 0, BW, BH); F.bild(t); let s = ''; F.spruch.forEach(([ab, tx]) => { if (t >= ab) s = tx; }); if (zeile.textContent !== s) zeile.textContent = s; zeile.style.display = s ? '' : 'none'; balken.style.width = (t / F.dauer * 100) + '%'; }
   function knoepfe(gross) {
     pauseB.innerHTML = laeuft ? IK.pause + 'Pause' : IK.spiel + (begonnen ? 'Weiter' : 'Start'); pauseB.setAttribute('aria-pressed', laeuft);
     startB.style.display = laeuft ? 'none' : ''; if (gross) startB.firstElementChild.innerHTML = IK.spiel + gross;
   }
-  function standbild() { t = FILME[nr].dauer * .42; mal(); zeile.style.display = 'none'; spruch.textContent = FILME[nr].titel + ' – ' + FILME[nr].unter; balken.style.width = '0'; }
+  function standbild() { zeigVideo(FILME[nr]); t = FILME[nr].dauer * .42; mal(); zeile.style.display = 'none'; spruch.textContent = FILME[nr].titel + ' – ' + FILME[nr].unter; balken.style.width = '0'; }
   function tick(jetzt) {
     if (!laeuft) return; const F = FILME[nr];
+    if (mitVideo()) { mal(); if ((vid.ended || (vid.duration && vid.currentTime >= vid.duration - .05)) && gesagt) return fertig(); return requestAnimationFrame(tick); }
     if (RUHIG) { if (jetzt - zuletzt > 2300) { zuletzt = jetzt; const zeiten = F.spruch.map(s => s[0] + .9).concat([F.dauer - .2]); const i = zeiten.findIndex(z => z > t + .01); if (i < 0) { if (gesagt) return fertig(); } else { t = zeiten[i]; mal(); } } }
     else {
       t += Math.min(.05, (jetzt - zuletzt) / 1000) * tempo; zuletzt = jetzt; while (klangNr < F.klang.length && F.klang[klangNr][0] <= t) Ton.spiel(F.klang[klangNr++][1]);
@@ -1542,13 +1556,14 @@ App.szene = function (key, titel) { if (App.tour || !Ton.an()) return; Sprecher.
     laeuft = begonnen = false; dann = 0; knoepfe('Noch einmal von vorn'); }
   function spiele(n) {
     Ton.bereit(); nr = n; t = RUHIG ? -1 : 0; klangNr = 0; FILME[nr].klang.sort((a, b) => a[0] - b[0]); laeuft = begonnen = true; zuletzt = RUHIG ? -9999 : performance.now();
+    if (zeigVideo(FILME[nr])) { try { vid.currentTime = 0; const pr = vid.play(); if (pr && pr.catch) pr.catch(() => { }); } catch (e) { } }
     spruch.textContent = SPRECHTEXTE[FILME[nr].key]; [...kap.children].forEach((b, i) => b.setAttribute('aria-pressed', i === nr)); knoepfe(); sprich(); requestAnimationFrame(tick);
   }
-  function halt() { laeuft = false; Sprecher.pause(); knoepfe('Weiter'); }
-  function weiter() { laeuft = true; zuletzt = RUHIG ? -9999 : performance.now(); Sprecher.weiter(); knoepfe(); requestAnimationFrame(tick); }
+  function halt() { laeuft = false; if (mitVideo()) vid.pause(); Sprecher.pause(); knoepfe('Weiter'); }
+  function weiter() { laeuft = true; if (mitVideo() && !vid.ended) { const pr = vid.play(); if (pr && pr.catch) pr.catch(() => { }); } zuletzt = RUHIG ? -9999 : performance.now(); Sprecher.weiter(); knoepfe(); requestAnimationFrame(tick); }
   const schalt = () => { if (laeuft) halt(); else if (begonnen) weiter(); else spiele(dann); };
   FILME.forEach((F, i) => { const b = el('button', '', `<b>${esc(F.titel)}</b><span>${esc(F.unter)}</span>`); b.setAttribute('aria-pressed', i === 0); b.onclick = () => spiele(i); kap.appendChild(b); });
-  startB.onclick = schalt; pauseB.onclick = schalt; cv.onclick = schalt;
+  startB.onclick = schalt; pauseB.onclick = schalt; cv.onclick = schalt; vid.onclick = schalt;
   App.tonHoerer.push(an => { if (!an) { sprLauf++; gesagt = true; tempo = 1; } });
   standbild(); knoepfe('Film abspielen');
 })();
