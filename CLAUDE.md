@@ -17,12 +17,14 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   16 deutsche Prüfstapel (2.892 Stücke): Art, Bereich, Absender, Frist unverändert; Probe in `run-kern-tests.mjs` (4 neu, Gegenprobe 3/3).
   Auftrag aus Private Brain Pro (Brief dort `BRIEF_SITZUNG_2026-11-15_SUCHE-SORTIERKERN.md`). Familienakte und BookLedgerPro noch nicht nachgezogen.
 
-## Veröffentlicht (14.11.2026 abends, Klaus' Wort „ich gebe alles frei“): Datei-Organizer 0.4.4 – nicht erneut ausgeben
+## Veröffentlicht (15.11.2026, Klaus' Wort „neue Fassung veröffentlichen“): Datei-Organizer 0.4.5 – nicht erneut ausgeben
 
-- **Android** `Datei-Organizer-Pro-0.4.4.apk` (Code 44, SHA-256 `29732221…7593`, Zertifikat `594e44df…365d`, Lauf 43641660355), **Windows**
-  `Datei-Organizer-Pro-Windows-0.4.4-x64-setup.exe` (25.165.106 B, Lauf 43642094461), beide auf `family-projekt.de/updates/datei-organizer/`
-  (Repo privat), **Basic** über Pages. Inhalt: Absender aus Scans/Fotos (Kern `079dd6d`), 3D-App-Symbol. Nachweis `docs/VEROEFFENTLICHUNG-0.4.4.json`.
-  Nächste Ausgabe: **0.4.5**. Updates über das Fähnchen. Vorher veröffentlicht: 0.4.3 (`docs/VEROEFFENTLICHUNG-0.4.3.json`).
+- **Android** `Datei-Organizer-Pro-0.4.5.apk` (Code 45, SHA-256 `3b6a3554…b5c5`, Zertifikat `594e44df…365d`, Lauf 43718716786), **Windows**
+  `Datei-Organizer-Pro-Windows-0.4.5-x64-setup.exe` (25.296.607 B, SHA-256 `f28b6741…6e49`, Lauf 43718375514), beide auf
+  `family-projekt.de/updates/datei-organizer/`, **Basic** über Pages. Inhalt: rekursive Verbesserung des Kerns (gelernte Art, Absender-
+  und Frist-Wahl; `docs/ERGEBNIS-REKURSIVE-VERBESSERUNG-2026-11-15.md`), Doppelte mit Haken und Papierkorb-Menü, Fotos ohne Text.
+  Nachweis `docs/VEROEFFENTLICHUNG-0.4.5.json`. Nächste Ausgabe: **0.4.6**. Updates über das Fähnchen.
+  Vorher veröffentlicht: 0.4.4, 0.4.3 (`docs/VEROEFFENTLICHUNG-0.4.4.json`, `-0.4.3.json`).
 
 ## Stand (14.11.2026): Pseudonymisierer 0.1.0 (PWA, zweite Seite in diesem Repo)
 
