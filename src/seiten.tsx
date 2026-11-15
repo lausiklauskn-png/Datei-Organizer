@@ -235,6 +235,53 @@ function PruefZeile({ z, d, neu }: { z: AppZustand; d: Datei; neu?: number }) {
   </div>;
 }
 
+
+// Doppelte (gleicher Inhalt, Byte für Byte): je Paar die Dateien nebeneinander, Haken = behalten (Muster wie in der Familienakte
+// beim Einlesen einer Sicherung, Klaus 15.11.2026). Die Wahl merkt sich der Organizer.
+function DoppelteKarte({ z }: { z: AppZustand }) {
+  const gruppen = useMemo(() => {
+    const m = new Map<string, Datei[]>();
+    for (const d of z.dateien) if (d.sha256 && !d.auffaellig) { const l = m.get(d.sha256) || []; l.push(d); m.set(d.sha256, l); }
+    return [...m.entries()].filter(([, l]) => l.length > 1 && l.some((d) => d.doppeltVon));
+  }, [z.dateien]);
+  const [alle, setAlle] = useState(false);
+  const [menue, setMenue] = useState(false);
+  if (!gruppen.length) return null;
+  const kopien = (l: Datei[]) => l.filter((d) => d.doppeltVon).map((d) => d.pfad);
+  const datum = (t: number) => t ? new Date(t).toLocaleDateString("de-DE") : "–";
+  const alleNach = (juenger: boolean) => z.behalten(gruppen.map(([sha, l]) => ({ sha, pfad: [...l].sort((a, b) => juenger ? b.geaendert - a.geaendert : a.geaendert - b.geaendert)[0].pfad })), `Bei allen ${gruppen.length} Paaren die ${juenger ? "jüngere" : "ältere"} Datei behalten.`);
+  const sichtbar = alle ? gruppen : gruppen.slice(0, 10);
+  return <section className="card" data-doppelte>
+    <div className="card-heading"><h2>Doppelte: welche behalten? <span className="badge">{gruppen.length}</span></h2>
+      <Info titel="Doppelt" punkte={["Gleicher Inhalt, Byte für Byte.", "Vorgewählt ist die Datei ohne „Kopie“ im Namen, sonst die ältere – du entscheidest per Haken.", "Die andere wird nur nicht weitergegeben. Die Originale auf dem Gerät bleiben unberührt.", "Geänderte Fassungen sind nie „doppelt“, sondern „ähnlich“: beide bleiben."]}/></div>
+    <div className="doppelt-menue-ort"><button type="button" className="button klein" aria-expanded={menue} aria-label="Alle Paare auf einmal" title="Alle Paare auf einmal: ältere oder jüngere behalten, Kopien herausnehmen" onClick={() => setMenue(!menue)} data-doppelt-menue><Trash2 size={15}/></button>
+      {menue && <div className="doppelt-menue" role="menu">
+        <button type="button" role="menuitem" onClick={() => { setMenue(false); alleNach(false); }} data-doppelt-alle-aelter>Alle: ältere behalten</button>
+        <button type="button" role="menuitem" onClick={() => { setMenue(false); alleNach(true); }} data-doppelt-alle-juenger>Alle: jüngere behalten</button>
+        <button type="button" role="menuitem" onClick={() => { setMenue(false); const k = kopien(gruppen.flatMap(([, l]) => l)); if (confirm(`${k.length} Kopien aus dem Organizer nehmen? Die Originale auf dem Gerät bleiben unverändert.`)) z.entfernen(k, `${k.length} Kopien`); }} data-doppelt-alle-raus>Alle Kopien aus dem Organizer nehmen</button>
+      </div>}</div>
+    {sichtbar.map(([sha, l]) => <div key={sha} className="doppelt-paar" data-doppelt-paar={sha}>
+      <div className="doppelt-name"><span>{(l.find((d) => !d.doppeltVon) || l[0]).name}</span><button type="button" className="button klein" aria-label="Kopie dieses Paars aus dem Organizer nehmen" title="Kopie aus dem Organizer nehmen (Original bleibt)" onClick={() => z.entfernen(kopien(l), "Kopie")} data-doppelt-paar-raus><Trash2 size={14}/></button></div>
+      <div className="doppelt-seiten">{l.map((d) => <label key={d.pfad} className={`doppelt-seite${d.doppeltVon ? "" : " behalten"}`}>
+        <input type="radio" name={`dp-${sha}`} checked={!d.doppeltVon} onChange={() => z.behalten([{ sha, pfad: d.pfad }])} data-doppelt-behalten={d.pfad}/>
+        <span><strong className="leise" style={{ fontSize: 12 }}>{d.doppeltVon ? "Kopie" : "behalten"}</strong><br/><span className="doppelt-ort">{d.pfad}</span><br/><span className="leise" style={{ fontSize: 12 }}>geändert {datum(d.geaendert)}</span></span>
+      </label>)}</div>
+    </div>)}
+    {gruppen.length > sichtbar.length && <button type="button" className="text-link" onClick={() => setAlle(true)}>Alle {gruppen.length} zeigen</button>}
+  </section>;
+}
+
+// Fotos ohne lesbaren Text: selbst zuordnen oder gesammelt aus dem Organizer nehmen (Klaus 15.11.2026). Gelöscht wird nichts.
+function FotosOhneTextKarte({ z }: { z: AppZustand }) {
+  const fotos = useMemo(() => z.dateien.filter((d) => d.art === "bild" && !d.volltext && !d.doppeltVon && !d.auffaellig), [z.dateien]);
+  if (!fotos.length) return null;
+  return <section className="card" data-fotos-ohne-text>
+    <div className="card-heading"><h2>Fotos ohne Text <span className="badge">{fotos.length}</span></h2>
+      <Info titel="Fotos ohne Text" punkte={["Die Texterkennung hat darin keine Schrift gefunden (Urlaubsbild, Bildschirmfoto ohne Text, zu unscharf).", "Selbst zuordnen: Auge an der Datei, dann Stift.", "Oder alle aus dem Organizer nehmen – sie werden dann nicht sortiert und nicht weitergegeben.", "Gelöscht wird nichts: wer ein Bild nicht mehr braucht, löscht es selbst auf dem Gerät."]}/></div>
+    <div className="button-row"><button type="button" className="button" onClick={() => { if (confirm(`${fotos.length} Fotos ohne Text aus dem Organizer nehmen? Die Originale bleiben unverändert.`)) z.entfernen(fotos.map((d) => d.pfad), `${fotos.length} Fotos ohne Text`); }} data-fotos-entfernen><Trash2 size={16}/>Alle aus dem Organizer nehmen</button></div>
+  </section>;
+}
+
 export function SortierenSeite({ z, gehe }: P) {
   // Zuerst, was im letzten Sieb neu hängen blieb (Marke „neu in Sieb N“), dann das Ältere.
   const neuOffen = (d: Datei) => istUnsicher(d, z.stufe);
@@ -278,6 +325,8 @@ export function SortierenSeite({ z, gehe }: P) {
           {sicher.length > 8 && !alleSicher && <button type="button" className="text-link" style={{ marginTop: 10 }} onClick={() => setAlleSicher(true)}>Alle {sicher.length} zeigen</button>}</>}
       {liegen > 0 && <p className="leise" style={{ marginTop: 10 }}>{liegen} gesperrt oder doppelt – sie bleiben liegen und werden nicht weitergegeben.</p>}
     </section>
+    <DoppelteKarte z={z}/>
+    <FotosOhneTextKarte z={z}/>
     {z.stufe >= 5 && offen.length === 0 && <section className="card"><div className="button-row"><button type="button" className="button primary" onClick={() => gehe("akte")}><Archive size={18}/>Weiter zur Familienakte</button><button type="button" className="button" onClick={() => gehe("finden")}><FolderTree size={18}/>Ansehen</button></div></section>}
   </>;
 }
@@ -510,8 +559,8 @@ export function HilfeSeite({ gehe }: P) {
       <details><summary>Werden meine Dateien verändert?</summary><p className="leise">Nein. Der Organizer liest nur. Er schreibt höchstens {INDEX_DATEI} dazu.</p></details>
       <details><summary>Geht etwas ins Internet?</summary><p className="leise">Nein. Alles läuft in diesem Gerät. Die Sortierung merkt sich nur dieser Browser.</p></details>
       <details><summary>Was heißt „gesperrt“?</summary><p className="leise">Die Datei sieht anders aus, als ihr Name sagt (z. B. ein Programm mit „.pdf“). Nicht öffnen, löschen.</p></details>
-      <details><summary>Was heißt „doppelt“?</summary><p className="leise">Gleicher Inhalt wie eine andere Datei. Die ältere bleibt, die Kopie wird nicht weitergegeben.</p></details>
-      <details><summary>Werden Fotos gelesen?</summary><p className="leise">Aufnahmedatum, Gerät und Ort aus dem Foto ja. Text im Bild (Schrift erkennen) kommt später.</p></details>
+      <details><summary>Was heißt „doppelt“?</summary><p className="leise">Gleicher Inhalt, Byte für Byte, wie eine andere Datei. Vorgewählt bleibt die ohne „Kopie“ im Namen, sonst die ältere – unter Sortieren › „Doppelte: welche behalten?“ entscheidest du per Haken, auch für alle auf einmal. Geänderte Fassungen sind nie „doppelt“, sondern „ähnlich“: beide bleiben.</p></details>
+      <details><summary>Werden Fotos gelesen?</summary><p className="leise">Ja. Aufnahmedatum, Gerät und Ort aus den Foto-Daten, dazu der Text im Bild über die Texterkennung auf dem Gerät – nichts geht ins Internet. Fotos ohne Text kannst du selbst zuordnen oder unter Sortieren gesammelt aus dem Organizer nehmen; gelöscht wird nichts.</p></details>
     </section>
   </>;
 }

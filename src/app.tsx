@@ -7,6 +7,7 @@ import { bildLeser, kernLeser, ocrGleichzeitig } from "./vendor.ts";
 import { leseEml } from "../lib/eml.ts";
 import { siebe, istUnsicher, offeneFelder } from "../lib/siebe.ts";
 import { absenderVereinheitlichen } from "../lib/abgleich.ts";
+const DOPPELT_SCHLUESSEL = "datei-organizer-doppelt-wahl";
 import { korrigieren as korrigiereDatei, lernen, regelnAufAlle } from "../lib/lernen.ts";
 import { archivnummernVergeben } from "../lib/archivnummer.ts";
 import { indexLesen, organizerIndex, INDEX_DATEI } from "../lib/index-format.ts";
@@ -65,7 +66,9 @@ function useOrganizer() {
   const laufHolen = useCallback(async (): Promise<Lauf | null> => (arbeitRef.current ? arbeitRef.current.laufLaden<Lauf>() : laufLaden()), []);
   const laufMerken = useCallback(async (l: Lauf) => { if (arbeitRef.current) await arbeitRef.current.laufSpeichern(l); else await laufSpeichern(l); }, []);
   const laufWeg = useCallback(async () => { if (arbeitRef.current) await arbeitRef.current.laufEnde().catch(() => {}); await laufLoeschen(); }, []);
-  const stapel = useRef<Datei[][]>([]);
+  // Jeder Eintrag merkt die Stufe, zu der er gehört: „Zurück“ nach Entfernen oder Behalten bleibt im selben Sieb.
+  const stapel = useRef<Array<Datei[] & { stufe?: number }>>([]);
+  const doppeltWahl = useRef<Record<string, string>>((() => { try { return JSON.parse(localStorage.getItem(DOPPELT_SCHLUESSEL) || "{}"); } catch { return {}; } })());
   const originale = useRef(new Map<string, QuellDatei | { blob: Uint8Array }>());
 
   // gemerkten Stand holen
@@ -201,7 +204,7 @@ function useOrganizer() {
       let frisch = neu;
       for (let s = 2; s <= stufe; s++) frisch = frisch.map((x) => siebe(x, s, regeln));
       const pfade = new Set(frisch.map((d) => d.pfad));
-      let alle = doppelteMarkieren([...dateien.filter((d) => !pfade.has(d.pfad)).map((d) => ({ ...d, doppeltVon: undefined })), ...frisch]);
+      let alle = doppelteMarkieren([...dateien.filter((d) => !pfade.has(d.pfad)).map((d) => ({ ...d, doppeltVon: undefined })), ...frisch], doppeltWahl.current);
       if (stufe >= 4) alle = absenderVereinheitlichen(alle);
       stapel.current = [];
       setDateien(alle); setFortschritt(null); if (!ordnerName) { setOrdnerName(q.name); setQuelleArt(q.art); if (!stufe) setStufe(1); }
@@ -209,7 +212,7 @@ function useOrganizer() {
       setMeldung({ text: `${frisch.length} Dateien hinzugefügt – jetzt ${alle.length} im Eingang${dopp ? ` · ${dopp} davon doppelt (gleicher Inhalt liegt schon da)` : ""}${weiter}.`, art: dopp ? "halt" : undefined });
       return;
     }
-    let fertig = doppelteMarkieren(neu);
+    let fertig = doppelteMarkieren(neu, doppeltWahl.current);
     // Vorhandenen Index übernehmen: Archivnummern, Bestätigtes, Regeln, Verlauf (Nummern ändern sich nie)
     let ausIndex = 0;
     const roh = await q.indexLesen?.().catch(() => null);
@@ -309,7 +312,7 @@ function useOrganizer() {
     let s = stufe, d = dateien;
     const ziel = bis ?? Math.min(5, stufe + 1);
     while (s < ziel) {
-      stapel.current.push(d);
+      stapel.current.push(Object.assign([...d], { stufe: s }));
       s++;
       d = d.map((x) => siebe(x, s, regeln));
       if (s >= 4) d = absenderVereinheitlichen(d);
@@ -326,7 +329,7 @@ function useOrganizer() {
   const zurueck = useCallback(() => {
     const vorher = stapel.current.pop();
     if (!vorher) return;
-    setDateien(vorher); setStufe((s) => Math.max(1, s - 1));
+    setDateien(vorher); setStufe((s) => vorher.stufe ?? Math.max(1, s - 1));
     setMeldung({ text: "Ein Sieb zurück. Korrekturen aus diesem Sieb sind zurückgenommen." });
   }, []);
 
@@ -410,18 +413,31 @@ function useOrganizer() {
     setMeldung({ text: `Organizer geleert: ${n} Dateien aus der Liste genommen. Die Originale und der Ordner sind unverändert${regeln.length ? `; ${regeln.length} gelernte Regeln bleiben` : ""}.` });
   }, [dateien.length, regeln.length]);
 
+  // Doppelte: welche Datei bleibt, entscheidet der Nutzer (Haken je Paar, „Alle: ältere/jüngere“); die Wahl wird gemerkt.
+  const behalten = useCallback((auswahl: Array<{ sha: string; pfad: string }>, was?: string) => {
+    for (const a of auswahl) doppeltWahl.current[a.sha] = a.pfad;
+    try { localStorage.setItem(DOPPELT_SCHLUESSEL, JSON.stringify(doppeltWahl.current)); } catch { /* ohne Speicher gilt die Wahl bis zum Schließen */ }
+    stapel.current.push(Object.assign([...dateien], { stufe }));
+    let d = doppelteMarkieren(dateien.map((x) => ({ ...x, doppeltVon: undefined })), doppeltWahl.current);
+    // die jetzt behaltene Datei war gesperrt und hat die Siebe noch nicht gesehen: bis zum heutigen Stand nachholen
+    d = d.map((x) => !x.doppeltVon && x.stufe < stufe ? siebe(x, stufe, regeln) : x);
+    if (stufe >= 4) d = absenderVereinheitlichen(d);
+    setDateien(d);
+    setMeldung({ text: was || "Gemerkt: diese Datei wird behalten, die andere gilt als Kopie. „Zurück“ auf der Seite Sortieren macht es rückgängig." });
+  }, [dateien, stufe, regeln]);
+
   // Einzelne Dateien oder einen ganzen Ordner aus dem Organizer nehmen. Nur die Liste ändert sich – die Originale bleiben, wo sie sind.
   const entfernen = useCallback((pfade: string[], was?: string) => {
     const weg = new Set(pfade);
     const bleibt = dateien.filter((d) => !weg.has(d.pfad) && !weg.has(d.pfad.split(" › ")[0]));
     const n = dateien.length - bleibt.length;
     if (!n) return;
-    stapel.current.push(dateien);
-    setDateien(doppelteMarkieren(bleibt.map((d) => ({ ...d, doppeltVon: undefined }))));
+    stapel.current.push(Object.assign([...dateien], { stufe }));
+    setDateien(doppelteMarkieren(bleibt.map((d) => ({ ...d, doppeltVon: undefined })), doppeltWahl.current));
     setMeldung({ text: `${was || (n === 1 ? "1 Datei" : `${n} Dateien`)} aus dem Organizer genommen. ${n === 1 ? "Das Original ist" : "Die Originale sind"} unverändert. „Zurück“ auf der Seite Sortieren holt sie wieder.` });
-  }, [dateien]);
+  }, [dateien, stufe]);
 
-  return { dateien, stufe, verlauf, regeln, ordnerName, quelleArt, quelle, meldung, setMeldung, fortschritt, einlesenAus, angefangen, anhalten, weitermachen, laufVerwerfen, leistung, arbeit, arbeitFehlt, arbeitEinrichten, arbeitAus, pcOrdnerWieder, naechstes, zurueck, aendern, rueckgaengig, nummern, indexSichern, indexText, original, neuBeginnen, leeren, entfernen, ordnerMerken, kannZurueck: () => stapel.current.length > 0 };
+  return { dateien, stufe, verlauf, regeln, ordnerName, quelleArt, quelle, meldung, setMeldung, fortschritt, einlesenAus, angefangen, anhalten, weitermachen, laufVerwerfen, leistung, arbeit, arbeitFehlt, arbeitEinrichten, arbeitAus, pcOrdnerWieder, naechstes, zurueck, aendern, rueckgaengig, nummern, indexSichern, indexText, original, neuBeginnen, leeren, entfernen, behalten, ordnerMerken, kannZurueck: () => stapel.current.length > 0 };
 }
 
 async function einlesenTeile(bytes: Uint8Array, pfad: string) {

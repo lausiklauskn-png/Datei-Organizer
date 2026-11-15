@@ -219,3 +219,17 @@ a { color: var(--teal); }
 /* Datei-Organizer Pro (App): Fassung als Knopf (lädt ein Update direkt), kurze Meldung unter dem Kopf. */
 .fassung-knopf { border: 1px solid var(--line, #c8d6e0); border-radius: 999px; padding: 6px 10px; color: inherit; background: transparent; font-size: .74rem; font-weight: 800; white-space: nowrap; }
 .update-meldung { position: fixed; z-index: 60; left: 50%; top: 84px; transform: translateX(-50%); max-width: min(92vw, 520px); padding: 10px 14px; border-radius: 8px; color: #fff; background: var(--navy, #0b3154); box-shadow: 0 6px 20px rgba(0,0,0,.2); font-size: .86rem; }
+/* Doppelte: je Paar zwei Dateien nebeneinander, Haken = behalten (Klaus 15.11.2026) */
+.doppelt-paar { border-top: 1px solid var(--line, #c8d6e0); padding: 10px 0; }
+.doppelt-paar:first-of-type { border-top: 0; }
+.doppelt-name { font-weight: 700; margin-bottom: 6px; overflow-wrap: anywhere; }
+.doppelt-seiten { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; }
+.doppelt-seite { display: flex; gap: 8px; align-items: flex-start; border: 1px solid var(--line, #c8d6e0); border-radius: 8px; padding: 8px; cursor: pointer; }
+.doppelt-seite.behalten { border-color: #1f7a4d; background: rgba(31, 122, 77, .08); }
+.doppelt-seite input { width: 18px; height: 18px; margin-top: 2px; accent-color: #1f7a4d; }
+.doppelt-ort { font-size: .82rem; overflow-wrap: anywhere; }
+.doppelt-name { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.doppelt-menue-ort { position: relative; display: inline-block; margin-bottom: 8px; }
+.doppelt-menue { position: absolute; z-index: 20; top: calc(100% + 4px); left: 0; display: flex; flex-direction: column; min-width: 260px; background: var(--card, #fff); border: 1px solid var(--line, #c8d6e0); border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,.15); padding: 4px; }
+.doppelt-menue button { text-align: left; border: 0; background: transparent; padding: 8px 10px; border-radius: 6px; font: inherit; cursor: pointer; color: inherit; }
+.doppelt-menue button:hover, .doppelt-menue button:focus-visible { background: rgba(42, 111, 176, .1); }
