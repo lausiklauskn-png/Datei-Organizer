@@ -400,7 +400,7 @@ var fehler=[];function zeig(t){fehler.push(t);var b=document.getElementById('tw-
 b.textContent='Fehler auf der Seite (bitte Bildschirmfoto schicken): '+fehler.slice(-3).join(' | ')}
 window.addEventListener('error',function(e){if(e.message)zeig(e.message+' @'+(e.lineno||''))});
 window.addEventListener('unhandledrejection',function(e){zeig(String(e.reason&&e.reason.message||e.reason))});
-document.addEventListener('DOMContentLoaded',function(){var r=document.createElement('a');r.href='./';r.textContent='‹ Datei-Organizer';r.setAttribute('data-zurueck','');r.style.cssText='position:fixed;left:10px;top:10px;z-index:9998;font:600 13px system-ui;padding:8px 12px;border-radius:999px;border:1px solid #8aa;background:#102030;color:#fff;opacity:.9;text-decoration:none';document.body.appendChild(r);var k=document.createElement('button');k.type='button';k.textContent=window.LEICHT?'3D-Ansicht einschalten':'Leichte Ansicht (ohne 3D)';
+document.addEventListener('DOMContentLoaded',function(){if(!window.EINZELDATEI){var r=document.createElement('a');r.href='./';r.textContent='‹ Datei-Organizer';r.setAttribute('data-zurueck','');r.style.cssText='position:fixed;left:10px;top:10px;z-index:9998;font:600 13px system-ui;padding:8px 12px;border-radius:999px;border:1px solid #8aa;background:#102030;color:#fff;opacity:.9;text-decoration:none';document.body.appendChild(r);}var k=document.createElement('button');k.type='button';k.textContent=window.LEICHT?'3D-Ansicht einschalten':'Leichte Ansicht (ohne 3D)';
 k.style.cssText='position:fixed;right:10px;top:10px;z-index:9998;font:600 13px system-ui;padding:8px 12px;border-radius:999px;border:1px solid #8aa;background:#102030;color:#fff;opacity:.9';
 k.onclick=function(){var neu=!window.LEICHT;try{localStorage.setItem('tw-leicht',neu?'1':'0')}catch(e){}try{location.hash=neu?'#2d':'#3d'}catch(e){}setTimeout(function(){location.reload()},50)};document.body.appendChild(k);
 })})();
@@ -832,7 +832,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && App.gewaeh
 
   /* Film statt 3D (Klaus 15.11.): derselbe Kreislauf als fertiger Film mit Sprecher – Vorgabe auf Tablet und Handy,
      am Rechner zur Wahl. Die 3D-Kugeln laden auf langsamen Geräten erst, wenn man sie ausdrücklich wählt. */
-  const FILM = { zeiten: [0, 11.07, 20.9, 30.43, 42.17, 49.63], adr: 'discovery-kreislauf.mp4', bild: 'discovery-kreislauf.jpg' };
+  const FILM = { zeiten: [0, 11.07, 20.9, 30.43, 42.17, 49.63], adr: window.DISCOVERY_FILM || 'discovery-kreislauf.mp4', bild: window.DISCOVERY_BILD || 'discovery-kreislauf.jpg' };
   const merk = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
   let filmArt = window.LEICHT ? false : (merk('tw-kreis') ? merk('tw-kreis') === 'film' : !!window.MOBIL), video = null, kugelnDa = false, tourBis = -1;
   const wahlF = el('div', 'kreis-wahl'), bF = el('button', '', 'Als Film'), b3 = el('button', '', 'Interaktiv in 3D'), filmBox = el('div', 'kreis-film');
