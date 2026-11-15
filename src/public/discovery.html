@@ -1460,7 +1460,7 @@ App.szene = function (key, titel) { if (App.tour || !Ton.an()) return; Sprecher.
     ['welten', 'Die Welten', () => { zurBuehne(); App.kreisBuehne.weg(); if (App.gewaehlt) App.close(); Szene.fokus(null); App.stadtFilm.zeig('staedte'); }],
     ['stadt_punkte', 'Die Punkte', () => { zurBuehne(); App.kreisBuehne.weg(); App.stadtFilm.zeig('punkte'); }]
   ].concat(KREIS.map(([k, n], i) => [k, `Kreislauf · ${i + 1} ${n}`, () => { zurBuehne(); App.stadtFilm.weg(); if (App.gewaehlt) App.close(); App.kreisBuehne.zeig(i); App.kreis.zeig(i, { nurText: true }); }]), [
-    ['schluss', 'Familienakte', () => { zurBuehne(); App.kreisBuehne.weg(); App.stadtFilm.weg(); if (App.gewaehlt) App.close(); Szene.fokus('akte'); }]
+    ['schluss', 'Familienakte', () => { zurBuehne(); App.kreisBuehne.weg(); App.stadtFilm.zeig('finale'); if (App.gewaehlt) App.close(); Szene.fokus('akte'); }]
   ]);
   const b = $('#bFuehrung'); let i = -1, uhr = null, lauf = 0;
   function schritt(n) {
@@ -1481,13 +1481,15 @@ App.szene = function (key, titel) { if (App.tour || !Ton.an()) return; Sprecher.
 /* ---------- Stadtfilm: vier Städte in vier Bildwelten, darüber die Punkte = Aufgaben der Agenten (Klaus 15.11.) ---------- */
 (function () {
   const ST = STAEDTE.slice(0, 4), BILD = window.DISCOVERY_STADTBILDER || ST.map((w, i) => `discovery-stadt-${i}.jpg`), VID = RUHIG ? [] : (window.DISCOVERY_STADTFILME || (window.EINZELDATEI ? [] : ST.map((w, i) => `discovery-stadt-${i}.mp4`)));
+  // Erzähl-Filme (Klaus 15.11.): Flug am Baum entlang durch die vier Städte, Landung der Murmeln in einer Stadt, Finale in der Familienakte.
+  const CLIPS = (RUHIG || window.EINZELDATEI) ? {} : Object.assign({ flug: 'discovery-stadt-flug.mp4', landung: 'discovery-stadt-landung.mp4', finale: 'discovery-stadt-finale.mp4' }, window.DISCOVERY_CLIPS || {});
   const box = el('div', 'stadt-film'); box.hidden = true;
   box.innerHTML = `<div class="sf-bilder">${ST.map((w, i) => `<div class="sf-szene" data-i="${i}"><img alt="" data-src="${BILD[i]}"></div>`).join('')}<div class="sf-szene sf-landung"></div></div>
     <div class="sf-punkte"></div><div class="sf-titel"><b></b><span></span></div>
-    <div class="sf-wahl">${ST.map((w, i) => `<button type="button" data-i="${i}" aria-pressed="false">${esc(w.kurz)}</button>`).join('')}</div>
+    <div class="sf-wahl">${ST.map((w, i) => `<button type="button" data-i="${i}" aria-pressed="false">${esc(w.kurz)}</button>`).join('')}${CLIPS.finale ? '<button type="button" data-clip="finale" aria-pressed="false">Familienakte</button>' : ''}</div>
     <div class="sf-leiste"><button type="button" class="sf-spiel" aria-label="Abspielen oder anhalten"></button><button type="button" class="sf-3d">Selbst erkunden: 3D-Ansicht</button></div>`;
   $('#buehne').appendChild(box);
-  const LAND = RUHIG ? '' : (window.DISCOVERY_LANDUNG || (window.EINZELDATEI ? '' : 'discovery-stadt-landung.mp4')), landBox = box.querySelector('.sf-landung'); let landV = null, landOk = !!LAND;
+  const landBox = box.querySelector('.sf-landung'); let landV = null, clipAn = null;
   const szenen = [...box.querySelectorAll('.sf-szene:not(.sf-landung)')], pBox = box.querySelector('.sf-punkte'), tB = box.querySelector('.sf-titel b'), tS = box.querySelector('.sf-titel span'), spielB = box.querySelector('.sf-spiel');
   let nr = 0, mitPunkten = false, laeuft = false, uhr = null, lauf = 0, geladen = false;
   function laden() { if (geladen) return; geladen = true; szenen.forEach((z, i) => { const b = z.querySelector('img'); b.src = b.dataset.src; if (VID[i]) { const v = document.createElement('video'); v.muted = true; v.loop = true; v.playsInline = true; v.preload = 'metadata'; v.onerror = () => v.remove(); v.src = VID[i]; z.appendChild(v); } }); }
@@ -1502,34 +1504,40 @@ App.szene = function (key, titel) { if (App.tour || !Ton.an()) return; Sprecher.
   function szene(i) {
     nr = (i + ST.length) % ST.length; laden();
     szenen.forEach((z, k) => { const an = k === nr; if (an && !z.classList.contains('an')) { const b = z.querySelector('img'); b.style.animation = 'none'; void b.offsetWidth; b.style.animation = ''; } z.classList.toggle('an', an); const v = z.querySelector('video'); if (v) { if (an && laeuft) { const pr = v.play(); if (pr && pr.catch) pr.catch(() => { }); } else v.pause(); } });
-    box.querySelectorAll('.sf-wahl button').forEach((b, k) => b.setAttribute('aria-pressed', k === nr));
-    [tB, tS].forEach(e => { e.style.animation = 'none'; void e.offsetWidth; e.style.animation = ''; }); tB.textContent = ST[nr].kurz; tB.style.fontSize = `clamp(16px, ${Math.min(6.2, 80 / (ST[nr].kurz.length * .94)).toFixed(2)}vw, 68px)`; tS.textContent = (ST[nr].d.art || '').split(',')[0]; punkte(nr);
+    box.querySelectorAll('.sf-wahl button').forEach(b => b.setAttribute('aria-pressed', b.dataset.i === String(nr)));
+    clipAn = null; landBox.classList.remove('an'); if (landV) landV.pause(); titel(ST[nr].kurz, (ST[nr].d.art || '').split(',')[0]); punkte(nr);
   }
-  // Die Murmeln landen in der Stadt und übernehmen die Aufgaben der Agenten (Klaus 15.11.): läuft zum Sprechtext „Die Punkte“, danach die Stadt mit den Punkten zum Antippen.
-  function landung(dann) {
-    if (!landOk) return dann();
-    if (!landV) { landV = document.createElement('video'); landV.muted = true; landV.playsInline = true; landV.preload = 'auto'; landV.poster = window.DISCOVERY_LANDUNGBILD || 'discovery-stadt-landung.jpg'; landV.onerror = () => { landOk = false; if (landBox.classList.contains('an')) fertigL(); }; landV.src = LAND; landBox.appendChild(landV); }
-    const meins = ++lauf; let aus = false; const fertigL = () => { if (aus) return; aus = true; landBox.classList.remove('an'); if (meins === lauf) dann(); };
-    landV.onended = fertigL; laeuft = true; knopf(); pBox.innerHTML = ''; szenen.forEach(z => z.classList.remove('an')); landBox.classList.add('an');
-    [tB, tS].forEach(e => { e.style.animation = 'none'; void e.offsetWidth; e.style.animation = ''; }); tB.style.fontSize = ''; tB.textContent = 'Die Agenten'; tS.textContent = 'jeder Punkt eine Aufgabe';
-    try { landV.currentTime = 0; const pr = landV.play(); if (pr && pr.catch) pr.catch(() => fertigL()); } catch (e) { fertigL(); }
+  function titel(a, b) { [tB, tS].forEach(e => { e.style.animation = 'none'; void e.offsetWidth; e.style.animation = ''; }); tB.textContent = a; tB.style.fontSize = `clamp(16px, ${Math.min(6.2, 80 / (a.length * .94)).toFixed(2)}vw, 68px)`; tS.textContent = b; }
+  // spielt einen Erzähl-Film; danach `dann()` – ohne `dann` bleibt das letzte Bild stehen. Fehlt der Film, geht es gleich weiter (bzw. `sonst()`).
+  function clip(key, a, b, dann, sonst) {
+    const weiterOhne = () => { clipAn = null; landBox.classList.remove('an'); (sonst || dann || (() => { laeuft = false; knopf(); }))(); };
+    if (!CLIPS[key]) return weiterOhne();
+    if (!landV) { landV = document.createElement('video'); landV.muted = true; landV.playsInline = true; landV.preload = 'auto'; landBox.appendChild(landV); }
+    const meins = ++lauf; let aus = false;
+    const fertig = () => { if (aus) return; aus = true; if (meins !== lauf) return; if (dann) { clipAn = null; landBox.classList.remove('an'); dann(); } else { laeuft = false; knopf(); } };
+    landV.onended = fertig; landV.onerror = () => { if (aus) return; aus = true; CLIPS[key] = ''; if (meins === lauf) weiterOhne(); };
+    clipAn = key; laeuft = true; knopf(); pBox.innerHTML = ''; szenen.forEach(z => { z.classList.remove('an'); const v = z.querySelector('video'); if (v) v.pause(); }); landBox.classList.add('an');
+    box.querySelectorAll('.sf-wahl button').forEach(x => x.setAttribute('aria-pressed', x.dataset.clip === key)); titel(a, b);
+    try { if (landV.dataset.key !== key) { landV.dataset.key = key; landV.src = CLIPS[key]; } else landV.currentTime = 0; const pr = landV.play(); if (pr && pr.catch) pr.catch(() => { }); } catch (e) { landV.onerror(); }
   }
   function knopf() { spielB.innerHTML = laeuft ? IK.pause : IK.spiel; }
   function takt(dauer, rest, dann) { clearTimeout(uhr); const meins = lauf; if (rest <= 0) { if (dann) dann(); return; } uhr = setTimeout(() => { if (meins !== lauf || !laeuft) return; szene(nr + 1); takt(dauer, rest - 1, dann); }, dauer); }
-  function halt() { laeuft = false; lauf++; clearTimeout(uhr); if (landV) { landV.pause(); landBox.classList.remove('an'); if (!szenen.some(z => z.classList.contains('an'))) { mitPunkten = true; szene(0); } } szenen.forEach(z => { const v = z.querySelector('video'); if (v) v.pause(); }); knopf(); }
+  function halt() { laeuft = false; if (!clipAn) lauf++; clearTimeout(uhr); if (landV) landV.pause(); szenen.forEach(z => { const v = z.querySelector('video'); if (v) v.pause(); }); knopf(); }
   function teil(punkteAn, dauer, dann) { mitPunkten = punkteAn; laeuft = true; lauf++; knopf(); szene(0); takt(dauer, ST.length - 1, () => { uhr = setTimeout(() => { if (dann) dann(); else { laeuft = false; knopf(); } }, dauer); }); }
   function zeig(art) {
     box.hidden = false; $('#buehne').classList.add('mit-stadtfilm'); $('#bStadtfilm').setAttribute('aria-pressed', 'true'); if (App.gewaehlt) App.close();
-    if (art === 'staedte') return teil(false, 5000);
-    if (art === 'punkte') return landung(() => teil(true, 4000));
-    // allein abgespielt: erst die Städte, dann die Punkte, mit dem Sprecher
-    Ton.bereit(); const meins = lauf + 1;
-    const zwei = () => { landung(() => teil(true, 4000)); if (Ton.an() && !App.tour) Sprecher.sag('stadt_punkte', {}); };
-    teil(false, 5000, zwei); if (Ton.an() && !App.tour) Sprecher.sag('welten', {});
+    const flug = dann => clip('flug', 'Vier Städte', 'ein Baum, vier Welten', dann, () => teil(false, 5000, dann));
+    const land = () => clip('landung', 'Die Agenten', 'jeder Punkt eine Aufgabe', () => teil(true, 4000));
+    if (art === 'staedte') return flug(null);
+    if (art === 'punkte') return land();
+    if (art === 'finale') return clip('finale', 'Familienakte', 'alles kommt zusammen', null, () => weg());
+    // allein abgespielt: Flug durch die Städte, Landung in einer Stadt, dann die Punkte zum Antippen – mit dem Sprecher
+    Ton.bereit();
+    flug(() => { land(); if (Ton.an() && !App.tour) Sprecher.sag('stadt_punkte', {}); }); if (Ton.an() && !App.tour) Sprecher.sag('welten', {});
   }
   function weg() { if (box.hidden) return; halt(); box.hidden = true; $('#buehne').classList.remove('mit-stadtfilm'); $('#bStadtfilm').setAttribute('aria-pressed', 'false'); }
-  spielB.onclick = () => { if (laeuft) { halt(); if (!App.tour) Sprecher.pause(); } else { laeuft = true; lauf++; knopf(); if (!App.tour) Sprecher.weiter(); takt(4000, 99); } };
-  box.querySelectorAll('.sf-wahl button').forEach(b => b.onclick = () => { halt(); mitPunkten = true; szene(+b.dataset.i); });
+  spielB.onclick = () => { if (laeuft) { halt(); if (!App.tour) Sprecher.pause(); } else { laeuft = true; knopf(); if (!App.tour) Sprecher.weiter(); if (clipAn && landV) { const pr = landV.play(); if (pr && pr.catch) pr.catch(() => { }); } else { lauf++; takt(4000, 99); } } };
+  box.querySelectorAll('.sf-wahl button').forEach(b => b.onclick = () => { if (b.dataset.clip) { if (!App.tour) { Sprecher.stopp(true); if (Ton.an()) Sprecher.sag('schluss', {}); } return zeig('finale'); } clipAn = null; halt(); mitPunkten = true; szene(+b.dataset.i); });
   box.querySelector('.sf-3d').onclick = () => { if (!App.tour) Sprecher.stopp(true); weg(); };
   $('#bStadtfilm').onclick = () => { if (!box.hidden && !App.tour) { Sprecher.stopp(true); return weg(); } zeig('alles'); };
   knopf(); App.stadtFilm = { zeig, weg, an: () => !box.hidden };

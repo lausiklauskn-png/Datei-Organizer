@@ -57,7 +57,11 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   Abend, Landstädtchen am Morgen, Steampunk-Großstadt, Zukunftsstadt am Fluss), Stadtname als große dünne Filmschrift im Bild (Klaus: keine
   Knopf-Optik, Schrift soll sich ins Bild einfügen); dann `discovery-stadt-landung.mp4` (die Murmeln landen in der Hafenstadt und übernehmen die
   Aufgaben der Agenten), danach die Punkte je Stadt (aus `D.welten[].agenten`) – Antippen öffnet die Karte der Stadt. Bei „weniger Bewegung“ und
-  in der Einzeldatei nur die Standbilder. **Idee von Klaus für den nächsten Umbau (15.11., nichts ändern ohne sein Wort):** Stadtname nach
+  in der Einzeldatei nur die Standbilder. **Erzählfolge (15.11. nachts):** „Die Welten“ = Flug am Baum entlang, die Murmeln teilen sich auf die
+  vier Städte auf, Zoom in die Hafenstadt (`discovery-stadt-flug.mp4`, endet auf dem Startbild der Landung); „Die Punkte“ = Landung, dann Punkte;
+  Schluss = Finale im Archivhaus in der Baummitte (`discovery-stadt-finale.mp4`, auch über „Familienakte“ in der Städtewahl); Tabelle `CLIPS`.
+  **Klaus will vor weiteren Filmen ein Drehbuch sehen** (Bewohner der Stadt zeigen, Murmeln vereinen sich am Ende, Überblendungen statt Neudreh).
+  **Idee von Klaus für den nächsten Umbau (15.11., nichts ändern ohne sein Wort):** Stadtname nach
   dem Einblenden wieder verschwinden lassen; Rollen-Namen nicht dauernd mitfliegen lassen, sobald die Rolle bekannt ist (die Murmel/der Punkt
   wird größer, wenn sie gerade erklärt wird). Discovery-Ordner jetzt rund 22 MB – **Paketgröße von APK/Windows vor der nächsten Ausgabe prüfen.**
   **Leistungsprüfung:** im Hintergrund wird gemessen, wie flüssig das Gerät zeichnet (`messe`); zu langsam, ruckelnde oder abgebrochene
