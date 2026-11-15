@@ -5,6 +5,26 @@ Regeln vorab und Einfrieren: `docs/PRUEFSTAPEL-REKURSIV-REGELN.md`. Nichts verö
 
 ## Kurz
 
+- **Runde 2 ist nachgewiesen (Welt 3, einmal gemessen, Text und gesetzte Fassung mit Barcode/QR zusammen):**
+  neu gegen 0.4.4 **+2,72 Punkte, gesichert** (76,18 → 78,89 % von 1 952 Feld-Urteilen, 90-%-Spanne +1,56 bis +3,70, p ≈ 0,0006);
+  neu gegen das bisherige Vorgehen **+2,66 Punkte, gesichert** (Spanne +1,73 bis +3,63). **Kein Feld schlechter.**
+  Damit ist Regel R2-4 erfüllt; die Übernahme in die Familienakte wartet auf Klaus' Ja.
+- Was der Kern jetzt lernt (alles „raten → Korrektur → lernen“, gemitteltes Perzeptron, nur aus Fehlern):
+  **Art** (`lib/artmodell.ts`), **Absender-Wahl** (`lib/absenderwahl.ts`) und **Frist-Wahl** (`lib/fristwahl.ts`) – die beiden
+  Wahlen greifen nur, wenn die feste Regel unsicher ist. Daten nur über `scripts/*-lernen.mjs`.
+- Runde 1 (Prüfstadt) war knapp **nicht** gesichert (+1,17, Spanne −0,10 bis +2,29) – daraus gelernt, dann Runde 2.
+
+| Welt 3, je Feld (neu gegen 0.4.4) | Text | gesetzt (Scan/Foto, Barcode/QR) |
+| --- | --- | --- |
+| Art des Schriftstücks | 72,0 → **80,0 %** (p = 0,009) | 66,0 → **73,0 %** (p = 0,034) |
+| Absender | 79,4 → 81,4 % | 56,3 → **59,3 %** (6 gegen 0, p = 0,031) |
+| Frist | 92,0 → **94,5 %** (5 gegen 0) | 82,0 → 83,5 % |
+| Bereich | 78,5 → 80,5 % | 78,0 → 78,5 % |
+| Person | 84,7 → 84,7 % | 73,4 → 73,4 % |
+| **alle Felder** | 81,25 → **84,22 %** (+2,97, gesichert) | 71,11 → **73,57 %** (+2,46, gesichert) |
+
+### Runde 1 (Prüfstadt, zuerst)
+
 - Die Schleife „raten → Korrektur → lernen“ ist gebaut: zwei **gelernte Bausteine** im Kern, die nur aus Fehlern lernen
   (gemitteltes Perzeptron): **Art des Schriftstücks** (`lib/artmodell.ts`, Wörter nach Lage im Brief) und **Absender-Wahl**
   unter den Zeilen des Schriftstücks (`lib/absenderwahl.ts`, greift nur, wenn die feste Regel unsicher ist). Daten erzeugt von
@@ -68,7 +88,29 @@ Person und Frist gleich. Der Absender aus Scans und Fotos bleibt trotzdem schwac
 **Einordnung:** Die Hauptzahl (Text) ist nach den Regeln nicht gesichert gegen 0.4.4; die gesetzte Fassung ist es. Beides zusammen
 ist ein deutlicher Hinweis, aber kein Freibrief: Hauptzahl war vorab der Text.
 
+## Runde 2 im Einzelnen
+
+- Lernmaterial zusätzlich: die verbrauchte Prüfstadt als Text **und so, wie die App die gesetzten Stücke liest** (`pruefstapel-stadt-pruef-ocr/`,
+  `scripts/gesetzt-texte.mjs`) – Lernen mit echten Lesefehlern.
+- Neu: **Frist-Wahl** (Kandidaten = alle Daten im Text, Regel-Vorschlag, „keine Frist“; Merkmale Wörter davor/danach, Uhrzeit, Wochentag,
+  Abstand zum Briefdatum). Art-Merkmale um das Briefende erweitert (Gruß, Rechtsbehelf, „bitte überweisen“); „sicher“ erst ab Abstand 25.
+- Reihum (9 Teststapel): 0.4.4 83,25 · bisheriges Vorgehen 83,88 · neu 85,45 %.
+- **Welt 3** „Beispielstadt-Nord“ (Großstadt, neue Agenten, sechs Haushalte u. a. Familie mit Aufenthaltstitel, Imbiss, Studentinnen),
+  200 Stücke, drei Einordner (ein Absender strittig). **Simulator 4** (eigener Agent): 110 PDF-Scans, 90 Fotos, je ein Drittel gut/mittel/schlecht,
+  69 mit Codes (Datamatrix-Frankierung 38, Code128 28, Strichcode auf Bescheiden 18, Überweisungs-QR 11, QR auf Bons/Links 9).
+  Lesegüte: Wortfehler 34–74 % je Form und Güte (schlechte Fotos: nur 45 % der Wörter gefunden).
+- Personen-Zuordnung: unverändert – sie läuft nur in der Messung, nicht in der App.
+
+## Grenzen
+
+- Erfundene Unterlagen von Claude-Agenten (Schreiber, Einordner, Setzer); kein Nicht-Claude-Einordner, keine echten Unterlagen, kein Gerät.
+- Absender aus schlechten Scans/Fotos bleibt schwach (59 %); die Lesegüte ist die Grenze.
+- App-Paket wächst von 0,66 auf 1,19 MB (gzip 214 → 285 KB), vor allem durch das Art-Modell (685 KB Daten).
+
 ## Nächste Schritte (Vorschlag)
+
+- **Familienakte:** Kern nachziehen (`tools/sortierkern-nachziehen.mjs` dort) und dort messen – nur mit Klaus' Ja.
+- Art-Modell verkleinern (ganzzahlige Gewichte, weniger Merkmale) und prüfen, was es kostet.
 
 - Einen zweiten, unabhängigen Nachweis bauen, bevor etwas in die Familienakte geht (Regel 8 der Gruppe).
 - Art: die häufigsten Restfehler sind „Aufforderung ← Brief“ und „Mahnung ← Rechnung“ – mehr Lehrmaterial mit drei Einordnern genau dafür.

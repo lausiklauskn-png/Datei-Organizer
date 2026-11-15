@@ -85,3 +85,8 @@ R2-4. **Alt** = 0.4.4 (`079dd6d`), **Gegenprobe** = bisheriges Vorgehen mit dens
   verbrauchten Stapeln einschließlich Prüfstadt. Lerndaten-Hash `cf02fc4004d11102`.
 - **Gegenprobe** = `1d21e2c`: Kern 0.4.4, Wortmodell byte-gleich mit Neu. **Alt** = `079dd6d`.
 - Abstimmung reihum (9 Teststapel inkl. gelesener Prüfstadt): alt 83,25 · Gegenprobe 83,88 · neu 85,45 %.
+
+### Runde 2 gemessen (15.11.2026, einmal)
+
+Hauptzahl (R2-3, Text+gesetzt): neu gegen 0.4.4 +2,72 Punkte (Spanne +1,56 bis +3,70), gegen Gegenprobe +2,66 (Spanne +1,73 bis +3,63) –
+beides gesichert, kein Feld schlechter. R2-4 erfüllt bis auf Klaus' Ja. Welt 3 ist damit verbraucht. Zahlen in `pruefstapel-stadt-3/`.
