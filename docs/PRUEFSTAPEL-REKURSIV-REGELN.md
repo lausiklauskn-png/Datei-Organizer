@@ -52,4 +52,13 @@ Eingecheckt, **bevor** die Prüfstadt existiert. Auftrag: `docs/BRIEF_SITZUNG_20
 
 ## Eingefroren
 
-(wird vor der Messung eingetragen: Kern neu, Kern Gegenprobe, Hash der Lerndaten)
+Eingefroren am 15.11.2026 gegen 01:25 Uhr, **bevor** die Prüfstadt oder ihre gesetzte Fassung gelesen oder gemessen wurde
+(die Agenten hatten Stapel und Einordnung fertig, beides ungeöffnet):
+- **Alt** = Kern `079dd6d` (0.4.4).
+- **Neu** = `ca63f1cdbfa62e405c69e3a9181784e170f8728a`: gelerntes Art-Modell (`lib/artmodell.ts`), gelernte Absender-Wahl (`lib/absenderwahl.ts`, nur wenn die Regel unsicher ist),
+  Wortmodell (Bereich) mit allen verbrauchten Stapeln neu gelernt. Lerndaten-Hash (Art-, Absender-, Wortmodell-Daten) `5546e66112abe4b4`.
+- **Gegenprobe** (bisheriges Vorgehen, Punkt 10) = `7b07329`: Kern `079dd6d`, nur das Wortmodell mit denselben Stapeln neu gelernt
+  (Wortmodell-Daten byte-gleich mit Neu).
+- Abstimmung reihum (7 verbrauchte Stapel, kein Nachweis): alt 85,65 · Gegenprobe 86,04 · neu 87,48 % richtige Feld-Urteile.
+- Abweichung von Punkt 4/5: Die Lernstadt ist nur Teststapel, nicht im Modell – ihr Soll stammt von einem einzigen Schreiber, sie brachte
+  reihum nichts und senkte den Testordner (Art 93 → 87 %).
