@@ -3,6 +3,8 @@ import { istGehaltsabrechnung, gehaltLesen } from "./gehalt.js";
 import { absenderAusGruss, erkenneAbsender, erkenneBetrag, erkenneBetrifft, erkenneDatum, erkenneFrist, erkenneKategorie, erkenneNummern, erkenneSchriftstueck } from "./erkennen.js";
 import { FOTOS } from "./kategorien.js";
 import { absenderName } from "./eml.js";
+import { absenderWaehlen } from "./absenderwahl.js";
+import { fristWaehlen } from "./fristwahl.js";
 import { lernregelAnwenden } from "./lernen.js";
 import { artMitModell, bereichMitModell } from "./wortmodell.js";
 const STUFEN = [
@@ -50,8 +52,10 @@ ${voll}`));
   }
   if (stufe >= 4 && d.stufe < 4) {
     if (d.email?.von) setze(d, "absender", { wert: absenderName(d.email.von), sicher: true, grund: "Absender der E-Mail", quelle: "regel" });
-    else if (!textOhne(d)) setze(d, "absender", erkenneAbsender(kopf) || absenderAusGruss(voll) || { wert: "unbekannt", sicher: false, grund: "kein Absender im Kopf gefunden", quelle: "regel" });
-    else if (d.art === "bild") setze(d, "absender", { wert: d.bild?.modell ? `eigenes Foto (${d.bild.modell})` : "eigenes Foto", sicher: true, grund: "Foto ohne Text", quelle: "regel" });
+    else if (!textOhne(d)) {
+      const kopfW = erkenneAbsender(kopf), gruss = absenderAusGruss(voll), regel = kopfW || gruss;
+      setze(d, "absender", (regel?.sicher ? regel : absenderWaehlen(voll, { kopf: kopfW, gruss })) || regel || { wert: "unbekannt", sicher: false, grund: "kein Absender im Kopf gefunden", quelle: "regel" });
+    } else if (d.art === "bild") setze(d, "absender", { wert: d.bild?.modell ? `eigenes Foto (${d.bild.modell})` : "eigenes Foto", sicher: true, grund: "Foto ohne Text", quelle: "regel" });
     else setze(d, "absender", { wert: "unbekannt", sicher: false, grund: "kein lesbarer Text (Scan ohne Textebene?)", quelle: "regel" });
     for (const r of regeln) lernregelAnwenden(d, r);
   }
@@ -60,7 +64,8 @@ ${voll}`));
       const weitere = erkenneNummern(voll).filter((n) => !d.felder.nummern?.some((x) => x.art === n.art && x.wert === n.wert));
       d.felder.nummern = [...d.felder.nummern || [], ...weitere];
       setze(d, "betrifft", erkenneBetrifft(voll) || { wert: "unbekannt", sicher: false, grund: "keine Anrede, kein Anschriftfeld", quelle: "regel" });
-      setze(d, "frist", erkenneFrist(voll, d.felder.datum?.wert, d.felder.datum?.sicher !== false));
+      const fr = erkenneFrist(voll, d.felder.datum?.wert, d.felder.datum?.sicher !== false);
+      setze(d, "frist", fr?.sicher ? fr : fristWaehlen(voll, fr, d.felder.datum));
       setze(d, "betrag", erkenneBetrag(voll));
       const g = gehaltLesen(voll);
       if (g) {

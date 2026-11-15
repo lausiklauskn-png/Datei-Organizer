@@ -3,6 +3,8 @@ import type { Datei, Wert } from "./typen.ts";
 import { absenderAusGruss, erkenneAbsender, erkenneBetrag, erkenneBetrifft, erkenneDatum, erkenneFrist, erkenneKategorie, erkenneNummern, erkenneSchriftstueck } from "./erkennen.ts";
 import { FOTOS } from "./kategorien.ts";
 import { absenderName } from "./eml.ts";
+import { absenderWaehlen } from "./absenderwahl.ts";
+import { fristWaehlen } from "./fristwahl.ts";
 import { lernregelAnwenden } from "./lernen.ts";
 import { artMitModell, bereichMitModell } from "./wortmodell.ts";
 import type { Lernregel } from "./typen.ts";
@@ -57,7 +59,11 @@ export function siebe(datei: Datei, stufe: number, regeln: Lernregel[] = []): Da
   }
   if (stufe >= 4 && d.stufe < 4) {
     if (d.email?.von) setze(d, "absender", { wert: absenderName(d.email.von), sicher: true, grund: "Absender der E-Mail", quelle: "regel" });
-    else if (!textOhne(d)) setze(d, "absender", erkenneAbsender(kopf) || absenderAusGruss(voll) || { wert: "unbekannt", sicher: false, grund: "kein Absender im Kopf gefunden", quelle: "regel" });
+    else if (!textOhne(d)) {
+      // Feste Regeln zuerst; finden sie keinen sicheren Absender, wählt die gelernte Absender-Wahl unter den Zeilen (lib/absenderwahl.ts)
+      const kopfW = erkenneAbsender(kopf), gruss = absenderAusGruss(voll), regel = kopfW || gruss;
+      setze(d, "absender", (regel?.sicher ? regel : absenderWaehlen(voll, { kopf: kopfW, gruss })) || regel || { wert: "unbekannt", sicher: false, grund: "kein Absender im Kopf gefunden", quelle: "regel" });
+    }
     // Nur ein Bild ohne Text ist ein eigenes Foto; ein PDF ohne lesbaren Text (Scan, Texterkennung fehlgeschlagen) bleibt offen (Training 14.11.2026;
     // Fehlerbehebung, nicht eigens gemessen)
     else if (d.art === "bild") setze(d, "absender", { wert: d.bild?.modell ? `eigenes Foto (${d.bild.modell})` : "eigenes Foto", sicher: true, grund: "Foto ohne Text", quelle: "regel" });
@@ -71,7 +77,9 @@ export function siebe(datei: Datei, stufe: number, regeln: Lernregel[] = []): Da
       const weitere = erkenneNummern(voll).filter((n) => !d.felder.nummern?.some((x) => x.art === n.art && x.wert === n.wert));
       d.felder.nummern = [...(d.felder.nummern || []), ...weitere];
       setze(d, "betrifft", erkenneBetrifft(voll) || { wert: "unbekannt", sicher: false, grund: "keine Anrede, kein Anschriftfeld", quelle: "regel" });
-      setze(d, "frist", erkenneFrist(voll, d.felder.datum?.wert, d.felder.datum?.sicher !== false));
+      // Feste Regel zuerst; ist sie nicht sicher, wählt die gelernte Frist-Wahl unter den Daten im Text oder „keine Frist“ (lib/fristwahl.ts)
+      const fr = erkenneFrist(voll, d.felder.datum?.wert, d.felder.datum?.sicher !== false);
+      setze(d, "frist", fr?.sicher ? fr : fristWaehlen(voll, fr, d.felder.datum));
       setze(d, "betrag", erkenneBetrag(voll));
       const g = gehaltLesen(voll);
       if (g) { d.gehalt = g; if (g.auszahlung) setze(d, "betrag", { wert: `${g.auszahlung} €`, sicher: true, grund: "Auszahlungsbetrag der Gehaltsabrechnung", quelle: "regel" }); }

@@ -1,5 +1,6 @@
 // Erzeugt aus Datei-Organizer lib/wortmodell.ts (scripts/kern-js.mjs). Nicht von Hand ändern.
 import { WORTMODELL_ART, WORTMODELL_BEREICH } from "./wortmodell-daten.js";
+import { artVorhersage, ARTMODELL_MIN, ARTMODELL_SICHER, ARTMODELL_VOR_REGEL } from "./artmodell.js";
 const STOPP = new Set("der die das und oder f\xFCr von vom mit bei den dem des ein eine einer eines einem einen ist sind wird wurde werden auf aus zum zur nach bis \xFCber unter ihre ihr ihrem ihren ihres wir sie uns unser unsere unserer bitte danke vielen dank gmbh kg ohg ag mbh inh inhaber inhaberin tel telefon fax mail www http https iban bic bank konto blz str stra\xDFe strasse weg platz allee ring nr no seite datum eur euro betrag summe gesamt netto brutto mwst ust umsatzsteuer steuernummer ustidnr idnr usb".split(" "));
 function merkmale(text) {
   const w = (text.toLowerCase().match(/[a-zäöüß]{3,}/g) || []).filter((x) => !STOPP.has(x)), m = new Set(w);
@@ -43,11 +44,23 @@ function mitModell(regel, modell, text) {
   return regel;
 }
 const bereichMitModell = (regel, text) => mitModell(regel, WORTMODELL_BEREICH, text);
-const artMitModell = (regel, text) => mitModell(regel, WORTMODELL_ART, text);
+function artMitModell(regel, text) {
+  if (!wortmodellSchalter.an) return regel;
+  const v = artVorhersage(text);
+  if (!v) return regel;
+  if (regel?.sicher && regel.wert === v.wert) return regel;
+  if (!regel?.sicher && v.abstand >= ARTMODELL_MIN || v.abstand >= ARTMODELL_VOR_REGEL) {
+    const wort = v.grund.length ? `gelernt: ${v.grund.map((g) => `\u201E${g}\u201C`).join(", ")}` : "gelerntes Art-Modell";
+    return { wert: v.wert, sicher: v.abstand >= ARTMODELL_SICHER, grund: v.abstand >= ARTMODELL_SICHER ? wort : `${wort} (knapp vor \u201E${v.zweites}\u201C)`, quelle: "regel" };
+  }
+  return regel;
+}
+const artMitWortmodell = (regel, text) => mitModell(regel, WORTMODELL_ART, text);
 export {
   MODELL_SICHER,
   MODELL_VOR_REGEL,
   artMitModell,
+  artMitWortmodell,
   bereichMitModell,
   merkmale,
   mitModell,
