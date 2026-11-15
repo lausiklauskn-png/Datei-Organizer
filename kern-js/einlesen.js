@@ -81,8 +81,10 @@ ${m.text}`.trim();
   }
   return aus;
 }
-function doppelteMarkieren(dateien) {
+function doppelteMarkieren(dateien, wahl = {}) {
   const erste = /* @__PURE__ */ new Map();
+  const da = new Set(dateien.map((d) => d.pfad));
+  for (const [sha, pfad] of Object.entries(wahl)) if (da.has(pfad) && dateien.some((d) => d.pfad === pfad && d.sha256 === sha)) erste.set(sha, pfad);
   const kopie = (d) => /kopie|copy|\(\d+\)|-(desktop|laptop|pc|tablet|handy|[a-z]+-pc)-[a-z0-9]+(?=\.\w+$)/i.test(d.name) ? 1 : 0;
   for (const d of [...dateien].sort((a, b) => kopie(a) - kopie(b) || a.geaendert - b.geaendert || a.pfad.localeCompare(b.pfad, "de"))) if (d.sha256 && !erste.has(d.sha256)) erste.set(d.sha256, d.pfad);
   return aehnlicheFinden(dateien.map((d) => {

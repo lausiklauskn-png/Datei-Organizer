@@ -90,3 +90,29 @@ R2-4. **Alt** = 0.4.4 (`079dd6d`), **Gegenprobe** = bisheriges Vorgehen mit dens
 
 Hauptzahl (R2-3, Text+gesetzt): neu gegen 0.4.4 +2,72 Punkte (Spanne +1,56 bis +3,70), gegen Gegenprobe +2,66 (Spanne +1,73 bis +3,63) –
 beides gesichert, kein Feld schlechter. R2-4 erfüllt bis auf Klaus' Ja. Welt 3 ist damit verbraucht. Zahlen in `pruefstapel-stadt-3/`.
+
+## Runde 3 (vorab festgelegt am 15.11.2026 gegen 02:55 Uhr, bevor Welt 4 existiert; Runde 2 ist auf `main`)
+
+R3-1. **Lernen** zusätzlich an Welt 3 (Text und so, wie die App die gesetzten Stücke liest). Reihum gewählt wie Punkt 5.
+R3-2. **Welt 4** (`pruefstapel-stadt-4/`): neue Agenten, eine **Mittelstadt im Westen mit Mehrgenerationenhäusern, Pendlern und viel
+      digitaler Post** (Portale, Mails mit Anhängen, App-Benachrichtigungen, E-Rechnungen als Ausdruck), dazu Papierpost. Drei Einordner,
+      eigener Setzer (Simulator 5) mit Barcodes und QR-Codes, Scan und Foto. Keiner sieht Repo, Kern, frühere Welten.
+R3-3. **Alt** = Kern auf `main` nach Runde 2 (`4cba044`), dazu wie bisher 0.4.4 (`079dd6d`) und die **Gegenprobe** (bisheriges Vorgehen mit
+      denselben Lerndaten). Hauptzahl wie R2-3 (Text+gesetzt, Bootstrap über Absender). Neu gilt als besser als Runde 2, wenn die untere
+      Grenze der 90-%-Spanne gegen `4cba044` über 0 liegt; Verschlechterungen je Feld werden genannt.
+R3-4. Ziel nebenbei: Art-Modell kleiner (App-Paket), ohne dass die Abstimmung reihum mehr als 0,3 Punkte verliert.
+
+### Runde 3 eingefroren (15.11.2026 gegen 07:45 Uhr, Welt 4 noch im Bau, nichts davon gelesen)
+
+- **Neu** = `9c87de186b01555a553e783815d4dfe9c1291277`: wie `main` (Runde 2), nur Absender- und Frist-Wahl zusätzlich mit Welt 3 gelernt. Art-Modell unverändert: mit Welt 3
+  gelernt fiel der Testordner unter die Grenze (89 statt ≥ 90 %). Kombination Art-Modell + Wortmodell verworfen (reihum nur +0,05).
+- **Zusätzliche Frage an Welt 4 (Nachtrag vor der Messung):** Hält der Gewinn von Runde 2 an einer zweiten unabhängigen Welt?
+  Gemessen `4cba044` gegen 0.4.4, gleicher Test wie R2-3. Das ist die Wiederholung, die die Recherche verlangt.
+
+### Runde 3 gemessen (15.11.2026, einmal, Welt 4)
+
+- **Wiederholung:** Kern `main` (Runde 2, `4cba044`) gegen 0.4.4: Text+gesetzt +2,06 Punkte (68,83 → 70,90 %, 90-%-Spanne +1,11 bis +3,03) –
+  zum zweiten Mal an einer unabhängigen Welt gesichert; kein Feld schlechter (Text: Art 69,0 → 75,0, Bereich 75,5 → 78,5, Absender 74,2 → 75,8,
+  Frist 92,5 → 93,5; gesetzt: Art 55,0 → 58,0, Absender 43,4 → 45,5, Frist 79,5 → 81,5, Bereich 62,5 → 64,0).
+- **Runde 3** gegen Runde 2: 0,00 Punkte (Spanne −0,20 bis +0,23) – mehr Lernmaterial aus Welt 3 bringt nichts Messbares. Nicht schlechter.
+- Welt 4 ist verbraucht. Zahlen in `pruefstapel-stadt-4/`.

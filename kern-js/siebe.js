@@ -43,7 +43,7 @@ ${voll}`));
     }
   }
   if (stufe >= 3 && d.stufe < 3) {
-    if (d.art === "bild" && textOhne(d)) setze(d, "kategorie", { wert: FOTOS, sicher: true, grund: "Foto ohne Text \u2013 Zuordnung sp\xE4ter (Texterkennung kommt in einer sp\xE4teren Fassung)", quelle: "regel" });
+    if (d.art === "bild" && textOhne(d)) setze(d, "kategorie", { wert: FOTOS, sicher: true, grund: "Foto ohne lesbaren Text \u2013 selbst zuordnen oder aus dem Organizer nehmen (Sortieren \u203A Fotos ohne Text)", quelle: "regel" });
     else if (istGehaltsabrechnung(voll)) setze(d, "kategorie", { wert: "Rente, Arbeit & Sozialversicherung", sicher: true, grund: "Gehaltsabrechnung", quelle: "regel" });
     else setze(d, "kategorie", bereichMitModell(erkenneKategorie(`${d.email?.betreff || ""}
 ${kopf}`, d.email?.von || erkenneAbsender(kopf)?.wert || absenderAusGruss(voll)?.wert || "", d.felder.schriftstueck?.wert), `${d.email?.betreff || ""}

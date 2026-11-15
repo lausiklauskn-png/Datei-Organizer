@@ -75,9 +75,12 @@ export async function einlesen(e: Eingabe, pdfLesen: PdfLeser, tiefe = 0, bildLe
   return aus;
 }
 
-/** Doppelte am Fingerabdruck markieren: die erste (nach Pfad) bleibt, alle weiteren zeigen auf sie. */
-export function doppelteMarkieren(dateien: Datei[]): Datei[] {
+/** Doppelte am Fingerabdruck markieren: eine bleibt, alle weiteren zeigen auf sie. Welche bleibt, entscheidet der Nutzer
+ *  (wahl: Fingerabdruck → Pfad, Klaus 15.11.2026); ohne Wahl die ohne „Kopie“ im Namen, sonst die ältere. */
+export function doppelteMarkieren(dateien: Datei[], wahl: Record<string, string> = {}): Datei[] {
   const erste = new Map<string, string>();
+  const da = new Set(dateien.map((d) => d.pfad));
+  for (const [sha, pfad] of Object.entries(wahl)) if (da.has(pfad) && dateien.some((d) => d.pfad === pfad && d.sha256 === sha)) erste.set(sha, pfad);
   // Original = die ohne „Kopie“/„(2)“ im Namen; sonst die ältere (Änderungszeiten sind nach Kopieren oder Auschecken unzuverlässig)
   const kopie = (d: Datei) => /kopie|copy|\(\d+\)|-(desktop|laptop|pc|tablet|handy|[a-z]+-pc)-[a-z0-9]+(?=\.\w+$)/i.test(d.name) ? 1 : 0;
   for (const d of [...dateien].sort((a, b) => kopie(a) - kopie(b) || a.geaendert - b.geaendert || a.pfad.localeCompare(b.pfad, "de"))) if (d.sha256 && !erste.has(d.sha256)) erste.set(d.sha256, d.pfad);

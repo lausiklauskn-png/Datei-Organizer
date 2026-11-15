@@ -52,7 +52,7 @@ export function siebe(datei: Datei, stufe: number, regeln: Lernregel[] = []): Da
     }
   }
   if (stufe >= 3 && d.stufe < 3) {
-    if (d.art === "bild" && textOhne(d)) setze(d, "kategorie", { wert: FOTOS, sicher: true, grund: "Foto ohne Text – Zuordnung später (Texterkennung kommt in einer späteren Fassung)", quelle: "regel" });
+    if (d.art === "bild" && textOhne(d)) setze(d, "kategorie", { wert: FOTOS, sicher: true, grund: "Foto ohne lesbaren Text – selbst zuordnen oder aus dem Organizer nehmen (Sortieren › Fotos ohne Text)", quelle: "regel" });
     else if (istGehaltsabrechnung(voll)) setze(d, "kategorie", { wert: "Rente, Arbeit & Sozialversicherung", sicher: true, grund: "Gehaltsabrechnung", quelle: "regel" });
     else setze(d, "kategorie", bereichMitModell(erkenneKategorie(`${d.email?.betreff || ""}\n${kopf}`, d.email?.von || erkenneAbsender(kopf)?.wert || absenderAusGruss(voll)?.wert || "", d.felder.schriftstueck?.wert), `${d.email?.betreff || ""}\n${voll}`));
     d.felder.nummern = erkenneNummern(kopf + "\n" + (d.email?.betreff || ""));

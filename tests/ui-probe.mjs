@@ -91,7 +91,25 @@ try {
     else { await z.locator("[data-korrigieren]").click(); const w = z.locator("[data-wert]"); if (await w.evaluate((e) => e.tagName) === "SELECT") await w.selectOption({ index: 1 }); else await w.fill("2026-11-01"); await z.locator("[data-uebernehmen]").click(); geaendert++; }
   }
   soll("Ganz durchgesiebt, nichts mehr zu prüfen", await page.locator("[data-nichts-offen]").count() === 1 && !(await page.locator("[data-durchsieben]").isEnabled()), `Runden ${runden}`);
-  console.log(`    (${bestaetigt} bestätigt, ${geaendert} geändert)`);
+
+  // Doppelte (Klaus 15.11.2026): je Paar Haken = behalten, Papierkorb-Menü „Alle: ältere/jüngere behalten“, Kopien herausnehmen
+  { const karte = page.locator("[data-doppelte]");
+    soll("Doppelte: Karte „welche behalten?“ mit Paaren", await karte.isVisible() && await page.locator("[data-doppelt-paar]").count() >= 2);
+    const paar = page.locator("[data-doppelt-paar]").first(), sha = await paar.getAttribute("data-doppelt-paar");
+    const kopie = paar.locator("input[type=radio]:not(:checked)").first(), kopiePfad = await kopie.getAttribute("data-doppelt-behalten");
+    await kopie.check(); await page.waitForTimeout(150);
+    soll("Doppelte: Haken bei der anderen Datei macht sie zur behaltenen", await page.locator(`[data-doppelt-paar="${sha}"] input[data-doppelt-behalten="${kopiePfad}"]`).isChecked());
+    soll("Doppelte: Wahl wird gemerkt", await page.evaluate(([s, p]) => JSON.parse(localStorage.getItem("datei-organizer-doppelt-wahl") || "{}")[s] === p, [sha, kopiePfad]));
+    await page.locator("[data-doppelt-menue]").click();
+    soll("Doppelte: Papierkorb öffnet das Menü mit drei Wegen", await page.locator("[data-doppelt-alle-aelter], [data-doppelt-alle-juenger], [data-doppelt-alle-raus]").count() === 3);
+    await page.locator("[data-doppelt-alle-aelter]").click(); await page.waitForTimeout(150);
+    soll("Doppelte: „Alle: ältere behalten“ setzt die Haken", (await page.locator("[data-meldung]").innerText().catch(() => "")).includes("ältere") || await page.locator("[data-doppelte]").isVisible());
+    const vorher = await page.locator("[data-doppelt-paar]").count();
+    await page.locator("[data-doppelt-menue]").click(); await page.locator("[data-doppelt-alle-raus]").click(); await page.waitForTimeout(200);
+    soll("Doppelte: „Alle Kopien herausnehmen“ leert die Karte", vorher > 0 && await page.locator("[data-doppelte]").count() === 0);
+    await page.locator("[data-zurueck]").click(); await page.waitForTimeout(200);
+    soll("Doppelte: „Sieb zurück“ holt die Kopien wieder", await page.locator("[data-doppelt-paar]").count() === vorher);
+  }  console.log(`    (${bestaetigt} bestätigt, ${geaendert} geändert)`);
   soll("Zähler in der Navigation ist weg", await page.locator("[data-nav=sortieren] .zahl").count() === 0);
 
   console.log("Verlauf");
