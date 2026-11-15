@@ -17,16 +17,15 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   16 deutsche Prüfstapel (2.892 Stücke): Art, Bereich, Absender, Frist unverändert; Probe in `run-kern-tests.mjs` (4 neu, Gegenprobe 3/3).
   Auftrag aus Private Brain Pro (Brief dort `BRIEF_SITZUNG_2026-11-15_SUCHE-SORTIERKERN.md`). Familienakte und BookLedgerPro noch nicht nachgezogen.
 
-## Veröffentlicht (15.11.2026, Klaus' Wort „neue Fassung veröffentlichen“): Datei-Organizer 0.4.5 – nicht erneut ausgeben
+## Veröffentlicht (15.11.2026, Klaus' Wort „0.4.6 veröffentlichen“): Datei-Organizer 0.4.6 – nicht erneut ausgeben
 
-- **Android** `Datei-Organizer-Pro-0.4.5.apk` (Code 45, SHA-256 `3b6a3554…b5c5`, Zertifikat `594e44df…365d`, Lauf 43718716786), **Windows**
-  `Datei-Organizer-Pro-Windows-0.4.5-x64-setup.exe` (25.296.607 B, SHA-256 `f28b6741…6e49`, Lauf 43718375514), beide auf
-  `family-projekt.de/updates/datei-organizer/`, **Basic** über Pages. Inhalt: rekursive Verbesserung des Kerns (gelernte Art, Absender-
-  und Frist-Wahl; `docs/ERGEBNIS-REKURSIVE-VERBESSERUNG-2026-11-15.md`), Doppelte mit Haken und Papierkorb-Menü, Fotos ohne Text.
-  Nachweis `docs/VEROEFFENTLICHUNG-0.4.5.json`. Nächste Ausgabe: **0.4.6**. Updates über das Fähnchen.
-  Vorher veröffentlicht: 0.4.4, 0.4.3 (`docs/VEROEFFENTLICHUNG-0.4.4.json`, `-0.4.3.json`).
+- **Android** `Datei-Organizer-Pro-0.4.6.apk` (Code 46, 16.321.178 B, SHA-256 `d9e683e5…1109`, Zertifikat `594e44df…365d`, Lauf 43735720040), **Windows**
+  `Datei-Organizer-Pro-Windows-0.4.6-x64-setup.exe` (31.018.398 B, SHA-256 `39461b99…b146`, Lauf 43735733108), beide auf
+  `family-projekt.de/updates/datei-organizer/`, **Basic** über Pages. Inhalt: Discovery (unten). Stand `f36f8a3`; die Schilder, die sich
+  hinter einer vorderen Stadt ausblenden (#43), sind **nicht** in den Apps. Nachweis `docs/VEROEFFENTLICHUNG-0.4.6.json`.
+  Nächste Ausgabe: **0.4.7**. Vorher veröffentlicht: 0.4.5, 0.4.4, 0.4.3 (Nachweise `docs/VEROEFFENTLICHUNG-<fassung>.json`).
 
-## Stand (15.11.2026, Fassung 0.4.6, Discovery – nicht als APK/Windows veröffentlicht)
+## Stand (15.11.2026, Fassung 0.4.6, Discovery – veröffentlicht, siehe oben)
 
 - **Discovery (Klaus 15.11.: „mache aus der Doku einen Teil des Repos, Button Discovery“):** Fernrohr-Knopf im Kopf (`data-discovery-knopf`,
   `src/app.tsx`) öffnet `src/public/discovery.html` – die interaktive Doku „so wurde der Sortier-Kern trainiert“: 3D-Baum mit den Test-Welten,
@@ -40,7 +39,9 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   Kurzfilme laufen lückenlos hintereinander, ohne Ansage „Erster Film“.
   Knopf „Leichte Ansicht (ohne 3D)“ als Notausgang, Rückweg „‹ Datei-Organizer“. Zahlen stammen aus der eingebetteten Messdatei (`const D`) –
   nicht von Hand ändern. UI-Probe 126 (4 neu). Dasselbe als Artefakt: https://claude.ai/artifact/1G6GPbK29HpWaTCGV5bBCk.
-  ⚠ Nicht am Gerät: ob die Segmente am Tab S6 reichen, Klang von Musik und Stimme zusammen.
+  **Nach 0.4.6 (auf main, nicht in den Apps):** Schilder blenden sich aus, wenn eine andere Stadt davor steht; **Einzeldatei zum Versenden**
+  `node scripts/discovery-einzeldatei.mjs [ziel]` (≈ 8 MB, alles eingebettet, nicht ins Repo legen). Klaus 15.11. am Galaxy Tab S6: „läuft alles“
+  (Artefakt Version 12: Film, Kurzfilme, Umschalter).
 
 ## Stand (14.11.2026): Pseudonymisierer 0.1.0 (PWA, zweite Seite in diesem Repo)
 
