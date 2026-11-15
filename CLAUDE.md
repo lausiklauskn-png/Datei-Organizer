@@ -30,7 +30,7 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
 - **Discovery (Klaus 15.11.: „mache aus der Doku einen Teil des Repos, Button Discovery“):** Fernrohr-Knopf im Kopf (`data-discovery-knopf`,
   `src/app.tsx`) öffnet `src/public/discovery.html` – die interaktive Doku „so wurde der Sortier-Kern trainiert“: 3D-Baum mit den Test-Welten,
   Kreislauf aus sechs Glaskugeln (Raten, Soll, Lernen, Reihum, Einfrieren, Messen), Führung, drei Kurzfilme, Musik/Geräusche (Web Audio).
-  Sprecher: 13 Tonspuren `src/public/discovery-ton/<schluessel>.mp3` (Klaus hat sie mit einem Sprachgenerator erzeugt, Tempo 0,9; Texte im
+  Sprecher: 13 Tonspuren `src/public/discovery-ton/<schluessel>.mp3` (seit 15.11. abends Stimme „Arthur“ über Higgsfield/ElevenLabs, Klaus' Wahl, auf main, nicht ausgegeben; vorher Sprachgenerator, Tempo 0,9; der Kreislauf-Film trägt dieselbe Stimme, Bild unverändert; Texte im
   Objekt `SPRECHTEXTE` der Seite – bei Textänderung neu vertonen), sonst Browserstimme. three.js r128 liegt bei (`discovery-three.min.js`, MIT),
   keine fremden Quellen. **Segmente:** am Tablet/Handy ist immer nur eine 3D-Fläche geladen (`window.Segmente`: die andere gibt ihre Grafik
   frei, lädt in Sicht oder auf Tipp nach) – Grund: das Galaxy Tab S6 zeigte mit zwei 3D-Flächen fehlende Schrift und schwarze Flächen.
@@ -44,6 +44,39 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   erscheint sie von selbst. „Weiter“ steht während der Führung oben neben „Führung anhalten“.
   **Kurzfilme wie ein Video** (0.4.8, nicht ausgegeben): keine Überschrift, keine Kästen daneben; Abspielen und Lautsprecher als runde Knöpfe im
   Bild, der Sprechtext darunter nur mit Untertiteln.
+  **Kurzfilme als echte Filme (15.11. abends, Higgsfield, nicht ausgegeben):** „Der Briefträger“ und „Der Kern rät“ laufen als Video
+  (`discovery-film-brieftraeger.mp4`, `discovery-film-kern.mp4`, je 8 s, ohne Ton – gesprochen wird weiter über die Tonspuren; Figuren mit
+  Gesicht, Klaus: „absolut cool“); fehlt die Datei oder ist „weniger Bewegung“ gewünscht, läuft die gezeichnete Fassung (`filmAdr`, `zeigVideo`).
+  „Der Strafzettel“ ebenfalls als Film (`discovery-film-strafzettel.mp4`, 10 s, Murmel schwebt). Die Einzeldatei bettet die Kurzfilme mit ein.
+  **Kreislauf-Film im Murmel-Stil (15.11. nachts, nicht ausgegeben):** `discovery-kreislauf.mp4` ist jetzt aus sechs Higgsfield-Filmen geschnitten
+  (je Kugel eine Murmel mit Gesicht: Raten türkis, Soll orange, Lernen violett, Reihum grün, Einfrieren eisblau, Messen rosa), Längen genau wie
+  `FILM.zeiten`, Tonspur = die sechs `kreis_*`-Tonspuren, schwebender Titel je Schritt eingebrannt; zeigt keine Zahlen mehr (die stehen im Text daneben).
+  Die interaktive 3D-Fassung der Kugeln ist unverändert.
+  **Stadtfilm (15.11. nachts, nicht ausgegeben):** Knopf „Stadtfilm“ im Rahmen und Führungsschritte „Die Welten“/„Die Punkte“ (`App.stadtFilm`,
+  14. Tonspur `stadt_punkte`): vier Städte in vier Bildwelten als Filmsequenzen (`discovery-stadt-0…3.mp4`, Standbild `.jpg` als Ersatz: Hafen am
+  Abend, Landstädtchen am Morgen, Steampunk-Großstadt, Zukunftsstadt am Fluss), Stadtname als große dünne Filmschrift im Bild (Klaus: keine
+  Knopf-Optik, Schrift soll sich ins Bild einfügen); dann `discovery-stadt-landung.mp4` (die Murmeln landen in der Hafenstadt und übernehmen die
+  Aufgaben der Agenten), danach die Punkte je Stadt (aus `D.welten[].agenten`) – Antippen öffnet die Karte der Stadt. Bei „weniger Bewegung“ und
+  in der Einzeldatei nur die Standbilder. **Drehbuch (Klaus' Ja 15.11. nachts: „Drehbuch passt, Baum als Ende, Bewohner wie der Briefträger“), zwei Geschichten:**
+  (1) **oben im Rahmen, interaktiv** (`App.stadtFilm`, Tabelle `CLIPS`, Führung in dieser Reihenfolge): Baum mit vier Städten (`discovery-stadt-baum.mp4`,
+  zum Text `begruessung`) → Recherche in 3D → die Städte leben, Bewohner = bunte Figuren mit Beinen im Stil des Briefträgers (`…-leben-1/2.mp4`,
+  `welten`) → Zwischenszene Strafzettel (derselbe Film wie der dritte Kurzfilm, Klaus' Wunsch; `welten` endet darum mit „… auch Strafzettel.“ – Pause, bis die
+  Murmel im Film fängt – „Die fängt der Kern ein und ordnet sie richtig zu.“; die Tonspur ist aus zwei Aufnahmen gesetzt, zweiter Satz bei 22,7 s; die Kurzform behält den kürzeren Satz, weil ihr Bild kürzer ist) → die Murmeln (= die Agenten, schwebend) teilen sich auf die vier Städte auf, Zoom in die Hafenstadt (`…-flug.mp4`, neuer Text
+  `stadt_agenten`) → Landung und Aufgaben (`…-landung.mp4`, `stadt_punkte` neu gesprochen), dann die Punkte zum Antippen → sechs Kugeln →
+  Finale: die Murmeln verschmelzen zu einer und liefern im Archivhaus in der Baummitte ab (`…-finale.mp4`, `schluss` neu gesprochen, beginnt jetzt
+  mit „Aus vier Städten kommt alles wieder zusammen.“). 15 Tonspuren. Die Filme sind stumm, Arthur kommt aus den Tonspuren; allein über den Knopf
+  „Stadtfilm“ wartet jede Szene, bis Film und Text zu Ende sind. (2) **unter dem Rahmen die Kurzform** nur mit den Murmeln:
+  `discovery-kurzgeschichte.mp4` (43 s, Ton eingebrannt, älteres Finale und ältere Texte – so von Klaus gelobt, nicht neu schneiden ohne sein Wort;
+  einzige Änderung auf seinen Wunsch: der Satz beginnt mit „Wir haben Städte erfunden.“ statt „Dann haben wir …“, auch in `welten`).
+  Die Führung wartet, bis der laufende Erzähl-Film zu Ende ist (`App.stadtFilm.wartet`).
+  **Zweites Kurzvideo „Runde für Runde“ (Klaus' Ja zum Drehbuch 15.11. spät):** `discovery-runden.mp4` (58 s, Ton eingebrannt; Schluss: letztes Bild zoomt weg, Schrift und Arthur „Je mehr du einordnest und verbesserst, umso besser wird sie/die App.“) unter der Kurzform:
+  erste Stadt → neuer Ast, neue Stadt, Blick hinein (neu gedreht) → Folge der vier Städte → was nicht hilft, fliegt raus (7 Versuche, 3 behalten) →
+  Verschmelzen und Archivhaus (ohne echten Brief, rund 4.700 erfundene Stücke) → zu Hause: eigene Unterlagen, die App lernt aus Korrekturen
+  (neu gedreht). Zahlen aus `const D`. Offen bei Klaus: ob es die Kurzform ersetzen soll; ob die Strafzettel-Murmel Beine bekommen soll.
+  Weitere Filme nur nach Drehbuch und Klaus' Ja; Übergänge durch Überblenden statt Neudreh. Discovery-Ordner rund 50 MB.
+  **Idee von Klaus für den nächsten Umbau (15.11., nichts ändern ohne sein Wort):** Stadtname nach
+  dem Einblenden wieder verschwinden lassen; Rollen-Namen nicht dauernd mitfliegen lassen, sobald die Rolle bekannt ist (die Murmel/der Punkt
+  wird größer, wenn sie gerade erklärt wird). Discovery-Ordner jetzt rund 50 MB – **Paketgröße von APK/Windows vor der nächsten Ausgabe prüfen.**
   **Leistungsprüfung:** im Hintergrund wird gemessen, wie flüssig das Gerät zeichnet (`messe`); zu langsam, ruckelnde oder abgebrochene
   Kugeln → Hinweis „geht auf diesem Gerät nicht flüssig“, Film statt 3D, gemerkt (`tw-kugeln-schwach`), „Trotzdem versuchen“.
   **Nach 0.4.6 (auf main, nicht in den Apps):** Schilder blenden sich aus, wenn eine andere Stadt davor steht; **Einzeldatei zum Versenden**
