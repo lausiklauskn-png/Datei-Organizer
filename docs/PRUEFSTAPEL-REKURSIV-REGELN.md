@@ -62,3 +62,18 @@ Eingefroren am 15.11.2026 gegen 01:25 Uhr, **bevor** die Prüfstadt oder ihre ge
 - Abstimmung reihum (7 verbrauchte Stapel, kein Nachweis): alt 85,65 · Gegenprobe 86,04 · neu 87,48 % richtige Feld-Urteile.
 - Abweichung von Punkt 4/5: Die Lernstadt ist nur Teststapel, nicht im Modell – ihr Soll stammt von einem einzigen Schreiber, sie brachte
   reihum nichts und senkte den Testordner (Art 93 → 87 %).
+
+## Runde 2 (vorab festgelegt am 15.11.2026 gegen 01:55 Uhr, bevor Welt 3 existiert)
+
+R2-1. **Lernen** an allen verbrauchten Stapeln einschließlich der **Prüfstadt** (jetzt verbraucht, Soll aus drei Einordnern), reihum
+      gewählt wie Punkt 5. Die Lernstadt bleibt Teststapel.
+R2-2. **Welt 3** (`pruefstapel-stadt-3/`): neue Agenten (eigener Planer, vier eigene Absender-Gruppen), eine **Großstadt mit Stadtteilen**
+      (Mietshäuser, Familien mit Wurzeln im Ausland, Schichtarbeit, Kleingewerbe), keiner sieht Repo, Kern, frühere Welten. Drei Einordner
+      (zwei Sonnet, ein Opus) wie Punkt 2. Dazu ein **eigener Setzer (Simulator 4)** eines anderen Agenten, wieder mit Barcodes, QR-Codes,
+      Logos, Stempeln, Scan und Foto.
+R2-3. **Einmal messen**, Text und gesetzt. **Hauptzahl diesmal beide zusammen** (Text und gesetzt je Stück zusammengezählt; die App
+      bekommt beides), gleicher Test wie Punkt 8 (Bootstrap über Absender, untere Grenze der 90-%-Spanne über 0). Text und gesetzt
+      zusätzlich einzeln berichtet.
+R2-4. **Alt** = 0.4.4 (`079dd6d`), **Gegenprobe** = bisheriges Vorgehen mit denselben Lerndaten, **Neu** = eingefrorener Kandidat der Runde 2.
+      Übertragung in die Familienakte nur, wenn Neu sowohl 0.4.4 als auch die Gegenprobe gesichert schlägt (Hauptzahl) und an keinem
+      Feld gesichert schlechter ist – und mit Klaus' Ja.
