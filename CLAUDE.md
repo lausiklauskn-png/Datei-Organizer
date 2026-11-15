@@ -57,7 +57,9 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   Abend, Landstädtchen am Morgen, Steampunk-Großstadt, Zukunftsstadt am Fluss), Stadtname als große dünne Filmschrift im Bild (Klaus: keine
   Knopf-Optik, Schrift soll sich ins Bild einfügen); dann `discovery-stadt-landung.mp4` (die Murmeln landen in der Hafenstadt und übernehmen die
   Aufgaben der Agenten), danach die Punkte je Stadt (aus `D.welten[].agenten`) – Antippen öffnet die Karte der Stadt. Bei „weniger Bewegung“ und
-  in der Einzeldatei nur die Standbilder. Discovery-Ordner jetzt rund 22 MB – **Paketgröße von APK/Windows vor der nächsten Ausgabe prüfen.**
+  in der Einzeldatei nur die Standbilder. **Idee von Klaus für den nächsten Umbau (15.11., nichts ändern ohne sein Wort):** Stadtname nach
+  dem Einblenden wieder verschwinden lassen; Rollen-Namen nicht dauernd mitfliegen lassen, sobald die Rolle bekannt ist (die Murmel/der Punkt
+  wird größer, wenn sie gerade erklärt wird). Discovery-Ordner jetzt rund 22 MB – **Paketgröße von APK/Windows vor der nächsten Ausgabe prüfen.**
   **Leistungsprüfung:** im Hintergrund wird gemessen, wie flüssig das Gerät zeichnet (`messe`); zu langsam, ruckelnde oder abgebrochene
   Kugeln → Hinweis „geht auf diesem Gerät nicht flüssig“, Film statt 3D, gemerkt (`tw-kugeln-schwach`), „Trotzdem versuchen“.
   **Nach 0.4.6 (auf main, nicht in den Apps):** Schilder blenden sich aus, wenn eine andere Stadt davor steht; **Einzeldatei zum Versenden**
