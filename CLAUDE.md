@@ -57,13 +57,19 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   Abend, Landstädtchen am Morgen, Steampunk-Großstadt, Zukunftsstadt am Fluss), Stadtname als große dünne Filmschrift im Bild (Klaus: keine
   Knopf-Optik, Schrift soll sich ins Bild einfügen); dann `discovery-stadt-landung.mp4` (die Murmeln landen in der Hafenstadt und übernehmen die
   Aufgaben der Agenten), danach die Punkte je Stadt (aus `D.welten[].agenten`) – Antippen öffnet die Karte der Stadt. Bei „weniger Bewegung“ und
-  in der Einzeldatei nur die Standbilder. **Erzählfolge (15.11. nachts):** „Die Welten“ = Flug am Baum entlang, die Murmeln teilen sich auf die
-  vier Städte auf, Zoom in die Hafenstadt (`discovery-stadt-flug.mp4`, endet auf dem Startbild der Landung); „Die Punkte“ = Landung, dann Punkte;
-  Schluss = Finale im Archivhaus in der Baummitte (`discovery-stadt-finale.mp4`, auch über „Familienakte“ in der Städtewahl); Tabelle `CLIPS`.
-  **Klaus will vor weiteren Filmen ein Drehbuch sehen** (Bewohner der Stadt zeigen, Murmeln vereinen sich am Ende, Überblendungen statt Neudreh).
+  in der Einzeldatei nur die Standbilder. **Drehbuch (Klaus' Ja 15.11. nachts: „Drehbuch passt, Baum als Ende, Bewohner wie der Briefträger“), zwei Geschichten:**
+  (1) **oben im Rahmen, interaktiv** (`App.stadtFilm`, Tabelle `CLIPS`, Führung in dieser Reihenfolge): Baum mit vier Städten (`discovery-stadt-baum.mp4`,
+  zum Text `begruessung`) → Recherche in 3D → die Städte leben, Bewohner = bunte Figuren mit Beinen im Stil des Briefträgers (`…-leben-1/2.mp4`,
+  `welten`) → die Murmeln (= die Agenten, schwebend) teilen sich auf die vier Städte auf, Zoom in die Hafenstadt (`…-flug.mp4`, neuer Text
+  `stadt_agenten`) → Landung und Aufgaben (`…-landung.mp4`, `stadt_punkte` neu gesprochen), dann die Punkte zum Antippen → sechs Kugeln →
+  Finale: die Murmeln verschmelzen zu einer und liefern im Archivhaus in der Baummitte ab (`…-finale.mp4`, `schluss` neu gesprochen, beginnt jetzt
+  mit „Aus vier Städten kommt alles wieder zusammen.“). 15 Tonspuren. Die Filme sind stumm, Arthur kommt aus den Tonspuren; allein über den Knopf
+  „Stadtfilm“ wartet jede Szene, bis Film und Text zu Ende sind. (2) **unter dem Rahmen die Kurzform** nur mit den Murmeln:
+  `discovery-kurzgeschichte.mp4` (43 s, Ton eingebrannt, älteres Finale und ältere Texte – so von Klaus gelobt, nicht neu schneiden ohne sein Wort).
+  Weitere Filme nur nach Drehbuch und Klaus' Ja; Übergänge durch Überblenden statt Neudreh. Discovery-Ordner rund 40 MB.
   **Idee von Klaus für den nächsten Umbau (15.11., nichts ändern ohne sein Wort):** Stadtname nach
   dem Einblenden wieder verschwinden lassen; Rollen-Namen nicht dauernd mitfliegen lassen, sobald die Rolle bekannt ist (die Murmel/der Punkt
-  wird größer, wenn sie gerade erklärt wird). Discovery-Ordner jetzt rund 22 MB – **Paketgröße von APK/Windows vor der nächsten Ausgabe prüfen.**
+  wird größer, wenn sie gerade erklärt wird). Discovery-Ordner jetzt rund 40 MB – **Paketgröße von APK/Windows vor der nächsten Ausgabe prüfen.**
   **Leistungsprüfung:** im Hintergrund wird gemessen, wie flüssig das Gerät zeichnet (`messe`); zu langsam, ruckelnde oder abgebrochene
   Kugeln → Hinweis „geht auf diesem Gerät nicht flüssig“, Film statt 3D, gemerkt (`tw-kugeln-schwach`), „Trotzdem versuchen“.
   **Nach 0.4.6 (auf main, nicht in den Apps):** Schilder blenden sich aus, wenn eine andere Stadt davor steht; **Einzeldatei zum Versenden**
