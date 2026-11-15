@@ -27,7 +27,7 @@
   "stichprobe.ts": "3e79d94cb0c7b7d381e2629b33e14d5a6c3144dd96837d053f29054c277d046e",
   "test-pdf.ts": "58cdaf19f0c2ac065cd2ccda4eacce0d1237de95034cbd9c58ee54ab6f957b3f",
   "typen.ts": "b0314ab7ca6b2025bd2b724a5b6ad1bfc47fcfef8e65f93b1d23d882cf8957d0",
-  "wortmodell-daten.ts": "2d6e310fac4f41a7eca205b0b8694e8c8cc1f3a5f774c492c7299f36a2faca7b",
+  "wortmodell-daten.ts": "be6bec54669d9b3a013cccddc6f3b110e0d0ffe780d82b0a7c4dd16bb819103a",
   "wortmodell.ts": "d1183aa2b42d0fa9cccfd7d33d639ad8c2d80e049456b89c5a7bfa6991797d33",
   "zip.ts": "9e4ca8b8cbf14c59d477bd7f83079a1282f661d8678e0f4fa45de5868d9b3133"
  },
@@ -57,7 +57,7 @@
   "stichprobe.js": "ff34d2e256be84275f818ff1371824a98d97634cec528687c34d340af0243cda",
   "test-pdf.js": "d85b594f255085995fbef3fa91a512281ea89b8fc50b12225351c78cfbb59a89",
   "typen.js": "1b9a87c595d50e4ba4bfc0b49bf5791b206553a3c5b642148d5d9597e1c49cf4",
-  "wortmodell-daten.js": "2ea83ec6312182216a6ae658ce3b22cf0b34059aa3f794c8c9499fc3de7118f7",
+  "wortmodell-daten.js": "a5e870c11e90afa92bfb920525538ab43922ea40ba06061a7401644d03f1ac93",
   "wortmodell.js": "be3bcb38ff6facd5b0246cd00d503e1fdea54130f9e14c7399c7664dc4bcd784",
   "zip.js": "3fc337d489b0229f7a1a4a3302d9a6ff495fbc34469cc79278d09d4177337a3b"
  }
