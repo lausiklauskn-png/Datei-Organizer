@@ -78,7 +78,10 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   Hintergrund der Bühne, die vier Städte und die Familienakte darin sind antippbar (`start()` in `App.stadtFilm`), die Erklärfilme laufen im selben
   Rahmen; „In 3D erkunden“ schaltet auf die 3D-Ansicht. Vorgewählt am Tablet/Handy; am Rechner misst die Seite den Bildabstand der 3D-Bühne
   (`messeB`, über 40 ms → Film-Ansicht mit Hinweis, gemerkt `tw-buehne-schwach`, Wahl `tw-buehne`); solange die Film-Ansicht die Bühne deckt, ruht
-  die 3D-Schleife (`App.buehneRuht`). Leichte Ansicht (2D) bleibt der Notausgang. **Ladebalken an jedem Film** (`ladeBalken`). **Die alten
+  die 3D-Schleife (`App.buehneRuht`); ist die Film-Ansicht vorgewählt, wird die 3D-Welt gar nicht erst gebaut (`App.baue3D`, erst auf „In 3D
+  erkunden“; Klaus: das Tablet stürzt bei 3D ab), am Tablet rechnet sie mit einfacher Auflösung. **„Führung starten“ spielt in der Film-Ansicht
+  das große Video am Stück** (`discovery-geschichte.mp4`, 75 s, Ton eingebrannt, `App.stadtFilm.gross`); die Schritt-Führung bleibt der 3D-Ansicht.
+  Leichte Ansicht (2D) bleibt der Notausgang. **Ladebalken an jedem Film** (`ladeBalken`). **Die alten
   gezeichneten Kurzfilme werden nicht mehr gezeigt** (Klaus: „grottenschlecht“; kein Rückfall mehr, der Zeichen-Code steht nur noch ungenutzt in der Seite).
   **Idee von Klaus für den nächsten Umbau (15.11., nichts ändern ohne sein Wort):** Stadtname nach
   dem Einblenden wieder verschwinden lassen; Rollen-Namen nicht dauernd mitfliegen lassen, sobald die Rolle bekannt ist (die Murmel/der Punkt
