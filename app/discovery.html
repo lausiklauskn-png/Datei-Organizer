@@ -281,6 +281,12 @@ canvas.kugeln.zeigt{cursor:pointer}
 .leinwand canvas{width:100%;height:100%;display:block}
 #kurzgeschichte{padding-top:8px}
 #kurzgeschichte[hidden]{display:none}
+.zugabe{margin-top:12px;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.zugabe #zugabeFilm{width:100%}.zugabe #zugabeFilm[hidden]{display:none}
+#zugabeKnopf{display:inline-flex;align-items:center;gap:9px;background:none;border:0;padding:4px 2px;color:var(--leise);font:500 13.5px var(--sans);cursor:pointer}
+#zugabeKnopf i{width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 34% 30%,#d9fff8 0,#49d6c4 34%,#178a86 72%,#0c4f57 100%);box-shadow:inset -4px -5px 8px rgba(0,0,0,.28),0 3px 10px rgba(0,0,0,.25);position:relative;flex:none;transition:transform .2s}
+#zugabeKnopf i::after{content:"";position:absolute;left:13px;top:10px;border-style:solid;border-width:7px 0 7px 11px;border-color:transparent transparent transparent #fff}
+#zugabeKnopf:hover i,#zugabeKnopf:focus-visible i{transform:scale(1.12)}#zugabeKnopf[aria-expanded="true"] i::after{left:11px;top:11px;width:12px;height:12px;border:0;background:#fff;border-radius:2px}
 .leinwand.kurzfilm{max-width:960px;margin:0 auto}
 .leinwand video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#101425;cursor:pointer}
 .kino-links{display:grid;gap:8px;align-content:start;min-width:0}
@@ -405,9 +411,11 @@ footer{padding:36px 0 48px;color:var(--leise);font-size:13.5px}
   </div>
 </div>
 
-<section id="kurzgeschichte" aria-label="Die Geschichte in Kurzform"><div class="rand">
-  <div class="leinwand kurzfilm"><video id="kurzVideo" controls playsinline preload="none" poster="discovery-kurzgeschichte.jpg" src="discovery-kurzgeschichte.mp4" aria-label="Die Geschichte in 43 Sekunden: Flug am Baum, Landung in der Stadt, Familienakte"></video></div>
-  <div class="leinwand kurzfilm" style="margin-top:14px"><video id="rundenVideo" controls playsinline preload="none" poster="discovery-runden.jpg" src="discovery-runden.mp4" aria-label="Runde für Runde in einer knappen Minute: immer neue Städte, der Kern wird besser, danach lernt die App mit den eigenen Unterlagen"></video></div>
+<section id="kurzgeschichte" aria-label="Runde für Runde"><div class="rand">
+  <div class="leinwand kurzfilm"><video id="rundenVideo" controls playsinline preload="none" poster="discovery-runden.jpg" src="discovery-runden.mp4" aria-label="Runde für Runde in einer knappen Minute: immer neue Städte, der Kern wird besser, danach lernt die App mit den eigenen Unterlagen"></video></div>
+  <!-- Zugabe (Klaus 16.11.): die 43-Sekunden-Kurzform nur noch hinter einer kleinen Murmel, sie erzählt dieselbe Geschichte wie der Film oben. -->
+  <div class="zugabe"><button type="button" id="zugabeKnopf" aria-expanded="false" aria-controls="zugabeFilm" title="Zugabe: die Geschichte noch einmal in 43 Sekunden, nur mit den Murmeln"><i aria-hidden="true"></i><span>Zugabe · 43 Sekunden</span></button>
+    <div class="leinwand kurzfilm" id="zugabeFilm" hidden><video id="kurzVideo" controls playsinline preload="none" poster="discovery-kurzgeschichte.jpg" src="discovery-kurzgeschichte.mp4" aria-label="Zugabe: die Geschichte in 43 Sekunden: Flug am Baum, Landung in der Stadt, Familienakte"></video></div></div>
 </div></section>
 <script>if (window.EINZELDATEI) document.getElementById('kurzgeschichte').hidden = true;</script>
 
@@ -1520,7 +1528,7 @@ App.szene = function (key, titel) { if (App.tour || !Ton.an()) return; Sprecher.
   }
   function ende() { lauf++; clearTimeout(uhr); Sprecher.stopp(true); i = -1; App.tour = false; App.kreisBuehne.weg(); App.stadtFilm.weg(); Unter.weg(); App.kreis.frei(); b.setAttribute('aria-pressed', 'false'); b.innerHTML = IK.spiel + 'Führung starten'; }
   b.innerHTML = IK.spiel + 'Führung starten';
-  b.onclick = () => { if (i < 0 && App.stadtFilm.film()) return App.stadtFilm.gross(); if (i >= 0) return ende(); Ton.bereit(); Sprecher.vorladen(); App.tour = true; b.setAttribute('aria-pressed', 'true'); b.innerHTML = IK.halt + 'Führung anhalten'; $('#tipp').classList.add('weg'); schritt(0); };
+  b.onclick = () => { if (i < 0 && App.stadtFilm.hatGross()) return App.stadtFilm.gross();   /* Klaus 16.11.: „Führung starten“ spielt oben den Film, in der 3D- wie in der Film-Ansicht; danach bleibt das Baum-Bild mit den antippbaren Städten */ if (i >= 0) return ende(); Ton.bereit(); Sprecher.vorladen(); App.tour = true; b.setAttribute('aria-pressed', 'true'); b.innerHTML = IK.halt + 'Führung anhalten'; $('#tipp').classList.add('weg'); schritt(0); };
   App.tonHoerer.push(an => { if (i >= 0) schritt(i); });   // Ton während der Führung umgeschaltet: Schritt neu ansetzen (mit oder ohne Stimme)
 })();
 
@@ -1583,8 +1591,10 @@ App.szene = function (key, titel) { if (App.tour || !Ton.an()) return; Sprecher.
   const fKnopf = an => { const b = $('#bFuehrung'); b.setAttribute('aria-pressed', an ? 'true' : 'false'); b.innerHTML = (an ? IK.halt + 'Führung anhalten' : IK.spiel + 'Führung starten'); };
   function gross() {
     if (clipAn === 'gross' && !box.hidden) { return start(); }
+    if (!filmB) setzB(true, false);   // aus der 3D-Ansicht: der Film läuft im selben Rahmen, danach steht das Baum-Bild mit den Städten; „In 3D erkunden“ führt zurück
     Ton.bereit(); Sprecher.stopp(true); auf(); if (App.gewaehlt) App.close(); fKnopf(true);
-    clip('gross', '', '', () => start(), () => start());
+    const zuEnde = () => { fKnopf(false); Unter.weg(); start(); };   // auch nach dem natürlichen Filmende: Knopf zurück auf „Führung starten“
+    clip('gross', '', '', zuEnde, zuEnde);
     // Untertitel zum großen Video (Klaus 16.11.: der Knopf tat hier nichts): der Text des Abschnitts, der gerade gesprochen wird.
     if (landV && !landV._ut) { landV._ut = true; landV.addEventListener('timeupdate', () => {
       if (clipAn !== 'gross') return; const t = landV.currentTime; let i = -1; UT_GROSS.forEach((u, k) => { if (t >= u[0]) i = k; });
@@ -1638,7 +1648,7 @@ App.szene = function (key, titel) { if (App.tour || !Ton.an()) return; Sprecher.
   $('#bStadtfilm').hidden = !!filmB;
   if (filmB) { if (merkB('tw-buehne-schwach') === '1') setzB(true, false, SCHWACH_B); else start(); } else wacheB();
   box.querySelectorAll('.sf-wahl button[data-start]').forEach(b => b.onclick = () => { if (!App.tour) Sprecher.stopp(true); start(); });
-  knopf(); App.stadtFilm = { zeig, weg, gross, an: () => !box.hidden, film: () => filmB, wartet: f => { if (!box.hidden && clipAn && laeuft) warter.push(f); else f(); } };
+  knopf(); App.stadtFilm = { zeig, weg, gross, hatGross: () => !!CLIPS.gross, an: () => !box.hidden, film: () => filmB, wartet: f => { if (!box.hidden && clipAn && laeuft) warter.push(f); else f(); } };
 })();
 
 /* ---------- Kurzfilme (gezeichnet) ---------- */
@@ -1725,6 +1735,7 @@ App.szene = function (key, titel) { if (App.tour || !Ton.an()) return; Sprecher.
   // Kurzfilme als echtes Video (Higgsfield, 15.11.): liegt für einen Film eine Datei vor, läuft sie statt der Zeichnung; fehlt sie
   // oder ist „weniger Bewegung“ gewünscht, bleibt die gezeichnete Fassung.
   ladeBalken($('#filmVideo')); ['#kurzVideo', '#rundenVideo'].forEach(q => { const v = $(q); if (v) ladeBalken(v); });
+  (function () { const k = $('#zugabeKnopf'), f = $('#zugabeFilm'), v = $('#kurzVideo'); if (!k) return; k.onclick = () => { const auf = f.hidden; f.hidden = !auf; k.setAttribute('aria-expanded', auf); if (auf) { const pr = v.play(); if (pr && pr.catch) pr.catch(() => { }); f.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } else v.pause(); }; })();
   const vid = $('#filmVideo'), VF = window.DISCOVERY_FILME || {}, VB = window.DISCOVERY_FILMBILDER || {}, kaputt = {};
   const filmAdr = F => VF[F.key] || F.video || '';   // die alten gezeichneten Fassungen werden nicht mehr gezeigt (Klaus 15.11.)
   const mitVideo = () => !vid.hidden;
