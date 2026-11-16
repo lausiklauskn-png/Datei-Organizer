@@ -89,7 +89,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .untertitel{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);width:min(700px,calc(100% - 24px));box-shadow:0 8px 30px rgba(0,0,0,.45);background:rgba(10,14,28,.86);color:#fff;border-radius:14px;padding:10px 14px;font-size:15px;line-height:1.4;z-index:4;display:none}
 .untertitel.an{display:block;z-index:50}
 .untertitel.an.stumm{display:none}
-#bWeiter[hidden]{display:none}
+#bWeiter[hidden],#bStadtfilm[hidden]{display:none}
 .untertitel .ut-k{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
 .untertitel .ut-k button{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:999px;padding:4px 12px;font-size:13.5px;font-weight:600}
 .ik{width:1em;height:1em;vertical-align:-.13em;margin-right:.4em;flex:none}
@@ -369,7 +369,7 @@ footer{padding:36px 0 48px;color:var(--leise);font-size:13.5px}
       <button id="bUnter" aria-pressed="false" title="Untertitel: den gesprochenen Text unten mitlesen">Untertitel</button>
       <button id="bWeiter" hidden title="Zum nächsten Schritt der Führung">Weiter</button>
       <details class="zeichen stimmwahl"><summary>Stimme</summary><div class="stimme" data-stimme></div></details>
-      <button id="bStadtfilm" title="Die vier Städte als kleiner Film, mit den Punkten zum Antippen">Stadtfilm</button>
+      <button id="bStadtfilm" title="Zurück zur Film-Ansicht: das Bild mit den vier Städten, die Filme laufen erst auf Tipp">Film-Ansicht</button>
       <button id="bLicht" class="nur3d">Abend</button>
       <details class="zeichen" id="zeichen"><summary>Zeichen</summary><ul id="zeichenListe"></ul></details>
     </div>
@@ -1323,15 +1323,8 @@ const Ton = (function () {
     const n = Math.floor(ctx.sampleRate * dauer), b = ctx.createBuffer(1, n, ctx.sampleRate), d = b.getChannelData(0); for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n);
     const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(); s.buffer = b; f.type = 'bandpass'; f.frequency.value = freq; g.gain.value = laut; s.connect(f); f.connect(g); g.connect(aus); s.start(t);
   }
-  function musik() {
-    if (!an) return; const jetzt = ctx.currentTime;
-    while (naechst < jetzt + .6) {
-      const a = AKK[takt % AKK.length], t = naechst;
-      a.forEach((f, i) => { ton(f, t, 6.4, i ? 'sine' : 'triangle', .035, hall, 2.2); ton(f * 1.003, t, 6.4, 'sine', .02, hall, 2.6); });
-      for (let i = 0; i < 4; i++) if (Math.random() < .7) ton(PENTA[Math.floor(Math.random() * PENTA.length)], t + i * 1.5 + Math.random() * .4, 1.6, 'triangle', .03, hall);
-      naechst += 6; takt++;
-    }
-  }
+  /* Keine Hintergrundmusik mehr (Klaus 16.11.: das Klingeln im Hintergrund lenkt ab). Es bleiben Sprecher und kurze Geräusche. */
+  function musik() {}
   function start() {
     if (!ctx) {
       const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return false; ctx = new AC();
@@ -1342,7 +1335,7 @@ const Ton = (function () {
       hall = ctx.createGain(); hall.connect(tp); tp.connect(mus); tp.connect(echo); echo.connect(rueck); rueck.connect(echo); echo.connect(mus);
     }
     ctx.resume(); an = true; naechst = ctx.currentTime + .1; aus.gain.cancelScheduledValues(ctx.currentTime); aus.gain.linearRampToValueAtTime(.8, ctx.currentTime + 1.2);
-    clearInterval(uhr); uhr = setInterval(musik, 200); musik(); return true;
+    clearInterval(uhr); return true;
   }
   function stopp() { an = false; clearInterval(uhr); if (ctx) { aus.gain.cancelScheduledValues(ctx.currentTime); aus.gain.linearRampToValueAtTime(0, ctx.currentTime + .4); setTimeout(() => { if (!an) ctx.suspend(); }, 600); } }
   function spiel(name) {
@@ -1403,7 +1396,7 @@ const Sprecher = (function () {
   function fuell(h) {
     const sel = h.querySelector('select'), hin = h.querySelector('small'), b = h.querySelector('button');
     sel.innerHTML = ''; sel.disabled = b.disabled = !liste.length;
-    if (!liste.length) { sel.appendChild(new Option(sy ? 'Keine deutsche Stimme gefunden' : 'Dieses Gerät kann nicht vorlesen', '')); hin.textContent = 'Ohne Stimme laufen Musik, Geräusche und Untertitel. Fertige Tonspuren werden trotzdem gespielt.'; return; }
+    if (!liste.length) { sel.appendChild(new Option(sy ? 'Keine deutsche Stimme gefunden' : 'Dieses Gerät kann nicht vorlesen', '')); hin.textContent = 'Ohne Stimme laufen Geräusche und Untertitel. Fertige Tonspuren werden trotzdem gespielt.'; return; }
     sel.appendChild(new Option('Automatisch: ' + liste[0].name, ''));
     liste.forEach(v => sel.appendChild(new Option(v.name + (note(v) >= 35 ? ' · klingt natürlicher' : note(v) < 0 ? ' · einfache Stimme' : ''), v.voiceURI)));
     sel.value = liste.some(v => v.voiceURI === wahl) ? wahl : '';
@@ -1611,15 +1604,17 @@ App.szene = function (key, titel) { if (App.tour || !Ton.an()) return; Sprecher.
   function ganzWeg() { App.buehneRuht = false; if (box.hidden) return; folge++; clipAn = null; halt(); startBox.classList.remove('an'); box.hidden = true; $('#buehne').classList.remove('mit-stadtfilm'); $('#bStadtfilm').setAttribute('aria-pressed', 'false'); }
   // In der Film-Ansicht heißt „weg“: zurück zum Startbild mit den antippbaren Städten; nur in der 3D-Ansicht gibt die Fläche die Bühne frei.
   function weg() { if (filmB) { if (box.hidden || !startBox.classList.contains('an')) start(); } else ganzWeg(); }
-  function setzB(film, merken, grund) { filmB = film; if (merken) setzM('tw-buehne', film ? 'film' : '3d'); hinw.hidden = !grund; hinw.textContent = grund || ''; box.querySelector('.sf-3d').textContent = grund ? 'Trotzdem in 3D' : 'In 3D erkunden'; if (film) { if (!App.tour) start(); } else ganzWeg(); }
+  function setzB(film, merken, grund) { filmB = film; $('#bStadtfilm').hidden = film;   /* Film-Ansicht: „Führung starten“ spielt schon die ganze Geschichte mit Ton – kein zweiter Knopf (Klaus 16.11.: Doppelung) */ if (merken) setzM('tw-buehne', film ? 'film' : '3d'); hinw.hidden = !grund; hinw.textContent = grund || ''; box.querySelector('.sf-3d').textContent = grund ? 'Trotzdem in 3D' : 'In 3D erkunden'; if (film) { if (!App.tour) start(); } else ganzWeg(); }
   spielB.onclick = () => { if (startBox.classList.contains('an')) return zeig('alles'); if (laeuft) { halt(); if (!App.tour) Sprecher.pause(); } else { laeuft = true; knopf(); if (!App.tour) Sprecher.weiter(); if (clipAn && landV) { const pr = landV.play(); if (pr && pr.catch) pr.catch(() => { }); } else { lauf++; takt(4000, 99); } } };
   box.querySelectorAll('.sf-wahl button:not([data-start])').forEach(b => b.onclick = () => { if (b.dataset.clip) { if (!App.tour) { Sprecher.stopp(true); if (Ton.an()) Sprecher.sag('schluss', {}); } return zeig('finale'); } clipAn = null; halt(); mitPunkten = true; szene(+b.dataset.i); });
   box.querySelector('.sf-3d').onclick = () => { if (!App.tour) Sprecher.stopp(true); if (window.LEICHT) return ganzWeg(); App.baue3D(); setzM('tw-buehne-schwach', null); setzB(false, true); wacheB(); };
-  $('#bStadtfilm').onclick = () => { if (!box.hidden && !App.tour && !startBox.classList.contains('an')) { Sprecher.stopp(true); return weg(); } zeig('alles'); };
+  /* In der 3D-Ansicht führt dieser Knopf zurück zur Film-Ansicht (Klaus 16.11.: kein Rückweg; vorher sprang hier ein Film an). Es startet nichts von selbst. */
+  $('#bStadtfilm').onclick = () => { if (App.tour) return; Sprecher.stopp(true); setzB(true, true); };
     // Leistungsprüfung der 3D-Bühne: Bildabstand messen; über 40 ms (unter 25 Bildern je Sekunde) übernimmt die Film-Ansicht.
   const messeB = (dauer, fertig) => { const d = []; let z = 0, t0 = 0; const f = t => { if (!t0) t0 = t; if (z) d.push(t - z); z = t; if (t - t0 < dauer) requestAnimationFrame(f); else { d.sort((a, b) => a - b); fertig(d.length > 8 ? d[d.length >> 1] : 999); } }; requestAnimationFrame(f); };
   const SCHWACH_B = 'Die 3D-Ansicht läuft auf diesem Gerät nicht flüssig – deshalb die Film-Ansicht.';
   function wacheB() { if (window.LEICHT || RUHIG || !Szene.ok) return; setTimeout(() => { if (filmB || document.hidden || !box.hidden) return; messeB(2500, m => { if (filmB || !box.hidden) return; if (m > 40) { setzM('tw-buehne-schwach', '1'); setzB(true, false, SCHWACH_B); } }); }, 2000); }
+  $('#bStadtfilm').hidden = !!filmB;
   if (filmB) { if (merkB('tw-buehne-schwach') === '1') setzB(true, false, SCHWACH_B); else start(); } else wacheB();
   box.querySelectorAll('.sf-wahl button[data-start]').forEach(b => b.onclick = () => { if (!App.tour) Sprecher.stopp(true); start(); });
   knopf(); App.stadtFilm = { zeig, weg, gross, an: () => !box.hidden, film: () => filmB, wartet: f => { if (!box.hidden && clipAn && laeuft) warter.push(f); else f(); } };
