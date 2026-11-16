@@ -535,10 +535,13 @@ export function App() {
           <span className="brand-symbol"><FolderTree size={24}/></span>
           <span><strong data-app-name>{APP_NAME}</strong><small>Fassung {FASSUNG} · vorsortiert für die Familienakte</small></span>
         </button>
-        <div className="header-actions">
+        {/* Klaus 16.11.: Fassung (Link fürs Update) und Fähnchen links neben dem Namen – am Handy leichter zu treffen. */}
+        <div className="fassung-platz" data-fassung-platz>
           {upd.nativ && upd.neu && <button type="button" className="update-fahne" data-update-fahne data-nativ title={`Update ${upd.neu} steht bereit. Antippen lädt und installiert.`} onClick={() => void upd.laden()}><Download size={14}/>{upd.prozent !== null ? `Lädt ${upd.prozent} %` : `Update ${upd.neu}`}</button>}
           {upd.nativ && <button type="button" className="fassung-knopf" data-fassung-knopf title="Fassung – antippen sucht ein Update und installiert es" onClick={() => void upd.laden()}>{upd.prozent !== null && !upd.neu ? `${upd.prozent} %` : FASSUNG}</button>}
           {neueFassung && <button type="button" className="update-fahne" data-update-fahne title={`Fassung ${neueFassung} steht bereit. Tippen aktualisiert; die Sortierung bleibt gemerkt.`} onClick={() => void aktualisieren(!!z.fortschritt && z.fortschritt.phase !== "stand")}><RefreshCw size={14}/>Update {neueFassung}</button>}
+        </div>
+        <div className="header-actions">
           {(() => { const pille = z.fortschritt && z.fortschritt.phase !== "stand" ? "Wird geladen …" : z.ordnerName ? `${z.ordnerName} · ${z.dateien.length}` : "Kein Ordner";
             // aria-label = sichtbarer Text: Android liest sonst nur den Tooltip (Name ohne Anzahl) – Vorleser und Emulator-Probe der APK.
             return <span className={`ordner-pill ${z.ordnerName ? "verbunden" : ""}`} data-ordner-pill title={z.ordnerName || "Kein Ordner gewählt"} aria-label={pille}>{pille}</span>; })()}
