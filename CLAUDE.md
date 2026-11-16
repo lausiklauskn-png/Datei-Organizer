@@ -23,8 +23,9 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   nach einem Fehlschlag gleich beim Start – eine volle Stunde. Jetzt nach „aktuell“ 10 Minuten, nach einem Fehlschlag 2 Minuten, Takt 15 Minuten
   (`RUHE_OK`/`RUHE_FEHLER` in `src/nativ.ts`). Ursache am Gerät nicht belegt, nur die wahrscheinlichste Stelle.
 - **Landkarte Organizer auf den Stand gebracht** (`docs/landkarte/…`, `node scripts/landkarte-bauen.mjs`): Texterkennung, Datei-Innere, Ähnliche,
-  Dashboard, große Mengen, Ordner auf dem Gerät sind „fertig“; neu „Teilen, Öffnen mit“ und „Arbeitsordner“. Geplant bleiben: Übernahme in die
-  Familienakte, Vorarbeit für andere Programme/KI, Lehrer. Das Artefakt der Landkarte ist nicht neu veröffentlicht.
+  Dashboard, große Mengen, Ordner auf dem Gerät sind „fertig“; neu „Teilen, Öffnen mit“ und „Arbeitsordner“. Seit 16.11. ist auch die **Übernahme in die
+  Familienakte** „fertig“ (dort #203, `lib/organizer-uebernahme.ts`: Ordner als Eingangsordner wählen, der Index wird Vorschlag im Prüf-Fenster;
+  ab Familienakte 2.28.71, am Gerät ungeprüft). Geplant bleiben: Vorarbeit für andere Programme/KI, Lehrer. Das Artefakt der Landkarte ist nicht neu veröffentlicht.
 
 ## Veröffentlicht (16.11.2026 vormittags, Klaus' Wort „kannst du zusammenführen und veröffentlichen“): Datei-Organizer 0.4.12 – nicht erneut ausgeben
 

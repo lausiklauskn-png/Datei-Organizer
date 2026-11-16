@@ -120,7 +120,7 @@ svg.faeden path.aus{opacity:.07}svg.faeden path.an{opacity:1;stroke-width:3}
         <details class="frage"><summary aria-label="Erklärung">?</summary><div class="antwort"><ul>
           <li>Jede Zeile: Kategorie im Organizer → Bereich in der Familienakte.</li>
           <li>„Ohne Bereich“: Fotos, Werbung, Unklares – bleiben im Eingang, bis du sie zuordnest.</li>
-          <li>Übernahme in die Familienakte ist noch nicht gebaut.</li>
+          <li>Übernahme: Ordner in der Familienakte als Eingangsordner wählen – sie liest organizer-index.json (ab Familienakte 2.28.71).</li>
         </ul></div></details></h3>
         <div class="fluss" id="fluss"></div></div>
     </div>
@@ -152,7 +152,7 @@ const KARTEN = {
       ["o_arbeit",3,"Arbeitsordner","bei großen Ordnern, auf dem gewählten Laufwerk","fertig","Ordner „Datei-Organizer-Arbeit“; nie im Pro-Tresor."],
       ["o_orig",3,"Originale","unverändert im Ordner","fertig","Dein Ordner. Der Organizer löscht und verschiebt nichts."],
       ["o_index",3,"organizer-index.json","Vorschläge zum Mitnehmen","fertig","Im gewählten Ordner, neben den Dateien."],
-      ["o_fa",4,"Familienakte","übernimmt und ordnet zu","geplant","Liest den Index; Dateien kommen in ihren Bereich."],
+      ["o_fa",4,"Familienakte","übernimmt als Vorschlag","fertig","Ab Familienakte 2.28.71: Ordner dort als Eingangsordner wählen. Am Gerät noch nicht geprüft."],
       ["o_ki",4,"Andere Programme, KI","Steckbrief, Text, Abschnitte","geplant","Vorarbeit für Suche und KI."],
       ["o_lehrer",4,"Lehrer","Claude Haiku über eigenen Server","geplant","Nur Ausschnitte, Namen verdeckt."],
     ],
@@ -161,11 +161,11 @@ const KARTEN = {
       ["o_text","o_siebe"],["o_ocr","o_siebe"],["o_innen","o_aehnlich"],["o_text","o_aehnlich"],
       ["o_siebe","o_pruefen"],["o_pruefen","o_lernen"],["o_siebe","o_dash"],["o_dash","o_pruefen"],["o_siebe","o_browser"],["o_pruefen","o_browser"],["o_lernen","o_browser"],
       ["o_doppelt","o_browser"],["o_aehnlich","o_browser"],["o_ordner","o_orig"],["o_browser","o_index"],
-      ["o_index","o_fa","geplant"],["o_index","o_ki","geplant"],["o_pruefen","o_lehrer","geplant"]],
+      ["o_index","o_fa"],["o_index","o_ki","geplant"],["o_pruefen","o_lehrer","geplant"]],
     fragen: [
       ["Kopiert er meine Dateien?",["Nein. Er liest im Ordner.","In der App liegt nur ein Steckbrief je Datei.","Die Originale bleiben, wo sie sind."]],
       ["Wie viele Dateien schafft er?",["Er liest in Blöcken zu 50 Dateien.","Anhalten und Weitermachen gehen, auch nach einem Absturz.","Über rund 800 Dateien ist es noch nicht gemessen."]],
-      ["Wie kommt es in die Familienakte?",["Er schreibt organizer-index.json in den Ordner.","Die Familienakte liest den Index und ordnet zu.","Dieser Schritt ist noch nicht gebaut."]],
+      ["Wie kommt es in die Familienakte?",["Er schreibt organizer-index.json in den Ordner.","In der Familienakte: diesen Ordner als Eingangsordner wählen.","Seine Angaben stehen dort als Vorschlag – du bestätigst (ab 2.28.71)."]],
     ],
   },
   familienakte: {
@@ -178,7 +178,7 @@ const KARTEN = {
       ["f_ordner",0,"Eingangsordner","in Blöcken zu 20","fertig","Ein Ordner, den die App beobachtet."],
       ["f_cloud",0,"Cloud-Ordner","OneDrive & Co. hereinholen","fertig","Kopie mit Herkunft, kein Verweis."],
       ["f_paket",0,"Paket vom anderen Gerät","Teilen, Netz, Festplatte","fertig","Wird beim Öffnen zusammengeführt."],
-      ["f_org",0,"Datei-Organizer","organizer-index.json","geplant","Vorschläge des Organizers übernehmen."],
+      ["f_org",0,"Datei-Organizer","organizer-index.json im Eingangsordner","fertig","Seine Angaben reisen als Vorschlag mit; Doppelte bleiben im Ordner (ab 2.28.71)."],
       ["f_lesen",1,"Text lesen","PDF-Text und Texterkennung","fertig","Textauszug an der Unterlage."],
       ["f_kern",1,"Sortier-Kern","Bereich, Frist, Absender","fertig","Derselbe Kern wie im Organizer, byte-gleich."],
       ["f_kopf",1,"Briefkopf","ergibt den Titel","fertig","Titel an der Unterlage."],
@@ -194,13 +194,13 @@ const KARTEN = {
       ["f_pro",3,"Andere Pro-Apps","BookLedgerPro, Workflow PDF, Private Brain","fertig","Über den gemeinsamen Tresor."],
     ],
     faeden: [["f_hinzu","f_lesen"],["f_teilen","f_lesen"],["f_scan","f_lesen"],["f_mail","f_lesen","bau"],["f_ordner","f_lesen"],["f_cloud","f_lesen"],
-      ["f_paket","f_app"],["f_org","f_ok","geplant"],["f_lesen","f_kern"],["f_lesen","f_kopf"],["f_kern","f_ok"],["f_kopf","f_ok"],
+      ["f_paket","f_app"],["f_org","f_lesen"],["f_lesen","f_kern"],["f_lesen","f_kopf"],["f_kern","f_ok"],["f_kopf","f_ok"],
       ["f_ok","f_app"],["f_ok","f_tresor"],["f_app","f_voll"],["f_tresor","f_voll"],["f_voll","f_zweit"],["f_app","f_platte"],["f_tresor","f_platte"],
       ["f_app","f_bib"],["f_tresor","f_bib"],["f_app","f_frist"],["f_tresor","f_frist"],["f_bib","f_teil"],["f_tresor","f_pro"]],
     fragen: [
       ["Wo liegen meine Unterlagen?",["Ohne Tresor: im Speicher der App.","Mit Pro-Tresor: verschlüsselt auf SD-Karte, Gerät oder PC.","Dazu deine Sicherungen."]],
       ["Was passiert beim Ablegen?",["Text lesen, Kern schlägt Bereich und Frist vor.","Du bestätigst.","Erst dann ist es in der Akte."]],
-      ["Was hat das mit dem Organizer zu tun?",["Beide nutzen denselben Sortier-Kern.","Der Organizer sortiert große Mengen vor.","Die Familienakte übernimmt – noch nicht gebaut."]],
+      ["Was hat das mit dem Organizer zu tun?",["Beide nutzen denselben Sortier-Kern.","Der Organizer sortiert große Mengen vor.","Die Familienakte übernimmt seine Angaben als Vorschlag (ab 2.28.71)."]],
     ],
   },
 };
