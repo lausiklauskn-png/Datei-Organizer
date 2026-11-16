@@ -26,8 +26,10 @@ export const nativeUpdates = (): UpdatePlugin | null => {
   return c?.isNativePlatform?.() && typeof c.Plugins?.DoUpdates?.pruefen === "function" ? c.Plugins.DoUpdates : null;
 };
 
-const STILL_KEY = "do_update_still_v1", STUNDE = 60 * 60 * 1000;
-type Gemerkt = { zeit: number; neu: string };
+// Wartezeit zwischen zwei stillen Anfragen (Klaus 16.11.: Fähnchen erschien nicht, obwohl ein Update bereitstand – vorher sperrte jede
+// Antwort, auch ein Fehlschlag gleich nach dem Start, eine volle Stunde): nach „aktuell“ 10 Minuten, nach einem Fehlschlag 2 Minuten.
+const STILL_KEY = "do_update_still_v1", RUHE_OK = 10 * 60 * 1000, RUHE_FEHLER = 2 * 60 * 1000;
+type Gemerkt = { zeit: number; neu: string; ok?: boolean };
 const gemerkt = (): Gemerkt | null => { try { const g = JSON.parse(localStorage.getItem(STILL_KEY) || "null"); return g && typeof g.zeit === "number" ? g : null; } catch { return null; } };
 const merken = (g: Gemerkt) => { try { localStorage.setItem(STILL_KEY, JSON.stringify(g)); } catch { /* ohne Speicher: nur diese Sitzung */ } };
 const zahl = (v: string) => { const m = /^(\d+)\.(\d+)\.(\d+)$/.exec(v || ""); return m ? [+m[1], +m[2], +m[3]] : null; };
@@ -37,16 +39,17 @@ let lauf: ReturnType<UpdatePlugin["pruefen"]> | null = null;
 /** Eine Anfrage zur Zeit: wer während der stillen Prüfung tippt, wartet auf sie. */
 const frage = (api: UpdatePlugin) => lauf || (lauf = api.pruefen().finally(() => { lauf = null; }));
 
-/** Still fragen (höchstens stündlich). Gibt die neue Fassung zurück, "" wenn aktuell; null = nichts gefragt oder Fehler. */
+/** Still fragen (höchstens alle 10 Minuten, nach einem Fehlschlag nach 2). Gibt die neue Fassung zurück, "" wenn aktuell; null = nichts gefragt oder Fehler. */
 export async function stillPruefen(api: UpdatePlugin, ich: string): Promise<string | null> {
   if (document.visibilityState === "hidden") return null;
   const g = gemerkt(), jetzt = Date.now();
-  if (g && jetzt >= g.zeit && jetzt - g.zeit < STUNDE) return neuer(g.neu, ich) ? g.neu : "";
-  merken({ zeit: jetzt, neu: g?.neu || "" }); // auch ein Fehlschlag zählt: höchstens eine Anfrage je Stunde
+  if (g && neuer(g.neu, ich)) { if (jetzt >= g.zeit && jetzt - g.zeit < RUHE_OK) return g.neu; }   // bekanntes Update: Fähnchen sofort
+  else if (g && jetzt >= g.zeit && jetzt - g.zeit < (g.ok === false ? RUHE_FEHLER : RUHE_OK)) return g.ok === false ? null : "";
+  merken({ zeit: jetzt, neu: g?.neu || "", ok: false }); // auch ein Fehlschlag zählt, aber nur kurz
   try {
     const r = await frage(api);
     const neu = r.neu && neuer(r.neu, ich) ? r.neu : "";
-    merken({ zeit: jetzt, neu });
+    merken({ zeit: jetzt, neu, ok: true });
     return neu;
   } catch { return null; } // ohne Netz, nicht eingerichtet oder Fehler: still
 }
