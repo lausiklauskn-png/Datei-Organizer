@@ -17,7 +17,24 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   16 deutsche Prüfstapel (2.892 Stücke): Art, Bereich, Absender, Frist unverändert; Probe in `run-kern-tests.mjs` (4 neu, Gegenprobe 3/3).
   Auftrag aus Private Brain Pro (Brief dort `BRIEF_SITZUNG_2026-11-15_SUCHE-SORTIERKERN.md`). Familienakte und BookLedgerPro noch nicht nachgezogen.
 
-## Nach 0.4.11 (16.11.2026, Gerätetest Klaus am Tablet, auf main, nicht ausgegeben – geht in 0.4.12)
+## Nach 0.4.12 (16.11.2026, auf main, nicht ausgegeben – geht in 0.4.13)
+
+- **Update-Fähnchen (Klaus 16.11.: Update über den Knopf lief, das Fähnchen erschien nicht):** die stille Prüfung sperrte nach jeder Antwort – auch
+  nach einem Fehlschlag gleich beim Start – eine volle Stunde. Jetzt nach „aktuell“ 10 Minuten, nach einem Fehlschlag 2 Minuten, Takt 15 Minuten
+  (`RUHE_OK`/`RUHE_FEHLER` in `src/nativ.ts`). Ursache am Gerät nicht belegt, nur die wahrscheinlichste Stelle.
+- **Landkarte Organizer auf den Stand gebracht** (`docs/landkarte/…`, `node scripts/landkarte-bauen.mjs`): Texterkennung, Datei-Innere, Ähnliche,
+  Dashboard, große Mengen, Ordner auf dem Gerät sind „fertig“; neu „Teilen, Öffnen mit“ und „Arbeitsordner“. Seit 16.11. ist auch die **Übernahme in die
+  Familienakte** „fertig“ (dort #203, `lib/organizer-uebernahme.ts`: Ordner als Eingangsordner wählen, der Index wird Vorschlag im Prüf-Fenster;
+  ab Familienakte 2.28.71, am Gerät ungeprüft). Geplant bleiben: Vorarbeit für andere Programme/KI, Lehrer. Das Artefakt der Landkarte ist nicht neu veröffentlicht.
+
+## Veröffentlicht (16.11.2026 vormittags, Klaus' Wort „kannst du zusammenführen und veröffentlichen“): Datei-Organizer 0.4.12 – nicht erneut ausgeben
+
+- **Android** `Datei-Organizer-Pro-0.4.12.apk` (Code 52, 72.127.288 B, SHA-256 `e3532c3b…545b`, Lauf 43830528268), **Windows**
+  `Datei-Organizer-Pro-Windows-0.4.12-x64-setup.exe` (87.291.066 B, SHA-256 `d9bebb29…4f1d`, Lauf 43831504145), **Basic** über Pages. Stand `b3517cc`.
+  Inhalt: der folgende Abschnitt. Nachweis `docs/VEROEFFENTLICHUNG-0.4.12.json`. Nächste Ausgabe: **0.4.13** (Code 53).
+  Discovery in den anderen Apps auf `b3517cc`: Familienakte #200, BookLedgerPro #479 (Basic danach); App-Ausgaben dort nur mit Klaus' Wort.
+
+## Inhalt von 0.4.12 (16.11.2026, Gerätetest Klaus am Tablet)
 
 - Discovery: unsichtbare Szenen der Film-Ansicht fangen keine Tipps mehr ab (`.sf-szene:not(.an){pointer-events:none}` – das Startbild lag über der
   Leiste des großen Videos: Lautstärke, Vollbild, Spulen gingen nicht); die Übersicht behält ihr Baum-Bild (`laden()` überschrieb es mit „undefined“,

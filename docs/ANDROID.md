@@ -53,7 +53,7 @@ Speicher-Namen bleiben in beiden gleich (IndexedDB, Vorrat `datei-organizer-v…
   (Name und versionCode), nur den Dateinamen `Datei-Organizer-Pro-X.Y.Z.apk`, setzt die Adresse selbst zusammen. Vor dem Installieren:
   Größe und SHA-256 wie im Feed, gleiches Paket, gleiches Signier-Zertifikat wie die installierte App, höherer versionCode – dann
   Androids Installieren-Fenster (`REQUEST_INSTALL_PACKAGES`; beim ersten Mal führt die App in „Apps installieren erlauben“).
-- **Bedienung:** still gefragt beim Start (nach 2,5 s), beim Zurückholen und höchstens einmal je Stunde (`localStorage`
+- **Bedienung:** still gefragt beim Start (nach 2,5 s), beim Zurückholen und alle 15 Minuten, höchstens alle 10 Minuten eine Anfrage, nach einem Fehlschlag nach 2 Minuten (seit 0.4.13; vorher sperrte auch ein Fehlschlag eine Stunde; `localStorage`
   `do_update_still_v1`). Steht ein Update bereit, erscheint neben der Fassung das Fähnchen „Update X.Y.Z“. Ein Tipp auf das Fähnchen
   **oder** auf die Fassungsnummer im Kopf lädt direkt (mit Prozent) und öffnet das Installieren-Fenster – wie Workflow PDF Pro.
   Aktuell → kurze Meldung „Aktuelle Fassung …“. Ohne Netz → still (die stille Frage zeigt nie etwas an).

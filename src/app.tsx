@@ -21,7 +21,7 @@ import { OrdnerSeite, SortierenSeite, FindenSeite, VerlaufSeite, AkteSeite, Hilf
 import { LandkarteSeite } from "./landkarte.tsx";
 import { APP_NAME, direktLaden, istNativ, nativeUpdates, stillPruefen } from "./nativ.ts";
 
-export const FASSUNG = "0.4.12";
+export const FASSUNG = "0.4.13";
 // Ladeanzeige: „suchen“ = Ordner wird durchgesehen (Zahl noch unbekannt), „lesen“ = Datei für Datei, „stand“ = gemerkter Stand beim Start.
 export type Fortschritt = { phase: "stand" | "suchen" | "lesen"; fertig: number; gesamt: number; name?: string };
 const luft = () => new Promise<void>((r) => setTimeout(r)); // dem Browser Zeit zum Zeichnen geben
@@ -504,7 +504,7 @@ function useNativesUpdate() {
     const start = setTimeout(() => void still(), 2500);
     const sicht = () => { if (document.visibilityState === "visible") void still(); };
     document.addEventListener("visibilitychange", sicht);
-    const takt = setInterval(still, 60 * 60 * 1000);
+    const takt = setInterval(still, 15 * 60 * 1000);
     return () => { weg = true; clearTimeout(start); document.removeEventListener("visibilitychange", sicht); clearInterval(takt); };
   }, [api]);
   useEffect(() => { if (!hinweis) return; const t = setTimeout(() => setHinweis(""), 4500); return () => clearTimeout(t); }, [hinweis]);
