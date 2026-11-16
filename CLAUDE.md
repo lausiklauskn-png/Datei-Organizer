@@ -22,7 +22,7 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
 - Discovery: unsichtbare Szenen der Film-Ansicht fangen keine Tipps mehr ab (`.sf-szene:not(.an){pointer-events:none}` – das Startbild lag über der
   Leiste des großen Videos: Lautstärke, Vollbild, Spulen gingen nicht); die Übersicht behält ihr Baum-Bild (`laden()` überschrieb es mit „undefined“,
   sobald eine Stadt gewählt war); der Knopf heißt „Intro abspielen“/„Intro anhalten“ (`fName`, „Führung“ nur noch ohne Film) und springt zurück,
-  wenn während des Intros eine Stadt gewählt wird. Die 3D-Welt zum Drehen erreicht man über „In 3D erkunden“ unten links (Klaus: so logisch).
+  wenn während des Intros eine Stadt gewählt wird. Die 3D-Welt zum Drehen erreicht man über „In 3D erkunden“ unten links (Klaus: so logisch). Der Rückweg aus 3D (`#bStadtfilm`) heißt jetzt „Übersicht“ wie der Eintrag in der Stadtwahl (Klaus' Ja 16.11.).
   Die anderen Apps (Familienakte, BookLedgerPro, Basic) tragen noch den Stand `213c81b` – mit 0.4.12 nachziehen.
 
 ## Veröffentlicht (16.11.2026 morgens, Klaus' Wort „auch die 0411 … ausgeben“): Datei-Organizer 0.4.11 – nicht erneut ausgeben
