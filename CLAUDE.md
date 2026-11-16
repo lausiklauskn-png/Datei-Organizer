@@ -17,7 +17,15 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   16 deutsche Prüfstapel (2.892 Stücke): Art, Bereich, Absender, Frist unverändert; Probe in `run-kern-tests.mjs` (4 neu, Gegenprobe 3/3).
   Auftrag aus Private Brain Pro (Brief dort `BRIEF_SITZUNG_2026-11-15_SUCHE-SORTIERKERN.md`). Familienakte und BookLedgerPro noch nicht nachgezogen.
 
-## Nach 0.4.12 (16.11.2026, auf main, nicht ausgegeben – geht in 0.4.13)
+## Veröffentlicht (16.11.2026 abends, Klaus' Wort „kannst du zusammenführen und veröffentlichen“): Datei-Organizer 0.4.13 – nicht erneut ausgeben
+
+- **Android** `Datei-Organizer-Pro-0.4.13.apk` (Code 53, 72.127.288 B, SHA-256 `ec7a5e0b…7eec`, Lauf 43933651627), **Windows**
+  `Datei-Organizer-Pro-Windows-0.4.13-x64-setup.exe` (87.293.242 B, SHA-256 `2b413a7c…5b07`, Lauf 43934877194), **Basic** über Pages. Stand `79e546c`.
+  Inhalt: der folgende Abschnitt. Nachweis `docs/VEROEFFENTLICHUNG-0.4.13.json`. Nächste Ausgabe: **0.4.14** (Code 54, steht in den Quellen).
+  **Lehre:** die Android-Ausgabe erst starten, wenn der Prüflauf `android` auf dem main-Stand grün ist – sonst hält sie sich selbst an.
+  Familienakte: Gegenstück zur neuen Kategorie auf main (#214), dort nicht ausgegeben (Klaus: noch nicht); Kern, Discovery, Landkarte dort auf dem Stand.
+
+## Inhalt von 0.4.13 (16.11.2026)
 
 - **Update-Fähnchen (Klaus 16.11.: Update über den Knopf lief, das Fähnchen erschien nicht):** die stille Prüfung sperrte nach jeder Antwort – auch
   nach einem Fehlschlag gleich beim Start – eine volle Stunde. Jetzt nach „aktuell“ 10 Minuten, nach einem Fehlschlag 2 Minuten, Takt 15 Minuten
