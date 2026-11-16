@@ -94,7 +94,7 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   `discovery-kurzgeschichte.mp4` (43 s, Ton eingebrannt, älteres Finale und ältere Texte – so von Klaus gelobt, nicht neu schneiden ohne sein Wort;
   einzige Änderung auf seinen Wunsch: der Satz beginnt mit „Wir haben Städte erfunden.“ statt „Dann haben wir …“, auch in `welten`).
   Die Führung wartet, bis der laufende Erzähl-Film zu Ende ist (`App.stadtFilm.wartet`).
-  **Zweites Kurzvideo „Runde für Runde“ (Klaus' Ja zum Drehbuch 15.11. spät):** `discovery-runden.mp4` (58 s, Ton eingebrannt; Schluss: letztes Bild zoomt weg, Schrift und Arthur „Je mehr du einordnest und verbesserst, umso besser wird sie/die App.“) unter der Kurzform:
+  **Zweites Kurzvideo „Runde für Runde“ (Klaus' Ja zum Drehbuch 15.11. spät):** `discovery-runden.mp4` (58 s, Ton eingebrannt; Schluss seit 16.11.: das letzte Bild wird blasser statt wegzuzoomen (Klaus), darüber Schrift und Arthur „Je mehr du einordnest und verbesserst, umso besser wird sie/die App.“) unter der Kurzform:
   erste Stadt → neuer Ast, neue Stadt, Blick hinein (neu gedreht) → Folge der vier Städte → was nicht hilft, fliegt raus (7 Versuche, 3 behalten) →
   Verschmelzen und Archivhaus (ohne echten Brief, rund 4.700 erfundene Stücke) → zu Hause: eigene Unterlagen, die App lernt aus Korrekturen
   (neu gedreht). Zahlen aus `const D`. Offen bei Klaus: ob es die Kurzform ersetzen soll; ob die Strafzettel-Murmel Beine bekommen soll.
