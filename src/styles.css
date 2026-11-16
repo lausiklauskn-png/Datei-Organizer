@@ -243,3 +243,7 @@ a { color: var(--teal); }
 .doppelt-menue { position: absolute; z-index: 20; top: calc(100% + 4px); left: 0; display: flex; flex-direction: column; min-width: 260px; background: var(--card, #fff); border: 1px solid var(--line, #c8d6e0); border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,.15); padding: 4px; }
 .doppelt-menue button { text-align: left; border: 0; background: transparent; padding: 8px 10px; border-radius: 6px; font: inherit; cursor: pointer; color: inherit; }
 .doppelt-menue button:hover, .doppelt-menue button:focus-visible { background: rgba(42, 111, 176, .1); }
+
+/* Wert von Hand: freies Feld und „Neue Kategorie erstellen“ (Klaus 16.11.). */
+.wert-feld { padding: 6px 8px; border-radius: 9px; border: 1px solid var(--line); font: inherit; min-width: 0; }
+.neue-kategorie { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }

@@ -19,6 +19,43 @@ export type P = { z: AppZustand; gehe: (s: SeitenId) => void; oeffne?: (sicht: s
 
 export const FELD_NAMEN: Record<FeldName, string> = { schriftstueck: "Art", kategorie: "Bereich", absender: "Absender", betrifft: "Betrifft", datum: "Datum", frist: "Frist" };
 export const AUSWAHL: Partial<Record<FeldName, string[]>> = { kategorie: [...KATEGORIEN, FOTOS, UNKLAR], schriftstueck: [...SCHRIFTSTUECKE] };
+
+// Eigene Kategorien (Klaus 16.11.): überall, wo ein Bereich gewählt wird, steht am Ende „Neue Kategorie erstellen“. Der Name wird
+// auf diesem Gerät gemerkt und steht danach in jeder Liste; im Index reist er als Bereich der Datei mit, die Familienakte schlägt
+// ihn dort als neuen Lebensbereich vor (lib/organizer-uebernahme.ts dort).
+const EIGENE_SCHLUESSEL = "do-eigene-kategorien", NEU = "\u0001neu";
+export const kategorieName = (v: string) => v.replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim().slice(0, 60);
+export function eigeneKategorien(): string[] {
+  try { const l = JSON.parse(localStorage.getItem(EIGENE_SCHLUESSEL) || "[]"); return Array.isArray(l) ? l.filter((x): x is string => typeof x === "string" && !!x).slice(0, 50) : []; } catch { return []; }
+}
+function kategorieMerken(name: string) {
+  const n = kategorieName(name); if (!n || (AUSWAHL.kategorie || []).includes(n)) return;
+  const l = eigeneKategorien(); if (l.some((x) => x.toLocaleLowerCase("de") === n.toLocaleLowerCase("de"))) return;
+  try { localStorage.setItem(EIGENE_SCHLUESSEL, JSON.stringify([...l, n].slice(-50))); } catch { /* ohne Speicher: gilt nur für diese Datei */ }
+}
+/** Übernehmen mit Merken: ein neuer Bereich steht danach in jeder Liste. */
+function uebernimm(z: AppZustand, pfad: string, feld: FeldName, wert: string) {
+  const w = feld === "kategorie" ? kategorieName(wert) : wert.trim();
+  if (!w) return;
+  if (feld === "kategorie") kategorieMerken(w);
+  z.aendern(pfad, feld, w);
+}
+/** Auswahl eines Werts: Liste (Bereich, Art) oder freies Feld; beim Bereich als letzter Eintrag „Neue Kategorie erstellen“. */
+function WertWahl({ feld, wert, setWert }: { feld: FeldName; wert: string; setWert: (w: string) => void }) {
+  const fest = AUSWAHL[feld];
+  const [neu, setNeu] = useState(false);
+  useEffect(() => setNeu(false), [feld]);
+  if (!fest) return <input value={wert} onChange={(e) => setWert(e.target.value)} aria-label={FELD_NAMEN[feld]} type={feld === "datum" || feld === "frist" ? "date" : "text"} data-wert className="wert-feld"/>;
+  const liste = feld === "kategorie" ? [...fest, ...eigeneKategorien().filter((k) => !fest.includes(k))] : fest;
+  if (neu) return <span className="neue-kategorie">
+    <input autoFocus value={wert} maxLength={60} onChange={(e) => setWert(e.target.value)} aria-label="Name der neuen Kategorie" placeholder="Name der neuen Kategorie" data-neue-kategorie className="wert-feld"/>
+    <button type="button" className="text-link" onClick={() => { setNeu(false); setWert(""); }}>Liste</button>
+  </span>;
+  return <select value={wert} onChange={(e) => { if (e.target.value === NEU) { setNeu(true); setWert(""); } else setWert(e.target.value); }} aria-label={FELD_NAMEN[feld]} data-wert>
+    {!liste.includes(wert) && <option value={wert}>{wert || "–"}</option>}{liste.map((k) => <option key={k}>{k}</option>)}
+    {feld === "kategorie" && <option value={NEU} data-neu-option>+ Neue Kategorie erstellen …</option>}
+  </select>;
+}
 export const offenBei = (d: Datei) => offeneFelder(d).length > 0;
 
 function Meldung({ z }: P) {
@@ -192,13 +229,11 @@ export function FeldAendern({ z, d, fertig }: { z: AppZustand; d: Datei; fertig:
   const FELDER: FeldName[] = ["kategorie", "schriftstueck", "absender", "betrifft", "datum", "frist"];
   const [feld, setFeld] = useState<FeldName>("kategorie");
   const [wert, setWert] = useState(d.felder.kategorie?.wert || "");
-  const liste = AUSWAHL[feld];
   const waehle = (f: FeldName) => { setFeld(f); setWert(d.felder[f]?.wert || ""); };
   return <div className="feld-aendern" data-feld-aendern={d.pfad}>
     <select value={feld} onChange={(e) => waehle(e.target.value as FeldName)} aria-label="Welches Feld" data-feld-wahl>{FELDER.map((f) => <option key={f} value={f}>{FELD_NAMEN[f]}{d.felder[f]?.wert ? `: ${d.felder[f]!.wert}` : ""}</option>)}</select>
-    {liste ? <select value={wert} onChange={(e) => setWert(e.target.value)} aria-label={FELD_NAMEN[feld]} data-wert>{!liste.includes(wert) && <option value={wert}>{wert || "–"}</option>}{liste.map((k) => <option key={k}>{k}</option>)}</select>
-      : <input value={wert} onChange={(e) => setWert(e.target.value)} aria-label={FELD_NAMEN[feld]} type={feld === "datum" || feld === "frist" ? "date" : "text"} data-wert/>}
-    <button type="button" className="button klein primary" disabled={!wert.trim() || wert.trim() === (d.felder[feld]?.wert || "")} onClick={() => { z.aendern(d.pfad, feld, wert.trim()); fertig(); }} data-uebernehmen>Übernehmen</button>
+    <WertWahl feld={feld} wert={wert} setWert={setWert}/>
+    <button type="button" className="button klein primary" disabled={!wert.trim() || wert.trim() === (d.felder[feld]?.wert || "")} onClick={() => { uebernimm(z, d.pfad, feld, wert); fertig(); }} data-uebernehmen>Übernehmen</button>
     <button type="button" className="button klein" onClick={fertig}>Abbrechen</button>
   </div>;
 }
@@ -212,7 +247,6 @@ function PruefZeile({ z, d, neu }: { z: AppZustand; d: Datei; neu?: number }) {
   const [auge, setAuge] = useState(false);
   if (!feld) return null;
   const w = d.felder[feld];
-  const liste = AUSWAHL[feld];
   return <div className="pruef-zeile" data-pruef={d.pfad}>
     <div><strong>{d.name}{neu ? <span className="badge pruefen" style={{ marginLeft: 8 }} data-neu-marke>neu in Sieb {neu}</span> : null}</strong>
       <span className="grund">{FELD_NAMEN[feld]}: <b>{w?.wert || "–"}</b> · {w?.grund || "nicht erkannt"}</span>
@@ -224,9 +258,8 @@ function PruefZeile({ z, d, neu }: { z: AppZustand; d: Datei; neu?: number }) {
         {w?.wert && <button type="button" className="button klein" onClick={() => z.aendern(d.pfad, feld, w.wert)} data-stimmt><Check size={15}/>Stimmt</button>}
         <button type="button" className="button klein" onClick={() => { setWert(w?.wert || ""); setAendern(true); }} aria-label="Ändern" title="Von Hand ändern" data-korrigieren><Pencil size={15}/></button>
       </> : <>
-        {liste ? <select value={wert} onChange={(e) => setWert(e.target.value)} aria-label={FELD_NAMEN[feld]} data-wert>{!liste.includes(wert) && <option value={wert}>{wert || "–"}</option>}{liste.map((k) => <option key={k}>{k}</option>)}</select>
-          : <input value={wert} onChange={(e) => setWert(e.target.value)} aria-label={FELD_NAMEN[feld]} type={feld === "datum" || feld === "frist" ? "date" : "text"} data-wert style={{ padding: "6px 8px", borderRadius: 9, border: "1px solid var(--line)" }}/>}
-        <button type="button" className="button klein primary" disabled={!wert.trim()} onClick={() => { z.aendern(d.pfad, feld, wert.trim()); setAendern(false); }} data-uebernehmen>Übernehmen</button>
+        <WertWahl feld={feld} wert={wert} setWert={setWert}/>
+        <button type="button" className="button klein primary" disabled={!wert.trim()} onClick={() => { uebernimm(z, d.pfad, feld, wert); setAendern(false); }} data-uebernehmen>Übernehmen</button>
         <button type="button" className="button klein" onClick={() => setAendern(false)}>Abbrechen</button>
       </>}
     </div>

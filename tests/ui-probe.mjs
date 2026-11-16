@@ -262,6 +262,22 @@ try {
     soll("Stift: Bereich einer schon eingeordneten Datei von Hand ändern – sie verlässt diesen Ordner", Number(await page.locator("[data-liste] .card-heading .badge").innerText()) === n - 1, `${neu}`);
     await page.locator("[data-nav=verlauf]").click(); await page.waitForTimeout(200);
     soll("… und die Änderung steht im Verlauf", (await page.locator("main").innerText()).includes(neu));
+    // Neue Kategorie erstellen (Klaus 16.11.): letzter Eintrag jeder Bereichs-Liste; der Name ist danach ein Bereich und steht in der Liste.
+    await page.goto(basis + "#landkarte"); await page.waitForTimeout(300);
+    await page.locator("[data-bereich]").first().click(); await page.waitForTimeout(400);
+    const e2 = page.locator("[data-liste] .datei-eintrag").first(); await e2.locator("[data-stift]").click();
+    const w2 = e2.locator("[data-feld-aendern] [data-wert]");
+    soll("Bereichs-Liste endet mit „Neue Kategorie erstellen“", /Neue Kategorie erstellen/.test(await w2.evaluate((e) => [...e.options].at(-1).textContent)));
+    await w2.selectOption(await w2.evaluate((e) => [...e.options].at(-1).value));
+    await e2.locator("[data-neue-kategorie]").fill("  Ehrenamt   Musterverein ");
+    await e2.locator("[data-feld-aendern] [data-uebernehmen]").click(); await page.waitForTimeout(400);
+    await page.goto(basis + "#landkarte"); await page.waitForTimeout(300);
+    const neuB = page.locator('[data-bereich="Ehrenamt Musterverein"]');
+    soll("Neue Kategorie ist ein eigener Bereich mit einer Datei", await neuB.count() === 1 && Number(await neuB.locator(".n").innerText().catch(() => "0")) === 1);
+    await neuB.click(); await page.waitForTimeout(400);
+    const e3 = page.locator("[data-liste] .datei-eintrag").first(); await e3.locator("[data-stift]").click();
+    soll("… und steht danach in der Bereichs-Liste zur Wahl", await e3.locator("[data-feld-aendern] [data-wert]").evaluate((e) => [...e.options].some((o) => o.value === "Ehrenamt Musterverein")));
+    soll("… und ist auf dem Gerät gemerkt", (await page.evaluate(() => JSON.parse(localStorage.getItem("do-eigene-kategorien") || "[]"))).includes("Ehrenamt Musterverein"));
     await page.goto(basis + "#landkarte"); await page.waitForTimeout(300);
     await page.locator("[data-kachel=sicher]").click(); await page.waitForTimeout(400);
     const vorP = Number(await page.locator("[data-liste] .card-heading .badge").innerText());
