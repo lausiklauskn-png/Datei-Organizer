@@ -369,7 +369,7 @@ footer{padding:36px 0 48px;color:var(--leise);font-size:13.5px}
       <button id="bUnter" aria-pressed="false" title="Untertitel: den gesprochenen Text unten mitlesen">Untertitel</button>
       <button id="bWeiter" hidden title="Zum nächsten Schritt der Führung">Weiter</button>
       <details class="zeichen stimmwahl"><summary>Stimme</summary><div class="stimme" data-stimme></div></details>
-      <button id="bStadtfilm" title="Die vier Städte als kleiner Film, mit den Punkten zum Antippen">Stadtfilm</button>
+      <button id="bStadtfilm" title="Zurück zur Film-Ansicht: das Bild mit den vier Städten, die Filme laufen erst auf Tipp">Film-Ansicht</button>
       <button id="bLicht" class="nur3d">Abend</button>
       <details class="zeichen" id="zeichen"><summary>Zeichen</summary><ul id="zeichenListe"></ul></details>
     </div>
@@ -1608,7 +1608,8 @@ App.szene = function (key, titel) { if (App.tour || !Ton.an()) return; Sprecher.
   spielB.onclick = () => { if (startBox.classList.contains('an')) return zeig('alles'); if (laeuft) { halt(); if (!App.tour) Sprecher.pause(); } else { laeuft = true; knopf(); if (!App.tour) Sprecher.weiter(); if (clipAn && landV) { const pr = landV.play(); if (pr && pr.catch) pr.catch(() => { }); } else { lauf++; takt(4000, 99); } } };
   box.querySelectorAll('.sf-wahl button:not([data-start])').forEach(b => b.onclick = () => { if (b.dataset.clip) { if (!App.tour) { Sprecher.stopp(true); if (Ton.an()) Sprecher.sag('schluss', {}); } return zeig('finale'); } clipAn = null; halt(); mitPunkten = true; szene(+b.dataset.i); });
   box.querySelector('.sf-3d').onclick = () => { if (!App.tour) Sprecher.stopp(true); if (window.LEICHT) return ganzWeg(); App.baue3D(); setzM('tw-buehne-schwach', null); setzB(false, true); wacheB(); };
-  $('#bStadtfilm').onclick = () => { if (!box.hidden && !App.tour && !startBox.classList.contains('an')) { Sprecher.stopp(true); return weg(); } zeig('alles'); };
+  /* In der 3D-Ansicht führt dieser Knopf zurück zur Film-Ansicht (Klaus 16.11.: kein Rückweg; vorher sprang hier ein Film an). Es startet nichts von selbst. */
+  $('#bStadtfilm').onclick = () => { if (App.tour) return; Sprecher.stopp(true); setzB(true, true); };
     // Leistungsprüfung der 3D-Bühne: Bildabstand messen; über 40 ms (unter 25 Bildern je Sekunde) übernimmt die Film-Ansicht.
   const messeB = (dauer, fertig) => { const d = []; let z = 0, t0 = 0; const f = t => { if (!t0) t0 = t; if (z) d.push(t - z); z = t; if (t - t0 < dauer) requestAnimationFrame(f); else { d.sort((a, b) => a - b); fertig(d.length > 8 ? d[d.length >> 1] : 999); } }; requestAnimationFrame(f); };
   const SCHWACH_B = 'Die 3D-Ansicht läuft auf diesem Gerät nicht flüssig – deshalb die Film-Ansicht.';

@@ -31,7 +31,7 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
 
 - **Discovery (Klaus 15.11.: „mache aus der Doku einen Teil des Repos, Button Discovery“):** Fernrohr-Knopf im Kopf (`data-discovery-knopf`,
   `src/app.tsx`) öffnet `src/public/discovery.html` – die interaktive Doku „so wurde der Sortier-Kern trainiert“: 3D-Baum mit den Test-Welten,
-  Kreislauf aus sechs Glaskugeln (Raten, Soll, Lernen, Reihum, Einfrieren, Messen), Führung, drei Kurzfilme, Geräusche (Web Audio; **keine Hintergrundmusik mehr**, Klaus 16.11.: das Klingeln lenkt ab – neue Musik nur, wenn sie wirklich passt und er Ja sagt; 0.4.9, nicht ausgegeben).
+  Kreislauf aus sechs Glaskugeln (Raten, Soll, Lernen, Reihum, Einfrieren, Messen), Führung, drei Kurzfilme, Geräusche (Web Audio; **keine erzeugte Hintergrundmusik mehr**, Klaus 16.11.: das Klingeln lenkt ab; 0.4.9, nicht ausgegeben). **Ruhige Musik in den vier Filmen mit eingebranntem Ton** (Klaus 16.11.: je Film eine andere, aber ähnlich; Higgsfield/ElevenLabs Music, rund 19 LU unter Arthur, ein- und ausgeblendet): `discovery-geschichte.mp4` Klavier/Streicher, `-kurzgeschichte.mp4` Gitarre/Cello, `-runden.mp4` E-Piano/Streicher, `-kreislauf.mp4` Fläche/Klavier – bei neuem Schnitt die Musik wieder daruntermischen (nur die Tonspur, Bild unverändert).
   Sprecher: 13 Tonspuren `src/public/discovery-ton/<schluessel>.mp3` (seit 15.11. abends Stimme „Arthur“ über Higgsfield/ElevenLabs, Klaus' Wahl, auf main, nicht ausgegeben; vorher Sprachgenerator, Tempo 0,9; der Kreislauf-Film trägt dieselbe Stimme, Bild unverändert; Texte im
   Objekt `SPRECHTEXTE` der Seite – bei Textänderung neu vertonen), sonst Browserstimme. three.js r128 liegt bei (`discovery-three.min.js`, MIT),
   keine fremden Quellen. **Segmente:** am Tablet/Handy ist immer nur eine 3D-Fläche geladen (`window.Segmente`: die andere gibt ihre Grafik
@@ -54,7 +54,7 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   (je Kugel eine Murmel mit Gesicht: Raten türkis, Soll orange, Lernen violett, Reihum grün, Einfrieren eisblau, Messen rosa), Längen genau wie
   `FILM.zeiten`, Tonspur = die sechs `kreis_*`-Tonspuren, schwebender Titel je Schritt eingebrannt; zeigt keine Zahlen mehr (die stehen im Text daneben).
   Die interaktive 3D-Fassung der Kugeln ist unverändert.
-  **Stadtfilm (15.11. nachts; seit 16.11. ist der Knopf in der Film-Ansicht ausgeblendet – Klaus: Doppelung zu „Führung starten“, bei ihm ohne Arthur; in der 3D-Ansicht bleibt er):** Knopf „Stadtfilm“ im Rahmen und Führungsschritte „Die Welten“/„Die Punkte“ (`App.stadtFilm`,
+  **Stadtfilm (15.11. nachts; seit 16.11. gibt es den Knopf „Stadtfilm“ nicht mehr – Klaus: Doppelung zu „Führung starten“, bei ihm ohne Arthur. `#bStadtfilm` heißt jetzt „Film-Ansicht“, ist nur in der 3D-Ansicht zu sehen und führt zurück zum Baum-Bild, ohne etwas abzuspielen; die Szenen laufen weiter in der Schritt-Führung der 3D-Ansicht):** Knopf „Stadtfilm“ im Rahmen und Führungsschritte „Die Welten“/„Die Punkte“ (`App.stadtFilm`,
   14. Tonspur `stadt_punkte`): vier Städte in vier Bildwelten als Filmsequenzen (`discovery-stadt-0…3.mp4`, Standbild `.jpg` als Ersatz: Hafen am
   Abend, Landstädtchen am Morgen, Steampunk-Großstadt, Zukunftsstadt am Fluss), Stadtname als große dünne Filmschrift im Bild (Klaus: keine
   Knopf-Optik, Schrift soll sich ins Bild einfügen); dann `discovery-stadt-landung.mp4` (die Murmeln landen in der Hafenstadt und übernehmen die
