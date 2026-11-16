@@ -25,6 +25,9 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   **Lehre:** die Android-Ausgabe erst starten, wenn der Prüflauf `android` auf dem main-Stand grün ist – sonst hält sie sich selbst an.
   Familienakte: Gegenstück zur neuen Kategorie auf main (#214), dort nicht ausgegeben (Klaus: noch nicht); Kern, Discovery, Landkarte dort auf dem Stand.
 
+- **Abschlussbrief:** `docs/BRIEF_ABSCHLUSS_2026-11-16_ORDNERSEITE-KATEGORIE-0.4.13.md` (Stand, Gerätetest, Startauftrag). Familienakte 2.28.72 ist
+  ausgegeben und enthält das Gegenstück zur neuen Kategorie. Forschung und Zeiten: KimHub `forschung/messungen/datei-organizer-2026-11-14-bis-16.md`.
+
 ## Inhalt von 0.4.13 (16.11.2026)
 
 - **Update-Fähnchen (Klaus 16.11.: Update über den Knopf lief, das Fähnchen erschien nicht):** die stille Prüfung sperrte nach jeder Antwort – auch
