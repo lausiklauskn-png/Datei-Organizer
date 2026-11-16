@@ -17,6 +17,15 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   16 deutsche Prüfstapel (2.892 Stücke): Art, Bereich, Absender, Frist unverändert; Probe in `run-kern-tests.mjs` (4 neu, Gegenprobe 3/3).
   Auftrag aus Private Brain Pro (Brief dort `BRIEF_SITZUNG_2026-11-15_SUCHE-SORTIERKERN.md`). Familienakte und BookLedgerPro noch nicht nachgezogen.
 
+## Veröffentlicht (16.11.2026, Klaus' Wort „49 kannst du starten“): Datei-Organizer 0.4.9 – nicht erneut ausgeben
+
+- **Android** `Datei-Organizer-Pro-0.4.9.apk` (Code 49, 72.282.936 B, SHA-256 `0bed7948…3ba1`, Lauf 43783092615), **Windows**
+  `Datei-Organizer-Pro-Windows-0.4.9-x64-setup.exe` (87.423.909 B, SHA-256 `16132f92…3af4`, Lauf 43783094960, Hochladen erst im zweiten Versuch),
+  **Basic** über Pages. Stand `6665bae`. Inhalt: ohne erzeugte Hintergrundmusik, ruhige Musik in den vier Filmen, „Film-Ansicht“ als Rückweg aus 3D,
+  kein Knopf „Stadtfilm“. **Nicht** darin: „reihum“ neu gesprochen (0.4.10 auf main). Nachweis `docs/VEROEFFENTLICHUNG-0.4.9.json`.
+  Nächste Ausgabe: **0.4.10** (Code 50, steht in den Quellen). **Lehre: Android- und Windows-Ausgabe nicht gleichzeitig starten** – beide laden auf
+  denselben Server, der zweite bricht ab („Another instance of rrsync“); erst Android, dann Windows, oder den abgebrochenen Schritt einmal neu starten.
+
 ## Veröffentlicht (15.11.2026 nachts, Klaus' Wort „0.4.8 veröffentlichen“): Datei-Organizer 0.4.8 – nicht erneut ausgeben
 
 - **Android** `Datei-Organizer-Pro-0.4.8.apk` (Code 48, 71.185.208 B, SHA-256 `e137adbc…ca2f`, Zertifikat `594e44df…365d`, Lauf 43776349955), **Windows**
