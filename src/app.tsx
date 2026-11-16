@@ -21,7 +21,7 @@ import { OrdnerSeite, SortierenSeite, FindenSeite, VerlaufSeite, AkteSeite, Hilf
 import { LandkarteSeite } from "./landkarte.tsx";
 import { APP_NAME, direktLaden, istNativ, nativeUpdates, stillPruefen } from "./nativ.ts";
 
-export const FASSUNG = "0.4.11";
+export const FASSUNG = "0.4.12";
 // Ladeanzeige: „suchen“ = Ordner wird durchgesehen (Zahl noch unbekannt), „lesen“ = Datei für Datei, „stand“ = gemerkter Stand beim Start.
 export type Fortschritt = { phase: "stand" | "suchen" | "lesen"; fertig: number; gesamt: number; name?: string };
 const luft = () => new Promise<void>((r) => setTimeout(r)); // dem Browser Zeit zum Zeichnen geben
