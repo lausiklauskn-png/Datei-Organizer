@@ -1339,6 +1339,7 @@ const Ton = (function () {
   }
   function stopp() { an = false; clearInterval(uhr); if (ctx) { aus.gain.cancelScheduledValues(ctx.currentTime); aus.gain.linearRampToValueAtTime(0, ctx.currentTime + .4); setTimeout(() => { if (!an) ctx.suspend(); }, 600); } }
   function spiel(name) {
+    if (name !== 'klick') return;   /* Klaus 16.11.: Zischen, Rascheln und Klingeln stören – es bleibt nur der leise Klick beim Antippen */
     if (!an || !ctx) return; const t = ctx.currentTime + .01;
     if (name === 'klick') { ton(660, t, .12, 'sine', .12); ton(990, t + .05, .14, 'sine', .08); }
     else if (name === 'brief') { rausch(t, .12, .12, 3200); ton(1320, t + .02, .1, 'sine', .04); }
@@ -1361,8 +1362,7 @@ const Ton = (function () {
   document.querySelectorAll('[data-ton]').forEach(b => { b.onclick = () => { wunsch = wunsch === false; setz(wunsch); if (an) spiel('klick'); }; });
   zeigAn();
   App.ton = spiel;
-  // leises Briefgeräusch, solange die Szene zu sehen ist
-  setInterval(() => { if (an && !document.hidden && $('#buehne').getBoundingClientRect().bottom > 100 && Math.random() < .5) spiel('brief'); }, 2600);
+  // Kein wiederkehrendes Briefgeräusch mehr (Klaus 16.11.: das Zischen alle paar Sekunden stört und ergibt keinen Sinn).
   return {
     spiel, an: () => an,
     bereit() { if (!an && wunsch !== false) setz(true); return an; },   // nach einem Tipp auf Start: Ton an, außer er wurde abgeschaltet
@@ -1396,7 +1396,7 @@ const Sprecher = (function () {
   function fuell(h) {
     const sel = h.querySelector('select'), hin = h.querySelector('small'), b = h.querySelector('button');
     sel.innerHTML = ''; sel.disabled = b.disabled = !liste.length;
-    if (!liste.length) { sel.appendChild(new Option(sy ? 'Keine deutsche Stimme gefunden' : 'Dieses Gerät kann nicht vorlesen', '')); hin.textContent = 'Ohne Stimme laufen Geräusche und Untertitel. Fertige Tonspuren werden trotzdem gespielt.'; return; }
+    if (!liste.length) { sel.appendChild(new Option(sy ? 'Keine deutsche Stimme gefunden' : 'Dieses Gerät kann nicht vorlesen', '')); hin.textContent = 'Ohne Stimme laufen Untertitel. Fertige Tonspuren werden trotzdem gespielt.'; return; }
     sel.appendChild(new Option('Automatisch: ' + liste[0].name, ''));
     liste.forEach(v => sel.appendChild(new Option(v.name + (note(v) >= 35 ? ' · klingt natürlicher' : note(v) < 0 ? ' · einfache Stimme' : ''), v.voiceURI)));
     sel.value = liste.some(v => v.voiceURI === wahl) ? wahl : '';
