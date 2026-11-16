@@ -593,8 +593,8 @@ function ladeBalken(video, wirt) {
   if (!video || video._lade) return; const l = el('div', 'film-lade', '<i></i><b><u></u><u></u><u></u></b><span></span>'); l.hidden = true; l.setAttribute('role', 'status'); video._lade = l; (wirt || video.parentNode).appendChild(l);
   const strich = l.firstChild, wort = l.lastChild; let uhr = null;
   const stand = () => { let e = 0; try { for (let i = 0; i < video.buffered.length; i++) e = Math.max(e, video.buffered.end(i)); } catch (x) { } const a = video.duration ? Math.min(1, e / video.duration) : 0; l.classList.remove('fehler'); wort.innerHTML = (a > 0 ? (a * 100).toFixed(0) + ' %' : '…') + '<small>Film lädt</small>'; l.setAttribute('aria-label', 'Film lädt' + (a > 0 ? ', ' + (a * 100).toFixed(0) + ' Prozent' : '')); };
-  const an = () => { clearTimeout(uhr); uhr = setTimeout(() => { if (video.readyState < 3 && !video.error) { l.hidden = false; stand(); } }, 350); }, aus = () => { clearTimeout(uhr); l.hidden = true; };
-  video.addEventListener('loadstart', an); video.addEventListener('waiting', an); video.addEventListener('progress', stand);
+  const an = () => { clearTimeout(uhr); uhr = setTimeout(() => { if (!video.paused && video.readyState < 3 && !video.error) { l.hidden = false; stand(); } }, 350); }, aus = () => { clearTimeout(uhr); l.hidden = true; };
+  video.addEventListener('loadstart', an); video.addEventListener('waiting', an); video.addEventListener('play', an);   /* nur solange wirklich abgespielt werden soll – nicht schon am stehenden Vorschaubild */ video.addEventListener('progress', stand);
   ['canplay', 'playing', 'canplaythrough', 'pause', 'emptied'].forEach(n => video.addEventListener(n, n === 'pause' || n === 'emptied' ? () => { if (video.readyState >= 3 || n === 'emptied') aus(); } : aus));
   video.addEventListener('error', () => { clearTimeout(uhr); l.hidden = false; l.classList.add('fehler'); wort.textContent = 'Der Film ließ sich nicht laden.'; setTimeout(aus, 2500); });
 }
@@ -953,13 +953,8 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && App.gewaeh
   }
   function baueFilm() {
     if (video) return;
-    filmBox.innerHTML = `<video playsinline controls preload="none" poster="${FILM.bild}" src="${FILM.adr}" aria-label="Film: der Kreislauf raten, Soll, lernen, reihum prüfen, einfrieren, messen – mit Sprecher"></video><div class="lade" hidden><i></i><span>Film lädt …</span></div>`;
-    video = filmBox.querySelector('video'); const lade = filmBox.querySelector('.lade'), strich = lade.querySelector('i'), wort = lade.querySelector('span');
-    const stand = () => { let e = 0; try { if (video.buffered.length) e = video.buffered.end(video.buffered.length - 1); } catch (x) { } const a = video.duration ? Math.min(1, e / video.duration) : 0; strich.style.width = (a * 100).toFixed(0) + '%'; wort.textContent = 'Film lädt … ' + (a * 100).toFixed(0) + ' %'; };
-    const zeigLade = an => { lade.hidden = !an; if (an) stand(); };
-    video.addEventListener('loadstart', () => zeigLade(true)); video.addEventListener('waiting', () => zeigLade(true)); video.addEventListener('progress', stand);
-    ['canplay', 'playing', 'canplaythrough'].forEach(n => video.addEventListener(n, () => zeigLade(false)));
-    video.addEventListener('error', () => { lade.hidden = false; wort.textContent = 'Der Film ließ sich nicht laden.'; });
+    filmBox.innerHTML = `<video playsinline controls preload="none" poster="${FILM.bild}" src="${FILM.adr}" aria-label="Film: der Kreislauf raten, Soll, lernen, reihum prüfen, einfrieren, messen – mit Sprecher"></video>`;
+    video = filmBox.querySelector('video'); ladeBalken(video, filmBox);   // dieselbe Ladeanzeige wie überall (drei Murmeln mit Prozent), erst nach dem Start
     video.addEventListener('play', () => { if (tourBis < 0) video.muted = false; });
     video.addEventListener('timeupdate', () => {
       const t = video.currentTime; if (tourBis >= 0 && t >= tourBis) { video.pause(); tourBis = -1; }
