@@ -157,6 +157,15 @@ try {
   await page.locator("[data-liste] [data-datei]").first().click();
   await page.locator("[data-original]").click();
   soll("Original eines Fotos wird angezeigt", await page.locator(".vorschau-bild").waitFor({ timeout: 5000 }).then(() => true, () => false));
+  // Vorschau der Original-PDF im Steckbrief (Klaus 16.11.): Seiten als Bild in der App, kein neues Fenster.
+  { const ast = page.locator("[data-ordnerbaum] [data-ast='PDF']").first();
+    if (await ast.count()) {
+      await ast.click(); await page.locator("[data-liste] [data-datei]").first().click();
+      await page.locator("[data-steckbrief] [data-original]").click();
+      soll("Original einer PDF: Seite als Bild im Steckbrief", await page.locator("[data-pdf-vorschau] img").first().waitFor({ timeout: 15000 }).then(() => true, () => false));
+      soll("… mit „Ganze PDF öffnen“", await page.locator("[data-pdf-ganz]").count() === 1);
+    } else soll("Testordner hat einen Ast „PDF“", false);
+  }
 
   console.log("Familienakte");
   await page.locator("[data-nav=akte]").click();

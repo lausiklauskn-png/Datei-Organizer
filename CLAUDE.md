@@ -33,6 +33,9 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   Nachtrag (Klaus: „Unklar“ in der Liste war nicht als neue Kategorie zu erkennen; ändern ging nur im letzten Sieb): neben der Bereichs-Auswahl steht
   sichtbar der Knopf „Neue Kategorie“ (`[data-neue-kategorie-knopf]`); in der Prüfliste ist beim Ändern jedes Feld wählbar (`[data-feld-wahl]`),
   nicht mehr nur das gerade offene. UI-Probe 133.
+- **Kopf und Vorschau (Klaus 16.11.):** Fassung (Link fürs Update) und Fähnchen stehen links neben dem Namen (`[data-fassung-platz]`), am Handy
+  leichter zu treffen. Das Auge im Steckbrief zeigt bei einer PDF die ersten drei Seiten als Bild in der App (`pdfVorschau` in `src/pdf.ts`,
+  `[data-pdf-vorschau]`, „Ganze PDF öffnen“) – vorher nur ein neues Fenster, das am Handy oft nicht aufging. UI-Probe 135.
 - **Landkarte Organizer auf den Stand gebracht** (`docs/landkarte/…`, `node scripts/landkarte-bauen.mjs`): Texterkennung, Datei-Innere, Ähnliche,
   Dashboard, große Mengen, Ordner auf dem Gerät sind „fertig“; neu „Teilen, Öffnen mit“ und „Arbeitsordner“. Seit 16.11. ist auch die **Übernahme in die
   Familienakte** „fertig“ (dort #203, `lib/organizer-uebernahme.ts`: Ordner als Eingangsordner wählen, der Index wird Vorschlag im Prüf-Fenster;

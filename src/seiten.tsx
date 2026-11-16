@@ -372,9 +372,10 @@ export function SortierenSeite({ z, gehe }: P) {
 // ---------------- Finden ----------------
 function Steckbrief({ z, d }: { z: AppZustand; d: Datei }) {
   const [bild, setBild] = useState<string | null>(null);
+  const [pdf, setPdf] = useState<{ bilder: string[]; seiten: number } | "laedt" | null>(null);
   const [stift, setStift] = useState(false);
   const [gross, setGross] = useState(false);
-  useEffect(() => { setBild(null); setGross(false); }, [d.pfad]);
+  useEffect(() => { setBild(null); setPdf(null); setGross(false); }, [d.pfad]);
   const f = d.felder;
   const zeile = (name: string, w?: { wert: string; sicher: boolean; grund: string; quelle: string }, anzeige?: string) => w ? <><dt>{name}</dt><dd><span className="feld-wert">{anzeige ?? w.wert}{w.quelle === "du" ? <span className="badge du">von dir</span> : w.quelle === "gelernt" ? <span className="badge du">gelernt</span> : !w.sicher ? <span className="badge pruefen">unsicher</span> : null}</span><span className="grund">{w.grund}</span></dd></> : null;
   const oeffnen = async (anzeigen: boolean) => {
@@ -382,6 +383,15 @@ function Steckbrief({ z, d }: { z: AppZustand; d: Datei }) {
     if (!b) { z.setMeldung({ text: "Original nur nach dem Einlesen in dieser Sitzung erreichbar. Ordner neu wählen.", art: "halt" }); return; }
     const url = URL.createObjectURL(d.art === "bild" ? new Blob([b], { type: "image/jpeg" }) : d.art === "pdf" ? new Blob([b], { type: "application/pdf" }) : b);
     if (anzeigen && d.art === "bild") { setBild(url); return; }
+    if (anzeigen && d.art === "pdf") {
+      // Vorschau des Originals in der App (Klaus 16.11.) – ein neues Fenster geht am Handy oft nicht auf.
+      URL.revokeObjectURL(url);
+      if (pdf && pdf !== "laedt") { setPdf(null); return; }
+      setPdf("laedt");
+      try { const { pdfVorschau } = await import("./pdf.ts"); setPdf(await pdfVorschau(new Uint8Array(await b.arrayBuffer()))); }
+      catch { setPdf(null); z.setMeldung({ text: "Die Vorschau dieser PDF ließ sich nicht zeichnen.", art: "halt" }); }
+      return;
+    }
     window.open(url, "_blank", "noopener"); setTimeout(() => URL.revokeObjectURL(url), 60000);
   };
   const teilen = async () => {
@@ -416,6 +426,11 @@ function Steckbrief({ z, d }: { z: AppZustand; d: Datei }) {
       <Info titel="Original" punkte={["Öffnet die Datei aus dem Ordner. Sie wird nicht verändert.", "Gesperrte Dateien öffnet der Organizer nicht."]}/>
     </div>
     {stift && <div style={{ marginTop: 10 }}><FeldAendern z={z} d={d} fertig={() => setStift(false)}/></div>}
+    {pdf === "laedt" && <p className="leise" role="status">Vorschau wird gezeichnet …</p>}
+    {pdf && pdf !== "laedt" && <div data-pdf-vorschau>
+      {pdf.bilder.map((u, i) => <img key={u} src={u} alt={`${d.name}, Seite ${i + 1}`} className={`vorschau-bild ${gross ? "gross" : ""}`} onClick={() => setGross(!gross)} title={gross ? "Tippen: kleiner" : "Tippen: größer"}/>)}
+      <p className="leise">{pdf.seiten > pdf.bilder.length ? `Seite 1–${pdf.bilder.length} von ${pdf.seiten}. ` : ""}<button type="button" className="text-link" onClick={() => oeffnen(false)} data-pdf-ganz>Ganze PDF öffnen</button></p>
+    </div>}
     {bild && <img src={bild} alt={`Foto ${d.name}`} className={`vorschau-bild ${gross ? "gross" : ""}`} onClick={() => setGross(!gross)} title={gross ? "Tippen: kleiner" : "Tippen: größer"}/>}
     {d.volltext && <details style={{ marginTop: 10 }}><summary className="leise">Erkannter Text</summary><pre style={{ whiteSpace: "pre-wrap", fontSize: ".8rem", maxHeight: 260, overflow: "auto" }}>{d.volltext.slice(0, 3000)}</pre></details>}
   </section>;
