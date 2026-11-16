@@ -1,7 +1,7 @@
 import { innenKurz } from "../lib/innen.ts";
 import { ausZiehen } from "./quellen.ts";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Archive, Check, Download, File, FileImage, FileText, FolderOpen, FolderTree, HelpCircle, History, ListChecks, Mail, Pencil, Eye, RotateCcw, Search, Settings, Share2, Trash2, Upload, ShieldAlert, Smartphone, Monitor, Undo2, X } from "lucide-react";
+import { Archive, Check, Download, File, FileImage, FileText, FolderOpen, FolderTree, HelpCircle, History, ListChecks, Mail, Pencil, Plus, Eye, RotateCcw, Search, Settings, Share2, Trash2, Upload, ShieldAlert, Smartphone, Monitor, Undo2, X } from "lucide-react";
 import type { Datei, FeldName } from "../lib/typen.ts";
 import { STUFEN, offeneFelder, gesperrt, istUnsicher } from "../lib/siebe.ts";
 import { SICHTEN, baum, dateienUnter, suche, type BaumKnoten } from "../lib/sichten.ts";
@@ -51,10 +51,12 @@ function WertWahl({ feld, wert, setWert }: { feld: FeldName; wert: string; setWe
     <input autoFocus value={wert} maxLength={60} onChange={(e) => setWert(e.target.value)} aria-label="Name der neuen Kategorie" placeholder="Name der neuen Kategorie" data-neue-kategorie className="wert-feld"/>
     <button type="button" className="text-link" onClick={() => { setNeu(false); setWert(""); }}>Liste</button>
   </span>;
-  return <select value={wert} onChange={(e) => { if (e.target.value === NEU) { setNeu(true); setWert(""); } else setWert(e.target.value); }} aria-label={FELD_NAMEN[feld]} data-wert>
+  const wahl = <select value={wert} onChange={(e) => { if (e.target.value === NEU) { setNeu(true); setWert(""); } else setWert(e.target.value); }} aria-label={FELD_NAMEN[feld]} data-wert>
     {!liste.includes(wert) && <option value={wert}>{wert || "–"}</option>}{liste.map((k) => <option key={k}>{k}</option>)}
     {feld === "kategorie" && <option value={NEU} data-neu-option>+ Neue Kategorie erstellen …</option>}
   </select>;
+  // Klaus 16.11.: „Unklar“ in der Liste ist keine neue Kategorie – darum zusätzlich ein eigener, sichtbarer Knopf.
+  return feld !== "kategorie" ? wahl : <>{wahl}<button type="button" className="button klein" onClick={() => { setNeu(true); setWert(""); }} title="Eigene Kategorie anlegen" data-neue-kategorie-knopf><Plus size={15}/>Neue Kategorie</button></>;
 }
 export const offenBei = (d: Datei) => offeneFelder(d).length > 0;
 
@@ -224,9 +226,10 @@ export function DateiAktionen({ z, d, auge, setAuge, stift, setStift }: { z: App
   </div>;
 }
 
+const ALLE_FELDER: FeldName[] = ["kategorie", "schriftstueck", "absender", "betrifft", "datum", "frist"];
 /** Jedes Feld von Hand ändern – auch was die App schon sicher eingeordnet hat. Geht durch z.aendern: Verlauf, Rückgängig, Lernen. */
 export function FeldAendern({ z, d, fertig }: { z: AppZustand; d: Datei; fertig: () => void }) {
-  const FELDER: FeldName[] = ["kategorie", "schriftstueck", "absender", "betrifft", "datum", "frist"];
+  const FELDER = ALLE_FELDER;
   const [feld, setFeld] = useState<FeldName>("kategorie");
   const [wert, setWert] = useState(d.felder.kategorie?.wert || "");
   const waehle = (f: FeldName) => { setFeld(f); setWert(d.felder[f]?.wert || ""); };
@@ -243,6 +246,8 @@ function PruefZeile({ z, d, neu }: { z: AppZustand; d: Datei; neu?: number }) {
   const [feld, setFeld] = useState<FeldName>(felder[0]);
   const [aendern, setAendern] = useState(false);
   const [wert, setWert] = useState("");
+  // Klaus 16.11.: in jedem Sieb jedes Feld von Hand ändern – nicht nur das gerade offene (vorher ging der Bereich erst im letzten Sieb).
+  const [was, setWas] = useState<FeldName>(felder[0]);
   useEffect(() => { if (!felder.includes(feld)) setFeld(felder[0]); }, [felder.join(), feld]);
   const [auge, setAuge] = useState(false);
   if (!feld) return null;
@@ -256,10 +261,11 @@ function PruefZeile({ z, d, neu }: { z: AppZustand; d: Datei; neu?: number }) {
       <button type="button" className="button klein" aria-pressed={auge} aria-label={`${d.name} ansehen`} title="Ansehen, teilen oder entfernen" onClick={() => setAuge(!auge)} data-auge><Eye size={15}/></button>
       {!aendern ? <>
         {w?.wert && <button type="button" className="button klein" onClick={() => z.aendern(d.pfad, feld, w.wert)} data-stimmt><Check size={15}/>Stimmt</button>}
-        <button type="button" className="button klein" onClick={() => { setWert(w?.wert || ""); setAendern(true); }} aria-label="Ändern" title="Von Hand ändern" data-korrigieren><Pencil size={15}/></button>
+        <button type="button" className="button klein" onClick={() => { setWas(feld); setWert(w?.wert || ""); setAendern(true); }} aria-label="Ändern" title="Von Hand ändern: Art, Bereich, Absender, Betrifft, Datum, Frist" data-korrigieren><Pencil size={15}/></button>
       </> : <>
-        <WertWahl feld={feld} wert={wert} setWert={setWert}/>
-        <button type="button" className="button klein primary" disabled={!wert.trim()} onClick={() => { uebernimm(z, d.pfad, feld, wert); setAendern(false); }} data-uebernehmen>Übernehmen</button>
+        <select value={was} onChange={(e) => { const f = e.target.value as FeldName; setWas(f); setWert(d.felder[f]?.wert || ""); }} aria-label="Welches Feld" data-feld-wahl>{ALLE_FELDER.map((f) => <option key={f} value={f}>{FELD_NAMEN[f]}</option>)}</select>
+        <WertWahl feld={was} wert={wert} setWert={setWert}/>
+        <button type="button" className="button klein primary" disabled={!wert.trim()} onClick={() => { uebernimm(z, d.pfad, was, wert); setAendern(false); }} data-uebernehmen>Übernehmen</button>
         <button type="button" className="button klein" onClick={() => setAendern(false)}>Abbrechen</button>
       </>}
     </div>

@@ -30,6 +30,9 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   wird auf dem Gerät gemerkt (`do-eigene-kategorien`, höchstens 50) und steht danach in jeder Liste. Im Index reist er als Bereich der Datei mit
   („von dir“); die Familienakte schlägt ihn als neuen Lebensbereich vor (dort `lib/organizer-uebernahme.ts`, ab 2.28.72). Kern (`lib/`) unverändert –
   der Kern selbst ordnet nie in eine eigene Kategorie ein, das Lernen aus Korrekturen (`lib/lernen.ts`) schon. UI-Probe 130.
+  Nachtrag (Klaus: „Unklar“ in der Liste war nicht als neue Kategorie zu erkennen; ändern ging nur im letzten Sieb): neben der Bereichs-Auswahl steht
+  sichtbar der Knopf „Neue Kategorie“ (`[data-neue-kategorie-knopf]`); in der Prüfliste ist beim Ändern jedes Feld wählbar (`[data-feld-wahl]`),
+  nicht mehr nur das gerade offene. UI-Probe 133.
 - **Landkarte Organizer auf den Stand gebracht** (`docs/landkarte/…`, `node scripts/landkarte-bauen.mjs`): Texterkennung, Datei-Innere, Ähnliche,
   Dashboard, große Mengen, Ordner auf dem Gerät sind „fertig“; neu „Teilen, Öffnen mit“ und „Arbeitsordner“. Seit 16.11. ist auch die **Übernahme in die
   Familienakte** „fertig“ (dort #203, `lib/organizer-uebernahme.ts`: Ordner als Eingangsordner wählen, der Index wird Vorschlag im Prüf-Fenster;

@@ -122,6 +122,14 @@ try {
   soll("Rückgängig nimmt eine zurück", await page.locator("[data-verlauf] li").count() === korr - 1);
   await page.locator("[data-nav=sortieren]").click();
   soll("… und die Datei ist wieder zu prüfen", await page.locator("[data-pruef]").count() >= 1);
+  { // Klaus 16.11.: in der Prüfliste lässt sich jedes Feld wählen, auch der Bereich mit „Neue Kategorie“ – nicht nur das offene.
+    const z0 = page.locator("[data-pruef]").first(); await z0.locator("[data-korrigieren]").click();
+    const fw = z0.locator("[data-feld-wahl]");
+    soll("Prüfliste: beim Ändern ist jedes Feld wählbar", await fw.evaluate((e) => e.options.length) === 6);
+    await fw.selectOption("kategorie");
+    soll("… beim Bereich mit dem Knopf „Neue Kategorie“", await z0.locator("[data-neue-kategorie-knopf]").isVisible());
+    await z0.getByText("Abbrechen").click();
+  }
   while (await page.locator("[data-pruef]").count()) {
     const z = page.locator("[data-pruef]").first();
     if (await z.locator("[data-stimmt]").count()) await z.locator("[data-stimmt]").click();
@@ -268,7 +276,9 @@ try {
     const e2 = page.locator("[data-liste] .datei-eintrag").first(); await e2.locator("[data-stift]").click();
     const w2 = e2.locator("[data-feld-aendern] [data-wert]");
     soll("Bereichs-Liste endet mit „Neue Kategorie erstellen“", /Neue Kategorie erstellen/.test(await w2.evaluate((e) => [...e.options].at(-1).textContent)));
-    await w2.selectOption(await w2.evaluate((e) => [...e.options].at(-1).value));
+    const kn = e2.locator("[data-feld-aendern] [data-neue-kategorie-knopf]");
+    soll("… und daneben steht sichtbar der Knopf „Neue Kategorie“", await kn.isVisible() && /Neue Kategorie/.test(await kn.innerText()));
+    await kn.click();
     await e2.locator("[data-neue-kategorie]").fill("  Ehrenamt   Musterverein ");
     await e2.locator("[data-feld-aendern] [data-uebernehmen]").click(); await page.waitForTimeout(400);
     await page.goto(basis + "#landkarte"); await page.waitForTimeout(300);
