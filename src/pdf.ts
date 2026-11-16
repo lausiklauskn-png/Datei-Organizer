@@ -26,13 +26,32 @@ async function scanLesen(pdfjs: ScanPdf, bytes: Uint8Array, ocr: BildLeser): Pro
   } finally { await doc.destroy(); }
 }
 
+const laden = () => bereit || (bereit = (async () => {
+  const [pdfjs, worker] = await Promise.all([import("pdfjs-dist"), import("pdfjs-dist/build/pdf.worker.min.mjs?url")]);
+  pdfjs.GlobalWorkerOptions.workerSrc = worker.default;
+  return pdfjs as unknown as PdfJsVoll;
+})());
+
+/** Vorschau des Originals (Klaus 16.11.): die ersten Seiten als Bild, in der App gezeichnet – kein neues Fenster, nichts verlässt das Gerät. */
+export async function pdfVorschau(bytes: Uint8Array, hoechstens = 3): Promise<{ bilder: string[]; seiten: number }> {
+  const pdfjs = await laden() as unknown as ScanPdf;
+  const doc = await pdfjs.getDocument({ data: bytes.slice(), isEvalSupported: false, verbosity: 0 }).promise;
+  try {
+    const bilder: string[] = [];
+    for (let n = 1; n <= Math.min(doc.numPages, hoechstens); n++) {
+      const seite = await doc.getPage(n);
+      const vp = seite.getViewport({ scale: 1.5 });
+      const c = document.createElement("canvas"); c.width = Math.ceil(vp.width); c.height = Math.ceil(vp.height);
+      await seite.render({ canvasContext: c.getContext("2d")!, viewport: vp }).promise;
+      const blob = await new Promise<Blob | null>((ok) => c.toBlob(ok, "image/jpeg", 0.85));
+      if (blob) bilder.push(URL.createObjectURL(blob));
+    }
+    return { bilder, seiten: doc.numPages };
+  } finally { await doc.destroy(); }
+}
+
 export async function pdfLeser(ocr?: BildLeser) {
-  if (!bereit) bereit = (async () => {
-    const [pdfjs, worker] = await Promise.all([import("pdfjs-dist"), import("pdfjs-dist/build/pdf.worker.min.mjs?url")]);
-    pdfjs.GlobalWorkerOptions.workerSrc = worker.default;
-    return pdfjs as unknown as PdfJsVoll;
-  })();
-  const pdfjs = await bereit;
+  const pdfjs = await laden();
   return async (b: Uint8Array) => {
     const t = await pdfTextLesen(pdfjs, b);
     if (t.voll.trim() || !ocr) return t;

@@ -8,6 +8,8 @@ import { createRequire } from "node:module";
 // Playwright liegt global (Behälter) oder als Entwicklungs-Abhängigkeit (CI).
 const { chromium } = createRequire(import.meta.url)("playwright");
 import { indexLesen } from "../lib/index-format.ts";
+// Der Arbeitsordner liegt seit 16.11. hinter dem Zahnrad der Ordner-Seite: erst aufklappen, wenn die Karte zu ist.
+const zahnrad = async (pg) => { if (!(await pg.locator("[data-arbeit-waehlen]").count())) await pg.locator("[data-einstellungen]").click(); };
 
 const WURZEL = fileURLToPath(new URL("..", import.meta.url));
 const TYP = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".mjs": "text/javascript", ".css": "text/css", ".json": "application/json", ".svg": "image/svg+xml", ".pdf": "application/pdf", ".jpg": "image/jpeg", ".webmanifest": "application/manifest+json" };
@@ -120,6 +122,14 @@ try {
   soll("Rückgängig nimmt eine zurück", await page.locator("[data-verlauf] li").count() === korr - 1);
   await page.locator("[data-nav=sortieren]").click();
   soll("… und die Datei ist wieder zu prüfen", await page.locator("[data-pruef]").count() >= 1);
+  { // Klaus 16.11.: in der Prüfliste lässt sich jedes Feld wählen, auch der Bereich mit „Neue Kategorie“ – nicht nur das offene.
+    const z0 = page.locator("[data-pruef]").first(); await z0.locator("[data-korrigieren]").click();
+    const fw = z0.locator("[data-feld-wahl]");
+    soll("Prüfliste: beim Ändern ist jedes Feld wählbar", await fw.evaluate((e) => e.options.length) === 6);
+    await fw.selectOption("kategorie");
+    soll("… beim Bereich mit dem Knopf „Neue Kategorie“", await z0.locator("[data-neue-kategorie-knopf]").isVisible());
+    await z0.getByText("Abbrechen").click();
+  }
   while (await page.locator("[data-pruef]").count()) {
     const z = page.locator("[data-pruef]").first();
     if (await z.locator("[data-stimmt]").count()) await z.locator("[data-stimmt]").click();
@@ -147,6 +157,24 @@ try {
   await page.locator("[data-liste] [data-datei]").first().click();
   await page.locator("[data-original]").click();
   soll("Original eines Fotos wird angezeigt", await page.locator(".vorschau-bild").waitFor({ timeout: 5000 }).then(() => true, () => false));
+  // Vorschau der Original-PDF im Steckbrief (Klaus 16.11.): Seiten als Bild in der App, kein neues Fenster.
+  { const ast = page.locator("[data-ordnerbaum] [data-ast='PDF']").first();
+    if (await ast.count()) {
+      await ast.click(); await page.locator("[data-liste] [data-datei]").first().click();
+      await page.locator("[data-steckbrief] [data-original]").click();
+      soll("Original einer PDF: Seite als Bild im Steckbrief", await page.locator("[data-pdf-vorschau] img").first().waitFor({ timeout: 15000 }).then(() => true, () => false));
+      soll("… mit „Ganze PDF öffnen“", await page.locator("[data-pdf-ganz]").count() === 1);
+    } else soll("Testordner hat einen Ast „PDF“", false);
+  }
+  { // Nach dem Neuladen (Originale nicht mehr im Speicher): der gemerkte Ordner wird still wieder geöffnet.
+    await page.reload(); await page.waitForTimeout(600);
+    await page.locator("[data-nav=finden]").click(); await page.waitForTimeout(300);
+    await page.locator("[data-sicht]").selectOption("art");
+    await page.locator("[data-ordnerbaum] [data-ast='PDF']").first().click();
+    await page.locator("[data-liste] [data-datei]").first().click();
+    await page.locator("[data-steckbrief] [data-original]").click();
+    soll("Nach dem Neuladen zeigt das Auge die Original-PDF wieder", await page.locator("[data-pdf-vorschau] img").first().waitFor({ timeout: 15000 }).then(() => true, () => false));
+  }
 
   console.log("Familienakte");
   await page.locator("[data-nav=akte]").click();
@@ -260,6 +288,24 @@ try {
     soll("Stift: Bereich einer schon eingeordneten Datei von Hand ändern – sie verlässt diesen Ordner", Number(await page.locator("[data-liste] .card-heading .badge").innerText()) === n - 1, `${neu}`);
     await page.locator("[data-nav=verlauf]").click(); await page.waitForTimeout(200);
     soll("… und die Änderung steht im Verlauf", (await page.locator("main").innerText()).includes(neu));
+    // Neue Kategorie erstellen (Klaus 16.11.): letzter Eintrag jeder Bereichs-Liste; der Name ist danach ein Bereich und steht in der Liste.
+    await page.goto(basis + "#landkarte"); await page.waitForTimeout(300);
+    await page.locator("[data-bereich]").first().click(); await page.waitForTimeout(400);
+    const e2 = page.locator("[data-liste] .datei-eintrag").first(); await e2.locator("[data-stift]").click();
+    const w2 = e2.locator("[data-feld-aendern] [data-wert]");
+    soll("Bereichs-Liste endet mit „Neue Kategorie erstellen“", /Neue Kategorie erstellen/.test(await w2.evaluate((e) => [...e.options].at(-1).textContent)));
+    const kn = e2.locator("[data-feld-aendern] [data-neue-kategorie-knopf]");
+    soll("… und daneben steht sichtbar der Knopf „Neue Kategorie“", await kn.isVisible() && /Neue Kategorie/.test(await kn.innerText()));
+    await kn.click();
+    await e2.locator("[data-neue-kategorie]").fill("  Ehrenamt   Musterverein ");
+    await e2.locator("[data-feld-aendern] [data-uebernehmen]").click(); await page.waitForTimeout(400);
+    await page.goto(basis + "#landkarte"); await page.waitForTimeout(300);
+    const neuB = page.locator('[data-bereich="Ehrenamt Musterverein"]');
+    soll("Neue Kategorie ist ein eigener Bereich mit einer Datei", await neuB.count() === 1 && Number(await neuB.locator(".n").innerText().catch(() => "0")) === 1);
+    await neuB.click(); await page.waitForTimeout(400);
+    const e3 = page.locator("[data-liste] .datei-eintrag").first(); await e3.locator("[data-stift]").click();
+    soll("… und steht danach in der Bereichs-Liste zur Wahl", await e3.locator("[data-feld-aendern] [data-wert]").evaluate((e) => [...e.options].some((o) => o.value === "Ehrenamt Musterverein")));
+    soll("… und ist auf dem Gerät gemerkt", (await page.evaluate(() => JSON.parse(localStorage.getItem("do-eigene-kategorien") || "[]"))).includes("Ehrenamt Musterverein"));
     await page.goto(basis + "#landkarte"); await page.waitForTimeout(300);
     await page.locator("[data-kachel=sicher]").click(); await page.waitForTimeout(400);
     const vorP = Number(await page.locator("[data-liste] .card-heading .badge").innerText());
@@ -518,10 +564,10 @@ try {
 
     // A + B + C: kleines Gerät (vollBis 30 MB), große Datei 35 MB, Arbeitsordner auf der „SD-Karte“.
     { const { c, pg, f } = await neueSeite({ mem: 2, kerne: 4, gross: GROSS, frei: 8 * 1024 ** 3, wahlen: ["t", "l", "e"] });
-      soll("A: Leistung des Geräts wird angezeigt (klein: Blöcke zu 25, bis 30 MB ganz)", /Kleines Gerät: Blöcke zu 25, Dateien bis 30 MB/.test(await pg.locator("[data-leistung]").innerText().catch(() => "")));
-      await pg.locator("[data-arbeit-waehlen]").click();
+      await zahnrad(pg); soll("A: Leistung des Geräts wird angezeigt (klein: Blöcke zu 25, bis 30 MB ganz)", /Kleines Gerät: Blöcke zu 25, Dateien bis 30 MB/.test(await pg.locator("[data-leistung]").innerText().catch(() => "")));
+      await zahnrad(pg); await pg.locator("[data-arbeit-waehlen]").click();
       soll("B: Pro-Tresor als Laufwerk gewählt → abgewiesen mit Erklärung", /Pro-Tresor/.test(await meldungNach(pg, /Tresor/)) && await pg.locator("[data-arbeit-pfad]").count() === 0);
-      await pg.locator("[data-arbeit-waehlen]").click();
+      await zahnrad(pg); await pg.locator("[data-arbeit-waehlen]").click();
       await pg.waitForSelector("[data-arbeit-pfad]", { timeout: 5000 }).catch(() => {});
       soll("B: Laufwerk gewählt → Arbeitsordner SD-Karte/Datei-Organizer-Arbeit, freier Speicher genannt", /SD-Karte\/Datei-Organizer-Arbeit/.test(await pg.locator("[data-arbeit-pfad]").innerText().catch(() => "")) && /frei 8 GB/.test(await pg.locator("[data-arbeit-pfad]").innerText().catch(() => "")));
       soll("B: das Laufwerk erscheint nicht unter „Zuletzt“ als Quelle", !((await pg.locator("[data-gemerkt]").innerText().catch(() => "")) || "").includes("SD-Karte"));
@@ -541,9 +587,9 @@ try {
       // „Neuinstallation“: App-Speicher weg, Laufwerk bleibt → nach Wahl des Laufwerks ist der Stand wieder da.
       await pg.evaluate(() => new Promise((ok) => { localStorage.clear(); const r = indexedDB.deleteDatabase("DateiOrganizer1"); r.onsuccess = r.onerror = r.onblocked = () => ok(); }));
       await pg.evaluate(() => { const o = JSON.parse(sessionStorage.getItem("opt")); o.wahlen = ["l"]; sessionStorage.setItem("opt", JSON.stringify(o)); });
-      await pg.reload(); await pg.waitForSelector("[data-arbeit-waehlen]", { timeout: 8000 }).catch(() => {});
+      await pg.reload(); await pg.waitForSelector("[data-einstellungen]", { timeout: 8000 }).catch(() => {});
       soll("B: nach „Neuinstallation“ ohne Arbeitsordner und leer", await pg.locator("[data-arbeit-pfad]").count() === 0 && (await pg.locator("[data-ordner-pill]").innerText()).includes("Kein Ordner"));
-      await pg.locator("[data-arbeit-waehlen]").click();
+      await zahnrad(pg); await pg.locator("[data-arbeit-waehlen]").click();
       soll("B: Laufwerk wieder gewählt → Stand aus dem Arbeitsordner übernommen (3 Dateien)", /3 Dateien aus dem gespeicherten Stand übernommen/.test(await meldungNach(pg, /übernommen/, 8000)) && (await pg.locator('[data-zahl="gesamt"]').innerText().catch(() => "")).startsWith("3 "));
       await pg.reload(); await pg.waitForFunction(() => /^3 /.test(document.querySelector('[data-zahl="gesamt"]')?.textContent || ""), null, { timeout: 8000 }).catch(() => {});
       soll("B: beim nächsten Start kommt die Liste ohne Auswahl vom Laufwerk", (await pg.locator('[data-zahl="gesamt"]').innerText().catch(() => "")).startsWith("3 "));
@@ -558,13 +604,13 @@ try {
       soll("A: ohne Prüfsummen-Aufruf der App (Familienakte) Stück für Stück über die Brücke, ohne Absturz", log.pruef === 0 && log.grossGelesen >= GROSS && log.grossGelesen <= GROSS + 4096, JSON.stringify(log));
       await c.close(); }
     { const { c, pg } = await neueSeite({ mem: 16, kerne: 12, gross: GROSS, frei: -1 });
-      soll("A: starkes Gerät (16 GB, 12 Kerne) lädt bis 256 MB ganz", /Starkes Gerät: Blöcke zu 100, Dateien bis 256 MB/.test(await pg.locator("[data-leistung]").innerText().catch(() => "")));
+      await zahnrad(pg); soll("A: starkes Gerät (16 GB, 12 Kerne) lädt bis 256 MB ganz", /Starkes Gerät: Blöcke zu 100, Dateien bis 256 MB/.test(await pg.locator("[data-leistung]").innerText().catch(() => "")));
       await pg.locator("[data-nativ-ordner]").click(); const m = await meldungNach(pg, /Dateien im Eingang/);
       soll("A: starkes Gerät – die große Datei wird ganz geladen (kein Stück-für-Stück-Weg)", !/Stück für Stück/.test(m) && (await pg.evaluate(() => window.__log.pruef)) === 0, m);
       await c.close(); }
     // D: zu wenig frei im Arbeitsordner → anhalten mit Meldung, Stand bleibt, nichts gelesen.
     { const { c, pg } = await neueSeite({ mem: 4, kerne: 6, gross: 0, frei: 10 * 1024 * 1024, wahlen: ["l", "e"] });
-      await pg.locator("[data-arbeit-waehlen]").click(); await pg.waitForSelector("[data-arbeit-pfad]", { timeout: 5000 }).catch(() => {});
+      await zahnrad(pg); await pg.locator("[data-arbeit-waehlen]").click(); await pg.waitForSelector("[data-arbeit-pfad]", { timeout: 5000 }).catch(() => {});
       await pg.locator("[data-nativ-ordner]").click();
       const m = await meldungNach(pg, /Zu wenig Speicher/, 20000);
       soll("D: zu wenig frei im Arbeitsordner → hält vor dem Block an, nennt frei und gebraucht", /Zu wenig Speicher im Arbeitsordner \(SD-Karte\/Datei-Organizer-Arbeit\): frei 10 MB, für den nächsten Block gebraucht 50 MB\. 0 von 2/.test(m), m);

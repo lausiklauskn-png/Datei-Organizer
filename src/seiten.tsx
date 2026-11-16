@@ -1,7 +1,7 @@
 import { innenKurz } from "../lib/innen.ts";
 import { ausZiehen } from "./quellen.ts";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Archive, Check, Download, File, FileImage, FileText, FolderOpen, FolderTree, HelpCircle, History, ListChecks, Mail, Pencil, Eye, RotateCcw, Search, Share2, Trash2, Upload, ShieldAlert, Smartphone, Monitor, Undo2, X } from "lucide-react";
+import { Archive, Check, Download, File, FileImage, FileText, FolderOpen, FolderTree, HelpCircle, History, ListChecks, Mail, Pencil, Plus, Eye, RotateCcw, Search, Settings, Share2, Trash2, Upload, ShieldAlert, Smartphone, Monitor, Undo2, X } from "lucide-react";
 import type { Datei, FeldName } from "../lib/typen.ts";
 import { STUFEN, offeneFelder, gesperrt, istUnsicher } from "../lib/siebe.ts";
 import { SICHTEN, baum, dateienUnter, suche, type BaumKnoten } from "../lib/sichten.ts";
@@ -19,6 +19,45 @@ export type P = { z: AppZustand; gehe: (s: SeitenId) => void; oeffne?: (sicht: s
 
 export const FELD_NAMEN: Record<FeldName, string> = { schriftstueck: "Art", kategorie: "Bereich", absender: "Absender", betrifft: "Betrifft", datum: "Datum", frist: "Frist" };
 export const AUSWAHL: Partial<Record<FeldName, string[]>> = { kategorie: [...KATEGORIEN, FOTOS, UNKLAR], schriftstueck: [...SCHRIFTSTUECKE] };
+
+// Eigene Kategorien (Klaus 16.11.): überall, wo ein Bereich gewählt wird, steht am Ende „Neue Kategorie erstellen“. Der Name wird
+// auf diesem Gerät gemerkt und steht danach in jeder Liste; im Index reist er als Bereich der Datei mit, die Familienakte schlägt
+// ihn dort als neuen Lebensbereich vor (lib/organizer-uebernahme.ts dort).
+const EIGENE_SCHLUESSEL = "do-eigene-kategorien", NEU = "\u0001neu";
+export const kategorieName = (v: string) => v.replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim().slice(0, 60);
+export function eigeneKategorien(): string[] {
+  try { const l = JSON.parse(localStorage.getItem(EIGENE_SCHLUESSEL) || "[]"); return Array.isArray(l) ? l.filter((x): x is string => typeof x === "string" && !!x).slice(0, 50) : []; } catch { return []; }
+}
+function kategorieMerken(name: string) {
+  const n = kategorieName(name); if (!n || (AUSWAHL.kategorie || []).includes(n)) return;
+  const l = eigeneKategorien(); if (l.some((x) => x.toLocaleLowerCase("de") === n.toLocaleLowerCase("de"))) return;
+  try { localStorage.setItem(EIGENE_SCHLUESSEL, JSON.stringify([...l, n].slice(-50))); } catch { /* ohne Speicher: gilt nur für diese Datei */ }
+}
+/** Übernehmen mit Merken: ein neuer Bereich steht danach in jeder Liste. */
+function uebernimm(z: AppZustand, pfad: string, feld: FeldName, wert: string) {
+  const w = feld === "kategorie" ? kategorieName(wert) : wert.trim();
+  if (!w) return;
+  if (feld === "kategorie") kategorieMerken(w);
+  z.aendern(pfad, feld, w);
+}
+/** Auswahl eines Werts: Liste (Bereich, Art) oder freies Feld; beim Bereich als letzter Eintrag „Neue Kategorie erstellen“. */
+function WertWahl({ feld, wert, setWert }: { feld: FeldName; wert: string; setWert: (w: string) => void }) {
+  const fest = AUSWAHL[feld];
+  const [neu, setNeu] = useState(false);
+  useEffect(() => setNeu(false), [feld]);
+  if (!fest) return <input value={wert} onChange={(e) => setWert(e.target.value)} aria-label={FELD_NAMEN[feld]} type={feld === "datum" || feld === "frist" ? "date" : "text"} data-wert className="wert-feld"/>;
+  const liste = feld === "kategorie" ? [...fest, ...eigeneKategorien().filter((k) => !fest.includes(k))] : fest;
+  if (neu) return <span className="neue-kategorie">
+    <input autoFocus value={wert} maxLength={60} onChange={(e) => setWert(e.target.value)} aria-label="Name der neuen Kategorie" placeholder="Name der neuen Kategorie" data-neue-kategorie className="wert-feld"/>
+    <button type="button" className="text-link" onClick={() => { setNeu(false); setWert(""); }}>Liste</button>
+  </span>;
+  const wahl = <select value={wert} onChange={(e) => { if (e.target.value === NEU) { setNeu(true); setWert(""); } else setWert(e.target.value); }} aria-label={FELD_NAMEN[feld]} data-wert>
+    {!liste.includes(wert) && <option value={wert}>{wert || "–"}</option>}{liste.map((k) => <option key={k}>{k}</option>)}
+    {feld === "kategorie" && <option value={NEU} data-neu-option>+ Neue Kategorie erstellen …</option>}
+  </select>;
+  // Klaus 16.11.: „Unklar“ in der Liste ist keine neue Kategorie – darum zusätzlich ein eigener, sichtbarer Knopf.
+  return feld !== "kategorie" ? wahl : <>{wahl}<button type="button" className="button klein" onClick={() => { setNeu(true); setWert(""); }} title="Eigene Kategorie anlegen" data-neue-kategorie-knopf><Plus size={15}/>Neue Kategorie</button></>;
+}
 export const offenBei = (d: Datei) => offeneFelder(d).length > 0;
 
 function Meldung({ z }: P) {
@@ -60,8 +99,8 @@ function ArbeitKarte({ z, laeuft, los }: { z: AppZustand; laeuft: boolean; los: 
   const [frei, setFrei] = useState<number | null>(null);
   useEffect(() => { let weg = false; if (z.arbeit && !z.arbeitFehlt) void arbeitFrei(z.arbeit).then((f) => { if (!weg) setFrei(f); }); else setFrei(null); return () => { weg = true; }; }, [z.arbeit, z.arbeitFehlt, z.dateien.length]);
   const amPc = nativPlattform() === "windows";
-  return <section className="card" data-arbeitsordner>
-    <div className="card-heading"><h2>Arbeitsordner</h2>
+  return <section className="einstellungen" data-arbeitsordner>
+    <div className="card-heading"><h3>Einstellungen · Arbeitsordner</h3>
       <Info titel="Wofür der Arbeitsordner?" punkte={[
         `Für große Ordner: Liste, Texte und Sortierung liegen dann auf ${amPc ? "der Festplatte" : "der SD-Karte"} statt im App-Speicher.`,
         `Du wählst nur das Laufwerk – der Ordner „${ARBEIT}“ entsteht darin von selbst. So landet nichts aus Versehen im falschen Ordner.`,
@@ -90,6 +129,8 @@ export function OrdnerSeite({ z, gehe }: P) {
   const [gemerkt, setGemerkt] = useState<GemerkterOrdner[]>([]);
   useEffect(() => { if (nativ) void nativGemerkt().then(setGemerkt); }, [nativ, z.ordnerName]);
   const [ziehtDrueber, setZiehtDrueber] = useState(false);
+  // Einstellungen der Seite (Zahnrad): der Arbeitsordner (Klaus 16.11.). Fehlt er, klappt die Karte von selbst auf.
+  const [einst, setEinst] = useState(false);
   const zahlen = useMemo(() => ({
     gesamt: z.dateien.length, auff: z.dateien.filter((d) => d.auffaellig).length, dopp: z.dateien.filter((d) => d.doppeltVon).length, aehnl: z.dateien.filter((d) => d.aehnlich).length,
     offen: z.dateien.filter(offenBei).length, fertig: z.dateien.filter((d) => d.stufe >= 5 && !offenBei(d) && !gesperrt(d)).length,
@@ -102,20 +143,28 @@ export function OrdnerSeite({ z, gehe }: P) {
       "Die Familienakte holt sich Kopien und ordnet sie nach dieser Datei zu.",
     ]} mehr={<FesterBaum wurzel={SD_BAUM} label="Wo der Ordner auf der SD-Karte liegt"/>}/>}/>
     <section className="card" data-ordner-wahl>
-      <div className="card-heading"><h2>{z.ordnerName ? `Ordner: ${z.ordnerName}` : "Ordner wählen"}</h2>
-        <Info titel="Welcher Weg?" punkte={[
-          "Handy/Tablet mit Datei-Organizer Pro oder Familienakte Pro: „Ordner auf dem Gerät“ – auch SD-Karte.",
+      <div className="card-heading mit-knoepfen"><h2 data-ordner-pfad>{z.ordnerName ? `Ordner: ${z.ordnerName}` : "Ordner oder Dateien einfügen"}</h2>
+        {arbeitMoeglich() && <button type="button" className={`info-knopf ${einst ? "aktiv" : ""}`} data-einstellungen aria-expanded={einst} aria-label="Einstellungen: Arbeitsordner" title="Einstellungen: Arbeitsordner" onClick={() => setEinst(!einst)}><Settings size={18}/></button>}
+        <Info titel="So kommen Dateien hinein" punkte={[
+          "Antippen: einen Ordner auf dem Gerät wählen – auch SD-Karte. Am PC mit Chrome oder Edge: „Ordner am PC“.",
+          "Oder Dateien und ganze Ordner auf die Fläche ziehen. Sie kommen zu dem dazu, was schon da ist; gleicher Inhalt wird als doppelt angezeigt.",
+          "Darunter: einzelne Dateien wählen, einen Ordner hochladen oder den Testordner mit 101 erfundenen Dateien.",
           "Datei-Organizer Pro merkt sich den Ordner: beim nächsten Mal reicht ein Tipp unter „Zuletzt“.",
-          "PC mit Chrome oder Edge: „Ordner am PC“ – lesen und Sortierung zurückschreiben.",
-          "Jeder Browser: „Dateien wählen“ – nur lesen, die Sortierung wird heruntergeladen.",
-          "„Testordner“: 101 erfundene Dateien zum Ausprobieren.",
+          "Die Originale bleiben, wo sie sind. Der Organizer liest nur.",
         ]}/></div>
-      <div className="button-row">
-        {nativ && <button type="button" className="button primary" disabled={laeuft} data-nativ-ordner onClick={() => los(async () => { const q = await nativWaehlen(); if (q) await z.einlesenAus(q); })}>{amPc ? <><Monitor size={18}/>Ordner am PC</> : <><Smartphone size={18}/>Ordner auf dem Gerät</>}</button>}
-        {pc && <button type="button" className={`button ${nativ ? "" : "primary"}`} disabled={laeuft} onClick={() => los(async () => { const q = await ordnerWaehlen(); if (q) { await z.einlesenAus(q); } })} data-pc-ordner><FolderOpen size={18}/>Ordner am PC</button>}
-        <button type="button" className="button" disabled={laeuft} onClick={() => ordnerWahl.current?.click()}><FolderTree size={18}/>Ordner hochladen</button>
-        <button type="button" className="button" disabled={laeuft} onClick={() => dateiWahl.current?.click()}><File size={18}/>Dateien wählen</button>
-        <button type="button" className="button" disabled={laeuft} onClick={() => los(() => z.einlesenAus(testOrdner()))} data-testordner><Archive size={18}/>Testordner</button>
+      {z.arbeit && !z.arbeitFehlt && <p className="leise" data-arbeit-zeile>Arbeitsordner: {arbeitAnzeige(z.arbeit)}</p>}
+      <button type="button" className={`ablage-feld ablage ${ziehtDrueber ? "drueber" : ""}`} data-ablage disabled={laeuft} {...(nativ ? { "data-nativ-ordner": "" } : pc ? { "data-pc-ordner": "" } : {})}
+        onClick={() => { if (nativ) void los(async () => { const q = await nativWaehlen(); if (q) await z.einlesenAus(q); }); else if (pc) void los(async () => { const q = await ordnerWaehlen(); if (q) await z.einlesenAus(q); }); else dateiWahl.current?.click(); }}
+        onDragOver={(e) => { e.preventDefault(); setZiehtDrueber(true); }} onDragLeave={() => setZiehtDrueber(false)}
+        onDrop={(e) => { e.preventDefault(); setZiehtDrueber(false); const dt = e.dataTransfer; void los(async () => { const q = await ausZiehen(dt); if (q) await z.einlesenAus(q, z.dateien.length > 0); else z.setMeldung({ text: "Darin war keine Datei.", art: "halt" }); }); }}>
+        <Upload size={24}/>
+        <span><strong>{ziehtDrueber ? "Loslassen zum Einfügen" : nativ ? (amPc ? "Ordner am PC wählen oder hierher ziehen" : "Ordner auf dem Gerät wählen oder hierher ziehen") : pc ? "Ordner am PC wählen oder hierher ziehen" : "Dateien wählen oder hierher ziehen"}</strong>
+          <small>{z.ordnerName ? `Jetzt: ${z.ordnerName} · ${z.dateien.length} Dateien` : "Dateien und ganze Ordner – die Originale bleiben, wo sie sind"}</small></span>
+      </button>
+      <div className="ablage-wege" data-ablage-wege>
+        <button type="button" className="text-link" disabled={laeuft} data-dateien-waehlen onClick={() => dateiWahl.current?.click()}><File size={15}/>Einzelne Dateien</button>
+        <button type="button" className="text-link" disabled={laeuft} data-ordner-hochladen onClick={() => ordnerWahl.current?.click()}><FolderTree size={15}/>Ordner hochladen</button>
+        <button type="button" className="text-link" disabled={laeuft} onClick={() => los(() => z.einlesenAus(testOrdner()))} data-testordner><Archive size={15}/>Testordner</button>
       </div>
       {gemerkt.some((g) => g.da && g.id !== z.arbeit?.id) && <div className="chips" data-gemerkt style={{ marginTop: 10 }}>
         <span className="leise">Zuletzt:</span>
@@ -135,18 +184,7 @@ export function OrdnerSeite({ z, gehe }: P) {
         </div>
       </div>}
       <Meldung z={z} gehe={gehe}/>
-    </section>
-    {arbeitMoeglich() && <ArbeitKarte z={z} laeuft={laeuft} los={los}/>}
-    <section className={`card ablage ${ziehtDrueber ? "drueber" : ""}`} data-ablage
-      onDragOver={(e) => { e.preventDefault(); setZiehtDrueber(true); }} onDragLeave={() => setZiehtDrueber(false)}
-      onDrop={(e) => { e.preventDefault(); setZiehtDrueber(false); const dt = e.dataTransfer; void los(async () => { const q = await ausZiehen(dt); if (q) await z.einlesenAus(q, z.dateien.length > 0); else z.setMeldung({ text: "Darin war keine Datei.", art: "halt" }); }); }}>
-      <div className="card-heading"><h2>Dateien einfügen per Drag and Drop</h2><Info titel="Hineinziehen" punkte={[
-        "Dateien oder ganze Ordner hierher ziehen und loslassen.",
-        "Sie kommen zu dem dazu, was schon im Organizer ist – nichts wird überschrieben.",
-        "Liegt derselbe Inhalt schon da, wird das Stück als doppelt angezeigt.",
-        "Die Originale bleiben, wo sie sind.",
-      ]}/></div>
-      <div className="ablage-feld"><Upload size={22}/><span>{ziehtDrueber ? "Loslassen zum Einfügen" : "Dateien oder Ordner hierher ziehen"}</span></div>
+      {arbeitMoeglich() && (einst || !!z.arbeitFehlt) && <ArbeitKarte z={z} laeuft={laeuft} los={los}/>}
     </section>
     {zahlen.gesamt > 0 && <section className="card" data-ueberblick>
       <div className="card-heading"><h2>Überblick</h2><button type="button" className="text-link" onClick={() => { if (confirm("Sortierung in diesem Browser vergessen? Die Originale im Ordner bleiben.")) void z.neuBeginnen(); }}><RotateCcw size={15}/>Neu beginnen</button><button type="button" className="text-link" onClick={() => { if (confirm(LEEREN_FRAGE)) void z.leeren(); }} data-leeren-ordner><Trash2 size={15}/>Leeren</button></div>
@@ -188,18 +226,17 @@ export function DateiAktionen({ z, d, auge, setAuge, stift, setStift }: { z: App
   </div>;
 }
 
+const ALLE_FELDER: FeldName[] = ["kategorie", "schriftstueck", "absender", "betrifft", "datum", "frist"];
 /** Jedes Feld von Hand ändern – auch was die App schon sicher eingeordnet hat. Geht durch z.aendern: Verlauf, Rückgängig, Lernen. */
 export function FeldAendern({ z, d, fertig }: { z: AppZustand; d: Datei; fertig: () => void }) {
-  const FELDER: FeldName[] = ["kategorie", "schriftstueck", "absender", "betrifft", "datum", "frist"];
+  const FELDER = ALLE_FELDER;
   const [feld, setFeld] = useState<FeldName>("kategorie");
   const [wert, setWert] = useState(d.felder.kategorie?.wert || "");
-  const liste = AUSWAHL[feld];
   const waehle = (f: FeldName) => { setFeld(f); setWert(d.felder[f]?.wert || ""); };
   return <div className="feld-aendern" data-feld-aendern={d.pfad}>
     <select value={feld} onChange={(e) => waehle(e.target.value as FeldName)} aria-label="Welches Feld" data-feld-wahl>{FELDER.map((f) => <option key={f} value={f}>{FELD_NAMEN[f]}{d.felder[f]?.wert ? `: ${d.felder[f]!.wert}` : ""}</option>)}</select>
-    {liste ? <select value={wert} onChange={(e) => setWert(e.target.value)} aria-label={FELD_NAMEN[feld]} data-wert>{!liste.includes(wert) && <option value={wert}>{wert || "–"}</option>}{liste.map((k) => <option key={k}>{k}</option>)}</select>
-      : <input value={wert} onChange={(e) => setWert(e.target.value)} aria-label={FELD_NAMEN[feld]} type={feld === "datum" || feld === "frist" ? "date" : "text"} data-wert/>}
-    <button type="button" className="button klein primary" disabled={!wert.trim() || wert.trim() === (d.felder[feld]?.wert || "")} onClick={() => { z.aendern(d.pfad, feld, wert.trim()); fertig(); }} data-uebernehmen>Übernehmen</button>
+    <WertWahl feld={feld} wert={wert} setWert={setWert}/>
+    <button type="button" className="button klein primary" disabled={!wert.trim() || wert.trim() === (d.felder[feld]?.wert || "")} onClick={() => { uebernimm(z, d.pfad, feld, wert); fertig(); }} data-uebernehmen>Übernehmen</button>
     <button type="button" className="button klein" onClick={fertig}>Abbrechen</button>
   </div>;
 }
@@ -209,11 +246,12 @@ function PruefZeile({ z, d, neu }: { z: AppZustand; d: Datei; neu?: number }) {
   const [feld, setFeld] = useState<FeldName>(felder[0]);
   const [aendern, setAendern] = useState(false);
   const [wert, setWert] = useState("");
+  // Klaus 16.11.: in jedem Sieb jedes Feld von Hand ändern – nicht nur das gerade offene (vorher ging der Bereich erst im letzten Sieb).
+  const [was, setWas] = useState<FeldName>(felder[0]);
   useEffect(() => { if (!felder.includes(feld)) setFeld(felder[0]); }, [felder.join(), feld]);
   const [auge, setAuge] = useState(false);
   if (!feld) return null;
   const w = d.felder[feld];
-  const liste = AUSWAHL[feld];
   return <div className="pruef-zeile" data-pruef={d.pfad}>
     <div><strong>{d.name}{neu ? <span className="badge pruefen" style={{ marginLeft: 8 }} data-neu-marke>neu in Sieb {neu}</span> : null}</strong>
       <span className="grund">{FELD_NAMEN[feld]}: <b>{w?.wert || "–"}</b> · {w?.grund || "nicht erkannt"}</span>
@@ -223,11 +261,11 @@ function PruefZeile({ z, d, neu }: { z: AppZustand; d: Datei; neu?: number }) {
       <button type="button" className="button klein" aria-pressed={auge} aria-label={`${d.name} ansehen`} title="Ansehen, teilen oder entfernen" onClick={() => setAuge(!auge)} data-auge><Eye size={15}/></button>
       {!aendern ? <>
         {w?.wert && <button type="button" className="button klein" onClick={() => z.aendern(d.pfad, feld, w.wert)} data-stimmt><Check size={15}/>Stimmt</button>}
-        <button type="button" className="button klein" onClick={() => { setWert(w?.wert || ""); setAendern(true); }} aria-label="Ändern" title="Von Hand ändern" data-korrigieren><Pencil size={15}/></button>
+        <button type="button" className="button klein" onClick={() => { setWas(feld); setWert(w?.wert || ""); setAendern(true); }} aria-label="Ändern" title="Von Hand ändern: Art, Bereich, Absender, Betrifft, Datum, Frist" data-korrigieren><Pencil size={15}/></button>
       </> : <>
-        {liste ? <select value={wert} onChange={(e) => setWert(e.target.value)} aria-label={FELD_NAMEN[feld]} data-wert>{!liste.includes(wert) && <option value={wert}>{wert || "–"}</option>}{liste.map((k) => <option key={k}>{k}</option>)}</select>
-          : <input value={wert} onChange={(e) => setWert(e.target.value)} aria-label={FELD_NAMEN[feld]} type={feld === "datum" || feld === "frist" ? "date" : "text"} data-wert style={{ padding: "6px 8px", borderRadius: 9, border: "1px solid var(--line)" }}/>}
-        <button type="button" className="button klein primary" disabled={!wert.trim()} onClick={() => { z.aendern(d.pfad, feld, wert.trim()); setAendern(false); }} data-uebernehmen>Übernehmen</button>
+        <select value={was} onChange={(e) => { const f = e.target.value as FeldName; setWas(f); setWert(d.felder[f]?.wert || ""); }} aria-label="Welches Feld" data-feld-wahl>{ALLE_FELDER.map((f) => <option key={f} value={f}>{FELD_NAMEN[f]}</option>)}</select>
+        <WertWahl feld={was} wert={wert} setWert={setWert}/>
+        <button type="button" className="button klein primary" disabled={!wert.trim()} onClick={() => { uebernimm(z, d.pfad, was, wert); setAendern(false); }} data-uebernehmen>Übernehmen</button>
         <button type="button" className="button klein" onClick={() => setAendern(false)}>Abbrechen</button>
       </>}
     </div>
@@ -334,9 +372,10 @@ export function SortierenSeite({ z, gehe }: P) {
 // ---------------- Finden ----------------
 function Steckbrief({ z, d }: { z: AppZustand; d: Datei }) {
   const [bild, setBild] = useState<string | null>(null);
+  const [pdf, setPdf] = useState<{ bilder: string[]; seiten: number } | "laedt" | null>(null);
   const [stift, setStift] = useState(false);
   const [gross, setGross] = useState(false);
-  useEffect(() => { setBild(null); setGross(false); }, [d.pfad]);
+  useEffect(() => { setBild(null); setPdf(null); setGross(false); }, [d.pfad]);
   const f = d.felder;
   const zeile = (name: string, w?: { wert: string; sicher: boolean; grund: string; quelle: string }, anzeige?: string) => w ? <><dt>{name}</dt><dd><span className="feld-wert">{anzeige ?? w.wert}{w.quelle === "du" ? <span className="badge du">von dir</span> : w.quelle === "gelernt" ? <span className="badge du">gelernt</span> : !w.sicher ? <span className="badge pruefen">unsicher</span> : null}</span><span className="grund">{w.grund}</span></dd></> : null;
   const oeffnen = async (anzeigen: boolean) => {
@@ -344,6 +383,15 @@ function Steckbrief({ z, d }: { z: AppZustand; d: Datei }) {
     if (!b) { z.setMeldung({ text: "Original nur nach dem Einlesen in dieser Sitzung erreichbar. Ordner neu wählen.", art: "halt" }); return; }
     const url = URL.createObjectURL(d.art === "bild" ? new Blob([b], { type: "image/jpeg" }) : d.art === "pdf" ? new Blob([b], { type: "application/pdf" }) : b);
     if (anzeigen && d.art === "bild") { setBild(url); return; }
+    if (anzeigen && d.art === "pdf") {
+      // Vorschau des Originals in der App (Klaus 16.11.) – ein neues Fenster geht am Handy oft nicht auf.
+      URL.revokeObjectURL(url);
+      if (pdf && pdf !== "laedt") { setPdf(null); return; }
+      setPdf("laedt");
+      try { const { pdfVorschau } = await import("./pdf.ts"); setPdf(await pdfVorschau(new Uint8Array(await b.arrayBuffer()))); }
+      catch { setPdf(null); z.setMeldung({ text: "Die Vorschau dieser PDF ließ sich nicht zeichnen.", art: "halt" }); }
+      return;
+    }
     window.open(url, "_blank", "noopener"); setTimeout(() => URL.revokeObjectURL(url), 60000);
   };
   const teilen = async () => {
@@ -378,6 +426,11 @@ function Steckbrief({ z, d }: { z: AppZustand; d: Datei }) {
       <Info titel="Original" punkte={["Öffnet die Datei aus dem Ordner. Sie wird nicht verändert.", "Gesperrte Dateien öffnet der Organizer nicht."]}/>
     </div>
     {stift && <div style={{ marginTop: 10 }}><FeldAendern z={z} d={d} fertig={() => setStift(false)}/></div>}
+    {pdf === "laedt" && <p className="leise" role="status">Vorschau wird gezeichnet …</p>}
+    {pdf && pdf !== "laedt" && <div data-pdf-vorschau>
+      {pdf.bilder.map((u, i) => <img key={u} src={u} alt={`${d.name}, Seite ${i + 1}`} className={`vorschau-bild ${gross ? "gross" : ""}`} onClick={() => setGross(!gross)} title={gross ? "Tippen: kleiner" : "Tippen: größer"}/>)}
+      <p className="leise">{pdf.seiten > pdf.bilder.length ? `Seite 1–${pdf.bilder.length} von ${pdf.seiten}. ` : ""}<button type="button" className="text-link" onClick={() => oeffnen(false)} data-pdf-ganz>Ganze PDF öffnen</button></p>
+    </div>}
     {bild && <img src={bild} alt={`Foto ${d.name}`} className={`vorschau-bild ${gross ? "gross" : ""}`} onClick={() => setGross(!gross)} title={gross ? "Tippen: kleiner" : "Tippen: größer"}/>}
     {d.volltext && <details style={{ marginTop: 10 }}><summary className="leise">Erkannter Text</summary><pre style={{ whiteSpace: "pre-wrap", fontSize: ".8rem", maxHeight: 260, overflow: "auto" }}>{d.volltext.slice(0, 3000)}</pre></details>}
   </section>;

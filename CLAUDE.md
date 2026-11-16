@@ -22,6 +22,20 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
 - **Update-Fähnchen (Klaus 16.11.: Update über den Knopf lief, das Fähnchen erschien nicht):** die stille Prüfung sperrte nach jeder Antwort – auch
   nach einem Fehlschlag gleich beim Start – eine volle Stunde. Jetzt nach „aktuell“ 10 Minuten, nach einem Fehlschlag 2 Minuten, Takt 15 Minuten
   (`RUHE_OK`/`RUHE_FEHLER` in `src/nativ.ts`). Ursache am Gerät nicht belegt, nur die wahrscheinlichste Stelle.
+- **Ordner-Seite neu (Klaus 16.11.: „ein Klick oder hineinziehen, den oberen Container brauche ich nicht, der Pfad muss zu sehen sein, Arbeitsordner
+  unter Einstellungen mit Zahnrad“):** eine Karte mit einer Fläche (`[data-ablage]`, Antippen = Ordner auf dem Gerät / am PC bzw. Dateien wählen,
+  Hineinziehen fügt dazu), darunter klein „Einzelne Dateien“, „Ordner hochladen“, „Testordner“, „Zuletzt“. Überschrift nennt den Ordner, die Zeile
+  darunter den Arbeitsordner. Der Arbeitsordner liegt hinter dem Zahnrad (`[data-einstellungen]`, nur in der App; klappt von selbst auf, wenn er fehlt).
+- **Neue Kategorie erstellen (Klaus 16.11.):** jede Bereichs-Auswahl endet mit „+ Neue Kategorie erstellen …“ (`WertWahl` in `src/seiten.tsx`); der Name
+  wird auf dem Gerät gemerkt (`do-eigene-kategorien`, höchstens 50) und steht danach in jeder Liste. Im Index reist er als Bereich der Datei mit
+  („von dir“); die Familienakte schlägt ihn als neuen Lebensbereich vor (dort `lib/organizer-uebernahme.ts`, ab 2.28.72). Kern (`lib/`) unverändert –
+  der Kern selbst ordnet nie in eine eigene Kategorie ein, das Lernen aus Korrekturen (`lib/lernen.ts`) schon. UI-Probe 130.
+  Nachtrag (Klaus: „Unklar“ in der Liste war nicht als neue Kategorie zu erkennen; ändern ging nur im letzten Sieb): neben der Bereichs-Auswahl steht
+  sichtbar der Knopf „Neue Kategorie“ (`[data-neue-kategorie-knopf]`); in der Prüfliste ist beim Ändern jedes Feld wählbar (`[data-feld-wahl]`),
+  nicht mehr nur das gerade offene. UI-Probe 133.
+- **Kopf und Vorschau (Klaus 16.11.):** Fassung (Link fürs Update) und Fähnchen stehen links neben dem Namen (`[data-fassung-platz]`), am Handy
+  leichter zu treffen. Das Auge im Steckbrief zeigt bei einer PDF die ersten drei Seiten als Bild in der App (`pdfVorschau` in `src/pdf.ts`,
+  `[data-pdf-vorschau]`, „Ganze PDF öffnen“) – vorher nur ein neues Fenster, das am Handy oft nicht aufging. Nach einem Neustart öffnet `original()` den gemerkten Ordner still wieder (Testordner, PC-Ordner mit Erlaubnis, App-Ordner). UI-Probe 136.
 - **Landkarte Organizer auf den Stand gebracht** (`docs/landkarte/…`, `node scripts/landkarte-bauen.mjs`): Texterkennung, Datei-Innere, Ähnliche,
   Dashboard, große Mengen, Ordner auf dem Gerät sind „fertig“; neu „Teilen, Öffnen mit“ und „Arbeitsordner“. Seit 16.11. ist auch die **Übernahme in die
   Familienakte** „fertig“ (dort #203, `lib/organizer-uebernahme.ts`: Ordner als Eingangsordner wählen, der Index wird Vorschlag im Prüf-Fenster;
