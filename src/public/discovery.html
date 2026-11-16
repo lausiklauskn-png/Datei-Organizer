@@ -1296,7 +1296,7 @@ App.baue3D = function () {
   requestAnimationFrame(bild);
   if (Segmente.einzeln) Segmente.vor('baum');
 };
-App.filmZuerst = (function () { if (window.LEICHT) return false; let w = null, sch = null; try { w = localStorage.getItem('tw-buehne'); sch = localStorage.getItem('tw-buehne-schwach'); } catch (e) { } return w ? w === 'film' : sch === '1'; })();   /* Klaus 16.11.: auch am Tablet zuerst der drehbare 3D-Baum – abgestürzt waren die Kugeln unten bzw. beide 3D-Flächen zusammen, nicht der Baum. Die Messung (wacheB) schaltet bei zu langsamem Bild auf die Film-Ansicht. */
+App.filmZuerst = !window.LEICHT;   /* Klaus 16.11. (Tablet, 0.4.11): die Seite startet immer mit der Übersicht (Baum-Bild mit den Städten zum Antippen); die 3D-Ansicht zum Drehen ist eine eigene Wahl über „In 3D erkunden“ und wird nicht mehr als Start gemerkt. */
 if (!App.filmZuerst) App.baue3D();
 
 /* ---------- 2D-Ersatz (wenn 3D nicht geht) ---------- */
@@ -1647,7 +1647,7 @@ App.szene = function (key, titel) { if (App.tour || !Ton.an()) return; Sprecher.
   $('#bStadtfilm').onclick = () => { if (App.tour) return; Sprecher.stopp(true); setzB(true, true); };
     // Leistungsprüfung der 3D-Bühne: Bildabstand messen; über 40 ms (unter 25 Bildern je Sekunde) übernimmt die Film-Ansicht.
   const messeB = (dauer, fertig) => { const d = []; let z = 0, t0 = 0; const f = t => { if (!t0) t0 = t; if (z) d.push(t - z); z = t; if (t - t0 < dauer) requestAnimationFrame(f); else { d.sort((a, b) => a - b); fertig(d.length > 8 ? d[d.length >> 1] : 999); } }; requestAnimationFrame(f); };
-  const SCHWACH_B = 'Die 3D-Ansicht läuft auf diesem Gerät nicht flüssig – deshalb die Film-Ansicht.';
+  const SCHWACH_B = 'Die 3D-Ansicht läuft auf diesem Gerät nicht flüssig.'   /* ohne Begründung für den Start (Klaus 16.11.); verschwindet, sobald 3D bei einem neuen Versuch flüssig läuft */;
   function wacheB() { if (window.LEICHT || RUHIG || !Szene.ok) return; setTimeout(() => { if (filmB || document.hidden || !box.hidden) return; messeB(2500, m => { if (filmB || !box.hidden) return; if (m > 40) { setzM('tw-buehne-schwach', '1'); setzB(true, false, SCHWACH_B); } }); }, 2000); }
   $('#bStadtfilm').hidden = !!filmB;
   if (filmB) { if (merkB('tw-buehne-schwach') === '1') setzB(true, false, SCHWACH_B); else start(); } else wacheB();
