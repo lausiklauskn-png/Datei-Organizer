@@ -17,6 +17,14 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   16 deutsche Prüfstapel (2.892 Stücke): Art, Bereich, Absender, Frist unverändert; Probe in `run-kern-tests.mjs` (4 neu, Gegenprobe 3/3).
   Auftrag aus Private Brain Pro (Brief dort `BRIEF_SITZUNG_2026-11-15_SUCHE-SORTIERKERN.md`). Familienakte und BookLedgerPro noch nicht nachgezogen.
 
+## Nach 0.4.11 (16.11.2026, Gerätetest Klaus am Tablet, auf main, nicht ausgegeben – geht in 0.4.12)
+
+- Discovery: unsichtbare Szenen der Film-Ansicht fangen keine Tipps mehr ab (`.sf-szene:not(.an){pointer-events:none}` – das Startbild lag über der
+  Leiste des großen Videos: Lautstärke, Vollbild, Spulen gingen nicht); die Übersicht behält ihr Baum-Bild (`laden()` überschrieb es mit „undefined“,
+  sobald eine Stadt gewählt war); der Knopf heißt „Intro abspielen“/„Intro anhalten“ (`fName`, „Führung“ nur noch ohne Film) und springt zurück,
+  wenn während des Intros eine Stadt gewählt wird. Die 3D-Welt zum Drehen erreicht man über „In 3D erkunden“ unten links (Klaus: so logisch).
+  Die anderen Apps (Familienakte, BookLedgerPro, Basic) tragen noch den Stand `213c81b` – mit 0.4.12 nachziehen.
+
 ## Veröffentlicht (16.11.2026 morgens, Klaus' Wort „auch die 0411 … ausgeben“): Datei-Organizer 0.4.11 – nicht erneut ausgeben
 
 - **Android** `Datei-Organizer-Pro-0.4.11.apk` (Code 51, 72.127.288 B, SHA-256 `11b4881f…580f`, Lauf 43820511694), **Windows**
