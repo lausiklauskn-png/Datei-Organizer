@@ -383,7 +383,6 @@ footer{padding:36px 0 48px;color:var(--leise);font-size:13.5px}
       <button id="bTon" data-ton aria-pressed="true">Ton an</button>
       <button id="bUnter" aria-pressed="false" title="Untertitel: den gesprochenen Text unten mitlesen">Untertitel</button>
       <button id="bWeiter" hidden title="Zum nächsten Schritt der Führung">Weiter</button>
-      <details class="zeichen stimmwahl"><summary>Stimme</summary><div class="stimme" data-stimme></div></details>
       <button id="bStadtfilm" title="Zurück zur Film-Ansicht: das Bild mit den vier Städten, die Filme laufen erst auf Tipp">Film-Ansicht</button>
       <button id="bLicht" class="nur3d">Abend</button>
       <details class="zeichen" id="zeichen"><summary>Zeichen</summary><ul id="zeichenListe"></ul></details>
@@ -1585,10 +1584,16 @@ App.szene = function (key, titel) { if (App.tour || !Ton.an()) return; Sprecher.
     if (clipAn === 'gross' && !box.hidden) { return start(); }
     Ton.bereit(); Sprecher.stopp(true); auf(); if (App.gewaehlt) App.close(); fKnopf(true);
     clip('gross', '', '', () => start(), () => start());
+    // Untertitel zum großen Video (Klaus 16.11.: der Knopf tat hier nichts): der Text des Abschnitts, der gerade gesprochen wird.
+    if (landV && !landV._ut) { landV._ut = true; landV.addEventListener('timeupdate', () => {
+      if (clipAn !== 'gross') return; const t = landV.currentTime; let i = -1; UT_GROSS.forEach((u, k) => { if (t >= u[0]) i = k; });
+      if (i !== utNr) { utNr = i; if (i < 0) Unter.weg(); else Unter.zeig(UT_GROSS[i][2], SPRECHTEXTE[UT_GROSS[i][1]], null, () => start()); } }); }
+    utNr = -2;
   }
+  const UT_GROSS = [[0.4, 'begruessung', 'Willkommen'], [6.4, 'welten', 'Die Welten'], [32.3, 'stadt_agenten', 'Die Agenten'], [45.5, 'stadt_punkte', 'Die Aufgaben'], [61, 'schluss', 'Zum Schluss']]; let utNr = -2;
   App.tonHoerer.push(an => { if (clipAn === 'gross' && landV) landV.muted = !an; });
   function start() {
-    if (clipAn === 'gross') fKnopf(false);
+    if (clipAn === 'gross') { fKnopf(false); Unter.weg(); }
     auf(); folge++; lauf++; clearTimeout(uhr); clipAn = null; laeuft = false; if (landV) landV.pause(); landBox.classList.remove('an');
     szenen.forEach(z => { z.classList.remove('an'); const v = z.querySelector('video'); if (v) v.pause(); }); startBox.classList.add('an');
     box.querySelectorAll('.sf-wahl button').forEach(x => x.setAttribute('aria-pressed', x.dataset.start === '1')); $('#bStadtfilm').setAttribute('aria-pressed', 'false');
