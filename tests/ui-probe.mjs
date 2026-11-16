@@ -8,6 +8,8 @@ import { createRequire } from "node:module";
 // Playwright liegt global (Behälter) oder als Entwicklungs-Abhängigkeit (CI).
 const { chromium } = createRequire(import.meta.url)("playwright");
 import { indexLesen } from "../lib/index-format.ts";
+// Der Arbeitsordner liegt seit 16.11. hinter dem Zahnrad der Ordner-Seite: erst aufklappen, wenn die Karte zu ist.
+const zahnrad = async (pg) => { if (!(await pg.locator("[data-arbeit-waehlen]").count())) await pg.locator("[data-einstellungen]").click(); };
 
 const WURZEL = fileURLToPath(new URL("..", import.meta.url));
 const TYP = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".mjs": "text/javascript", ".css": "text/css", ".json": "application/json", ".svg": "image/svg+xml", ".pdf": "application/pdf", ".jpg": "image/jpeg", ".webmanifest": "application/manifest+json" };
@@ -518,10 +520,10 @@ try {
 
     // A + B + C: kleines Gerät (vollBis 30 MB), große Datei 35 MB, Arbeitsordner auf der „SD-Karte“.
     { const { c, pg, f } = await neueSeite({ mem: 2, kerne: 4, gross: GROSS, frei: 8 * 1024 ** 3, wahlen: ["t", "l", "e"] });
-      soll("A: Leistung des Geräts wird angezeigt (klein: Blöcke zu 25, bis 30 MB ganz)", /Kleines Gerät: Blöcke zu 25, Dateien bis 30 MB/.test(await pg.locator("[data-leistung]").innerText().catch(() => "")));
-      await pg.locator("[data-arbeit-waehlen]").click();
+      await zahnrad(pg); soll("A: Leistung des Geräts wird angezeigt (klein: Blöcke zu 25, bis 30 MB ganz)", /Kleines Gerät: Blöcke zu 25, Dateien bis 30 MB/.test(await pg.locator("[data-leistung]").innerText().catch(() => "")));
+      await zahnrad(pg); await pg.locator("[data-arbeit-waehlen]").click();
       soll("B: Pro-Tresor als Laufwerk gewählt → abgewiesen mit Erklärung", /Pro-Tresor/.test(await meldungNach(pg, /Tresor/)) && await pg.locator("[data-arbeit-pfad]").count() === 0);
-      await pg.locator("[data-arbeit-waehlen]").click();
+      await zahnrad(pg); await pg.locator("[data-arbeit-waehlen]").click();
       await pg.waitForSelector("[data-arbeit-pfad]", { timeout: 5000 }).catch(() => {});
       soll("B: Laufwerk gewählt → Arbeitsordner SD-Karte/Datei-Organizer-Arbeit, freier Speicher genannt", /SD-Karte\/Datei-Organizer-Arbeit/.test(await pg.locator("[data-arbeit-pfad]").innerText().catch(() => "")) && /frei 8 GB/.test(await pg.locator("[data-arbeit-pfad]").innerText().catch(() => "")));
       soll("B: das Laufwerk erscheint nicht unter „Zuletzt“ als Quelle", !((await pg.locator("[data-gemerkt]").innerText().catch(() => "")) || "").includes("SD-Karte"));
@@ -541,9 +543,9 @@ try {
       // „Neuinstallation“: App-Speicher weg, Laufwerk bleibt → nach Wahl des Laufwerks ist der Stand wieder da.
       await pg.evaluate(() => new Promise((ok) => { localStorage.clear(); const r = indexedDB.deleteDatabase("DateiOrganizer1"); r.onsuccess = r.onerror = r.onblocked = () => ok(); }));
       await pg.evaluate(() => { const o = JSON.parse(sessionStorage.getItem("opt")); o.wahlen = ["l"]; sessionStorage.setItem("opt", JSON.stringify(o)); });
-      await pg.reload(); await pg.waitForSelector("[data-arbeit-waehlen]", { timeout: 8000 }).catch(() => {});
+      await pg.reload(); await pg.waitForSelector("[data-einstellungen]", { timeout: 8000 }).catch(() => {});
       soll("B: nach „Neuinstallation“ ohne Arbeitsordner und leer", await pg.locator("[data-arbeit-pfad]").count() === 0 && (await pg.locator("[data-ordner-pill]").innerText()).includes("Kein Ordner"));
-      await pg.locator("[data-arbeit-waehlen]").click();
+      await zahnrad(pg); await pg.locator("[data-arbeit-waehlen]").click();
       soll("B: Laufwerk wieder gewählt → Stand aus dem Arbeitsordner übernommen (3 Dateien)", /3 Dateien aus dem gespeicherten Stand übernommen/.test(await meldungNach(pg, /übernommen/, 8000)) && (await pg.locator('[data-zahl="gesamt"]').innerText().catch(() => "")).startsWith("3 "));
       await pg.reload(); await pg.waitForFunction(() => /^3 /.test(document.querySelector('[data-zahl="gesamt"]')?.textContent || ""), null, { timeout: 8000 }).catch(() => {});
       soll("B: beim nächsten Start kommt die Liste ohne Auswahl vom Laufwerk", (await pg.locator('[data-zahl="gesamt"]').innerText().catch(() => "")).startsWith("3 "));
@@ -558,13 +560,13 @@ try {
       soll("A: ohne Prüfsummen-Aufruf der App (Familienakte) Stück für Stück über die Brücke, ohne Absturz", log.pruef === 0 && log.grossGelesen >= GROSS && log.grossGelesen <= GROSS + 4096, JSON.stringify(log));
       await c.close(); }
     { const { c, pg } = await neueSeite({ mem: 16, kerne: 12, gross: GROSS, frei: -1 });
-      soll("A: starkes Gerät (16 GB, 12 Kerne) lädt bis 256 MB ganz", /Starkes Gerät: Blöcke zu 100, Dateien bis 256 MB/.test(await pg.locator("[data-leistung]").innerText().catch(() => "")));
+      await zahnrad(pg); soll("A: starkes Gerät (16 GB, 12 Kerne) lädt bis 256 MB ganz", /Starkes Gerät: Blöcke zu 100, Dateien bis 256 MB/.test(await pg.locator("[data-leistung]").innerText().catch(() => "")));
       await pg.locator("[data-nativ-ordner]").click(); const m = await meldungNach(pg, /Dateien im Eingang/);
       soll("A: starkes Gerät – die große Datei wird ganz geladen (kein Stück-für-Stück-Weg)", !/Stück für Stück/.test(m) && (await pg.evaluate(() => window.__log.pruef)) === 0, m);
       await c.close(); }
     // D: zu wenig frei im Arbeitsordner → anhalten mit Meldung, Stand bleibt, nichts gelesen.
     { const { c, pg } = await neueSeite({ mem: 4, kerne: 6, gross: 0, frei: 10 * 1024 * 1024, wahlen: ["l", "e"] });
-      await pg.locator("[data-arbeit-waehlen]").click(); await pg.waitForSelector("[data-arbeit-pfad]", { timeout: 5000 }).catch(() => {});
+      await zahnrad(pg); await pg.locator("[data-arbeit-waehlen]").click(); await pg.waitForSelector("[data-arbeit-pfad]", { timeout: 5000 }).catch(() => {});
       await pg.locator("[data-nativ-ordner]").click();
       const m = await meldungNach(pg, /Zu wenig Speicher/, 20000);
       soll("D: zu wenig frei im Arbeitsordner → hält vor dem Block an, nennt frei und gebraucht", /Zu wenig Speicher im Arbeitsordner \(SD-Karte\/Datei-Organizer-Arbeit\): frei 10 MB, für den nächsten Block gebraucht 50 MB\. 0 von 2/.test(m), m);

@@ -1,7 +1,7 @@
 import { innenKurz } from "../lib/innen.ts";
 import { ausZiehen } from "./quellen.ts";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Archive, Check, Download, File, FileImage, FileText, FolderOpen, FolderTree, HelpCircle, History, ListChecks, Mail, Pencil, Eye, RotateCcw, Search, Share2, Trash2, Upload, ShieldAlert, Smartphone, Monitor, Undo2, X } from "lucide-react";
+import { Archive, Check, Download, File, FileImage, FileText, FolderOpen, FolderTree, HelpCircle, History, ListChecks, Mail, Pencil, Eye, RotateCcw, Search, Settings, Share2, Trash2, Upload, ShieldAlert, Smartphone, Monitor, Undo2, X } from "lucide-react";
 import type { Datei, FeldName } from "../lib/typen.ts";
 import { STUFEN, offeneFelder, gesperrt, istUnsicher } from "../lib/siebe.ts";
 import { SICHTEN, baum, dateienUnter, suche, type BaumKnoten } from "../lib/sichten.ts";
@@ -60,8 +60,8 @@ function ArbeitKarte({ z, laeuft, los }: { z: AppZustand; laeuft: boolean; los: 
   const [frei, setFrei] = useState<number | null>(null);
   useEffect(() => { let weg = false; if (z.arbeit && !z.arbeitFehlt) void arbeitFrei(z.arbeit).then((f) => { if (!weg) setFrei(f); }); else setFrei(null); return () => { weg = true; }; }, [z.arbeit, z.arbeitFehlt, z.dateien.length]);
   const amPc = nativPlattform() === "windows";
-  return <section className="card" data-arbeitsordner>
-    <div className="card-heading"><h2>Arbeitsordner</h2>
+  return <section className="einstellungen" data-arbeitsordner>
+    <div className="card-heading"><h3>Einstellungen · Arbeitsordner</h3>
       <Info titel="Wofür der Arbeitsordner?" punkte={[
         `Für große Ordner: Liste, Texte und Sortierung liegen dann auf ${amPc ? "der Festplatte" : "der SD-Karte"} statt im App-Speicher.`,
         `Du wählst nur das Laufwerk – der Ordner „${ARBEIT}“ entsteht darin von selbst. So landet nichts aus Versehen im falschen Ordner.`,
@@ -90,6 +90,8 @@ export function OrdnerSeite({ z, gehe }: P) {
   const [gemerkt, setGemerkt] = useState<GemerkterOrdner[]>([]);
   useEffect(() => { if (nativ) void nativGemerkt().then(setGemerkt); }, [nativ, z.ordnerName]);
   const [ziehtDrueber, setZiehtDrueber] = useState(false);
+  // Einstellungen der Seite (Zahnrad): der Arbeitsordner (Klaus 16.11.). Fehlt er, klappt die Karte von selbst auf.
+  const [einst, setEinst] = useState(false);
   const zahlen = useMemo(() => ({
     gesamt: z.dateien.length, auff: z.dateien.filter((d) => d.auffaellig).length, dopp: z.dateien.filter((d) => d.doppeltVon).length, aehnl: z.dateien.filter((d) => d.aehnlich).length,
     offen: z.dateien.filter(offenBei).length, fertig: z.dateien.filter((d) => d.stufe >= 5 && !offenBei(d) && !gesperrt(d)).length,
@@ -102,20 +104,28 @@ export function OrdnerSeite({ z, gehe }: P) {
       "Die Familienakte holt sich Kopien und ordnet sie nach dieser Datei zu.",
     ]} mehr={<FesterBaum wurzel={SD_BAUM} label="Wo der Ordner auf der SD-Karte liegt"/>}/>}/>
     <section className="card" data-ordner-wahl>
-      <div className="card-heading"><h2>{z.ordnerName ? `Ordner: ${z.ordnerName}` : "Ordner wählen"}</h2>
-        <Info titel="Welcher Weg?" punkte={[
-          "Handy/Tablet mit Datei-Organizer Pro oder Familienakte Pro: „Ordner auf dem Gerät“ – auch SD-Karte.",
+      <div className="card-heading mit-knoepfen"><h2 data-ordner-pfad>{z.ordnerName ? `Ordner: ${z.ordnerName}` : "Ordner oder Dateien einfügen"}</h2>
+        {arbeitMoeglich() && <button type="button" className={`info-knopf ${einst ? "aktiv" : ""}`} data-einstellungen aria-expanded={einst} aria-label="Einstellungen: Arbeitsordner" title="Einstellungen: Arbeitsordner" onClick={() => setEinst(!einst)}><Settings size={18}/></button>}
+        <Info titel="So kommen Dateien hinein" punkte={[
+          "Antippen: einen Ordner auf dem Gerät wählen – auch SD-Karte. Am PC mit Chrome oder Edge: „Ordner am PC“.",
+          "Oder Dateien und ganze Ordner auf die Fläche ziehen. Sie kommen zu dem dazu, was schon da ist; gleicher Inhalt wird als doppelt angezeigt.",
+          "Darunter: einzelne Dateien wählen, einen Ordner hochladen oder den Testordner mit 101 erfundenen Dateien.",
           "Datei-Organizer Pro merkt sich den Ordner: beim nächsten Mal reicht ein Tipp unter „Zuletzt“.",
-          "PC mit Chrome oder Edge: „Ordner am PC“ – lesen und Sortierung zurückschreiben.",
-          "Jeder Browser: „Dateien wählen“ – nur lesen, die Sortierung wird heruntergeladen.",
-          "„Testordner“: 101 erfundene Dateien zum Ausprobieren.",
+          "Die Originale bleiben, wo sie sind. Der Organizer liest nur.",
         ]}/></div>
-      <div className="button-row">
-        {nativ && <button type="button" className="button primary" disabled={laeuft} data-nativ-ordner onClick={() => los(async () => { const q = await nativWaehlen(); if (q) await z.einlesenAus(q); })}>{amPc ? <><Monitor size={18}/>Ordner am PC</> : <><Smartphone size={18}/>Ordner auf dem Gerät</>}</button>}
-        {pc && <button type="button" className={`button ${nativ ? "" : "primary"}`} disabled={laeuft} onClick={() => los(async () => { const q = await ordnerWaehlen(); if (q) { await z.einlesenAus(q); } })} data-pc-ordner><FolderOpen size={18}/>Ordner am PC</button>}
-        <button type="button" className="button" disabled={laeuft} onClick={() => ordnerWahl.current?.click()}><FolderTree size={18}/>Ordner hochladen</button>
-        <button type="button" className="button" disabled={laeuft} onClick={() => dateiWahl.current?.click()}><File size={18}/>Dateien wählen</button>
-        <button type="button" className="button" disabled={laeuft} onClick={() => los(() => z.einlesenAus(testOrdner()))} data-testordner><Archive size={18}/>Testordner</button>
+      {z.arbeit && !z.arbeitFehlt && <p className="leise" data-arbeit-zeile>Arbeitsordner: {arbeitAnzeige(z.arbeit)}</p>}
+      <button type="button" className={`ablage-feld ablage ${ziehtDrueber ? "drueber" : ""}`} data-ablage disabled={laeuft} {...(nativ ? { "data-nativ-ordner": "" } : pc ? { "data-pc-ordner": "" } : {})}
+        onClick={() => { if (nativ) void los(async () => { const q = await nativWaehlen(); if (q) await z.einlesenAus(q); }); else if (pc) void los(async () => { const q = await ordnerWaehlen(); if (q) await z.einlesenAus(q); }); else dateiWahl.current?.click(); }}
+        onDragOver={(e) => { e.preventDefault(); setZiehtDrueber(true); }} onDragLeave={() => setZiehtDrueber(false)}
+        onDrop={(e) => { e.preventDefault(); setZiehtDrueber(false); const dt = e.dataTransfer; void los(async () => { const q = await ausZiehen(dt); if (q) await z.einlesenAus(q, z.dateien.length > 0); else z.setMeldung({ text: "Darin war keine Datei.", art: "halt" }); }); }}>
+        <Upload size={24}/>
+        <span><strong>{ziehtDrueber ? "Loslassen zum Einfügen" : nativ ? (amPc ? "Ordner am PC wählen oder hierher ziehen" : "Ordner auf dem Gerät wählen oder hierher ziehen") : pc ? "Ordner am PC wählen oder hierher ziehen" : "Dateien wählen oder hierher ziehen"}</strong>
+          <small>{z.ordnerName ? `Jetzt: ${z.ordnerName} · ${z.dateien.length} Dateien` : "Dateien und ganze Ordner – die Originale bleiben, wo sie sind"}</small></span>
+      </button>
+      <div className="ablage-wege" data-ablage-wege>
+        <button type="button" className="text-link" disabled={laeuft} data-dateien-waehlen onClick={() => dateiWahl.current?.click()}><File size={15}/>Einzelne Dateien</button>
+        <button type="button" className="text-link" disabled={laeuft} data-ordner-hochladen onClick={() => ordnerWahl.current?.click()}><FolderTree size={15}/>Ordner hochladen</button>
+        <button type="button" className="text-link" disabled={laeuft} onClick={() => los(() => z.einlesenAus(testOrdner()))} data-testordner><Archive size={15}/>Testordner</button>
       </div>
       {gemerkt.some((g) => g.da && g.id !== z.arbeit?.id) && <div className="chips" data-gemerkt style={{ marginTop: 10 }}>
         <span className="leise">Zuletzt:</span>
@@ -135,18 +145,7 @@ export function OrdnerSeite({ z, gehe }: P) {
         </div>
       </div>}
       <Meldung z={z} gehe={gehe}/>
-    </section>
-    {arbeitMoeglich() && <ArbeitKarte z={z} laeuft={laeuft} los={los}/>}
-    <section className={`card ablage ${ziehtDrueber ? "drueber" : ""}`} data-ablage
-      onDragOver={(e) => { e.preventDefault(); setZiehtDrueber(true); }} onDragLeave={() => setZiehtDrueber(false)}
-      onDrop={(e) => { e.preventDefault(); setZiehtDrueber(false); const dt = e.dataTransfer; void los(async () => { const q = await ausZiehen(dt); if (q) await z.einlesenAus(q, z.dateien.length > 0); else z.setMeldung({ text: "Darin war keine Datei.", art: "halt" }); }); }}>
-      <div className="card-heading"><h2>Dateien einfügen per Drag and Drop</h2><Info titel="Hineinziehen" punkte={[
-        "Dateien oder ganze Ordner hierher ziehen und loslassen.",
-        "Sie kommen zu dem dazu, was schon im Organizer ist – nichts wird überschrieben.",
-        "Liegt derselbe Inhalt schon da, wird das Stück als doppelt angezeigt.",
-        "Die Originale bleiben, wo sie sind.",
-      ]}/></div>
-      <div className="ablage-feld"><Upload size={22}/><span>{ziehtDrueber ? "Loslassen zum Einfügen" : "Dateien oder Ordner hierher ziehen"}</span></div>
+      {arbeitMoeglich() && (einst || !!z.arbeitFehlt) && <ArbeitKarte z={z} laeuft={laeuft} los={los}/>}
     </section>
     {zahlen.gesamt > 0 && <section className="card" data-ueberblick>
       <div className="card-heading"><h2>Überblick</h2><button type="button" className="text-link" onClick={() => { if (confirm("Sortierung in diesem Browser vergessen? Die Originale im Ordner bleiben.")) void z.neuBeginnen(); }}><RotateCcw size={15}/>Neu beginnen</button><button type="button" className="text-link" onClick={() => { if (confirm(LEEREN_FRAGE)) void z.leeren(); }} data-leeren-ordner><Trash2 size={15}/>Leeren</button></div>
