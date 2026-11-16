@@ -89,7 +89,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .untertitel{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);width:min(700px,calc(100% - 24px));box-shadow:0 8px 30px rgba(0,0,0,.45);background:rgba(10,14,28,.86);color:#fff;border-radius:14px;padding:10px 14px;font-size:15px;line-height:1.4;z-index:4;display:none}
 .untertitel.an{display:block;z-index:50}
 .untertitel.an.stumm{display:none}
-#bWeiter[hidden]{display:none}
+#bWeiter[hidden],#bStadtfilm[hidden]{display:none}
 .untertitel .ut-k{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
 .untertitel .ut-k button{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:999px;padding:4px 12px;font-size:13.5px;font-weight:600}
 .ik{width:1em;height:1em;vertical-align:-.13em;margin-right:.4em;flex:none}
@@ -1604,7 +1604,7 @@ App.szene = function (key, titel) { if (App.tour || !Ton.an()) return; Sprecher.
   function ganzWeg() { App.buehneRuht = false; if (box.hidden) return; folge++; clipAn = null; halt(); startBox.classList.remove('an'); box.hidden = true; $('#buehne').classList.remove('mit-stadtfilm'); $('#bStadtfilm').setAttribute('aria-pressed', 'false'); }
   // In der Film-Ansicht heißt „weg“: zurück zum Startbild mit den antippbaren Städten; nur in der 3D-Ansicht gibt die Fläche die Bühne frei.
   function weg() { if (filmB) { if (box.hidden || !startBox.classList.contains('an')) start(); } else ganzWeg(); }
-  function setzB(film, merken, grund) { filmB = film; if (merken) setzM('tw-buehne', film ? 'film' : '3d'); hinw.hidden = !grund; hinw.textContent = grund || ''; box.querySelector('.sf-3d').textContent = grund ? 'Trotzdem in 3D' : 'In 3D erkunden'; if (film) { if (!App.tour) start(); } else ganzWeg(); }
+  function setzB(film, merken, grund) { filmB = film; $('#bStadtfilm').hidden = film;   /* Film-Ansicht: „Führung starten“ spielt schon die ganze Geschichte mit Ton – kein zweiter Knopf (Klaus 16.11.: Doppelung) */ if (merken) setzM('tw-buehne', film ? 'film' : '3d'); hinw.hidden = !grund; hinw.textContent = grund || ''; box.querySelector('.sf-3d').textContent = grund ? 'Trotzdem in 3D' : 'In 3D erkunden'; if (film) { if (!App.tour) start(); } else ganzWeg(); }
   spielB.onclick = () => { if (startBox.classList.contains('an')) return zeig('alles'); if (laeuft) { halt(); if (!App.tour) Sprecher.pause(); } else { laeuft = true; knopf(); if (!App.tour) Sprecher.weiter(); if (clipAn && landV) { const pr = landV.play(); if (pr && pr.catch) pr.catch(() => { }); } else { lauf++; takt(4000, 99); } } };
   box.querySelectorAll('.sf-wahl button:not([data-start])').forEach(b => b.onclick = () => { if (b.dataset.clip) { if (!App.tour) { Sprecher.stopp(true); if (Ton.an()) Sprecher.sag('schluss', {}); } return zeig('finale'); } clipAn = null; halt(); mitPunkten = true; szene(+b.dataset.i); });
   box.querySelector('.sf-3d').onclick = () => { if (!App.tour) Sprecher.stopp(true); if (window.LEICHT) return ganzWeg(); App.baue3D(); setzM('tw-buehne-schwach', null); setzB(false, true); wacheB(); };
@@ -1613,6 +1613,7 @@ App.szene = function (key, titel) { if (App.tour || !Ton.an()) return; Sprecher.
   const messeB = (dauer, fertig) => { const d = []; let z = 0, t0 = 0; const f = t => { if (!t0) t0 = t; if (z) d.push(t - z); z = t; if (t - t0 < dauer) requestAnimationFrame(f); else { d.sort((a, b) => a - b); fertig(d.length > 8 ? d[d.length >> 1] : 999); } }; requestAnimationFrame(f); };
   const SCHWACH_B = 'Die 3D-Ansicht läuft auf diesem Gerät nicht flüssig – deshalb die Film-Ansicht.';
   function wacheB() { if (window.LEICHT || RUHIG || !Szene.ok) return; setTimeout(() => { if (filmB || document.hidden || !box.hidden) return; messeB(2500, m => { if (filmB || !box.hidden) return; if (m > 40) { setzM('tw-buehne-schwach', '1'); setzB(true, false, SCHWACH_B); } }); }, 2000); }
+  $('#bStadtfilm').hidden = !!filmB;
   if (filmB) { if (merkB('tw-buehne-schwach') === '1') setzB(true, false, SCHWACH_B); else start(); } else wacheB();
   box.querySelectorAll('.sf-wahl button[data-start]').forEach(b => b.onclick = () => { if (!App.tour) Sprecher.stopp(true); start(); });
   knopf(); App.stadtFilm = { zeig, weg, gross, an: () => !box.hidden, film: () => filmB, wartet: f => { if (!box.hidden && clipAn && laeuft) warter.push(f); else f(); } };

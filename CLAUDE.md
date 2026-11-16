@@ -54,7 +54,7 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   (je Kugel eine Murmel mit Gesicht: Raten türkis, Soll orange, Lernen violett, Reihum grün, Einfrieren eisblau, Messen rosa), Längen genau wie
   `FILM.zeiten`, Tonspur = die sechs `kreis_*`-Tonspuren, schwebender Titel je Schritt eingebrannt; zeigt keine Zahlen mehr (die stehen im Text daneben).
   Die interaktive 3D-Fassung der Kugeln ist unverändert.
-  **Stadtfilm (15.11. nachts, nicht ausgegeben):** Knopf „Stadtfilm“ im Rahmen und Führungsschritte „Die Welten“/„Die Punkte“ (`App.stadtFilm`,
+  **Stadtfilm (15.11. nachts; seit 16.11. ist der Knopf in der Film-Ansicht ausgeblendet – Klaus: Doppelung zu „Führung starten“, bei ihm ohne Arthur; in der 3D-Ansicht bleibt er):** Knopf „Stadtfilm“ im Rahmen und Führungsschritte „Die Welten“/„Die Punkte“ (`App.stadtFilm`,
   14. Tonspur `stadt_punkte`): vier Städte in vier Bildwelten als Filmsequenzen (`discovery-stadt-0…3.mp4`, Standbild `.jpg` als Ersatz: Hafen am
   Abend, Landstädtchen am Morgen, Steampunk-Großstadt, Zukunftsstadt am Fluss), Stadtname als große dünne Filmschrift im Bild (Klaus: keine
   Knopf-Optik, Schrift soll sich ins Bild einfügen); dann `discovery-stadt-landung.mp4` (die Murmeln landen in der Hafenstadt und übernehmen die
