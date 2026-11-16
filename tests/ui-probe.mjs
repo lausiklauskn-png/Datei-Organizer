@@ -166,6 +166,15 @@ try {
       soll("… mit „Ganze PDF öffnen“", await page.locator("[data-pdf-ganz]").count() === 1);
     } else soll("Testordner hat einen Ast „PDF“", false);
   }
+  { // Nach dem Neuladen (Originale nicht mehr im Speicher): der gemerkte Ordner wird still wieder geöffnet.
+    await page.reload(); await page.waitForTimeout(600);
+    await page.locator("[data-nav=finden]").click(); await page.waitForTimeout(300);
+    await page.locator("[data-sicht]").selectOption("art");
+    await page.locator("[data-ordnerbaum] [data-ast='PDF']").first().click();
+    await page.locator("[data-liste] [data-datei]").first().click();
+    await page.locator("[data-steckbrief] [data-original]").click();
+    soll("Nach dem Neuladen zeigt das Auge die Original-PDF wieder", await page.locator("[data-pdf-vorschau] img").first().waitFor({ timeout: 15000 }).then(() => true, () => false));
+  }
 
   console.log("Familienakte");
   await page.locator("[data-nav=akte]").click();

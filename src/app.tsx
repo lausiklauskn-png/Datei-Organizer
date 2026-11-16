@@ -390,14 +390,25 @@ function useOrganizer() {
   const original = useCallback(async (pfad: string): Promise<Blob | null> => {
     // Anhang einer Mail: aus der Mail neu lesen
     const haupt = pfad.split(" › ")[0];
-    const q = originale.current.get(haupt) as QuellDatei | undefined;
+    let q = originale.current.get(haupt) as QuellDatei | undefined;
+    if (!q) {
+      // Nach einem Neustart (Klaus 16.11.: das Original soll sich ansehen lassen): den gemerkten Ordner ohne Auswahl-Fenster wieder öffnen.
+      let wieder: Quelle | null = null;
+      try {
+        if (quelleArt === "test") wieder = testOrdner();
+        else if (quelleArt === "ordner") { const h = await ordnerHolen(); if (h && (await erlaubnisPruefen(h as never))) { const k = ausHandle(h as never); if (k.name === ordnerName) wieder = k; } }
+        else if (quelleArt === "nativ") { const id = (await nativGemerkt()).find((g) => g.da && g.name === ordnerName)?.id; if (id) wieder = await nativWieder(id); }
+        if (wieder) for (const qd of await wieder.dateien()) if (!originale.current.has(qd.pfad)) originale.current.set(qd.pfad, qd);
+      } catch { /* bleibt unerreichbar */ }
+      q = originale.current.get(haupt) as QuellDatei | undefined;
+    }
     if (!q) return null;
     const bytes = await q.lesen();
     if (haupt === pfad) return new Blob([bytes as BlobPart]);
     const teile = await einlesenTeile(bytes, haupt);
     const a = teile.find((t) => t.pfad === pfad);
     return a ? new Blob([a.daten as BlobPart]) : null;
-  }, []);
+  }, [quelleArt, ordnerName]);
 
   const neuBeginnen = useCallback(async () => {
     await loeschen(); stapel.current = []; originale.current.clear(); setAngefangen(null);
