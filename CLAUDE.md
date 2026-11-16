@@ -17,6 +17,15 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   16 deutsche Prüfstapel (2.892 Stücke): Art, Bereich, Absender, Frist unverändert; Probe in `run-kern-tests.mjs` (4 neu, Gegenprobe 3/3).
   Auftrag aus Private Brain Pro (Brief dort `BRIEF_SITZUNG_2026-11-15_SUCHE-SORTIERKERN.md`). Familienakte und BookLedgerPro noch nicht nachgezogen.
 
+## Veröffentlicht (16.11.2026, Klaus' Wort „49 kannst du starten“): Datei-Organizer 0.4.9 – nicht erneut ausgeben
+
+- **Android** `Datei-Organizer-Pro-0.4.9.apk` (Code 49, 72.282.936 B, SHA-256 `0bed7948…3ba1`, Lauf 43783092615), **Windows**
+  `Datei-Organizer-Pro-Windows-0.4.9-x64-setup.exe` (87.423.909 B, SHA-256 `16132f92…3af4`, Lauf 43783094960, Hochladen erst im zweiten Versuch),
+  **Basic** über Pages. Stand `6665bae`. Inhalt: ohne erzeugte Hintergrundmusik, ruhige Musik in den vier Filmen, „Film-Ansicht“ als Rückweg aus 3D,
+  kein Knopf „Stadtfilm“. **Nicht** darin: „reihum“ neu gesprochen (0.4.10 auf main). Nachweis `docs/VEROEFFENTLICHUNG-0.4.9.json`.
+  Nächste Ausgabe: **0.4.10** (Code 50, steht in den Quellen). **Lehre: Android- und Windows-Ausgabe nicht gleichzeitig starten** – beide laden auf
+  denselben Server, der zweite bricht ab („Another instance of rrsync“); erst Android, dann Windows, oder den abgebrochenen Schritt einmal neu starten.
+
 ## Veröffentlicht (15.11.2026 nachts, Klaus' Wort „0.4.8 veröffentlichen“): Datei-Organizer 0.4.8 – nicht erneut ausgeben
 
 - **Android** `Datei-Organizer-Pro-0.4.8.apk` (Code 48, 71.185.208 B, SHA-256 `e137adbc…ca2f`, Zertifikat `594e44df…365d`, Lauf 43776349955), **Windows**
@@ -31,7 +40,9 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
 
 - **Discovery (Klaus 15.11.: „mache aus der Doku einen Teil des Repos, Button Discovery“):** Fernrohr-Knopf im Kopf (`data-discovery-knopf`,
   `src/app.tsx`) öffnet `src/public/discovery.html` – die interaktive Doku „so wurde der Sortier-Kern trainiert“: 3D-Baum mit den Test-Welten,
-  Kreislauf aus sechs Glaskugeln (Raten, Soll, Lernen, Reihum, Einfrieren, Messen), Führung, drei Kurzfilme, Geräusche (Web Audio; **keine erzeugte Hintergrundmusik mehr**, Klaus 16.11.: das Klingeln lenkt ab; 0.4.9, nicht ausgegeben). **Ruhige Musik in den vier Filmen mit eingebranntem Ton** (Klaus 16.11.: je Film eine andere, aber ähnlich; Higgsfield/ElevenLabs Music, rund 19 LU unter Arthur, ein- und ausgeblendet): `discovery-geschichte.mp4` Klavier/Streicher, `-kurzgeschichte.mp4` Gitarre/Cello, `-runden.mp4` E-Piano/Streicher, `-kreislauf.mp4` Fläche/Klavier – bei neuem Schnitt die Musik wieder daruntermischen (nur die Tonspur, Bild unverändert).
+  Kreislauf aus sechs Glaskugeln (Raten, Soll, Lernen, Reihum, Einfrieren, Messen), Führung, drei Kurzfilme. **Ton aus dem Browser nur noch der Klick beim Antippen** (Klaus 16.11.: keine erzeugte Hintergrundmusik – das Klingeln lenkt ab, seit 0.4.9; kein Briefrascheln alle paar Sekunden und keine anderen Geräusche – „stört und ergibt keinen Sinn“, 0.4.10; `spiel()` lässt nur `klick` durch). **Ruhige Musik in den vier Filmen mit eingebranntem Ton** (Klaus 16.11.: je Film eine andere, aber ähnlich; Higgsfield/ElevenLabs Music, rund 19 LU unter Arthur, ein- und ausgeblendet): `discovery-geschichte.mp4` Klavier/Streicher, `-kurzgeschichte.mp4` Gitarre/Cello, `-runden.mp4` E-Piano/Streicher, `-kreislauf.mp4` Fläche/Klavier – bei neuem Schnitt die Musik wieder daruntermischen (nur die Tonspur, Bild unverändert).
+  **Gerätetest 0.4.9 (Klaus 16.11., Tablet, 0.4.10):** Stadtfilme zeigen beim Laden ihr Standbild (`poster`; Android zeigte sonst ein graues Abspiel-Zeichen) und laufen beim Wählen der Stadt von selbst; die Leiste unten (`.sf-leiste`) ist nur so breit wie ihre Knöpfe (sie deckte die zweite Zeile der Stadtwahl zu – „Musterhausen am Rhein“ und „Familienakte“ ließen sich nicht antippen); bei offener Karte rückt die Stadtwahl neben die Karte (`.buehne.karte-offen`). **Ladeanzeige** = drei kreisende Murmeln mit der Prozentzahl in der Mitte (`.film-lade`, `ladeBalken`).
+  **Aussprache (Klaus 16.11.):** „reihum“ spricht Arthur sonst mit hörbarem H – für die Aufnahme „Rei-um“ schreiben (`kreis_reihum.mp3` und der Abschnitt im Kugel-Film sind so neu gesprochen; der Text auf der Seite bleibt „Reihum“). Offen: im Film „Die Städte leben“ (`discovery-stadt-leben-2.mp4`, Schlange vor dem Kiosk) hat eine Figur hinten ein verzogenes Gesicht mit mehreren Augen – Neudreh nur mit Klaus' Ja (steckt auch im großen Video).
   Sprecher: 13 Tonspuren `src/public/discovery-ton/<schluessel>.mp3` (seit 15.11. abends Stimme „Arthur“ über Higgsfield/ElevenLabs, Klaus' Wahl, auf main, nicht ausgegeben; vorher Sprachgenerator, Tempo 0,9; der Kreislauf-Film trägt dieselbe Stimme, Bild unverändert; Texte im
   Objekt `SPRECHTEXTE` der Seite – bei Textänderung neu vertonen), sonst Browserstimme. three.js r128 liegt bei (`discovery-three.min.js`, MIT),
   keine fremden Quellen. **Segmente:** am Tablet/Handy ist immer nur eine 3D-Fläche geladen (`window.Segmente`: die andere gibt ihre Grafik
