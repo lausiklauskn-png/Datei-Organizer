@@ -17,6 +17,14 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   16 deutsche Prüfstapel (2.892 Stücke): Art, Bereich, Absender, Frist unverändert; Probe in `run-kern-tests.mjs` (4 neu, Gegenprobe 3/3).
   Auftrag aus Private Brain Pro (Brief dort `BRIEF_SITZUNG_2026-11-15_SUCHE-SORTIERKERN.md`). Familienakte und BookLedgerPro noch nicht nachgezogen.
 
+## Veröffentlicht (16.11.2026 nachts, Klaus' Wort „Prüf weiter und dann veröffentliche bitte“): Datei-Organizer 0.4.10 – nicht erneut ausgeben
+
+- **Android** `Datei-Organizer-Pro-0.4.10.apk` (Code 50, 72.287.032 B, SHA-256 `37a49cfb…9a51`, Lauf 43787235867), **Windows**
+  `Datei-Organizer-Pro-Windows-0.4.10-x64-setup.exe` (87.427.855 B, SHA-256 `a01cb836…5aeb`, Lauf 43787862699; nacheinander gestartet, beide im
+  ersten Versuch grün), **Basic** über Pages. Stand `63a2cb5`. Inhalt: „reihum“ neu gesprochen, nur noch der Klick als Geräusch, Stadtwahl immer
+  antippbar, Standbild beim Laden, Ladeanzeige mit drei Murmeln. Nachweis `docs/VEROEFFENTLICHUNG-0.4.10.json`.
+  Nächste Ausgabe: **0.4.11** (Code 51, steht in den Quellen). Offen: Figur mit mehreren Augen (Kiosk-Schlange), ältere Ladeanzeige am Kugel-Film.
+
 ## Veröffentlicht (16.11.2026, Klaus' Wort „49 kannst du starten“): Datei-Organizer 0.4.9 – nicht erneut ausgeben
 
 - **Android** `Datei-Organizer-Pro-0.4.9.apk` (Code 49, 72.282.936 B, SHA-256 `0bed7948…3ba1`, Lauf 43783092615), **Windows**
