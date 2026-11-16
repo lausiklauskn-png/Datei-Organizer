@@ -1285,7 +1285,7 @@ App.baue3D = function () {
   requestAnimationFrame(bild);
   if (Segmente.einzeln) Segmente.vor('baum');
 };
-App.filmZuerst = (function () { if (window.LEICHT) return false; let w = null, sch = null; try { w = localStorage.getItem('tw-buehne'); sch = localStorage.getItem('tw-buehne-schwach'); } catch (e) { } return w ? w === 'film' : (!!window.MOBIL || sch === '1'); })();
+App.filmZuerst = (function () { if (window.LEICHT) return false; let w = null, sch = null; try { w = localStorage.getItem('tw-buehne'); sch = localStorage.getItem('tw-buehne-schwach'); } catch (e) { } return w ? w === 'film' : sch === '1'; })();   /* Klaus 16.11.: auch am Tablet zuerst der drehbare 3D-Baum – abgestürzt waren die Kugeln unten bzw. beide 3D-Flächen zusammen, nicht der Baum. Die Messung (wacheB) schaltet bei zu langsamem Bild auf die Film-Ansicht. */
 if (!App.filmZuerst) App.baue3D();
 
 /* ---------- 2D-Ersatz (wenn 3D nicht geht) ---------- */
