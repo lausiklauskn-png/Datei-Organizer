@@ -1323,15 +1323,8 @@ const Ton = (function () {
     const n = Math.floor(ctx.sampleRate * dauer), b = ctx.createBuffer(1, n, ctx.sampleRate), d = b.getChannelData(0); for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n);
     const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(); s.buffer = b; f.type = 'bandpass'; f.frequency.value = freq; g.gain.value = laut; s.connect(f); f.connect(g); g.connect(aus); s.start(t);
   }
-  function musik() {
-    if (!an) return; const jetzt = ctx.currentTime;
-    while (naechst < jetzt + .6) {
-      const a = AKK[takt % AKK.length], t = naechst;
-      a.forEach((f, i) => { ton(f, t, 6.4, i ? 'sine' : 'triangle', .035, hall, 2.2); ton(f * 1.003, t, 6.4, 'sine', .02, hall, 2.6); });
-      for (let i = 0; i < 4; i++) if (Math.random() < .7) ton(PENTA[Math.floor(Math.random() * PENTA.length)], t + i * 1.5 + Math.random() * .4, 1.6, 'triangle', .03, hall);
-      naechst += 6; takt++;
-    }
-  }
+  /* Keine Hintergrundmusik mehr (Klaus 16.11.: das Klingeln im Hintergrund lenkt ab). Es bleiben Sprecher und kurze Geräusche. */
+  function musik() {}
   function start() {
     if (!ctx) {
       const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return false; ctx = new AC();
@@ -1342,7 +1335,7 @@ const Ton = (function () {
       hall = ctx.createGain(); hall.connect(tp); tp.connect(mus); tp.connect(echo); echo.connect(rueck); rueck.connect(echo); echo.connect(mus);
     }
     ctx.resume(); an = true; naechst = ctx.currentTime + .1; aus.gain.cancelScheduledValues(ctx.currentTime); aus.gain.linearRampToValueAtTime(.8, ctx.currentTime + 1.2);
-    clearInterval(uhr); uhr = setInterval(musik, 200); musik(); return true;
+    clearInterval(uhr); return true;
   }
   function stopp() { an = false; clearInterval(uhr); if (ctx) { aus.gain.cancelScheduledValues(ctx.currentTime); aus.gain.linearRampToValueAtTime(0, ctx.currentTime + .4); setTimeout(() => { if (!an) ctx.suspend(); }, 600); } }
   function spiel(name) {
@@ -1403,7 +1396,7 @@ const Sprecher = (function () {
   function fuell(h) {
     const sel = h.querySelector('select'), hin = h.querySelector('small'), b = h.querySelector('button');
     sel.innerHTML = ''; sel.disabled = b.disabled = !liste.length;
-    if (!liste.length) { sel.appendChild(new Option(sy ? 'Keine deutsche Stimme gefunden' : 'Dieses Gerät kann nicht vorlesen', '')); hin.textContent = 'Ohne Stimme laufen Musik, Geräusche und Untertitel. Fertige Tonspuren werden trotzdem gespielt.'; return; }
+    if (!liste.length) { sel.appendChild(new Option(sy ? 'Keine deutsche Stimme gefunden' : 'Dieses Gerät kann nicht vorlesen', '')); hin.textContent = 'Ohne Stimme laufen Geräusche und Untertitel. Fertige Tonspuren werden trotzdem gespielt.'; return; }
     sel.appendChild(new Option('Automatisch: ' + liste[0].name, ''));
     liste.forEach(v => sel.appendChild(new Option(v.name + (note(v) >= 35 ? ' · klingt natürlicher' : note(v) < 0 ? ' · einfache Stimme' : ''), v.voiceURI)));
     sel.value = liste.some(v => v.voiceURI === wahl) ? wahl : '';
