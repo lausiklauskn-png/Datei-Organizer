@@ -18,6 +18,13 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   Eine Seite bleibt ein JPG, mehrere werden ein PDF (`pdfAusSeiten`, eigener kleiner Schreiber), Name `Scan_JJJJ-MM-TT_hh-mm-ss`; kommt zum
   Bestand dazu, die Texterkennung liest es. „Kopie speichern“ (gemerkt `do-scan-kopie`) lädt die Datei in Downloads – der Scan liegt sonst nur
   im Speicher der Seite. Kern unverändert. UI-Probe 141 (5 neu). Vorschau `docs/vorschau/scan-2026-11-17.png`. Am Gerät ungeprüft.
+- **Klaus 17.11. am Tablet: „Foto hat funktioniert“.** Danach (sein Wort): die Pille „Kein Ordner“ im Kopf ist weg (mit Ordner bleibt
+  `[data-ordner-pill]` mit Name und Anzahl), an der Stelle steht der runde Drucker-Knopf (`[data-drucken]`, nur Web-App, öffnet vorerst das
+  Druckfenster des Geräts – der eigentliche Drucker-/Scanner-Auftrag kommt als Brief für die nächste Sitzung).
+- **Kopf gekürzt (Klaus 17.11.: der Text unter dem Namen ist „viel zu lang“, nur die Nummer als Knopf, „V“ davor):** unter dem Namen steht
+  nichts mehr; daneben der Knopf „V 0.4.14“ (`[data-fassung-knopf]`, in der Web-App = Aktualisieren, in der App wie bisher Update suchen), das
+  rote Fähnchen kommt daneben. Am Handy (bis 480 px) steht „Basic“/„Pro“ unter „Datei-Organizer“ und Pille und Knöpfe rutschen in eine zweite
+  Zeile. Das gilt auch für APK/Windows ab der nächsten Ausgabe (gleicher Kopf). UI-Probe 141.
 - **Für APK/Windows offen (erst mit Klaus' Wort):** Android braucht dafür im FileProvider einen Pfad für das Kamerabild und die Abfrage
   `IMAGE_CAPTURE` im Manifest (`tools/native/test-native.mjs` prüft heute „nur update/“); zu entscheiden ist, ob Scans in den gewählten Ordner
   geschrieben werden (heute schreibt die App dort nur den Index).

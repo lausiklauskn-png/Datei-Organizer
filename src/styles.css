@@ -31,6 +31,8 @@ a { color: var(--teal); }
 .update-fahne { display: inline-flex; align-items: center; gap: 5px; border: 0; border-radius: 6px 999px 999px 6px; padding: 7px 12px 7px 9px; color: #fff; background: var(--teal); font-size: .76rem; font-weight: 900; white-space: nowrap; }
 .update-fahne:hover { filter: brightness(1.1); }
 .ordner-pill.verbunden { border-color: #82bda7; color: #176548; background: #eaf8f2; }
+/* Handy: Name und Fassung oben, Pille und Knöpfe in einer zweiten Zeile – sonst reicht die Breite nicht. */
+@media (max-width: 480px) { .masthead { flex-wrap: wrap; row-gap: 6px; } .header-actions { width: 100%; justify-content: flex-end; gap: 6px; } .ordner-pill { max-width: 36vw; margin-right: auto; } }
 .main-navigation { display: flex; justify-content: center; gap: 2px; padding: 0 12px; color: white; background: var(--navy); overflow-x: auto; scrollbar-width: none; }
 .main-navigation button { flex: 0 0 auto; height: 47px; display: flex; align-items: center; gap: 6px; border: 0; border-bottom: 4px solid transparent; padding: 0 14px; color: #fff; background: transparent; font-size: .84rem; letter-spacing: .045em; text-transform: uppercase; }
 .main-navigation button:hover, .main-navigation button.active { background: rgba(255,255,255,.09); border-bottom-color: #54b8d2; }
@@ -201,7 +203,7 @@ a { color: var(--teal); }
 .footer-directory button:hover, .footer-directory a:hover { color: #fff; text-decoration: underline; }
 .footer-meta { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-top: 1px solid rgba(220,231,239,.2); padding-top: 12px; color: #9fb3c1; font-size: .75rem; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
-@media (max-width: 480px) { .site-brand strong { white-space: nowrap; } .site-brand small { display: none; } }
+@media (max-width: 480px) { .site-brand strong { font-size: .95rem; line-height: 1.15; } .site-brand .variante { display: block; font-weight: 600; } .site-brand small { display: none; } }
 
 /* Auge, Stift, Papierkorb an jeder Datei (Klaus 13.11.) */
 .datei-zeile-mit { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 6px; align-items: center; }

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Archive, FolderOpen, FolderTree, HelpCircle, History, ListChecks, Download, Map as KarteSymbol, RefreshCw, Search, Telescope } from "lucide-react";
+import { Archive, FolderOpen, FolderTree, HelpCircle, History, ListChecks, Download, Map as KarteSymbol, Printer, RefreshCw, Search, Telescope } from "lucide-react";
 import type { Datei, FeldName, Korrektur, Lernregel } from "../lib/typen.ts";
 import { einlesen, doppelteMarkieren } from "../lib/einlesen.ts";
 import { aehnlicheFinden } from "../lib/aehnlich.ts";
@@ -19,7 +19,7 @@ import { erkenneArt } from "../lib/dateiart.ts";
 import { ArbeitSpeicher, arbeitAnzeige, arbeitFehler, arbeitFrei, arbeitGemerkt, arbeitMoeglich, arbeitVergessen, arbeitWaehlen, blockBedarf, leistungMessen, leistungText, mbText, schlank, speicherReicht, type Arbeitsordner, type Leistung } from "./arbeit.ts";
 import { OrdnerSeite, SortierenSeite, FindenSeite, VerlaufSeite, AkteSeite, HilfeSeite } from "./seiten.tsx";
 import { LandkarteSeite } from "./landkarte.tsx";
-import { APP_NAME, direktLaden, istNativ, nativeUpdates, stillPruefen } from "./nativ.ts";
+import { APP_NAME, APP_VARIANTE, direktLaden, istNativ, nativeUpdates, stillPruefen } from "./nativ.ts";
 
 export const FASSUNG = "0.4.14";
 // Ladeanzeige: „suchen“ = Ordner wird durchgesehen (Zahl noch unbekannt), „lesen“ = Datei für Datei, „stand“ = gemerkter Stand beim Start.
@@ -544,18 +544,23 @@ export function App() {
       <div className="masthead">
         <button type="button" className="site-brand" onClick={() => gehe("ordner")} aria-label={`${APP_NAME} – zum Ordner`}>
           <span className="brand-symbol"><FolderTree size={24}/></span>
-          <span><strong data-app-name>{APP_NAME}</strong><small>Fassung {FASSUNG} · vorsortiert für die Familienakte</small></span>
+          <span><strong data-app-name>Datei-Organizer <span className="variante">{APP_VARIANTE}</span></strong></span>
         </button>
         {/* Klaus 16.11.: Fassung (Link fürs Update) und Fähnchen links neben dem Namen – am Handy leichter zu treffen. */}
         <div className="fassung-platz" data-fassung-platz>
           {upd.nativ && upd.neu && <button type="button" className="update-fahne" data-update-fahne data-nativ title={`Update ${upd.neu} steht bereit. Antippen lädt und installiert.`} onClick={() => void upd.laden()}><Download size={14}/>{upd.prozent !== null ? `Lädt ${upd.prozent} %` : `Update ${upd.neu}`}</button>}
-          {upd.nativ && <button type="button" className="fassung-knopf" data-fassung-knopf title="Fassung – antippen sucht ein Update und installiert es" onClick={() => void upd.laden()}>{upd.prozent !== null && !upd.neu ? `${upd.prozent} %` : FASSUNG}</button>}
+          {upd.nativ && <button type="button" className="fassung-knopf" data-fassung-knopf title="Fassung – antippen sucht ein Update und installiert es" onClick={() => void upd.laden()}>{upd.prozent !== null && !upd.neu ? `${upd.prozent} %` : `V ${FASSUNG}`}</button>}
+          {/* Web-App (Klaus 17.11.: unter dem Namen kein langer Text, nur die Nummer als Knopf): antippen holt die neueste Fassung. */}
+          {!upd.nativ && <button type="button" className="fassung-knopf" data-fassung-knopf title="Aktualisieren" onClick={() => void aktualisieren(!!z.fortschritt && z.fortschritt.phase !== "stand")}>V {FASSUNG}</button>}
           {neueFassung && <button type="button" className="update-fahne" data-update-fahne title={`Fassung ${neueFassung} steht bereit. Tippen aktualisiert; die Sortierung bleibt gemerkt.`} onClick={() => void aktualisieren(!!z.fortschritt && z.fortschritt.phase !== "stand")}><RefreshCw size={14}/>Update {neueFassung}</button>}
         </div>
         <div className="header-actions">
           {(() => { const pille = z.fortschritt && z.fortschritt.phase !== "stand" ? "Wird geladen …" : z.ordnerName ? `${z.ordnerName} · ${z.dateien.length}` : "Kein Ordner";
             // aria-label = sichtbarer Text: Android liest sonst nur den Tooltip (Name ohne Anzahl) – Vorleser und Emulator-Probe der APK.
-            return <span className={`ordner-pill ${z.ordnerName ? "verbunden" : ""}`} data-ordner-pill title={z.ordnerName || "Kein Ordner gewählt"} aria-label={pille}>{pille}</span>; })()}
+            // Ohne Ordner keine Pille (Klaus 17.11.: „man merkt ja, ob man keinen Ordner drin hat“).
+            return pille === "Kein Ordner" ? null : <span className={`ordner-pill ${z.ordnerName ? "verbunden" : ""}`} data-ordner-pill title={z.ordnerName} aria-label={pille}>{pille}</span>; })()}
+          {/* Drucker (Klaus 17.11., zuerst nur Web-App): öffnet das Druckfenster des Geräts; mehr dazu im Brief für die nächste Sitzung. */}
+          {!istNativ() && <button type="button" className="info-knopf" aria-label="Drucken" title="Drucken" data-drucken onClick={() => window.print()}><Printer size={18}/></button>}
           <button type="button" className="info-knopf" aria-label="Aktualisieren" title="Aktualisieren: App neu laden (neueste Fassung). Die Sortierung bleibt gemerkt." data-aktualisieren onClick={() => void aktualisieren(!!z.fortschritt && z.fortschritt.phase !== "stand")}><RefreshCw size={18}/></button>
           <button type="button" className={`info-knopf ${seite === "landkarte" ? "aktiv" : ""}`} aria-label="Landkarte und Dashboard" title="Landkarte und Dashboard: was sortiert wurde, wohin es geht, wie die App arbeitet" onClick={() => gehe("landkarte")} data-landkarte-knopf><KarteSymbol size={18}/></button>
           <a className="info-knopf" href="discovery.html" aria-label="Discovery" title="Discovery: so wurde der Sortier-Kern trainiert – Test-Welten, Kugeln, Filme mit Ton" data-discovery-knopf><Telescope size={18}/></a>
