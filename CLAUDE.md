@@ -27,6 +27,24 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   (`.marke`, `.variante`). Am Handy (bis 480 px) stecken die runden Knöpfe hinter einem Pfeil (`[data-mehr-knopf]` klappt `[data-kopf-knoepfe]`
   auf), damit der Kopf zwei Zeilen hoch bleibt (Name, Leiste); die Ordner-Pille entfällt dort ganz (Klaus: „wir sehen ja, ob ein Ordner
   verbunden ist“; am Tablet/PC bleibt sie mit Ordner). Das gilt auch für APK/Windows ab der nächsten Ausgabe (gleicher Kopf). UI-Probe 141.
+- **Scans in den Unterordner „Scans“ (Klaus 17.11., entschieden; gebaut 17.11. nur für „Ordner am PC“ in der Web-App):** ist der gewählte Ordner
+  schreibbar, legt „Fertig – übernehmen“ den Scan als gewöhnliche Datei in `<Ordner>/Scans/` (`ablegen` in `src/quellen.ts`, `SCAN_ORDNER`,
+  überschreibt nie; `scanAblegen`/`scanZiel` in `src/app.tsx`) und nimmt ihn mit dem Pfad `Scans/…` in den Bestand; der Scan-Kasten nennt dann
+  das Ziel (`[data-scan-ziel]`) statt „Kopie speichern“. Ohne schreibbaren Ordner (Handy, Dateiauswahl) bleibt es bei der Kopie in Downloads.
+  UI-Probe 145 (3 neu, Ordner im Test = privater Browser-Speicher). An einem echten PC-Ordner ungeprüft. **Am Handy ändert das nichts** – dort
+  kommt der Unterordner erst mit Foto / Scan in der Android-App (Klaus' Wort offen).
+- **Symbol der Basic-Fassung umgedreht (Klaus 17.11.: „innen die Strichgrafik blau, außen weiß … nur umgedreht, so pro Version“):** die Web-App
+  trägt das blaue Zeichen auf einem Verlauf von Blau (außen) nach Weiß (nur in der Mitte hinter dem Zeichen; Klaus: „kräftiger, deutlicher“) (`symbolSvg(form, groesse, "basic")` in `scripts/symbol-bauen.mjs`;
+  `icon-192/512`, `icon-maskable-512`, `favicon.svg`). Pro bleibt weiß auf Blau: Android `mipmap-*`, Windows nimmt jetzt
+  `src/public/icon-pro-192.png` (byte-gleich mit dem bisherigen). Vorschau `docs/vorschau/symbol-basic-2026-11-17.png`. Das Zeichen im Kopf der
+  Seite ist in Basic ebenso umgedreht (`.brand-symbol.basic`, Klaus' Ja 17.11.), in Pro unverändert. Ein schon installiertes Symbol auf dem Startbildschirm wechselt je nach Gerät erst nach Neuinstallieren.
+- **Drucken (Klaus 17.11. abends):** gedruckt werden soll vor allem **vom Handy** (Web-App am Handy), am PC über die Windows-Fassung; beides testen.
+  **Gebaut für die Web-App (Klaus' Ja 17.11. zur Vorschau `docs/vorschau/drucken-2026-11-17.png`):** der Drucker-Knopf im Kopf (`[data-drucken]`)
+  druckt die Datei des zuletzt geöffneten Steckbriefs (`src/drucken.ts`: `druckZielSetzen`, `drucken`); ohne offene Datei ist er ausgegraut. Foto als
+  Bild, PDF als gezeichnete Seiten (höchstens 40, `DRUCK_SEITEN`), sonst der erkannte Text – in einem eigenen Blatt der Seite (`#druck-blatt`,
+  `body.druckt`), weil ein PDF im neuen Fenster am Handy nicht verlässlich druckt. Den Drucker wählt das Druckfenster des Geräts. UI-Probe 149
+  (4 neu, Druckfenster im Test ersetzt). Am Handy mit echtem Drucker ungeprüft. Offen: Android-App (eigener Aufruf nötig), Windows; welche
+  „Notiz“ Klaus meinte. Recherche: Bluetooth aus dem Browser erreicht nur stromsparende Geräte, keine üblichen Drucker.
 - **Für APK/Windows offen (erst mit Klaus' Wort):** Android braucht dafür im FileProvider einen Pfad für das Kamerabild und die Abfrage
   `IMAGE_CAPTURE` im Manifest (`tools/native/test-native.mjs` prüft heute „nur update/“); **entschieden (Klaus 17.11.): Scans kommen in den Unterordner
   „Scans“ des gewählten Ordners** (heute schreibt die App dort nur den Index) und müssen später wieder herausgenommen und in ein Modul

@@ -43,6 +43,7 @@ try {
   await page.goto(basis);
   soll("Kopf, Navigation und Fuß stehen da", await page.locator(".site-header .main-navigation [data-nav]").count() === 6 && await page.locator(".site-footer").isVisible());
   soll("Ohne Ordner: keine Pille im Kopf, dafür der Drucker-Knopf", await page.locator("[data-ordner-pill]").count() === 0 && await page.locator(".header-actions [data-drucken]").count() === 1);
+  soll("Drucker-Knopf ist ausgegraut, solange keine Datei offen ist", await page.locator(".header-actions [data-drucken]").isDisabled());
   soll("Knopf „Aktualisieren“ steht oben im Kopf", await page.locator(".site-header [data-aktualisieren]").isVisible());
   await page.locator(".page-title .info-knopf").click();
   soll("Fragezeichen öffnet den Hinweis mit dem SD-Baum", await page.locator("[data-info-fenster]").isVisible() && (await page.locator("[data-info-fenster]").innerText()).includes("Datei-Organizer"));
@@ -157,6 +158,18 @@ try {
   await page.locator("[data-liste] [data-datei]").first().click();
   await page.locator("[data-original]").click();
   soll("Original eines Fotos wird angezeigt", await page.locator(".vorschau-bild").waitFor({ timeout: 5000 }).then(() => true, () => false));
+  // Drucken, was gerade offen ist (Klaus 17.11.): der Drucker-Knopf im Kopf druckt die Datei des offenen Steckbriefs.
+  const druckProbe = async () => {
+    await page.evaluate(() => { window.__druck = null; window.print = () => { const b = document.querySelector("#druck-blatt"); window.__druck = { art: b?.getAttribute("data-druck-blatt"), bilder: [...(b?.querySelectorAll("img") || [])].filter((i) => i.naturalWidth > 50).length, klasse: document.body.classList.contains("druckt"), titel: document.title }; window.dispatchEvent(new Event("afterprint")); }; });
+    await page.locator("[data-drucken]").click();
+    await page.waitForFunction(() => window.__druck, null, { timeout: 30000 }).catch(() => {});
+    return { ...(await page.evaluate(() => window.__druck) || {}), rest: await page.locator("#druck-blatt").count(), name: await page.locator("[data-steckbrief] h2").first().innerText() };
+  };
+  { const k = page.locator("[data-drucken]");
+    soll("Drucken: mit offenem Foto ist der Knopf aktiv und nennt die Datei", await k.isEnabled() && (await k.getAttribute("title") || "").startsWith("Drucken: "), await k.getAttribute("title"));
+    const d = await druckProbe();
+    soll("Drucken: das offene Foto geht als ein Bild ins Druckfenster, danach ist aufgeräumt", d.art === "bild" && d.bilder === 1 && d.klasse && d.titel === d.name && d.rest === 0, JSON.stringify(d));
+  }
   // Vorschau der Original-PDF im Steckbrief (Klaus 16.11.): Seiten als Bild in der App, kein neues Fenster.
   { const ast = page.locator("[data-ordnerbaum] [data-ast='PDF']").first();
     if (await ast.count()) {
@@ -164,6 +177,8 @@ try {
       await page.locator("[data-steckbrief] [data-original]").click();
       soll("Original einer PDF: Seite als Bild im Steckbrief", await page.locator("[data-pdf-vorschau] img").first().waitFor({ timeout: 15000 }).then(() => true, () => false));
       soll("… mit „Ganze PDF öffnen“", await page.locator("[data-pdf-ganz]").count() === 1);
+      const d = await druckProbe();
+      soll("Drucken: die offene PDF geht als gezeichnete Seiten ins Druckfenster", d.art === "pdf" && d.bilder >= 1 && d.rest === 0, JSON.stringify(d));
     } else soll("Testordner hat einen Ast „PDF“", false);
   }
   { // Nach dem Neuladen (Originale nicht mehr im Speicher): der gemerkte Ordner wird still wieder geöffnet.
@@ -653,6 +668,26 @@ try {
     await page.waitForSelector("[data-scan-seite]", { timeout: 10000 }).catch(() => {});
     await page.locator("[data-scan-verwerfen]").click();
     soll("Scan: Verwerfen lässt den Bestand, wie er ist", await page.locator("[data-scan]").count() === 0 && await zahl() === davor + 1);
+    // Scans in den Unterordner „Scans“ (Klaus 17.11.): mit „Ordner am PC“ wird der Scan dorthin geschrieben, ohne Kopie in Downloads.
+    await page.evaluate(async () => {
+      const w = await navigator.storage.getDirectory(); try { await w.removeEntry("Belege", { recursive: true }); } catch { /* neu */ }
+      const o = await w.getDirectoryHandle("Belege", { create: true });
+      const f = await (await o.getFileHandle("notiz.txt", { create: true })).createWritable(); await f.write("Notiz zum Einkauf am 3.11.2026"); await f.close();
+      window.showDirectoryPicker = async () => o;
+    });
+    await page.locator("[data-pc-ordner]").click();
+    await page.waitForFunction(() => /Ordner: Belege/.test(document.querySelector("[data-ordner-pfad]")?.textContent || ""), null, { timeout: 20000 }).catch(() => {});
+    await page.setInputFiles("[data-kamera-eingabe]", { name: "kamera4.png", mimeType: "image/png", buffer: await foto(["Kassenbon Markt Muster", "Summe 12,34 EUR"]) });
+    await page.waitForSelector("[data-scan-seite]", { timeout: 10000 }).catch(() => {});
+    soll("Scans-Ordner: der Kasten nennt das Ziel statt „Kopie speichern“", (await page.locator("[data-scan-ziel]").textContent().catch(() => "") || "").trim() === "Belege/Scans" && await page.locator("[data-scan-kopie]").count() === 0);
+    const [dl2] = await Promise.all([page.waitForEvent("download", { timeout: 4000 }).catch(() => null), page.locator("[data-scan-fertig]").click()]);
+    await page.waitForFunction(() => /Scan gespeichert/.test(document.querySelector("[data-meldung]")?.textContent || document.body.textContent || ""), null, { timeout: 120000 }).catch(() => {});
+    await page.waitForTimeout(900);
+    const imOrdner = await page.evaluate(async () => { const a = []; try { const d = await (await (await navigator.storage.getDirectory()).getDirectoryHandle("Belege")).getDirectoryHandle("Scans"); for await (const e of d.values()) a.push(`${e.name}:${(await e.getFile()).size > 1000}`); } catch { /* fehlt */ } return a; });
+    const st2 = await page.evaluate(() => new Promise((ok) => { const r = indexedDB.open("DateiOrganizer1", 1); r.onsuccess = () => { const q = r.result.transaction("kv").objectStore("kv").get("zustand"); q.onsuccess = () => ok(q.result); }; r.onerror = () => ok(null); }));
+    const sc2 = st2?.dateien?.find((d) => /^Scans\/Scan_.*\.jpg$/.test(d.pfad));
+    soll("Scans-Ordner: der Scan liegt als JPG in „Belege/Scans“, ohne Download", imOrdner.length === 1 && /^Scan_\d{4}-\d\d-\d\d_\d\d-\d\d-\d\d\.jpg:true$/.test(imOrdner[0]) && !dl2, `${JSON.stringify(imOrdner)} · Download ${dl2?.suggestedFilename() || "keiner"}`);
+    soll("Scans-Ordner: steht mit dem Pfad „Scans/…“ im Bestand neben der Datei des Ordners, Text gelesen", !!sc2 && st2.dateien.length === 2 && /Kassenbon/i.test(sc2.volltext || ""), `${st2?.dateien?.map((d) => d.pfad).join(", ")} · ${JSON.stringify((sc2?.volltext || "").slice(0, 80))}`);
   }
   soll("Keine Fehler in der Konsole", fehler.length === 0, fehler.slice(0, 3).join(" | "));
 } finally {

@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { drucken, druckZiel, druckZielHoeren } from "./drucken.ts";
 import { Archive, ChevronDown, FolderOpen, FolderTree, HelpCircle, History, ListChecks, Download, Map as KarteSymbol, Printer, RefreshCw, Search, Telescope } from "lucide-react";
 import type { Datei, FeldName, Korrektur, Lernregel } from "../lib/typen.ts";
 import { einlesen, doppelteMarkieren } from "../lib/einlesen.ts";
@@ -12,7 +13,7 @@ import { korrigieren as korrigiereDatei, lernen, regelnAufAlle } from "../lib/le
 import { archivnummernVergeben } from "../lib/archivnummer.ts";
 import { indexLesen, organizerIndex, INDEX_DATEI } from "../lib/index-format.ts";
 import { pdfLeser } from "./pdf.ts";
-import { ausHandle, eingangAbholen, erlaubnisPruefen, herunterladen, nativerEingang, nativGemerkt, nativSpeichern, nativWieder, testOrdner, type Quelle, type QuellDatei } from "./quellen.ts";
+import { ausHandle, eingangAbholen, erlaubnisPruefen, herunterladen, nativerEingang, ordnerWahlMoeglich, SCAN_ORDNER, nativGemerkt, nativSpeichern, nativWieder, testOrdner, type Quelle, type QuellDatei } from "./quellen.ts";
 import { laden, laufLaden, laufLoeschen, laufNeuBeginnen, laufSpeichern, loeschen, ordnerHolen, ordnerMerken, speichern } from "./zustand.ts";
 import { fortsetzen, passt, schluessel, type Lauf } from "./lauf.ts";
 import { erkenneArt } from "../lib/dateiart.ts";
@@ -308,6 +309,24 @@ function useOrganizer() {
     return true;
   }, [einlesenAus]);
 
+  // Foto / Scan: der fertige Scan kommt als gewöhnliche Datei in den Unterordner „Scans“ des gewählten Ordners (Klaus 17.11.) und
+  // zum Bestand dazu. Geht nur, wo der Ordner schreibbar ist (bisher „Ordner am PC“); sonst false – dann bleibt es bei der Kopie.
+  const scanZiel = quelle?.ablegen ? `${quelle.name}/${SCAN_ORDNER}` : !quelle && quelleArt === "ordner" && ordnerName && ordnerWahlMoeglich() ? `${ordnerName}/${SCAN_ORDNER}` : "";
+  const scanAblegen = useCallback(async (f: File): Promise<boolean> => {
+    let q = quelle?.ablegen ? quelle : null;
+    if (!q && !quelle && quelleArt === "ordner") {
+      // Nach einem Neustart: den gemerkten Ordner still wieder öffnen (wie beim Ansehen des Originals).
+      const h = await ordnerHolen();
+      if (h && (await erlaubnisPruefen(h as never))) { const k = ausHandle(h as never); if (k.name === ordnerName) q = k; }
+    }
+    if (!q?.ablegen) return false;
+    let qd: QuellDatei;
+    try { qd = await q.ablegen(SCAN_ORDNER, f); } catch { return false; }
+    await einlesenAus({ art: "auswahl", name: SCAN_ORDNER, dateien: async () => [qd] }, true);
+    setMeldung({ text: `Scan gespeichert: ${q.name}/${qd.pfad}` });
+    return true;
+  }, [quelle, quelleArt, ordnerName, einlesenAus]);
+
   const naechstes = useCallback((bis?: number) => {
     let s = stufe, d = dateien;
     const ziel = bis ?? Math.min(5, stufe + 1);
@@ -448,7 +467,7 @@ function useOrganizer() {
     setMeldung({ text: `${was || (n === 1 ? "1 Datei" : `${n} Dateien`)} aus dem Organizer genommen. ${n === 1 ? "Das Original ist" : "Die Originale sind"} unverändert. „Zurück“ auf der Seite Sortieren holt sie wieder.` });
   }, [dateien, stufe]);
 
-  return { dateien, stufe, verlauf, regeln, ordnerName, quelleArt, quelle, meldung, setMeldung, fortschritt, einlesenAus, angefangen, anhalten, weitermachen, laufVerwerfen, leistung, arbeit, arbeitFehlt, arbeitEinrichten, arbeitAus, pcOrdnerWieder, naechstes, zurueck, aendern, rueckgaengig, nummern, indexSichern, indexText, original, neuBeginnen, leeren, entfernen, behalten, ordnerMerken, kannZurueck: () => stapel.current.length > 0 };
+  return { dateien, stufe, verlauf, regeln, ordnerName, quelleArt, quelle, meldung, setMeldung, fortschritt, einlesenAus, scanZiel, scanAblegen, angefangen, anhalten, weitermachen, laufVerwerfen, leistung, arbeit, arbeitFehlt, arbeitEinrichten, arbeitAus, pcOrdnerWieder, naechstes, zurueck, aendern, rueckgaengig, nummern, indexSichern, indexText, original, neuBeginnen, leeren, entfernen, behalten, ordnerMerken, kannZurueck: () => stapel.current.length > 0 };
 }
 
 async function einlesenTeile(bytes: Uint8Array, pfad: string) {
@@ -539,6 +558,7 @@ export function App() {
   const [ziel, setZiel] = useState<FindenZiel>(null);
   // Handy (Klaus 17.11.): die runden Knöpfe des Kopfs stecken hinter einem Pfeil, damit der Kopf zwei Zeilen hoch bleibt.
   const [mehr, setMehr] = useState(false);
+  const offenZumDruck = useSyncExternalStore(druckZielHoeren, druckZiel), [drucktGerade, setDrucktGerade] = useState(false);
   const oeffne = useCallback((sicht: string, knoten?: string) => { setZiel({ sicht, knoten, nr: Date.now() }); gehe("finden"); }, [gehe]);
   const props = { z, gehe, oeffne, ziel };
   return <div className="app-shell">
@@ -546,7 +566,7 @@ export function App() {
       <div className="masthead">
         <div className="marke" data-variante={APP_VARIANTE}>
         <button type="button" className="site-brand" onClick={() => gehe("ordner")} aria-label={`${APP_NAME} – zum Ordner`}>
-          <span className="brand-symbol"><FolderTree size={24}/></span>
+          <span className={`brand-symbol ${APP_VARIANTE === "Basic" ? "basic" : ""}`} data-kopf-symbol={APP_VARIANTE}><FolderTree size={24}/></span>
           <span><strong data-app-name>Datei-Organizer <span className="variante">{APP_VARIANTE}</span></strong></span>
         </button>
         {/* Klaus 16.11.: Fassung (Link fürs Update) und Fähnchen beim Namen; seit 17.11. flach unter dem Namen (`.marke`). */}
@@ -563,8 +583,9 @@ export function App() {
             // aria-label = sichtbarer Text: Android liest sonst nur den Tooltip (Name ohne Anzahl) – Vorleser und Emulator-Probe der APK.
             // Ohne Ordner keine Pille (Klaus 17.11.: „man merkt ja, ob man keinen Ordner drin hat“).
             return pille === "Kein Ordner" ? null : <span className={`ordner-pill ${z.ordnerName ? "verbunden" : ""}`} data-ordner-pill title={z.ordnerName} aria-label={pille}>{pille}</span>; })()}
-          {/* Drucker (Klaus 17.11., zuerst nur Web-App): öffnet das Druckfenster des Geräts; mehr dazu im Brief für die nächste Sitzung. */}
-          {!istNativ() && <button type="button" className="info-knopf" aria-label="Drucken" title="Drucken" data-drucken onClick={() => window.print()}><Printer size={18}/></button>}
+          {/* Drucker (Klaus 17.11., zuerst nur Web-App): druckt die gerade geöffnete Datei über das Druckfenster des Geräts; ohne offene Datei ausgegraut. */}
+          {!istNativ() && <button type="button" className="info-knopf" aria-label={offenZumDruck ? `Drucken: ${offenZumDruck.name}` : "Drucken"} title={offenZumDruck ? `Drucken: ${offenZumDruck.name}` : "Drucken"} data-drucken disabled={!offenZumDruck || drucktGerade}
+            onClick={() => { const zi = offenZumDruck; if (!zi) return; setDrucktGerade(true); void drucken(zi).then((f) => { if (f) z.setMeldung({ text: f, art: "halt" }); }).finally(() => setDrucktGerade(false)); }}><Printer size={18}/></button>}
           <button type="button" className="info-knopf" aria-label="Aktualisieren" title="Aktualisieren: App neu laden (neueste Fassung). Die Sortierung bleibt gemerkt." data-aktualisieren onClick={() => void aktualisieren(!!z.fortschritt && z.fortschritt.phase !== "stand")}><RefreshCw size={18}/></button>
           <button type="button" className={`info-knopf ${seite === "landkarte" ? "aktiv" : ""}`} aria-label="Landkarte und Dashboard" title="Landkarte und Dashboard: was sortiert wurde, wohin es geht, wie die App arbeitet" onClick={() => gehe("landkarte")} data-landkarte-knopf><KarteSymbol size={18}/></button>
           <a className="info-knopf" href="discovery.html" aria-label="Discovery" title="Discovery: so wurde der Sortier-Kern trainiert – Test-Welten, Kugeln, Filme mit Ton" data-discovery-knopf><Telescope size={18}/></a>

@@ -272,3 +272,18 @@ a { color: var(--teal); }
 /* Wert von Hand: freies Feld und „Neue Kategorie erstellen“ (Klaus 16.11.). */
 .wert-feld { padding: 6px 8px; border-radius: 9px; border: 1px solid var(--line); font: inherit; min-width: 0; }
 .neue-kategorie { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+/* Drucken, was gerade offen ist: am Bildschirm unsichtbar, im Druck nur das Blatt (Bilder bzw. gezeichnete PDF-Seiten). */
+.info-knopf:disabled { opacity: .4; cursor: default; }
+.info-knopf:disabled:hover { border-color: #9eb8c8; color: var(--navy); background: #fff; }
+#druck-blatt { display: none; }
+@media print {
+  body.druckt > *:not(#druck-blatt) { display: none !important; }
+  body.druckt { background: #fff; margin: 0; }
+  #druck-blatt { display: block; }
+  #druck-blatt img { display: block; width: 100%; max-height: 100vh; object-fit: contain; break-after: page; page-break-after: always; }
+  #druck-blatt img:last-child { break-after: auto; page-break-after: auto; }
+  #druck-blatt pre { white-space: pre-wrap; font: 11pt/1.4 system-ui, sans-serif; margin: 0; }
+}
+/* Basic (Klaus 17.11.): das Zeichen im Kopf umgedreht wie das App-Symbol – blaues Zeichen, Verlauf von Blau (außen) nach Weiß (Mitte). */
+.brand-symbol.basic { color: #1c5f98; background: radial-gradient(circle at 50% 50%, #fff 0, #fff 34%, #bcd8ef 60%, #5a9bd4 80%, #1c5f98 100%); background-size: 128% 128%; background-position: center; }
