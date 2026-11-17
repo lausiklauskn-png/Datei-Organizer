@@ -13,6 +13,7 @@ import { deutsch, kurzfassung, INDEX_DATEI } from "../lib/index-format.ts";
 import { Ablaufbild, FesterBaum, Info, OrdnerBaum, Seitentitel, type Schritt } from "./ui.tsx";
 import { ausAuswahl, nativGemerkt, nativPlattform, nativVergessen, nativSpeichernMoeglich, nativWaehlen, nativWieder, nativerOrdner, ordnerWaehlen, ordnerWahlMoeglich, testOrdner, type GemerkterOrdner } from "./quellen.ts";
 import { heute, Ladebalken, type AppZustand, type FindenZiel, type SeitenId } from "./app.tsx";
+import { druckZielSetzen, druckZielWeg } from "./drucken.ts";
 import { fotoAufbereiten, scanDatei, scanFreigeben, scanSpeichern, type ScanSeite } from "./scan.ts";
 import { ARBEIT, arbeitAnzeige, arbeitFrei, arbeitMoeglich, leistungText, mbText, TEXT_IM_SPEICHER } from "./arbeit.ts";
 
@@ -409,6 +410,13 @@ function Steckbrief({ z, d }: { z: AppZustand; d: Datei }) {
   const [stift, setStift] = useState(false);
   const [gross, setGross] = useState(false);
   useEffect(() => { setBild(null); setPdf(null); setGross(false); }, [d.pfad]);
+  // Drucken, was gerade offen ist: der zuletzt geöffnete Steckbrief ist das Ziel des Drucker-Knopfs im Kopf.
+  const druckbar = !d.auffaellig && (d.art === "bild" || d.art === "pdf" || !!d.volltext);
+  useEffect(() => {
+    if (!druckbar) return;
+    druckZielSetzen({ pfad: d.pfad, name: d.name, art: d.art === "bild" || d.art === "pdf" ? d.art : "text", holen: () => z.original(d.pfad), text: d.volltext });
+    return () => druckZielWeg(d.pfad);
+  }, [d.pfad, d.name, d.art, d.volltext, druckbar, z.original]);
   const f = d.felder;
   const zeile = (name: string, w?: { wert: string; sicher: boolean; grund: string; quelle: string }, anzeige?: string) => w ? <><dt>{name}</dt><dd><span className="feld-wert">{anzeige ?? w.wert}{w.quelle === "du" ? <span className="badge du">von dir</span> : w.quelle === "gelernt" ? <span className="badge du">gelernt</span> : !w.sicher ? <span className="badge pruefen">unsicher</span> : null}</span><span className="grund">{w.grund}</span></dd></> : null;
   const oeffnen = async (anzeigen: boolean) => {

@@ -39,6 +39,12 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   `src/public/icon-pro-192.png` (byte-gleich mit dem bisherigen). Vorschau `docs/vorschau/symbol-basic-2026-11-17.png`. Das Zeichen im Kopf der
   Seite (`.brand-symbol`) ist unverändert. Ein schon installiertes Symbol auf dem Startbildschirm wechselt je nach Gerät erst nach Neuinstallieren.
 - **Drucken (Klaus 17.11. abends):** gedruckt werden soll vor allem **vom Handy** (Web-App am Handy), am PC über die Windows-Fassung; beides testen.
+  **Gebaut für die Web-App (Klaus' Ja 17.11. zur Vorschau `docs/vorschau/drucken-2026-11-17.png`):** der Drucker-Knopf im Kopf (`[data-drucken]`)
+  druckt die Datei des zuletzt geöffneten Steckbriefs (`src/drucken.ts`: `druckZielSetzen`, `drucken`); ohne offene Datei ist er ausgegraut. Foto als
+  Bild, PDF als gezeichnete Seiten (höchstens 40, `DRUCK_SEITEN`), sonst der erkannte Text – in einem eigenen Blatt der Seite (`#druck-blatt`,
+  `body.druckt`), weil ein PDF im neuen Fenster am Handy nicht verlässlich druckt. Den Drucker wählt das Druckfenster des Geräts. UI-Probe 149
+  (4 neu, Druckfenster im Test ersetzt). Am Handy mit echtem Drucker ungeprüft. Offen: Android-App (eigener Aufruf nötig), Windows; welche
+  „Notiz“ Klaus meinte. Recherche: Bluetooth aus dem Browser erreicht nur stromsparende Geräte, keine üblichen Drucker.
 - **Für APK/Windows offen (erst mit Klaus' Wort):** Android braucht dafür im FileProvider einen Pfad für das Kamerabild und die Abfrage
   `IMAGE_CAPTURE` im Manifest (`tools/native/test-native.mjs` prüft heute „nur update/“); **entschieden (Klaus 17.11.): Scans kommen in den Unterordner
   „Scans“ des gewählten Ordners** (heute schreibt die App dort nur den Index) und müssen später wieder herausgenommen und in ein Modul
