@@ -1,7 +1,7 @@
 import { innenKurz } from "../lib/innen.ts";
 import { ausZiehen } from "./quellen.ts";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Archive, Check, Download, File, FileImage, FileText, FolderOpen, FolderTree, HelpCircle, History, ListChecks, Mail, Pencil, Plus, Eye, RotateCcw, Search, Settings, Share2, Trash2, Upload, ShieldAlert, Smartphone, Monitor, Undo2, X } from "lucide-react";
+import { Archive, Camera, Check, Download, File, FileImage, FileText, FolderOpen, FolderTree, HelpCircle, History, ListChecks, Mail, Pencil, Plus, Eye, RotateCcw, Search, Settings, Share2, Trash2, Upload, ShieldAlert, Smartphone, Monitor, Undo2, X } from "lucide-react";
 import type { Datei, FeldName } from "../lib/typen.ts";
 import { STUFEN, offeneFelder, gesperrt, istUnsicher } from "../lib/siebe.ts";
 import { SICHTEN, baum, dateienUnter, suche, type BaumKnoten } from "../lib/sichten.ts";
@@ -13,6 +13,7 @@ import { deutsch, kurzfassung, INDEX_DATEI } from "../lib/index-format.ts";
 import { Ablaufbild, FesterBaum, Info, OrdnerBaum, Seitentitel, type Schritt } from "./ui.tsx";
 import { ausAuswahl, nativGemerkt, nativPlattform, nativVergessen, nativSpeichernMoeglich, nativWaehlen, nativWieder, nativerOrdner, ordnerWaehlen, ordnerWahlMoeglich, testOrdner, type GemerkterOrdner } from "./quellen.ts";
 import { heute, Ladebalken, type AppZustand, type FindenZiel, type SeitenId } from "./app.tsx";
+import { fotoAufbereiten, scanDatei, scanFreigeben, scanSpeichern, type ScanSeite } from "./scan.ts";
 import { ARBEIT, arbeitAnzeige, arbeitFrei, arbeitMoeglich, leistungText, mbText, TEXT_IM_SPEICHER } from "./arbeit.ts";
 
 export type P = { z: AppZustand; gehe: (s: SeitenId) => void; oeffne?: (sicht: string, knoten?: string) => void; ziel?: FindenZiel };
@@ -131,6 +132,19 @@ export function OrdnerSeite({ z, gehe }: P) {
   const [ziehtDrueber, setZiehtDrueber] = useState(false);
   // Einstellungen der Seite (Zahnrad): der Arbeitsordner (Klaus 16.11.). Fehlt er, klappt die Karte von selbst auf.
   const [einst, setEinst] = useState(false);
+  // Foto / Scan (Klaus 17.11.: zuerst nur in der Web-App „Basic“, nicht in der Android- und Windows-App): die Kamera des Geräts
+  // macht das Bild, die Seiten sammeln sich im Scan-Kasten, „Fertig“ übernimmt sie als ein Dokument.
+  const kamera = useRef<HTMLInputElement>(null);
+  const nurWeb = !nativPlattform() || nativPlattform() === "web";
+  const [scan, setScan] = useState<ScanSeite[]>([]);
+  const [scanKopie, setScanKopie] = useState(() => { try { return localStorage.getItem("do-scan-kopie") !== "nein"; } catch { return true; } });
+  const scanWeg = () => { scanFreigeben(scan); setScan([]); };
+  const scanFertig = () => los(async () => {
+    const f = scanDatei(scan);
+    if (scanKopie) scanSpeichern(f);
+    scanWeg();
+    await z.einlesenAus(ausAuswahl([f], "Scans"), z.dateien.length > 0);
+  });
   const zahlen = useMemo(() => ({
     gesamt: z.dateien.length, auff: z.dateien.filter((d) => d.auffaellig).length, dopp: z.dateien.filter((d) => d.doppeltVon).length, aehnl: z.dateien.filter((d) => d.aehnlich).length,
     offen: z.dateien.filter(offenBei).length, fertig: z.dateien.filter((d) => d.stufe >= 5 && !offenBei(d) && !gesperrt(d)).length,
@@ -162,6 +176,7 @@ export function OrdnerSeite({ z, gehe }: P) {
           <small>{z.ordnerName ? `Jetzt: ${z.ordnerName} · ${z.dateien.length} Dateien` : "Dateien und ganze Ordner – die Originale bleiben, wo sie sind"}</small></span>
       </button>
       <div className="ablage-wege" data-ablage-wege>
+        {nurWeb && <button type="button" className="text-link" disabled={laeuft} data-scan-knopf onClick={() => kamera.current?.click()}><Camera size={15}/>Foto / Scan</button>}
         <button type="button" className="text-link" disabled={laeuft} data-dateien-waehlen onClick={() => dateiWahl.current?.click()}><File size={15}/>Einzelne Dateien</button>
         <button type="button" className="text-link" disabled={laeuft} data-ordner-hochladen onClick={() => ordnerWahl.current?.click()}><FolderTree size={15}/>Ordner hochladen</button>
         <button type="button" className="text-link" disabled={laeuft} onClick={() => los(() => z.einlesenAus(testOrdner()))} data-testordner><Archive size={15}/>Testordner</button>
@@ -175,6 +190,22 @@ export function OrdnerSeite({ z, gehe }: P) {
       </div>}
       <input ref={dateiWahl} type="file" multiple hidden onChange={(e) => { const l = e.target.files; if (l?.length) void los(() => z.einlesenAus(ausAuswahl(l, "Ausgewählte Dateien"))); else z.setMeldung({ text: `Der Browser hat keine Dateien übergeben${z.ordnerName ? ` – angezeigt wird weiter „${z.ordnerName}“` : ""}. Bitte „Ordner am PC“ oder „Dateien wählen“ nehmen.`, art: "halt" }); e.target.value = ""; }}/>
       <input ref={ordnerWahl} type="file" multiple hidden {...{ webkitdirectory: "" }} onChange={(e) => { const l = e.target.files; if (l?.length) { const n = (l[0] as File & { webkitRelativePath?: string }).webkitRelativePath?.split("/")[0] || "Ordner"; void los(() => z.einlesenAus(ausAuswahl(l, n))); } else z.setMeldung({ text: `Der Browser hat keine Dateien übergeben${z.ordnerName ? ` – angezeigt wird weiter „${z.ordnerName}“` : ""}. Bitte „Ordner am PC“ oder „Dateien wählen“ nehmen.`, art: "halt" }); e.target.value = ""; }}/>
+      {nurWeb && <input ref={kamera} type="file" accept="image/*" capture="environment" hidden data-kamera-eingabe onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) void los(async () => { const s = await fotoAufbereiten(f); setScan((a) => [...a, s]); }); }}/>}
+      {scan.length > 0 && <div className="weiter-kasten scan-kasten" data-scan role="status">
+        <p><b>Scan: {scan.length === 1 ? "1 Seite" : `${scan.length} Seiten`}</b></p>
+        <div className="scan-seiten">
+          {scan.map((s, i) => <figure key={s.url} data-scan-seite>
+            <img src={s.url} alt={`Seite ${i + 1}`}/>
+            <figcaption>{i + 1}<button type="button" className="text-link" aria-label={`Seite ${i + 1} entfernen`} title="Seite entfernen" onClick={() => { URL.revokeObjectURL(s.url); setScan((a) => a.filter((x) => x !== s)); }}><X size={14}/></button></figcaption>
+          </figure>)}
+        </div>
+        <label className="scan-kopie"><input type="checkbox" checked={scanKopie} data-scan-kopie onChange={(e) => { setScanKopie(e.target.checked); try { localStorage.setItem("do-scan-kopie", e.target.checked ? "ja" : "nein"); } catch { /* egal */ } }}/> Kopie speichern</label>
+        <div className="button-row">
+          <button type="button" className="button primary" disabled={laeuft} data-scan-fertig onClick={() => void scanFertig()}><Check size={18}/>Fertig – übernehmen</button>
+          <button type="button" className="button" disabled={laeuft} data-scan-weitere onClick={() => kamera.current?.click()}><Camera size={18}/>Weitere Seite</button>
+          <button type="button" className="button" disabled={laeuft} data-scan-verwerfen onClick={scanWeg}>Verwerfen</button>
+        </div>
+      </div>}
       <Ladebalken f={z.fortschritt} anhalten={z.anhalten}/>
       {z.angefangen && !z.fortschritt && <div className="weiter-kasten" data-angefangen role="status">
         <p><b>Einlesen angefangen:</b> {z.angefangen.erledigt.length} von {z.angefangen.gesamt} Dateien aus „{z.angefangen.quelleName}“ gelesen ({new Date(z.angefangen.zeit).toLocaleString("de-DE", { dateStyle: "short", timeStyle: "short" })}).</p>

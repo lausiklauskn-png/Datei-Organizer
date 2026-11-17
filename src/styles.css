@@ -161,6 +161,11 @@ a { color: var(--teal); }
 .ablage-feld strong { font-weight: 800; }
 .ablage-feld small { color: #5d6b78; font-weight: 400; overflow-wrap: anywhere; }
 .ablage-wege { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 10px; }
+.scan-seiten { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; }
+.scan-seiten figure { margin: 0; flex: 0 0 auto; text-align: center; }
+.scan-seiten img { display: block; height: 120px; max-width: 160px; object-fit: contain; background: #fff; border: 1px solid var(--line); border-radius: 6px; }
+.scan-seiten figcaption { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: .85rem; }
+.scan-kopie { display: flex; align-items: center; gap: 8px; margin: 8px 0; }
 .card-heading.mit-knoepfen h2 { margin-right: auto; overflow-wrap: anywhere; }
 .einstellungen { margin-top: 14px; padding-top: 14px; border-top: 1px solid #d9e3ea; }
 .einstellungen h3 { margin: 0; font-size: 1rem; }
