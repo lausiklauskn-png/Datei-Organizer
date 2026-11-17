@@ -214,6 +214,15 @@ try {
     const breit = await page.evaluate(() => document.documentElement.scrollWidth);
     const zuBreit = breit > 361 ? await page.evaluate(() => [...document.querySelectorAll("body *")].filter((e) => e.getBoundingClientRect().right > 362).slice(-3).map((e) => `${e.tagName}.${e.className}`).join(", ")) : "";
     soll(`${s}: kein seitliches Scrollen`, breit <= 361, `${breit}px ${zuBreit}`);
+    if (s === "ordner") {
+      // Handy (Klaus 17.11.): Kopf höchstens zwei Zeilen – die runden Knöpfe stecken hinter dem Pfeil und klappen auf Tipp auf.
+      const hoch = await page.evaluate(() => document.querySelector(".site-header").getBoundingClientRect().height);
+      const zu = !(await page.locator("[data-kopf-knoepfe]").isVisible());
+      await page.locator("[data-mehr-knopf]").click();
+      const auf = await page.locator("[data-kopf-knoepfe] [data-drucken]").isVisible() && await page.locator("[data-kopf-knoepfe] [data-aktualisieren]").isVisible();
+      await page.locator("[data-mehr-knopf]").click();
+      soll("Handy: Kopf zwei Zeilen hoch, Knöpfe hinter dem Pfeil", hoch <= 125 && zu && auf && !(await page.locator("[data-kopf-knoepfe]").isVisible()), `${hoch}px zu=${zu} auf=${auf}`);
+    }
   }
   await page.goto(basis + "datenschutz.html");
   soll("Impressum & Datenschutz erreichbar", (await page.locator("h1").innerText()).includes("Impressum"));
@@ -340,7 +349,7 @@ try {
     soll("… und bleibt nach dem Neuladen leer", await page.locator("[data-ordner-pill]").count() === 0);
   } else soll("Knopf „Organizer leeren“ steht auf der Seite Familienakte", false);
   { const l = (await page.evaluate(() => sessionStorage.getItem("probe-lade") || "")).split(" "); soll("Ladebalken im Kopf lief beim Einlesen (durchsehen, dann Datei für Datei)", l.includes("suchen") && l.includes("lesen"), JSON.stringify([...new Set(l)])); }
-  soll("Web-App heißt „Datei-Organizer Basic“ (Kopf, Seitentitel), kein langer Text unter dem Namen", (await page.locator("[data-app-name]").innerText()) === "Datei-Organizer Basic" && (await page.title()) === "Datei-Organizer Basic" && await page.locator(".site-brand small").count() === 0);
+  soll("Web-App heißt „Datei-Organizer Basic“ (Kopf, Seitentitel), kein langer Text unter dem Namen", (await page.locator("[data-app-name]").innerText()).replace(/\s+/g, " ") === "Datei-Organizer Basic" && (await page.title()) === "Datei-Organizer Basic" && await page.locator(".site-brand small").count() === 0);
   // Datei-Organizer Pro (Android-App) gestellt: Capacitor-Brücke mit Update-Plugin DoUpdates. Kein echtes Android, kein echter Server.
   {
     const nctx = await browser.newContext({ viewport: { width: 400, height: 800 } });
@@ -356,7 +365,7 @@ try {
     const np = await nctx.newPage();
     const nfehler = []; np.on("pageerror", (e) => nfehler.push(String(e)));
     await np.goto(basis + "#hilfe");
-    soll("App heißt „Datei-Organizer Pro“ (Kopf, Seitentitel, Fuß)", (await np.locator("[data-app-name]").innerText()) === "Datei-Organizer Pro" && (await np.title()) === "Datei-Organizer Pro" && (await np.locator(".footer-meta").innerText()).includes("Datei-Organizer Pro"));
+    soll("App heißt „Datei-Organizer Pro“ (Kopf, Seitentitel, Fuß)", (await np.locator("[data-app-name]").innerText()).replace(/\s+/g, " ") === "Datei-Organizer Pro" && (await np.title()) === "Datei-Organizer Pro" && (await np.locator(".footer-meta").innerText()).includes("Datei-Organizer Pro"));
     soll("App: kein Service Worker angemeldet", await np.evaluate(async () => !(await navigator.serviceWorker?.getRegistration())));
     await np.waitForSelector("[data-update-fahne][data-nativ]", { timeout: 6000 }).catch(() => {});
     soll("App: still geprüft, Fähnchen „Update 9.9.9“ erscheint von selbst", ((await np.locator("[data-update-fahne]").innerText().catch(() => "")) || "").includes("9.9.9"));

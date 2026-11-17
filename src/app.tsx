@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Archive, FolderOpen, FolderTree, HelpCircle, History, ListChecks, Download, Map as KarteSymbol, Printer, RefreshCw, Search, Telescope } from "lucide-react";
+import { Archive, ChevronDown, FolderOpen, FolderTree, HelpCircle, History, ListChecks, Download, Map as KarteSymbol, Printer, RefreshCw, Search, Telescope } from "lucide-react";
 import type { Datei, FeldName, Korrektur, Lernregel } from "../lib/typen.ts";
 import { einlesen, doppelteMarkieren } from "../lib/einlesen.ts";
 import { aehnlicheFinden } from "../lib/aehnlich.ts";
@@ -19,7 +19,7 @@ import { erkenneArt } from "../lib/dateiart.ts";
 import { ArbeitSpeicher, arbeitAnzeige, arbeitFehler, arbeitFrei, arbeitGemerkt, arbeitMoeglich, arbeitVergessen, arbeitWaehlen, blockBedarf, leistungMessen, leistungText, mbText, schlank, speicherReicht, type Arbeitsordner, type Leistung } from "./arbeit.ts";
 import { OrdnerSeite, SortierenSeite, FindenSeite, VerlaufSeite, AkteSeite, HilfeSeite } from "./seiten.tsx";
 import { LandkarteSeite } from "./landkarte.tsx";
-import { APP_NAME, direktLaden, istNativ, nativeUpdates, stillPruefen } from "./nativ.ts";
+import { APP_NAME, APP_VARIANTE, direktLaden, istNativ, nativeUpdates, stillPruefen } from "./nativ.ts";
 
 export const FASSUNG = "0.4.14";
 // Ladeanzeige: „suchen“ = Ordner wird durchgesehen (Zahl noch unbekannt), „lesen“ = Datei für Datei, „stand“ = gemerkter Stand beim Start.
@@ -537,15 +537,17 @@ export function App() {
   const gehe = useCallback((s: SeitenId) => { location.hash = s; setSeite(s); window.scrollTo({ top: 0 }); }, []);
   const offen = useMemo(() => z.dateien.filter((d) => offeneFelder(d).length > 0).length, [z.dateien]);
   const [ziel, setZiel] = useState<FindenZiel>(null);
+  // Handy (Klaus 17.11.): die runden Knöpfe des Kopfs stecken hinter einem Pfeil, damit der Kopf zwei Zeilen hoch bleibt.
+  const [mehr, setMehr] = useState(false);
   const oeffne = useCallback((sicht: string, knoten?: string) => { setZiel({ sicht, knoten, nr: Date.now() }); gehe("finden"); }, [gehe]);
   const props = { z, gehe, oeffne, ziel };
   return <div className="app-shell">
     <header className="site-header">
       <div className="masthead">
-        <div className="marke">
+        <div className="marke" data-variante={APP_VARIANTE}>
         <button type="button" className="site-brand" onClick={() => gehe("ordner")} aria-label={`${APP_NAME} – zum Ordner`}>
           <span className="brand-symbol"><FolderTree size={24}/></span>
-          <span><strong data-app-name>{APP_NAME}</strong></span>
+          <span><strong data-app-name>Datei-Organizer <span className="variante">{APP_VARIANTE}</span></strong></span>
         </button>
         {/* Klaus 16.11.: Fassung (Link fürs Update) und Fähnchen beim Namen; seit 17.11. flach unter dem Namen (`.marke`). */}
         <div className="fassung-platz" data-fassung-platz>
@@ -556,7 +558,7 @@ export function App() {
           {neueFassung && <button type="button" className="update-fahne" data-update-fahne title={`Fassung ${neueFassung} steht bereit. Tippen aktualisiert; die Sortierung bleibt gemerkt.`} onClick={() => void aktualisieren(!!z.fortschritt && z.fortschritt.phase !== "stand")}><RefreshCw size={14}/>Update {neueFassung}</button>}
         </div>
         </div>
-        <div className="header-actions">
+        <div className={`header-actions ${mehr ? "offen" : ""}`} data-kopf-knoepfe onClick={() => setMehr(false)}>
           {(() => { const pille = z.fortschritt && z.fortschritt.phase !== "stand" ? "Wird geladen …" : z.ordnerName ? `${z.ordnerName} · ${z.dateien.length}` : "Kein Ordner";
             // aria-label = sichtbarer Text: Android liest sonst nur den Tooltip (Name ohne Anzahl) – Vorleser und Emulator-Probe der APK.
             // Ohne Ordner keine Pille (Klaus 17.11.: „man merkt ja, ob man keinen Ordner drin hat“).
@@ -568,6 +570,7 @@ export function App() {
           <a className="info-knopf" href="discovery.html" aria-label="Discovery" title="Discovery: so wurde der Sortier-Kern trainiert – Test-Welten, Kugeln, Filme mit Ton" data-discovery-knopf><Telescope size={18}/></a>
           <button type="button" className="info-knopf" aria-label="Suchen" onClick={() => gehe("finden")}><Search size={18}/></button>
         </div>
+        <button type="button" className={`info-knopf mehr-knopf ${mehr ? "aktiv" : ""}`} aria-label="Weitere Knöpfe" aria-expanded={mehr} title="Weitere Knöpfe" data-mehr-knopf onClick={() => setMehr(!mehr)}><ChevronDown size={18}/></button>
       </div>
       <nav className="main-navigation" aria-label="Bereiche">
         {SEITEN.map((s) => <button key={s.id} type="button" className={seite === s.id ? "active" : ""} aria-current={seite === s.id ? "page" : undefined} onClick={() => gehe(s.id)} data-nav={s.id}>

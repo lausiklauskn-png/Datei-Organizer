@@ -124,7 +124,7 @@ console.log('App-Paket im Browser (Wurzel wie https://localhost/, Capacitor gest
       const page = await ctx.newPage(); const fehler = []; page.on('pageerror', (e) => fehler.push(String(e)));
       await page.goto(`http://127.0.0.1:${srv.address().port}/`);
       await page.waitForSelector('[data-app-name]', { timeout: 15000 }).catch(() => {});
-      soll('App startet aus dem Paket an der Wurzel und heißt „Datei-Organizer Pro“', (await page.locator('[data-app-name]').innerText().catch(() => '')) === 'Datei-Organizer Pro');
+      soll('App startet aus dem Paket an der Wurzel und heißt „Datei-Organizer Pro“', (await page.locator('[data-app-name]').innerText().catch(() => '')).replace(/\s+/g, ' ') === 'Datei-Organizer Pro');
       await page.locator('[data-testordner]').click();
       await page.waitForFunction(() => /· \d+/.test(document.querySelector('[data-ordner-pill]')?.textContent || ''), null, { timeout: 60000 }).catch(() => {});
       const pill = await page.locator('[data-ordner-pill]').innerText().catch(() => '');

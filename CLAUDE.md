@@ -23,8 +23,10 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   Druckfenster des Geräts – der eigentliche Drucker-/Scanner-Auftrag kommt als Brief für die nächste Sitzung).
 - **Kopf gekürzt (Klaus 17.11.: der Text unter dem Namen ist „viel zu lang“, nur die Nummer als Knopf, „V“ davor):** unter dem Namen steht
   nichts mehr; daneben der Knopf „V 0.4.14“ (`[data-fassung-knopf]`, in der Web-App = Aktualisieren, in der App wie bisher Update suchen), das
-  rote Fähnchen kommt daneben. Knopf und Fähnchen stehen flach unter dem Namen (`.marke`). Am Handy (bis 480 px) rutschen die Knöpfe in
-  eine zweite Zeile und die Ordner-Pille entfällt ganz (Klaus: „wir sehen ja, ob ein Ordner verbunden ist“; am Tablet/PC bleibt sie mit Ordner). Das gilt auch für APK/Windows ab der nächsten Ausgabe (gleicher Kopf). UI-Probe 141.
+  rote Fähnchen kommt daneben. „Basic“/„Pro“ steht in der zweiten Zeile unter „Datei-Organizer“, Knopf und Fähnchen flach daneben
+  (`.marke`, `.variante`). Am Handy (bis 480 px) stecken die runden Knöpfe hinter einem Pfeil (`[data-mehr-knopf]` klappt `[data-kopf-knoepfe]`
+  auf), damit der Kopf zwei Zeilen hoch bleibt (Name, Leiste); die Ordner-Pille entfällt dort ganz (Klaus: „wir sehen ja, ob ein Ordner
+  verbunden ist“; am Tablet/PC bleibt sie mit Ordner). Das gilt auch für APK/Windows ab der nächsten Ausgabe (gleicher Kopf). UI-Probe 141.
 - **Für APK/Windows offen (erst mit Klaus' Wort):** Android braucht dafür im FileProvider einen Pfad für das Kamerabild und die Abfrage
   `IMAGE_CAPTURE` im Manifest (`tools/native/test-native.mjs` prüft heute „nur update/“); zu entscheiden ist, ob Scans in den gewählten Ordner
   geschrieben werden (heute schreibt die App dort nur den Index).
