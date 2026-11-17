@@ -285,3 +285,5 @@ a { color: var(--teal); }
   #druck-blatt img:last-child { break-after: auto; page-break-after: auto; }
   #druck-blatt pre { white-space: pre-wrap; font: 11pt/1.4 system-ui, sans-serif; margin: 0; }
 }
+/* Basic (Klaus 17.11.): das Zeichen im Kopf umgedreht wie das App-Symbol – blaues Zeichen, Verlauf von Blau (außen) nach Weiß (Mitte). */
+.brand-symbol.basic { color: #1c5f98; background: radial-gradient(circle at 50% 50%, #fff 0, #fff 34%, #bcd8ef 60%, #5a9bd4 80%, #1c5f98 100%); background-size: 128% 128%; background-position: center; }

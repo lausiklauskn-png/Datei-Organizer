@@ -37,7 +37,7 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   trägt das blaue Zeichen auf einem Verlauf von Blau (außen) nach Weiß (nur in der Mitte hinter dem Zeichen; Klaus: „kräftiger, deutlicher“) (`symbolSvg(form, groesse, "basic")` in `scripts/symbol-bauen.mjs`;
   `icon-192/512`, `icon-maskable-512`, `favicon.svg`). Pro bleibt weiß auf Blau: Android `mipmap-*`, Windows nimmt jetzt
   `src/public/icon-pro-192.png` (byte-gleich mit dem bisherigen). Vorschau `docs/vorschau/symbol-basic-2026-11-17.png`. Das Zeichen im Kopf der
-  Seite (`.brand-symbol`) ist unverändert. Ein schon installiertes Symbol auf dem Startbildschirm wechselt je nach Gerät erst nach Neuinstallieren.
+  Seite ist in Basic ebenso umgedreht (`.brand-symbol.basic`, Klaus' Ja 17.11.), in Pro unverändert. Ein schon installiertes Symbol auf dem Startbildschirm wechselt je nach Gerät erst nach Neuinstallieren.
 - **Drucken (Klaus 17.11. abends):** gedruckt werden soll vor allem **vom Handy** (Web-App am Handy), am PC über die Windows-Fassung; beides testen.
   **Gebaut für die Web-App (Klaus' Ja 17.11. zur Vorschau `docs/vorschau/drucken-2026-11-17.png`):** der Drucker-Knopf im Kopf (`[data-drucken]`)
   druckt die Datei des zuletzt geöffneten Steckbriefs (`src/drucken.ts`: `druckZielSetzen`, `drucken`); ohne offene Datei ist er ausgegraut. Foto als

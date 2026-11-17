@@ -566,7 +566,7 @@ export function App() {
       <div className="masthead">
         <div className="marke" data-variante={APP_VARIANTE}>
         <button type="button" className="site-brand" onClick={() => gehe("ordner")} aria-label={`${APP_NAME} – zum Ordner`}>
-          <span className="brand-symbol"><FolderTree size={24}/></span>
+          <span className={`brand-symbol ${APP_VARIANTE === "Basic" ? "basic" : ""}`} data-kopf-symbol={APP_VARIANTE}><FolderTree size={24}/></span>
           <span><strong data-app-name>Datei-Organizer <span className="variante">{APP_VARIANTE}</span></strong></span>
         </button>
         {/* Klaus 16.11.: Fassung (Link fürs Update) und Fähnchen beim Namen; seit 17.11. flach unter dem Namen (`.marke`). */}
