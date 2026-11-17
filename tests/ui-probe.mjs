@@ -653,6 +653,26 @@ try {
     await page.waitForSelector("[data-scan-seite]", { timeout: 10000 }).catch(() => {});
     await page.locator("[data-scan-verwerfen]").click();
     soll("Scan: Verwerfen lässt den Bestand, wie er ist", await page.locator("[data-scan]").count() === 0 && await zahl() === davor + 1);
+    // Scans in den Unterordner „Scans“ (Klaus 17.11.): mit „Ordner am PC“ wird der Scan dorthin geschrieben, ohne Kopie in Downloads.
+    await page.evaluate(async () => {
+      const w = await navigator.storage.getDirectory(); try { await w.removeEntry("Belege", { recursive: true }); } catch { /* neu */ }
+      const o = await w.getDirectoryHandle("Belege", { create: true });
+      const f = await (await o.getFileHandle("notiz.txt", { create: true })).createWritable(); await f.write("Notiz zum Einkauf am 3.11.2026"); await f.close();
+      window.showDirectoryPicker = async () => o;
+    });
+    await page.locator("[data-pc-ordner]").click();
+    await page.waitForFunction(() => /Ordner: Belege/.test(document.querySelector("[data-ordner-pfad]")?.textContent || ""), null, { timeout: 20000 }).catch(() => {});
+    await page.setInputFiles("[data-kamera-eingabe]", { name: "kamera4.png", mimeType: "image/png", buffer: await foto(["Kassenbon Markt Muster", "Summe 12,34 EUR"]) });
+    await page.waitForSelector("[data-scan-seite]", { timeout: 10000 }).catch(() => {});
+    soll("Scans-Ordner: der Kasten nennt das Ziel statt „Kopie speichern“", (await page.locator("[data-scan-ziel]").textContent().catch(() => "") || "").trim() === "Belege/Scans" && await page.locator("[data-scan-kopie]").count() === 0);
+    const [dl2] = await Promise.all([page.waitForEvent("download", { timeout: 4000 }).catch(() => null), page.locator("[data-scan-fertig]").click()]);
+    await page.waitForFunction(() => /Scan gespeichert/.test(document.querySelector("[data-meldung]")?.textContent || document.body.textContent || ""), null, { timeout: 120000 }).catch(() => {});
+    await page.waitForTimeout(900);
+    const imOrdner = await page.evaluate(async () => { const a = []; try { const d = await (await (await navigator.storage.getDirectory()).getDirectoryHandle("Belege")).getDirectoryHandle("Scans"); for await (const e of d.values()) a.push(`${e.name}:${(await e.getFile()).size > 1000}`); } catch { /* fehlt */ } return a; });
+    const st2 = await page.evaluate(() => new Promise((ok) => { const r = indexedDB.open("DateiOrganizer1", 1); r.onsuccess = () => { const q = r.result.transaction("kv").objectStore("kv").get("zustand"); q.onsuccess = () => ok(q.result); }; r.onerror = () => ok(null); }));
+    const sc2 = st2?.dateien?.find((d) => /^Scans\/Scan_.*\.jpg$/.test(d.pfad));
+    soll("Scans-Ordner: der Scan liegt als JPG in „Belege/Scans“, ohne Download", imOrdner.length === 1 && /^Scan_\d{4}-\d\d-\d\d_\d\d-\d\d-\d\d\.jpg:true$/.test(imOrdner[0]) && !dl2, `${JSON.stringify(imOrdner)} · Download ${dl2?.suggestedFilename() || "keiner"}`);
+    soll("Scans-Ordner: steht mit dem Pfad „Scans/…“ im Bestand neben der Datei des Ordners, Text gelesen", !!sc2 && st2.dateien.length === 2 && /Kassenbon/i.test(sc2.volltext || ""), `${st2?.dateien?.map((d) => d.pfad).join(", ")} · ${JSON.stringify((sc2?.volltext || "").slice(0, 80))}`);
   }
   soll("Keine Fehler in der Konsole", fehler.length === 0, fehler.slice(0, 3).join(" | "));
 } finally {

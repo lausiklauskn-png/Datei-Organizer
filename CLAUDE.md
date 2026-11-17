@@ -27,6 +27,13 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   (`.marke`, `.variante`). Am Handy (bis 480 px) stecken die runden Knöpfe hinter einem Pfeil (`[data-mehr-knopf]` klappt `[data-kopf-knoepfe]`
   auf), damit der Kopf zwei Zeilen hoch bleibt (Name, Leiste); die Ordner-Pille entfällt dort ganz (Klaus: „wir sehen ja, ob ein Ordner
   verbunden ist“; am Tablet/PC bleibt sie mit Ordner). Das gilt auch für APK/Windows ab der nächsten Ausgabe (gleicher Kopf). UI-Probe 141.
+- **Scans in den Unterordner „Scans“ (Klaus 17.11., entschieden; gebaut 17.11. nur für „Ordner am PC“ in der Web-App):** ist der gewählte Ordner
+  schreibbar, legt „Fertig – übernehmen“ den Scan als gewöhnliche Datei in `<Ordner>/Scans/` (`ablegen` in `src/quellen.ts`, `SCAN_ORDNER`,
+  überschreibt nie; `scanAblegen`/`scanZiel` in `src/app.tsx`) und nimmt ihn mit dem Pfad `Scans/…` in den Bestand; der Scan-Kasten nennt dann
+  das Ziel (`[data-scan-ziel]`) statt „Kopie speichern“. Ohne schreibbaren Ordner (Handy, Dateiauswahl) bleibt es bei der Kopie in Downloads.
+  UI-Probe 145 (3 neu, Ordner im Test = privater Browser-Speicher). An einem echten PC-Ordner ungeprüft. **Am Handy ändert das nichts** – dort
+  kommt der Unterordner erst mit Foto / Scan in der Android-App (Klaus' Wort offen).
+- **Drucken (Klaus 17.11. abends):** gedruckt werden soll vor allem **vom Handy** (Web-App am Handy), am PC über die Windows-Fassung; beides testen.
 - **Für APK/Windows offen (erst mit Klaus' Wort):** Android braucht dafür im FileProvider einen Pfad für das Kamerabild und die Abfrage
   `IMAGE_CAPTURE` im Manifest (`tools/native/test-native.mjs` prüft heute „nur update/“); **entschieden (Klaus 17.11.): Scans kommen in den Unterordner
   „Scans“ des gewählten Ordners** (heute schreibt die App dort nur den Index) und müssen später wieder herausgenommen und in ein Modul

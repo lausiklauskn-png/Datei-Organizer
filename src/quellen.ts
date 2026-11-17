@@ -1,6 +1,7 @@
 /**
  * Woher die Dateien kommen. Die Originale bleiben, wo sie sind – gelesen wird nur; zurückgeschrieben wird
- * höchstens organizer-index.json (und nur, wo der Ordner das erlaubt).
+ * höchstens organizer-index.json (und nur, wo der Ordner das erlaubt) – und, seit Klaus' Entscheidung vom 17.11., ein Scan aus
+ * „Foto / Scan“ in den Unterordner „Scans“ (ablegen; bisher nur „Ordner am PC“).
  *
  * 1 Ordner am PC (Chrome/Edge): Ordnerwahl des Browsers, lesen und schreiben.
  * 2 Datei-Organizer Pro bzw. Familienakte Pro (Android, Windows): der Ordnerzugriff der App (Plugin „FamilyFolders“, Android-Ordnerwahl
@@ -26,6 +27,8 @@ export type Quelle = {
   dateien: () => Promise<QuellDatei[]>;
   /** Index in den Ordner schreiben; fehlt, wenn der Ordner nur gelesen werden kann. */
   schreiben?: (name: string, text: string) => Promise<void>;
+  /** Eine neue Datei in einen Unterordner legen (Scans); überschreibt nie, bei gleichem Namen kommt „_2“ … dazu. Fehlt, wo das nicht geht. */
+  ablegen?: (ordner: string, datei: File) => Promise<QuellDatei>;
   /** Vorhandenen Index lesen, falls da. */
   indexLesen?: () => Promise<string | null>;
   /** Ordner am PC: das Handle zum Merken (Weitermachen nach Abbruch ohne Auswahl-Fenster). */
@@ -39,8 +42,8 @@ import { ueberspringen as UEBERSPRINGEN } from "../lib/einlesen.ts";
 import { sha256Stueckweise } from "./sha256.ts";
 
 // ---------- 1 Ordner am PC ----------
-type DirHandle = { name: string; kind: "directory"; values: () => AsyncIterable<FileHandle | DirHandle>; getFileHandle: (n: string, o?: { create?: boolean }) => Promise<FileHandle>; queryPermission?: (o: { mode: string }) => Promise<string>; requestPermission?: (o: { mode: string }) => Promise<string> };
-type FileHandle = { name: string; kind: "file"; getFile: () => Promise<File>; createWritable: () => Promise<{ write: (d: string) => Promise<void>; close: () => Promise<void> }> };
+type DirHandle = { name: string; kind: "directory"; values: () => AsyncIterable<FileHandle | DirHandle>; getFileHandle: (n: string, o?: { create?: boolean }) => Promise<FileHandle>; getDirectoryHandle: (n: string, o?: { create?: boolean }) => Promise<DirHandle>; queryPermission?: (o: { mode: string }) => Promise<string>; requestPermission?: (o: { mode: string }) => Promise<string> };
+type FileHandle = { name: string; kind: "file"; getFile: () => Promise<File>; createWritable: () => Promise<{ write: (d: string | Blob) => Promise<void>; close: () => Promise<void> }> };
 type FensterMitOrdner = Window & { showDirectoryPicker?: (o?: { mode?: string; id?: string }) => Promise<DirHandle> };
 
 export const ordnerWahlMoeglich = () => typeof window !== "undefined" && typeof (window as FensterMitOrdner).showDirectoryPicker === "function";
@@ -70,9 +73,20 @@ export function ausHandle(h: DirHandle): Quelle {
       return aus.sort((a, b) => a.pfad.localeCompare(b.pfad, "de"));
     },
     async schreiben(name, text) { const f = await h.getFileHandle(name, { create: true }); const w = await f.createWritable(); await w.write(text); await w.close(); },
+    async ablegen(ordner, datei) {
+      const d = await h.getDirectoryHandle(ordner, { create: true });
+      const punkt = datei.name.lastIndexOf("."), stamm = punkt > 0 ? datei.name.slice(0, punkt) : datei.name, endung = punkt > 0 ? datei.name.slice(punkt) : "";
+      let name = datei.name;
+      for (let i = 2; i < 1000; i++) { try { await d.getFileHandle(name); name = `${stamm}_${i}${endung}`; } catch { break; } }
+      const f = await d.getFileHandle(name, { create: true }); const w = await f.createWritable(); await w.write(datei); await w.close();
+      return ausFile(`${ordner}/${name}`, await f.getFile());
+    },
     async indexLesen() { try { return await (await (await h.getFileHandle(INDEX_NAME)).getFile()).text(); } catch { return null; } },
   };
 }
+
+/** Unterordner des gewählten Ordners, in den Scans aus „Foto / Scan“ geschrieben werden (Klaus 17.11.). */
+export const SCAN_ORDNER = "Scans";
 
 export async function erlaubnisPruefen(h: DirHandle): Promise<boolean> {
   try {

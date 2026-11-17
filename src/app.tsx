@@ -12,7 +12,7 @@ import { korrigieren as korrigiereDatei, lernen, regelnAufAlle } from "../lib/le
 import { archivnummernVergeben } from "../lib/archivnummer.ts";
 import { indexLesen, organizerIndex, INDEX_DATEI } from "../lib/index-format.ts";
 import { pdfLeser } from "./pdf.ts";
-import { ausHandle, eingangAbholen, erlaubnisPruefen, herunterladen, nativerEingang, nativGemerkt, nativSpeichern, nativWieder, testOrdner, type Quelle, type QuellDatei } from "./quellen.ts";
+import { ausHandle, eingangAbholen, erlaubnisPruefen, herunterladen, nativerEingang, ordnerWahlMoeglich, SCAN_ORDNER, nativGemerkt, nativSpeichern, nativWieder, testOrdner, type Quelle, type QuellDatei } from "./quellen.ts";
 import { laden, laufLaden, laufLoeschen, laufNeuBeginnen, laufSpeichern, loeschen, ordnerHolen, ordnerMerken, speichern } from "./zustand.ts";
 import { fortsetzen, passt, schluessel, type Lauf } from "./lauf.ts";
 import { erkenneArt } from "../lib/dateiart.ts";
@@ -308,6 +308,24 @@ function useOrganizer() {
     return true;
   }, [einlesenAus]);
 
+  // Foto / Scan: der fertige Scan kommt als gewöhnliche Datei in den Unterordner „Scans“ des gewählten Ordners (Klaus 17.11.) und
+  // zum Bestand dazu. Geht nur, wo der Ordner schreibbar ist (bisher „Ordner am PC“); sonst false – dann bleibt es bei der Kopie.
+  const scanZiel = quelle?.ablegen ? `${quelle.name}/${SCAN_ORDNER}` : !quelle && quelleArt === "ordner" && ordnerName && ordnerWahlMoeglich() ? `${ordnerName}/${SCAN_ORDNER}` : "";
+  const scanAblegen = useCallback(async (f: File): Promise<boolean> => {
+    let q = quelle?.ablegen ? quelle : null;
+    if (!q && !quelle && quelleArt === "ordner") {
+      // Nach einem Neustart: den gemerkten Ordner still wieder öffnen (wie beim Ansehen des Originals).
+      const h = await ordnerHolen();
+      if (h && (await erlaubnisPruefen(h as never))) { const k = ausHandle(h as never); if (k.name === ordnerName) q = k; }
+    }
+    if (!q?.ablegen) return false;
+    let qd: QuellDatei;
+    try { qd = await q.ablegen(SCAN_ORDNER, f); } catch { return false; }
+    await einlesenAus({ art: "auswahl", name: SCAN_ORDNER, dateien: async () => [qd] }, true);
+    setMeldung({ text: `Scan gespeichert: ${q.name}/${qd.pfad}` });
+    return true;
+  }, [quelle, quelleArt, ordnerName, einlesenAus]);
+
   const naechstes = useCallback((bis?: number) => {
     let s = stufe, d = dateien;
     const ziel = bis ?? Math.min(5, stufe + 1);
@@ -448,7 +466,7 @@ function useOrganizer() {
     setMeldung({ text: `${was || (n === 1 ? "1 Datei" : `${n} Dateien`)} aus dem Organizer genommen. ${n === 1 ? "Das Original ist" : "Die Originale sind"} unverändert. „Zurück“ auf der Seite Sortieren holt sie wieder.` });
   }, [dateien, stufe]);
 
-  return { dateien, stufe, verlauf, regeln, ordnerName, quelleArt, quelle, meldung, setMeldung, fortschritt, einlesenAus, angefangen, anhalten, weitermachen, laufVerwerfen, leistung, arbeit, arbeitFehlt, arbeitEinrichten, arbeitAus, pcOrdnerWieder, naechstes, zurueck, aendern, rueckgaengig, nummern, indexSichern, indexText, original, neuBeginnen, leeren, entfernen, behalten, ordnerMerken, kannZurueck: () => stapel.current.length > 0 };
+  return { dateien, stufe, verlauf, regeln, ordnerName, quelleArt, quelle, meldung, setMeldung, fortschritt, einlesenAus, scanZiel, scanAblegen, angefangen, anhalten, weitermachen, laufVerwerfen, leistung, arbeit, arbeitFehlt, arbeitEinrichten, arbeitAus, pcOrdnerWieder, naechstes, zurueck, aendern, rueckgaengig, nummern, indexSichern, indexText, original, neuBeginnen, leeren, entfernen, behalten, ordnerMerken, kannZurueck: () => stapel.current.length > 0 };
 }
 
 async function einlesenTeile(bytes: Uint8Array, pfad: string) {

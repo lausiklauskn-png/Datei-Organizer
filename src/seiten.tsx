@@ -141,8 +141,10 @@ export function OrdnerSeite({ z, gehe }: P) {
   const scanWeg = () => { scanFreigeben(scan); setScan([]); };
   const scanFertig = () => los(async () => {
     const f = scanDatei(scan);
-    if (scanKopie) scanSpeichern(f);
     scanWeg();
+    // Schreibbarer Ordner: der Scan liegt danach in dessen Unterordner „Scans“. Sonst (oder wenn das Schreiben scheitert) die Kopie.
+    if (z.scanZiel && await z.scanAblegen(f)) return;
+    if (scanKopie || z.scanZiel) scanSpeichern(f);
     await z.einlesenAus(ausAuswahl([f], "Scans"), z.dateien.length > 0);
   });
   const zahlen = useMemo(() => ({
@@ -199,7 +201,7 @@ export function OrdnerSeite({ z, gehe }: P) {
             <figcaption>{i + 1}<button type="button" className="text-link" aria-label={`Seite ${i + 1} entfernen`} title="Seite entfernen" onClick={() => { URL.revokeObjectURL(s.url); setScan((a) => a.filter((x) => x !== s)); }}><X size={14}/></button></figcaption>
           </figure>)}
         </div>
-        <label className="scan-kopie"><input type="checkbox" checked={scanKopie} data-scan-kopie onChange={(e) => { setScanKopie(e.target.checked); try { localStorage.setItem("do-scan-kopie", e.target.checked ? "ja" : "nein"); } catch { /* egal */ } }}/> Kopie speichern</label>
+        {z.scanZiel ? <p className="leise" data-scan-ziel><FolderOpen size={15}/> {z.scanZiel}</p> : <label className="scan-kopie"><input type="checkbox" checked={scanKopie} data-scan-kopie onChange={(e) => { setScanKopie(e.target.checked); try { localStorage.setItem("do-scan-kopie", e.target.checked ? "ja" : "nein"); } catch { /* egal */ } }}/> Kopie speichern</label>}
         <div className="button-row">
           <button type="button" className="button primary" disabled={laeuft} data-scan-fertig onClick={() => void scanFertig()}><Check size={18}/>Fertig – übernehmen</button>
           <button type="button" className="button" disabled={laeuft} data-scan-weitere onClick={() => kamera.current?.click()}><Camera size={18}/>Weitere Seite</button>
