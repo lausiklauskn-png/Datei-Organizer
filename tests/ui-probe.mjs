@@ -616,6 +616,35 @@ try {
       soll("D: zu wenig frei im Arbeitsordner → hält vor dem Block an, nennt frei und gebraucht", /Zu wenig Speicher im Arbeitsordner \(SD-Karte\/Datei-Organizer-Arbeit\): frei 10 MB, für den nächsten Block gebraucht 50 MB\. 0 von 2/.test(m), m);
       await c.close(); }
   }
+  // Foto / Scan (Klaus 17.11., nur Web-App): zwei Fotos über die Kamera-Eingabe → ein PDF, das die Texterkennung liest; Kopie in Downloads.
+  { await page.setViewportSize({ width: 1280, height: 900 }); await page.goto(basis + "#ordner"); await page.waitForSelector("[data-scan-knopf]", { timeout: 5000 }).catch(() => {});
+    const zahl = async () => Number(((await page.locator("[data-ordner-pill]").innerText()).match(/· (\d+)/) || [])[1] || 0);
+    const davor = await zahl();
+    const foto = async (zeilen) => Buffer.from(await page.evaluate(async (zeilen) => {
+      const c = document.createElement("canvas"); c.width = 1400; c.height = 1900; const g = c.getContext("2d");
+      g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height); g.fillStyle = "#000"; g.font = "bold 54px Arial";
+      zeilen.forEach((z, i) => g.fillText(z, 60, 160 + i * 130));
+      return (await new Promise((ok) => c.toBlob(ok, "image/png")).then((b) => b.arrayBuffer()).then((a) => btoa(String.fromCharCode(...new Uint8Array(a)))));
+    }, zeilen), "base64");
+    soll("Scan: Knopf „Foto / Scan“ mit Kamera-Eingabe (Bild, Rückkamera)", await page.locator("[data-scan-knopf]").count() === 1 && await page.locator("[data-kamera-eingabe]").getAttribute("capture") === "environment");
+    await page.setInputFiles("[data-kamera-eingabe]", { name: "kamera1.png", mimeType: "image/png", buffer: await foto(["Stadtwerke Musterstadt GmbH", "Rechnung Nummer 5822", "Betrag zahlbar bis 20.12.2026"]) });
+    await page.waitForSelector("[data-scan-seite]", { timeout: 10000 }).catch(() => {});
+    await page.setInputFiles("[data-kamera-eingabe]", { name: "kamera2.png", mimeType: "image/png", buffer: await foto(["Seite zwei der Rechnung", "Zahlungsbedingungen und Hinweise"]) });
+    await page.waitForFunction(() => document.querySelectorAll("[data-scan-seite]").length === 2, null, { timeout: 10000 }).catch(() => {});
+    soll("Scan: zwei Seiten gesammelt, Bestand noch unverändert", await page.locator("[data-scan-seite]").count() === 2 && await zahl() === davor);
+    const [dl] = await Promise.all([page.waitForEvent("download", { timeout: 10000 }).catch(() => null), page.locator("[data-scan-fertig]").click()]);
+    soll("Scan: Kopie als PDF auf das Gerät", /^Scan_\d{4}-\d\d-\d\d_\d\d-\d\d-\d\d\.pdf$/.test(dl?.suggestedFilename() || ""), dl?.suggestedFilename());
+    await page.waitForFunction((v) => Number(((document.querySelector("[data-ordner-pill]")?.textContent || "").match(/· (\d+)/) || [])[1] || 0) === v + 1, davor, { timeout: 120000 }).catch(() => {});
+    await page.waitForTimeout(900);
+    const st = await page.evaluate(() => new Promise((ok) => { const r = indexedDB.open("DateiOrganizer1", 1); r.onsuccess = () => { const q = r.result.transaction("kv").objectStore("kv").get("zustand"); q.onsuccess = () => ok(q.result); }; r.onerror = () => ok(null); }));
+    const sc = st?.dateien?.find((d) => /^Scan_.*\.pdf$/.test(d.name));
+    soll("Scan: kommt als ein PDF zum Bestand dazu, Texterkennung liest beide Seiten", await zahl() === davor + 1 && /Rechnung/i.test(sc?.volltext || "") && /Seite zwei/i.test(sc?.volltext || "") && await page.locator("[data-scan]").count() === 0, `${davor} → ${await zahl()} · ${JSON.stringify((sc?.volltext || "").slice(0, 120))}`);
+    // Eine Seite bleibt ein Bild; „Verwerfen“ nimmt nichts in den Bestand.
+    await page.setInputFiles("[data-kamera-eingabe]", { name: "kamera3.png", mimeType: "image/png", buffer: await foto(["Kassenbon Markt Muster", "Summe 12,34 EUR"]) });
+    await page.waitForSelector("[data-scan-seite]", { timeout: 10000 }).catch(() => {});
+    await page.locator("[data-scan-verwerfen]").click();
+    soll("Scan: Verwerfen lässt den Bestand, wie er ist", await page.locator("[data-scan]").count() === 0 && await zahl() === davor + 1);
+  }
   soll("Keine Fehler in der Konsole", fehler.length === 0, fehler.slice(0, 3).join(" | "));
 } finally {
   await browser.close(); server.close();

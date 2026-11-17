@@ -9,6 +9,22 @@ oder Altbestand kommen in **einen** Ordner; der Organizer sortiert sie Klick fü
 Nummern → Absender → Inhalt) und zeigt sie als Baum nach vielen Gesichtspunkten. Zuerst für die Familienakte gemacht: der Ordner
 wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). Plan und alle Entscheidungen: `docs/PLAN.md`.
 
+## Stand (17.11.2026): Foto / Scan in der Web-App (Basic) – nicht in APK/Windows, erst nach Klaus' Prüfung
+
+- **Foto / Scan (Klaus 17.11.: Dokumente, Rechnungen, Kassenbons mit der Handykamera; „erst einmal in der PWA-Version, dann wird das geprüft“,
+  „ohne Erläuterungen“):** Ordner-Seite, erster Weg unter der Fläche (`[data-scan-knopf]`, nur ohne App: `nurWeb` in `src/seiten.tsx`). Die
+  Kamera-App des Geräts macht das Bild (`[data-kamera-eingabe]`, `capture="environment"`), `src/scan.ts` verkleinert es (längste Kante 2400,
+  JPEG) und dreht es gerade; Seiten sammeln sich im Scan-Kasten (`[data-scan]`: Fertig – übernehmen, Weitere Seite, Verwerfen, Seite entfernen).
+  Eine Seite bleibt ein JPG, mehrere werden ein PDF (`pdfAusSeiten`, eigener kleiner Schreiber), Name `Scan_JJJJ-MM-TT_hh-mm-ss`; kommt zum
+  Bestand dazu, die Texterkennung liest es. „Kopie speichern“ (gemerkt `do-scan-kopie`) lädt die Datei in Downloads – der Scan liegt sonst nur
+  im Speicher der Seite. Kern unverändert. UI-Probe 141 (5 neu). Vorschau `docs/vorschau/scan-2026-11-17.png`. Am Gerät ungeprüft.
+- **Für APK/Windows offen (erst mit Klaus' Wort):** Android braucht dafür im FileProvider einen Pfad für das Kamerabild und die Abfrage
+  `IMAGE_CAPTURE` im Manifest (`tools/native/test-native.mjs` prüft heute „nur update/“); zu entscheiden ist, ob Scans in den gewählten Ordner
+  geschrieben werden (heute schreibt die App dort nur den Index).
+- **Ideen von Klaus (17.11., nice to have, nichts gebaut):** externer Dokumentenscanner am Handy (Bluetooth), Druckersymbol oben („Drucker
+  verbinden“, drucken ohne Kabel). Einschätzung im Chat: Scanner-/Drucker-Apps (z. B. vom Hersteller) über „Teilen“ an die App geht in der
+  Android-App schon (0.4.1); in der Web-App ginge „Teilen an“ und Drucken über das Druckfenster des Geräts, Bluetooth direkt aus der Seite nicht.
+
 ## Stand (15.11.2026): englische Rechnungen im Kern (für Private Brain)
 
 - Kern erkennt Belege von Online-Diensten auf Englisch („Invoice“, „Receipt from …“, „Amount due/paid“, „Total due“, „Bill to“) als Rechnung;
