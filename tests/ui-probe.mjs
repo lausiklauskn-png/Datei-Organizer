@@ -42,7 +42,7 @@ try {
   console.log("Start");
   await page.goto(basis);
   soll("Kopf, Navigation und Fuß stehen da", await page.locator(".site-header .main-navigation [data-nav]").count() === 6 && await page.locator(".site-footer").isVisible());
-  soll("Ohne Ordner: „Kein Ordner“", (await page.locator("[data-ordner-pill]").innerText()).includes("Kein Ordner"));
+  soll("Ohne Ordner: keine Pille im Kopf, dafür der Drucker-Knopf", await page.locator("[data-ordner-pill]").count() === 0 && await page.locator(".header-actions [data-drucken]").count() === 1);
   soll("Knopf „Aktualisieren“ steht oben im Kopf", await page.locator(".site-header [data-aktualisieren]").isVisible());
   await page.locator(".page-title .info-knopf").click();
   soll("Fragezeichen öffnet den Hinweis mit dem SD-Baum", await page.locator("[data-info-fenster]").isVisible() && (await page.locator("[data-info-fenster]").innerText()).includes("Datei-Organizer"));
@@ -214,6 +214,15 @@ try {
     const breit = await page.evaluate(() => document.documentElement.scrollWidth);
     const zuBreit = breit > 361 ? await page.evaluate(() => [...document.querySelectorAll("body *")].filter((e) => e.getBoundingClientRect().right > 362).slice(-3).map((e) => `${e.tagName}.${e.className}`).join(", ")) : "";
     soll(`${s}: kein seitliches Scrollen`, breit <= 361, `${breit}px ${zuBreit}`);
+    if (s === "ordner") {
+      // Handy (Klaus 17.11.): Kopf höchstens zwei Zeilen – die runden Knöpfe stecken hinter dem Pfeil und klappen auf Tipp auf.
+      const hoch = await page.evaluate(() => document.querySelector(".site-header").getBoundingClientRect().height);
+      const zu = !(await page.locator("[data-kopf-knoepfe]").isVisible());
+      await page.locator("[data-mehr-knopf]").click();
+      const auf = await page.locator("[data-kopf-knoepfe] [data-drucken]").isVisible() && await page.locator("[data-kopf-knoepfe] [data-aktualisieren]").isVisible();
+      await page.locator("[data-mehr-knopf]").click();
+      soll("Handy: Kopf zwei Zeilen hoch, Knöpfe hinter dem Pfeil", hoch <= 125 && zu && auf && !(await page.locator("[data-kopf-knoepfe]").isVisible()), `${hoch}px zu=${zu} auf=${auf}`);
+    }
   }
   await page.goto(basis + "datenschutz.html");
   soll("Impressum & Datenschutz erreichbar", (await page.locator("h1").innerText()).includes("Impressum"));
@@ -325,7 +334,7 @@ try {
   }
   await page.setViewportSize({ width: 1280, height: 900 }); await page.goto(basis + "#akte"); await page.waitForTimeout(300);
   soll("Kein Update-Fähnchen, solange die Fassung aktuell ist", await page.locator("[data-update-fahne]").count() === 0);
-  { const v = JSON.parse(await (await page.request.get(basis + "version.json")).text()); const kopf = await page.locator(".site-brand small").innerText(); soll("version.json nennt dieselbe Fassung wie der Kopf", kopf.includes("Fassung " + v.fassung), `${v.fassung} / ${kopf}`); }
+  { const v = JSON.parse(await (await page.request.get(basis + "version.json")).text()); const kopf = await page.locator("[data-fassung-knopf]").innerText(); soll("version.json nennt dieselbe Fassung wie der Kopf (Knopf „V …“)", kopf === "V " + v.fassung, `${v.fassung} / ${kopf}`); }
   await page.route("**/version.json*", (r) => r.fulfill({ contentType: "application/json", body: JSON.stringify({ fassung: "9.9.9" }) }));
   await page.evaluate(() => document.dispatchEvent(new Event("visibilitychange")));
   await page.waitForSelector("[data-update-fahne]", { timeout: 5000 }).catch(() => {});
@@ -333,14 +342,14 @@ try {
   await page.unroute("**/version.json*");
   if (await page.locator("[data-leeren-knopf]").count()) {
     await page.locator("[data-leeren-knopf]").click();
-    await page.waitForFunction(() => document.querySelector("[data-ordner-pill]")?.textContent?.includes("Kein Ordner"), null, { timeout: 5000 }).catch(() => {});
-    soll("„Organizer leeren“: Liste leer, Meldung nennt die unveränderten Originale", (await page.locator("[data-ordner-pill]").innerText()).includes("Kein Ordner") && /Originale und der Ordner sind unverändert/.test(await page.locator("[data-ordner-wahl]").innerText()));
+    await page.waitForFunction(() => !document.querySelector("[data-ordner-pill]"), null, { timeout: 5000 }).catch(() => {});
+    soll("„Organizer leeren“: Liste leer, Meldung nennt die unveränderten Originale", await page.locator("[data-ordner-pill]").count() === 0 && /Originale und der Ordner sind unverändert/.test(await page.locator("[data-ordner-wahl]").innerText()));
     await page.waitForTimeout(600); await page.reload();
     await page.waitForTimeout(600);
-    { const t = await page.locator("[data-ordner-pill]").innerText(); soll("… und bleibt nach dem Neuladen leer", t.includes("Kein Ordner"), t); }
+    soll("… und bleibt nach dem Neuladen leer", await page.locator("[data-ordner-pill]").count() === 0);
   } else soll("Knopf „Organizer leeren“ steht auf der Seite Familienakte", false);
   { const l = (await page.evaluate(() => sessionStorage.getItem("probe-lade") || "")).split(" "); soll("Ladebalken im Kopf lief beim Einlesen (durchsehen, dann Datei für Datei)", l.includes("suchen") && l.includes("lesen"), JSON.stringify([...new Set(l)])); }
-  soll("Web-App heißt „Datei-Organizer Basic“ (Kopf, Seitentitel), ohne Fassungs-Knopf der App", (await page.locator("[data-app-name]").innerText()) === "Datei-Organizer Basic" && (await page.title()) === "Datei-Organizer Basic" && await page.locator("[data-fassung-knopf]").count() === 0);
+  soll("Web-App heißt „Datei-Organizer Basic“ (Kopf, Seitentitel), kein langer Text unter dem Namen", (await page.locator("[data-app-name]").innerText()).replace(/\s+/g, " ") === "Datei-Organizer Basic" && (await page.title()) === "Datei-Organizer Basic" && await page.locator(".site-brand small").count() === 0);
   // Datei-Organizer Pro (Android-App) gestellt: Capacitor-Brücke mit Update-Plugin DoUpdates. Kein echtes Android, kein echter Server.
   {
     const nctx = await browser.newContext({ viewport: { width: 400, height: 800 } });
@@ -356,7 +365,7 @@ try {
     const np = await nctx.newPage();
     const nfehler = []; np.on("pageerror", (e) => nfehler.push(String(e)));
     await np.goto(basis + "#hilfe");
-    soll("App heißt „Datei-Organizer Pro“ (Kopf, Seitentitel, Fuß)", (await np.locator("[data-app-name]").innerText()) === "Datei-Organizer Pro" && (await np.title()) === "Datei-Organizer Pro" && (await np.locator(".footer-meta").innerText()).includes("Datei-Organizer Pro"));
+    soll("App heißt „Datei-Organizer Pro“ (Kopf, Seitentitel, Fuß)", (await np.locator("[data-app-name]").innerText()).replace(/\s+/g, " ") === "Datei-Organizer Pro" && (await np.title()) === "Datei-Organizer Pro" && (await np.locator(".footer-meta").innerText()).includes("Datei-Organizer Pro"));
     soll("App: kein Service Worker angemeldet", await np.evaluate(async () => !(await navigator.serviceWorker?.getRegistration())));
     await np.waitForSelector("[data-update-fahne][data-nativ]", { timeout: 6000 }).catch(() => {});
     soll("App: still geprüft, Fähnchen „Update 9.9.9“ erscheint von selbst", ((await np.locator("[data-update-fahne]").innerText().catch(() => "")) || "").includes("9.9.9"));
@@ -588,7 +597,7 @@ try {
       await pg.evaluate(() => new Promise((ok) => { localStorage.clear(); const r = indexedDB.deleteDatabase("DateiOrganizer1"); r.onsuccess = r.onerror = r.onblocked = () => ok(); }));
       await pg.evaluate(() => { const o = JSON.parse(sessionStorage.getItem("opt")); o.wahlen = ["l"]; sessionStorage.setItem("opt", JSON.stringify(o)); });
       await pg.reload(); await pg.waitForSelector("[data-einstellungen]", { timeout: 8000 }).catch(() => {});
-      soll("B: nach „Neuinstallation“ ohne Arbeitsordner und leer", await pg.locator("[data-arbeit-pfad]").count() === 0 && (await pg.locator("[data-ordner-pill]").innerText()).includes("Kein Ordner"));
+      soll("B: nach „Neuinstallation“ ohne Arbeitsordner und leer", await pg.locator("[data-arbeit-pfad]").count() === 0 && await pg.locator("[data-ordner-pill]").count() === 0);
       await zahnrad(pg); await pg.locator("[data-arbeit-waehlen]").click();
       soll("B: Laufwerk wieder gewählt → Stand aus dem Arbeitsordner übernommen (3 Dateien)", /3 Dateien aus dem gespeicherten Stand übernommen/.test(await meldungNach(pg, /übernommen/, 8000)) && (await pg.locator('[data-zahl="gesamt"]').innerText().catch(() => "")).startsWith("3 "));
       await pg.reload(); await pg.waitForFunction(() => /^3 /.test(document.querySelector('[data-zahl="gesamt"]')?.textContent || ""), null, { timeout: 8000 }).catch(() => {});
@@ -618,7 +627,7 @@ try {
   }
   // Foto / Scan (Klaus 17.11., nur Web-App): zwei Fotos über die Kamera-Eingabe → ein PDF, das die Texterkennung liest; Kopie in Downloads.
   { await page.setViewportSize({ width: 1280, height: 900 }); await page.goto(basis + "#ordner"); await page.waitForSelector("[data-scan-knopf]", { timeout: 5000 }).catch(() => {});
-    const zahl = async () => Number(((await page.locator("[data-ordner-pill]").innerText()).match(/· (\d+)/) || [])[1] || 0);
+    const zahl = () => page.evaluate(() => Number(((document.querySelector("[data-ordner-pill]")?.textContent || "").match(/· (\d+)/) || [])[1] || 0));
     const davor = await zahl();
     const foto = async (zeilen) => Buffer.from(await page.evaluate(async (zeilen) => {
       const c = document.createElement("canvas"); c.width = 1400; c.height = 1900; const g = c.getContext("2d");

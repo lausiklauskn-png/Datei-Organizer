@@ -18,9 +18,20 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   Eine Seite bleibt ein JPG, mehrere werden ein PDF (`pdfAusSeiten`, eigener kleiner Schreiber), Name `Scan_JJJJ-MM-TT_hh-mm-ss`; kommt zum
   Bestand dazu, die Texterkennung liest es. „Kopie speichern“ (gemerkt `do-scan-kopie`) lädt die Datei in Downloads – der Scan liegt sonst nur
   im Speicher der Seite. Kern unverändert. UI-Probe 141 (5 neu). Vorschau `docs/vorschau/scan-2026-11-17.png`. Am Gerät ungeprüft.
+- **Klaus 17.11. am Tablet: „Foto hat funktioniert“.** Danach (sein Wort): die Pille „Kein Ordner“ im Kopf ist weg (mit Ordner bleibt
+  `[data-ordner-pill]` mit Name und Anzahl), an der Stelle steht der runde Drucker-Knopf (`[data-drucken]`, nur Web-App, öffnet vorerst das
+  Druckfenster des Geräts – der eigentliche Drucker-/Scanner-Auftrag kommt als Brief für die nächste Sitzung).
+- **Kopf gekürzt (Klaus 17.11.: der Text unter dem Namen ist „viel zu lang“, nur die Nummer als Knopf, „V“ davor):** unter dem Namen steht
+  nichts mehr; daneben der Knopf „V 0.4.14“ (`[data-fassung-knopf]`, in der Web-App = Aktualisieren, in der App wie bisher Update suchen), das
+  rote Fähnchen kommt daneben. „Basic“/„Pro“ steht in der zweiten Zeile unter „Datei-Organizer“, Knopf und Fähnchen flach daneben
+  (`.marke`, `.variante`). Am Handy (bis 480 px) stecken die runden Knöpfe hinter einem Pfeil (`[data-mehr-knopf]` klappt `[data-kopf-knoepfe]`
+  auf), damit der Kopf zwei Zeilen hoch bleibt (Name, Leiste); die Ordner-Pille entfällt dort ganz (Klaus: „wir sehen ja, ob ein Ordner
+  verbunden ist“; am Tablet/PC bleibt sie mit Ordner). Das gilt auch für APK/Windows ab der nächsten Ausgabe (gleicher Kopf). UI-Probe 141.
 - **Für APK/Windows offen (erst mit Klaus' Wort):** Android braucht dafür im FileProvider einen Pfad für das Kamerabild und die Abfrage
-  `IMAGE_CAPTURE` im Manifest (`tools/native/test-native.mjs` prüft heute „nur update/“); zu entscheiden ist, ob Scans in den gewählten Ordner
-  geschrieben werden (heute schreibt die App dort nur den Index).
+  `IMAGE_CAPTURE` im Manifest (`tools/native/test-native.mjs` prüft heute „nur update/“); **entschieden (Klaus 17.11.): Scans kommen in den Unterordner
+  „Scans“ des gewählten Ordners** (heute schreibt die App dort nur den Index) und müssen später wieder herausgenommen und in ein Modul
+  einsortiert werden können (Familienakte in Modulen – noch nicht entschieden).
+- **Auftrag für die nächste Sitzung:** `docs/BRIEF_SITZUNG_2026-11-18_DRUCKER-SCANNER.md` (Drucken, externer Scanner über „Teilen“, Foto / Scan in APK/Windows; mit Startauftrag).
 - **Ideen von Klaus (17.11., nice to have, nichts gebaut):** externer Dokumentenscanner am Handy (Bluetooth), Druckersymbol oben („Drucker
   verbinden“, drucken ohne Kabel). Einschätzung im Chat: Scanner-/Drucker-Apps (z. B. vom Hersteller) über „Teilen“ an die App geht in der
   Android-App schon (0.4.1); in der Web-App ginge „Teilen an“ und Drucken über das Druckfenster des Geräts, Bluetooth direkt aus der Seite nicht.
