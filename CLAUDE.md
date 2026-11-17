@@ -28,8 +28,9 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   auf), damit der Kopf zwei Zeilen hoch bleibt (Name, Leiste); die Ordner-Pille entfällt dort ganz (Klaus: „wir sehen ja, ob ein Ordner
   verbunden ist“; am Tablet/PC bleibt sie mit Ordner). Das gilt auch für APK/Windows ab der nächsten Ausgabe (gleicher Kopf). UI-Probe 141.
 - **Für APK/Windows offen (erst mit Klaus' Wort):** Android braucht dafür im FileProvider einen Pfad für das Kamerabild und die Abfrage
-  `IMAGE_CAPTURE` im Manifest (`tools/native/test-native.mjs` prüft heute „nur update/“); zu entscheiden ist, ob Scans in den gewählten Ordner
-  geschrieben werden (heute schreibt die App dort nur den Index).
+  `IMAGE_CAPTURE` im Manifest (`tools/native/test-native.mjs` prüft heute „nur update/“); **entschieden (Klaus 17.11.): Scans kommen in den Unterordner
+  „Scans“ des gewählten Ordners** (heute schreibt die App dort nur den Index) und müssen später wieder herausgenommen und in ein Modul
+  einsortiert werden können (Familienakte in Modulen – noch nicht entschieden).
 - **Auftrag für die nächste Sitzung:** `docs/BRIEF_SITZUNG_2026-11-18_DRUCKER-SCANNER.md` (Drucken, externer Scanner über „Teilen“, Foto / Scan in APK/Windows; mit Startauftrag).
 - **Ideen von Klaus (17.11., nice to have, nichts gebaut):** externer Dokumentenscanner am Handy (Bluetooth), Druckersymbol oben („Drucker
   verbinden“, drucken ohne Kabel). Einschätzung im Chat: Scanner-/Drucker-Apps (z. B. vom Hersteller) über „Teilen“ an die App geht in der
