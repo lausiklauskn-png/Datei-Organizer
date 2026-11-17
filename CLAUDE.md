@@ -30,6 +30,7 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
 - **Für APK/Windows offen (erst mit Klaus' Wort):** Android braucht dafür im FileProvider einen Pfad für das Kamerabild und die Abfrage
   `IMAGE_CAPTURE` im Manifest (`tools/native/test-native.mjs` prüft heute „nur update/“); zu entscheiden ist, ob Scans in den gewählten Ordner
   geschrieben werden (heute schreibt die App dort nur den Index).
+- **Auftrag für die nächste Sitzung:** `docs/BRIEF_SITZUNG_2026-11-18_DRUCKER-SCANNER.md` (Drucken, externer Scanner über „Teilen“, Foto / Scan in APK/Windows; mit Startauftrag).
 - **Ideen von Klaus (17.11., nice to have, nichts gebaut):** externer Dokumentenscanner am Handy (Bluetooth), Druckersymbol oben („Drucker
   verbinden“, drucken ohne Kabel). Einschätzung im Chat: Scanner-/Drucker-Apps (z. B. vom Hersteller) über „Teilen“ an die App geht in der
   Android-App schon (0.4.1); in der Web-App ginge „Teilen an“ und Drucken über das Druckfenster des Geräts, Bluetooth direkt aus der Seite nicht.
