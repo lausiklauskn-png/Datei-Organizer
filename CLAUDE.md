@@ -34,7 +34,7 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   UI-Probe 145 (3 neu, Ordner im Test = privater Browser-Speicher). An einem echten PC-Ordner ungeprüft. **Am Handy ändert das nichts** – dort
   kommt der Unterordner erst mit Foto / Scan in der Android-App (Klaus' Wort offen).
 - **Symbol der Basic-Fassung umgedreht (Klaus 17.11.: „innen die Strichgrafik blau, außen weiß … nur umgedreht, so pro Version“):** die Web-App
-  trägt das blaue Zeichen auf weißem, zum Rand leicht bläulichem Grund (`symbolSvg(form, groesse, "basic")` in `scripts/symbol-bauen.mjs`;
+  trägt das blaue Zeichen auf einem Verlauf von Blau (außen) nach Weiß (nur in der Mitte hinter dem Zeichen; Klaus: „kräftiger, deutlicher“) (`symbolSvg(form, groesse, "basic")` in `scripts/symbol-bauen.mjs`;
   `icon-192/512`, `icon-maskable-512`, `favicon.svg`). Pro bleibt weiß auf Blau: Android `mipmap-*`, Windows nimmt jetzt
   `src/public/icon-pro-192.png` (byte-gleich mit dem bisherigen). Vorschau `docs/vorschau/symbol-basic-2026-11-17.png`. Das Zeichen im Kopf der
   Seite (`.brand-symbol`) ist unverändert. Ein schon installiertes Symbol auf dem Startbildschirm wechselt je nach Gerät erst nach Neuinstallieren.

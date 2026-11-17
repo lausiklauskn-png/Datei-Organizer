@@ -3,8 +3,8 @@
     <linearGradient id="verlauf" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#3b8ed0"/><stop offset="0.55" stop-color="#1c5f98"/><stop offset="1" stop-color="#0b3154"/>
     </linearGradient>
-    <radialGradient id="hell" cx="0.5" cy="0.46" r="0.72">
-      <stop offset="0" stop-color="#ffffff"/><stop offset="0.55" stop-color="#f6fafd"/><stop offset="1" stop-color="#cfe0ee"/>
+    <radialGradient id="hell" cx="0.5" cy="0.5" r="0.64">
+      <stop offset="0" stop-color="#ffffff"/><stop offset="0.34" stop-color="#ffffff"/><stop offset="0.6" stop-color="#bcd8ef"/><stop offset="0.8" stop-color="#5a9bd4"/><stop offset="1" stop-color="#1c5f98"/>
     </radialGradient>
     <linearGradient id="strichBlau" gradientUnits="userSpaceOnUse" x1="2" y1="2" x2="22" y2="22">
       <stop offset="0" stop-color="#3b8ed0"/><stop offset="0.55" stop-color="#1c5f98"/><stop offset="1" stop-color="#0b3154"/>
