@@ -43,7 +43,10 @@ try {
   await page.goto(basis);
   soll("Kopf, Navigation und Fuß stehen da", await page.locator(".site-header .main-navigation [data-nav]").count() === 6 && await page.locator(".site-footer").isVisible());
   soll("Ohne Ordner: keine Pille im Kopf, dafür der Drucker-Knopf", await page.locator("[data-ordner-pill]").count() === 0 && await page.locator(".header-actions [data-drucken]").count() === 1);
-  soll("Drucker-Knopf ist ausgegraut, solange keine Datei offen ist", await page.locator(".header-actions [data-drucken]").isDisabled());
+  { // Ohne offene Datei druckt der Knopf die Seite, wie sie ist (Klaus 17.11.: nicht ausgegraut).
+    await page.evaluate(() => { window.__seite = 0; window.print = () => { window.__seite += document.querySelector("#druck-blatt") ? 100 : 1; }; });
+    await page.locator(".header-actions [data-drucken]").click();
+    soll("Drucker-Knopf druckt ohne offene Datei die Seite", await page.evaluate(() => window.__seite) === 1 && await page.locator(".header-actions [data-drucken]").isEnabled()); }
   soll("Knopf „Aktualisieren“ steht oben im Kopf", await page.locator(".site-header [data-aktualisieren]").isVisible());
   await page.locator(".page-title .info-knopf").click();
   soll("Fragezeichen öffnet den Hinweis mit dem SD-Baum", await page.locator("[data-info-fenster]").isVisible() && (await page.locator("[data-info-fenster]").innerText()).includes("Datei-Organizer"));
@@ -688,6 +691,16 @@ try {
     const sc2 = st2?.dateien?.find((d) => /^Scans\/Scan_.*\.jpg$/.test(d.pfad));
     soll("Scans-Ordner: der Scan liegt als JPG in „Belege/Scans“, ohne Download", imOrdner.length === 1 && /^Scan_\d{4}-\d\d-\d\d_\d\d-\d\d-\d\d\.jpg:true$/.test(imOrdner[0]) && !dl2, `${JSON.stringify(imOrdner)} · Download ${dl2?.suggestedFilename() || "keiner"}`);
     soll("Scans-Ordner: steht mit dem Pfad „Scans/…“ im Bestand neben der Datei des Ordners, Text gelesen", !!sc2 && st2.dateien.length === 2 && /Kassenbon/i.test(sc2.volltext || ""), `${st2?.dateien?.map((d) => d.pfad).join(", ")} · ${JSON.stringify((sc2?.volltext || "").slice(0, 80))}`);
+  }
+  // Erstinstallation (Klaus 17.11.): bietet der Browser die Installation an, steht neben der Fassung der Knopf „Installieren“.
+  { await page.setViewportSize({ width: 1280, height: 900 }); await page.goto(basis + "#ordner"); await page.waitForSelector("[data-fassung-knopf]");
+    const ohne = await page.locator("[data-installieren]").count();
+    await page.evaluate(() => { window.__inst = 0; const e = new Event("beforeinstallprompt", { cancelable: true }); e.prompt = async () => { window.__inst++; }; e.userChoice = Promise.resolve({ outcome: "accepted" }); window.dispatchEvent(e); });
+    await page.waitForSelector("[data-installieren]", { timeout: 3000 }).catch(() => {});
+    const da = await page.locator("[data-fassung-platz] [data-installieren]").isVisible().catch(() => false);
+    if (da) await page.locator("[data-installieren]").click();
+    await page.waitForFunction(() => !document.querySelector("[data-installieren]"), null, { timeout: 3000 }).catch(() => {});
+    soll("Installieren: Knopf nur mit Angebot des Browsers, Tipp öffnet die Installation, danach ist er weg", ohne === 0 && da && await page.evaluate(() => window.__inst) === 1 && await page.locator("[data-installieren]").count() === 0, `ohne=${ohne} da=${da}`);
   }
   soll("Keine Fehler in der Konsole", fehler.length === 0, fehler.slice(0, 3).join(" | "));
 } finally {
