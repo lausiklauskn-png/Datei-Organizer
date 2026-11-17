@@ -88,7 +88,7 @@ Repo lausiklauskn-png/Datei-Organizer (eigener Zweig, Entwurfs-PR; eigene geprü
 Zuerst lesen: CLAUDE.md, docs/BRIEF_SITZUNG_2026-11-18_DRUCKER-SCANNER.md.
 Stand: Foto / Scan ist in der Web-App (Basic) und von Klaus am Tablet bestätigt; Kopf neu (V-Knopf, Pfeil am Handy, Drucker-Knopf als
 Platzhalter). APK und Windows unverändert (0.4.13 ausgegeben, Quellen 0.4.14).
-Erster Schritt: Klaus nach dem Gerätetest von Foto / Scan und dem neuen Kopf fragen, Befunde abarbeiten. Dann der Reihe nach: Drucken
+Erster Schritt: Klaus nach dem Gerätetest von Foto / Scan und dem neuen Kopf fragen, Befunde abarbeiten. Dann der Reihe nach:
 Scans in den Unterordner „Scans“ des gewählten Ordners schreiben (entschieden) und Foto / Scan in APK und Windows (nur mit Klaus' Wort),
 Drucken dessen, was gerade offen ist, mit vorgewähltem Drucker (erst Vorschau), „Teilen an“ in der Web-App für Scanner-Apps.
 ```
