@@ -356,7 +356,7 @@ try {
     const np = await nctx.newPage();
     const nfehler = []; np.on("pageerror", (e) => nfehler.push(String(e)));
     await np.goto(basis + "#hilfe");
-    soll("App heißt „Datei-Organizer Pro“ (Kopf, Seitentitel, Fuß)", (await np.locator("[data-app-name]").innerText()).replace(/\s+/g, " ") === "Datei-Organizer Pro" && (await np.title()) === "Datei-Organizer Pro" && (await np.locator(".footer-meta").innerText()).includes("Datei-Organizer Pro"));
+    soll("App heißt „Datei-Organizer Pro“ (Kopf, Seitentitel, Fuß)", (await np.locator("[data-app-name]").innerText()) === "Datei-Organizer Pro" && (await np.title()) === "Datei-Organizer Pro" && (await np.locator(".footer-meta").innerText()).includes("Datei-Organizer Pro"));
     soll("App: kein Service Worker angemeldet", await np.evaluate(async () => !(await navigator.serviceWorker?.getRegistration())));
     await np.waitForSelector("[data-update-fahne][data-nativ]", { timeout: 6000 }).catch(() => {});
     soll("App: still geprüft, Fähnchen „Update 9.9.9“ erscheint von selbst", ((await np.locator("[data-update-fahne]").innerText().catch(() => "")) || "").includes("9.9.9"));

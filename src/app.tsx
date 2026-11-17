@@ -19,7 +19,7 @@ import { erkenneArt } from "../lib/dateiart.ts";
 import { ArbeitSpeicher, arbeitAnzeige, arbeitFehler, arbeitFrei, arbeitGemerkt, arbeitMoeglich, arbeitVergessen, arbeitWaehlen, blockBedarf, leistungMessen, leistungText, mbText, schlank, speicherReicht, type Arbeitsordner, type Leistung } from "./arbeit.ts";
 import { OrdnerSeite, SortierenSeite, FindenSeite, VerlaufSeite, AkteSeite, HilfeSeite } from "./seiten.tsx";
 import { LandkarteSeite } from "./landkarte.tsx";
-import { APP_NAME, APP_VARIANTE, direktLaden, istNativ, nativeUpdates, stillPruefen } from "./nativ.ts";
+import { APP_NAME, direktLaden, istNativ, nativeUpdates, stillPruefen } from "./nativ.ts";
 
 export const FASSUNG = "0.4.14";
 // Ladeanzeige: „suchen“ = Ordner wird durchgesehen (Zahl noch unbekannt), „lesen“ = Datei für Datei, „stand“ = gemerkter Stand beim Start.
@@ -542,17 +542,19 @@ export function App() {
   return <div className="app-shell">
     <header className="site-header">
       <div className="masthead">
+        <div className="marke">
         <button type="button" className="site-brand" onClick={() => gehe("ordner")} aria-label={`${APP_NAME} – zum Ordner`}>
           <span className="brand-symbol"><FolderTree size={24}/></span>
-          <span><strong data-app-name>Datei-Organizer <span className="variante">{APP_VARIANTE}</span></strong></span>
+          <span><strong data-app-name>{APP_NAME}</strong></span>
         </button>
-        {/* Klaus 16.11.: Fassung (Link fürs Update) und Fähnchen links neben dem Namen – am Handy leichter zu treffen. */}
+        {/* Klaus 16.11.: Fassung (Link fürs Update) und Fähnchen beim Namen; seit 17.11. flach unter dem Namen (`.marke`). */}
         <div className="fassung-platz" data-fassung-platz>
           {upd.nativ && upd.neu && <button type="button" className="update-fahne" data-update-fahne data-nativ title={`Update ${upd.neu} steht bereit. Antippen lädt und installiert.`} onClick={() => void upd.laden()}><Download size={14}/>{upd.prozent !== null ? `Lädt ${upd.prozent} %` : `Update ${upd.neu}`}</button>}
           {upd.nativ && <button type="button" className="fassung-knopf" data-fassung-knopf title="Fassung – antippen sucht ein Update und installiert es" onClick={() => void upd.laden()}>{upd.prozent !== null && !upd.neu ? `${upd.prozent} %` : `V ${FASSUNG}`}</button>}
           {/* Web-App (Klaus 17.11.: unter dem Namen kein langer Text, nur die Nummer als Knopf): antippen holt die neueste Fassung. */}
           {!upd.nativ && <button type="button" className="fassung-knopf" data-fassung-knopf title="Aktualisieren" onClick={() => void aktualisieren(!!z.fortschritt && z.fortschritt.phase !== "stand")}>V {FASSUNG}</button>}
           {neueFassung && <button type="button" className="update-fahne" data-update-fahne title={`Fassung ${neueFassung} steht bereit. Tippen aktualisiert; die Sortierung bleibt gemerkt.`} onClick={() => void aktualisieren(!!z.fortschritt && z.fortschritt.phase !== "stand")}><RefreshCw size={14}/>Update {neueFassung}</button>}
+        </div>
         </div>
         <div className="header-actions">
           {(() => { const pille = z.fortschritt && z.fortschritt.phase !== "stand" ? "Wird geladen …" : z.ordnerName ? `${z.ordnerName} · ${z.dateien.length}` : "Kein Ordner";
