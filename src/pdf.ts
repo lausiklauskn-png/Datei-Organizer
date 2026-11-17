@@ -33,14 +33,14 @@ const laden = () => bereit || (bereit = (async () => {
 })());
 
 /** Vorschau des Originals (Klaus 16.11.): die ersten Seiten als Bild, in der App gezeichnet – kein neues Fenster, nichts verlässt das Gerät. */
-export async function pdfVorschau(bytes: Uint8Array, hoechstens = 3, schaerfe = 1.5): Promise<{ bilder: string[]; seiten: number }> {
+export async function pdfVorschau(bytes: Uint8Array, hoechstens = 3): Promise<{ bilder: string[]; seiten: number }> {
   const pdfjs = await laden() as unknown as ScanPdf;
   const doc = await pdfjs.getDocument({ data: bytes.slice(), isEvalSupported: false, verbosity: 0 }).promise;
   try {
     const bilder: string[] = [];
     for (let n = 1; n <= Math.min(doc.numPages, hoechstens); n++) {
       const seite = await doc.getPage(n);
-      const vp = seite.getViewport({ scale: schaerfe });
+      const vp = seite.getViewport({ scale: 1.5 });
       const c = document.createElement("canvas"); c.width = Math.ceil(vp.width); c.height = Math.ceil(vp.height);
       await seite.render({ canvasContext: c.getContext("2d")!, viewport: vp }).promise;
       const blob = await new Promise<Blob | null>((ok) => c.toBlob(ok, "image/jpeg", 0.85));

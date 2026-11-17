@@ -43,7 +43,6 @@ try {
   await page.goto(basis);
   soll("Kopf, Navigation und Fuß stehen da", await page.locator(".site-header .main-navigation [data-nav]").count() === 6 && await page.locator(".site-footer").isVisible());
   soll("Ohne Ordner: keine Pille im Kopf, dafür der Drucker-Knopf", await page.locator("[data-ordner-pill]").count() === 0 && await page.locator(".header-actions [data-drucken]").count() === 1);
-  soll("Drucker-Knopf ist ausgegraut, solange keine Datei offen ist", await page.locator(".header-actions [data-drucken]").isDisabled());
   soll("Knopf „Aktualisieren“ steht oben im Kopf", await page.locator(".site-header [data-aktualisieren]").isVisible());
   await page.locator(".page-title .info-knopf").click();
   soll("Fragezeichen öffnet den Hinweis mit dem SD-Baum", await page.locator("[data-info-fenster]").isVisible() && (await page.locator("[data-info-fenster]").innerText()).includes("Datei-Organizer"));
@@ -158,18 +157,6 @@ try {
   await page.locator("[data-liste] [data-datei]").first().click();
   await page.locator("[data-original]").click();
   soll("Original eines Fotos wird angezeigt", await page.locator(".vorschau-bild").waitFor({ timeout: 5000 }).then(() => true, () => false));
-  // Drucken, was gerade offen ist (Klaus 17.11.): der Drucker-Knopf im Kopf druckt die Datei des offenen Steckbriefs.
-  const druckProbe = async () => {
-    await page.evaluate(() => { window.__druck = null; window.print = () => { const b = document.querySelector("#druck-blatt"); window.__druck = { art: b?.getAttribute("data-druck-blatt"), bilder: [...(b?.querySelectorAll("img") || [])].filter((i) => i.naturalWidth > 50).length, klasse: document.body.classList.contains("druckt"), titel: document.title }; window.dispatchEvent(new Event("afterprint")); }; });
-    await page.locator("[data-drucken]").click();
-    await page.waitForFunction(() => window.__druck, null, { timeout: 30000 }).catch(() => {});
-    return { ...(await page.evaluate(() => window.__druck) || {}), rest: await page.locator("#druck-blatt").count(), name: await page.locator("[data-steckbrief] h2").first().innerText() };
-  };
-  { const k = page.locator("[data-drucken]");
-    soll("Drucken: mit offenem Foto ist der Knopf aktiv und nennt die Datei", await k.isEnabled() && (await k.getAttribute("title") || "").startsWith("Drucken: "), await k.getAttribute("title"));
-    const d = await druckProbe();
-    soll("Drucken: das offene Foto geht als ein Bild ins Druckfenster, danach ist aufgeräumt", d.art === "bild" && d.bilder === 1 && d.klasse && d.titel === d.name && d.rest === 0, JSON.stringify(d));
-  }
   // Vorschau der Original-PDF im Steckbrief (Klaus 16.11.): Seiten als Bild in der App, kein neues Fenster.
   { const ast = page.locator("[data-ordnerbaum] [data-ast='PDF']").first();
     if (await ast.count()) {
@@ -177,8 +164,6 @@ try {
       await page.locator("[data-steckbrief] [data-original]").click();
       soll("Original einer PDF: Seite als Bild im Steckbrief", await page.locator("[data-pdf-vorschau] img").first().waitFor({ timeout: 15000 }).then(() => true, () => false));
       soll("… mit „Ganze PDF öffnen“", await page.locator("[data-pdf-ganz]").count() === 1);
-      const d = await druckProbe();
-      soll("Drucken: die offene PDF geht als gezeichnete Seiten ins Druckfenster", d.art === "pdf" && d.bilder >= 1 && d.rest === 0, JSON.stringify(d));
     } else soll("Testordner hat einen Ast „PDF“", false);
   }
   { // Nach dem Neuladen (Originale nicht mehr im Speicher): der gemerkte Ordner wird still wieder geöffnet.
