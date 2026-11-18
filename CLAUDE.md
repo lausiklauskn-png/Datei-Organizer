@@ -11,16 +11,17 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
 
 ## Stand (18.11.2026 abends): 0.4.19 – Knöpfe „An die Private Akte“ und „An die Familienakte“ in der eigenständigen App
 
-- **Klaus 18.11.: „im blauen Organizer fehlt oben der Knopf an die Familienakte übergeben“; „Datei-Organizer Basic hat beide Knöpfe,
-  der Organizer in der Privaten Akte bleibt, wie er ist“.** Seite „Familienakte“, ganz oben:
+- **Klaus 18.11.: „im blauen Organizer fehlt oben der Knopf an die Familienakte übergeben“; der Organizer in der Privaten Akte bleibt,
+  wie er ist.** Basic (Web-App): „An die Private Akte“; Pro (Android/Windows): „An die Familienakte“. Seite „Familienakte“, ganz oben:
   - **„An die Private Akte übergeben“** (`[data-uebergeben-akte]`, nur Web-App ohne Rahmen): öffnet `/Private-Akte/?empfang=organizer`
     im selben Browser (gleiche Adresse github.io); die Akte meldet „pa-empfang-bereit“, bekommt dasselbe Paket wie im Rahmen
     („pa-organizer-uebergabe“) und bestätigt („pa-organizer-angenommen“) – `aktePartner` in `src/rahmen.ts`, Ladeanzeige wie im Rahmen.
-  - **„An die Familienakte übergeben“** (`[data-uebergeben-familienakte]`, Web-App, Android, Windows; nicht im Rahmen): legt
+  - **„An die Familienakte übergeben“** (`[data-uebergeben-familienakte]`, nur Android und Windows – Klaus: „in die Basic-Variante
+    brauchst du es nicht einbauen“; nicht im Rahmen): legt
     `organizer-index.json` in den Ordner (bzw. „Speichern unter …“/Herunterladen) und sagt: „In der Familienakte diesen Ordner als
     Eingangsordner wählen – sie übernimmt die Sortierung“ (Weg wie bisher in der Familienakte, `lib/organizer-uebernahme.ts` dort).
   - Im Rahmen der Privaten Akte unverändert nur „An die Private Akte übergeben“.
-  Fassung 0.4.19 (Code 59, Vorrat v40). UI-Probe 217 grün, Native 66 grün. Klaus' Wort 18.11.: als APK und Windows ausgeben.
+  Fassung 0.4.19 (Code 59, Vorrat v40). UI-Probe 218 grün, Native 66 grün. Klaus' Wort 18.11.: als APK und Windows ausgeben.
 
 ## Stand (18.11.2026 abends): 0.4.18 – Reihenfolge nach Datum, Ladeanzeige bei der Übergabe
 

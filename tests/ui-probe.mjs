@@ -541,6 +541,11 @@ try {
     await ap.waitForTimeout(500);
     const g = await ap.evaluate(() => window.__gespeichert);
     soll("„Speichern unter …“: organizer-index.json als JSON an die App, kein Download", g.length === 1 && g[0].name === "organizer-index.json" && g[0].mime === "application/json" && atob(g[0].data).includes("Geteilt.txt") && !download);
+    // 0.4.19: in der App oben „An die Familienakte übergeben“ (kein „An die Private Akte“ – die ist eine Web-App)
+    soll("Android-App: oben „An die Familienakte übergeben“, kein „An die Private Akte“", (await ap.locator("[data-uebergeben-familienakte]").count()) === 1 && (await ap.locator("[data-uebergeben-akte]").count()) === 0);
+    await ap.locator("[data-uebergeben-familienakte]").click().catch(() => {}); await ap.waitForTimeout(500);
+    const g2 = await ap.evaluate(() => window.__gespeichert), mt = await ap.locator("[data-uebergabe-familienakte] [data-meldung]").innerText().catch(() => "");
+    soll("„An die Familienakte“: Sortierung über „Speichern unter …“ an die App, Meldung nennt den Eingangsordner", g2.length === 2 && g2[1].name === "organizer-index.json" && /Eingangsordner/.test(mt), mt);
     soll("Android-App: keine Fehler in der Seite", afehler.length === 0, afehler.slice(0, 3).join(" | "));
     await actx.close();
   }
@@ -788,15 +793,11 @@ try {
     await ep.goto(basis); await ep.locator("[data-testordner]").click();
     await ep.waitForFunction(() => /\d+ (Dateien|sortiert)/.test(document.body.innerText) && !document.querySelector("[data-ladebalken]"), null, { timeout: 60000 }).catch(() => {});
     await ep.waitForTimeout(800); await ep.evaluate(() => { location.hash = "akte"; }); await ep.waitForSelector("[data-uebergeben-akte]", { timeout: 5000 }).catch(() => {});
-    soll("Eigenständig: oben beide Knöpfe – „An die Private Akte“ und „An die Familienakte“", (await ep.locator("[data-uebergeben-akte]").count()) === 1 && (await ep.locator("[data-uebergeben-familienakte]").count()) === 1 && (await ep.locator("[data-uebergeben]").count()) === 0);
+    soll("Web-App eigenständig: oben „An die Private Akte“, kein „An die Familienakte“ (gibt es nur in APK/Windows)", (await ep.locator("[data-uebergeben-akte]").count()) === 1 && (await ep.locator("[data-uebergeben-familienakte]").count()) === 0 && (await ep.locator("[data-uebergeben]").count()) === 0);
     const [akte] = await Promise.all([ectx.waitForEvent("page"), ep.locator("[data-uebergeben-akte]").click()]);
-    await ep.waitForFunction(() => /bereit/.test(document.querySelector("[data-uebergabe-familienakte] [data-meldung]")?.innerText || document.body.innerText), null, { timeout: 60000 }).catch(() => {});
+    await ep.waitForFunction(() => /bereit/.test(document.querySelector("[data-uebergabe-web] [data-meldung]")?.innerText || ""), null, { timeout: 60000 }).catch(() => {});
     soll("„An die Private Akte“ öffnet sie und übergibt die Dateien (Nachricht zwischen den Fenstern)", /\/Private-Akte\/\?empfang=organizer/.test(akte.url()) && /erhalten [1-9]\d+/.test(await akte.title()), `${akte.url()} · ${await akte.title()}`);
     await akte.close();
-    const [dl] = await Promise.all([ep.waitForEvent("download", { timeout: 10000 }).catch(() => null), ep.locator("[data-uebergeben-familienakte]").click()]);
-    await ep.waitForTimeout(300);
-    const mt = await ep.locator("[data-uebergabe-familienakte] [data-meldung]").innerText().catch(() => "");
-    soll("„An die Familienakte“ legt die Sortierung ab und sagt, wie es weitergeht", (!!dl && dl.suggestedFilename() === "organizer-index.json" || /liegt jetzt im Ordner/.test(mt)) && /Eingangsordner/.test(mt), mt);
     soll("Eigenständig: keine Fehler in der Seite", ef.length === 0, ef.slice(0, 2).join(" | "));
     await ectx.close();
   }

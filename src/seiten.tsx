@@ -660,8 +660,9 @@ export function AkteSeite({ z, gehe }: P) {
         <button type="button" className="button primary" disabled={!z.dateien.some((d) => !gesperrt(d)) || z.fortschritt?.phase === "uebergeben"} onClick={() => { const w = window.open(AKTE_ADRESSE, "private-akte"); void z.uebergeben(mitText, aktePartner(w)); }} data-uebergeben-akte><Share2 size={18}/>An die Private Akte übergeben</button>
       </div>
       {z.fortschritt?.phase === "uebergeben" && <Ladebalken f={z.fortschritt}/>}
+      <Meldung z={z} gehe={gehe}/>
     </section>}
-    {!rahmen() && <section className="card" data-uebergabe-familienakte>
+    {!rahmen() && !!nativPlattform() && nativPlattform() !== "web" && <section className="card" data-uebergabe-familienakte>
       <div className="card-heading"><h2>An die Familienakte übergeben</h2><Info titel="So kommt es in die Familienakte" punkte={[
         `Der Knopf legt die Sortierung (${INDEX_DATEI}) in den Ordner zu den Dateien.`,
         "In der Familienakte diesen Ordner als Eingangsordner wählen – sie übernimmt Bereich, Art, Absender und Datum als Vorschlag.",
