@@ -6,6 +6,9 @@ import { join, extname, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 // Playwright liegt global (Behälter) oder als Entwicklungs-Abhängigkeit (CI).
+/* Was der Kern gelernt hat, steht nicht mehr auf der Seite (0.4.17) – die Probe liest es aus dem gemerkten Zustand. */
+const regelnText = async (pg) => { await pg.waitForTimeout(250); return pg.evaluate(() => new Promise((ok) => { const r = indexedDB.open("DateiOrganizer1", 1); r.onsuccess = () => { const t = r.result.transaction("kv", "readonly").objectStore("kv").get("zustand"); t.onsuccess = () => { r.result.close(); ok(JSON.stringify((t.result && t.result.regeln) || [])); }; }; r.onerror = () => ok("?"); })); };
+const regelnAnzahl = async (pg) => JSON.parse(await regelnText(pg)).length;
 const { chromium } = createRequire(import.meta.url)("playwright");
 import { indexLesen } from "../lib/index-format.ts";
 // Der Arbeitsordner liegt seit 16.11. hinter dem Zahnrad der Ordner-Seite: erst aufklappen, wenn die Karte zu ist.
@@ -134,18 +137,22 @@ try {
     const texte = await page.locator("[data-verlauf-eintrag]").allInnerTexts(), ersteBest = texte.findIndex((t) => t.includes("bestätigt:"));
     soll("Verlauf: Sortierung nach Art – Geändertes vor Bestätigtem", ersteBest >= geaendert - 0 && texte.slice(0, ersteBest).every((t) => t.includes("→")) && texte.slice(ersteBest).every((t) => t.includes("bestätigt:")), `erste Bestätigung an Stelle ${ersteBest}`);
     await page.locator("[data-verlauf-sortieren]").selectOption("neu");
+    { const zl = await page.locator("[data-verlauf-leiste]").evaluate((e) => { const k = e.getBoundingClientRect(); return { hoch: k.height, text: e.innerText.replace(/\s+/g, " ") }; });
+      soll("Verlauf: Haken „Alle“, Sortieren, Papierkorb und Rückgängig in einer Zeile, Knöpfe nur als Symbol", zl.hoch <= 48 && /^Alle Sortieren/.test(zl.text.trim()) && !/löschen|Rückgängig|gewählt|Erst Haken/.test(zl.text) && await page.locator("[data-verlauf-loeschen] svg").count() === 1 && await page.locator("[data-rueckgaengig] svg").count() === 1, JSON.stringify(zl));
+      soll("Verlauf: „Korrekturen“ ist einklappbar (ab Werk offen), die Liste rollt innen mit fester Höhe", await page.locator("[data-verlauf]").evaluate((e) => e.tagName === "DETAILS" && e.open) && ["auto", "scroll"].includes(await page.locator("[data-verlauf-liste]").evaluate((e) => getComputedStyle(e).overflowY)) && (await page.locator("[data-verlauf-liste]").evaluate((e) => parseFloat(getComputedStyle(e).maxHeight))) <= 520);
+      soll("Verlauf: keine Liste „Gelernt“ mehr, die Stichprobe ist eingeklappt", await page.locator("[data-regeln]").count() === 0 && !(await page.locator("[data-stichprobe]").evaluate((e) => e.open)) && await page.locator("[data-stichprobe] summary").isVisible()); }
     soll("Verlauf: an der Zeile steht kein Knopf, die Knöpfe oben sind ohne Haken aus", await page.locator("[data-verlauf] li button").count() === 0 && await page.locator("[data-verlauf-loeschen]").isDisabled() && await page.locator("[data-rueckgaengig]").isDisabled());
     await page.locator("[data-verlauf-eintrag]").nth(1).locator("span").first().click();
-    soll("Verlauf: ein Tipp auf den Eintrag setzt nur den Haken – nichts wird zurücksortiert", await page.locator("[data-verlauf-eintrag]").nth(1).locator("[data-verlauf-wahl]").isChecked() && await page.locator("[data-verlauf] li").count() === korr && (await page.locator("[data-verlauf-gewaehlt]").innerText()).includes("1 gewählt"));
+    soll("Verlauf: ein Tipp auf den Eintrag setzt nur den Haken – nichts wird zurücksortiert", await page.locator("[data-verlauf-eintrag]").nth(1).locator("[data-verlauf-wahl]").isChecked() && await page.locator("[data-verlauf] li").count() === korr);
     await page.locator("[data-verlauf-alle]").check();
-    soll("Verlauf: „Alle auswählen“ setzt alle Haken", await page.locator("[data-verlauf-wahl]:checked").count() === korr && (await page.locator("[data-verlauf-gewaehlt]").innerText()).includes(`${korr} gewählt`));
+    soll("Verlauf: „Alle auswählen“ setzt alle Haken", await page.locator("[data-verlauf-wahl]:checked").count() === korr);
     await page.locator("[data-verlauf-alle]").uncheck();
     soll("… und nimmt sie wieder weg", await page.locator("[data-verlauf-wahl]:checked").count() === 0);
     // Zwei Einträge löschen: die Liste wird kürzer, das Gelernte bleibt, nichts steht wieder bei „bitte prüfen“.
-    const regelnVorher = await page.locator("[data-regeln]").innerText();
+    const regelnVorher = await regelnText(page);
     await page.locator("[data-verlauf-eintrag]").nth(2).locator("[data-verlauf-wahl]").check(); await page.locator("[data-verlauf-eintrag]").nth(3).locator("[data-verlauf-wahl]").check();
     await page.locator("[data-verlauf-loeschen]").click(); await page.waitForTimeout(150);
-    soll("Verlauf: „Aus Verlauf löschen“ nimmt nur die Einträge weg, das Gelernte bleibt", await page.locator("[data-verlauf] li").count() === korr - 2 && await page.locator("[data-regeln]").innerText() === regelnVorher && regelnVorher.includes("→"));
+    soll("Verlauf: „Aus Verlauf löschen“ nimmt nur die Einträge weg, das Gelernte bleibt", await page.locator("[data-verlauf] li").count() === korr - 2 && await regelnText(page) === regelnVorher && regelnVorher.length > 2);
     await page.locator("[data-nav=sortieren]").click();
     soll("… und keine Datei ist zurücksortiert (nichts zu prüfen)", await page.locator("[data-nichts-offen]").count() === 1 && await page.locator("[data-pruef]").count() === 0);
     await page.locator("[data-nav=verlauf]").click();
@@ -813,14 +820,14 @@ try {
     };
     await stiftAn(0, "kategorie"); await stiftAn(8, "kategorie"); await stiftAn(3, "betrifft", "Probe-Person");
     await sp.evaluate(() => { location.hash = "verlauf"; }); await sp.waitForSelector("[data-verlauf-eintrag]");
-    const vAlle = await sp.locator("[data-verlauf] li").count(), regelZahl = await sp.locator("[data-regeln] li").count(), regelText = await sp.locator("[data-regeln]").innerText();
+    const vAlle = await sp.locator("[data-verlauf] li").count(), regelZahl = await regelnAnzahl(sp), regelText = await regelnText(sp);
     soll("Verlauf: aus den geänderten Bereichen ist gelernt", vAlle === vUeber + 3 && regelZahl >= 1, `${vAlle} Einträge, ${regelZahl} Regeln`);
     fragen.length = 0;
     await sp.locator("[data-verlauf-alle]").check(); await sp.locator("[data-verlauf-eintrag]").first().locator("[data-verlauf-wahl]").uncheck();
     await sp.locator("[data-verlauf-loeschen]").click(); await sp.waitForTimeout(200);
-    soll("Verlauf: alle bis auf einen gelöscht (mit Rückfrage) – das Gelernte unverändert", await sp.locator("[data-verlauf] li").count() === 1 && await sp.locator("[data-regeln]").innerText() === regelText && fragen.length === 1 && fragen[0].includes("aus dem Verlauf löschen") && fragen[0].includes("Gelernte bleibt"), `${await sp.locator("[data-verlauf] li").count()} Einträge, ${await sp.locator("[data-regeln] li").count()} Regeln`);
+    soll("Verlauf: alle bis auf einen gelöscht (mit Rückfrage) – das Gelernte unverändert", await sp.locator("[data-verlauf] li").count() === 1 && await regelnText(sp) === regelText && fragen.length === 1 && fragen[0].includes("aus dem Verlauf löschen") && fragen[0].includes("Gelernte bleibt"), `${await sp.locator("[data-verlauf] li").count()} Einträge, ${await regelnAnzahl(sp)} Regeln`);
     await sp.locator("[data-verlauf-eintrag]").first().locator("[data-verlauf-wahl]").check(); await sp.locator("[data-rueckgaengig]").click(); await sp.waitForTimeout(200);
-    soll("Verlauf: Rückgängig des letzten Eintrags (ohne Rückfrage) – was aus den gelöschten Einträgen gelernt wurde, bleibt", fragen.length === 1 && await sp.locator("[data-verlauf] li").count() === 0 && await sp.locator("[data-regeln]").innerText() === regelText, `${await sp.locator("[data-regeln] li").count()} von ${regelZahl} Regeln`);
+    soll("Verlauf: Rückgängig des letzten Eintrags (ohne Rückfrage) – was aus den gelöschten Einträgen gelernt wurde, bleibt", fragen.length === 1 && await sp.locator("[data-verlauf] li").count() === 0 && await regelnText(sp) === regelText, `${await regelnAnzahl(sp)} von ${regelZahl} Regeln`);
     await sp.evaluate(() => { location.hash = "sortieren"; }); await sp.waitForTimeout(150);
     soll("… genau eine Datei steht wieder bei „bitte prüfen“", await sp.locator("[data-pruef]").count() === 1);
     // mehrere Schritte zurück: nur nach Rückfrage
