@@ -21,7 +21,7 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
     `organizer-index.json` in den Ordner (bzw. „Speichern unter …“/Herunterladen) und sagt: „In der Familienakte diesen Ordner als
     Eingangsordner wählen – sie übernimmt die Sortierung“ (Weg wie bisher in der Familienakte, `lib/organizer-uebernahme.ts` dort).
   - Im Rahmen der Privaten Akte unverändert nur „An die Private Akte übergeben“.
-  Fassung 0.4.19 (Code 59, Vorrat v40). UI-Probe 218 grün, Native 66 grün. Klaus' Wort 18.11.: als APK und Windows ausgeben.
+  Fassung 0.4.19 (Code 59, Vorrat v40). UI-Probe 218 grün, Native 66 grün. **Veröffentlicht 18.11.2026 (Klaus' Wort) als Android und Windows**, Nachweis `docs/VEROEFFENTLICHUNG-0.4.19.json` – nicht erneut ausgeben; nächste Ausgabe 0.4.20 (Code 60).
 
 ## Stand (18.11.2026 abends): 0.4.18 – Reihenfolge nach Datum, Ladeanzeige bei der Übergabe
 
