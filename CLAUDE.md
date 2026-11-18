@@ -19,6 +19,9 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   (4) **Kartenhöhe:** beide Karten höchstens bis zum unteren Fensterrand (mindestens 300 px), darin rollen; die Überschrift der Liste
   bleibt stehen; schmal der Baum höchstens halbe Fensterhöhe (`--finden-hoehe`, `--finden-baum`). Gilt in Basic, Pro und im Rahmen.
   Fassung 0.4.20 (Code 60, Vorrat v41). UI-Probe 222 grün, Native 66 grün. Am Gerät ungeprüft.
+  **Veröffentlicht 18.11.2026 (Klaus' Wort) als Android und Windows**, Nachweis `docs/VEROEFFENTLICHUNG-0.4.20.json` – nicht erneut ausgeben;
+  nächste Ausgabe 0.4.21 (Code 61). **Offen:** die Probe „Verlauf: aus den geänderten Bereichen ist gelernt“ war im PR-Lauf einmal rot
+  (47 Einträge, 0 Regeln), im Lauf davor, danach auf main und hier grün – Ursache nicht gefunden (Zeitpunkt des Speicherns?).
 
 ## Stand (18.11.2026 abends): 0.4.19 – Knöpfe „An die Private Akte“ und „An die Familienakte“ in der eigenständigen App
 
