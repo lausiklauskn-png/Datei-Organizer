@@ -194,6 +194,8 @@ try {
   await page.locator("[data-suche]").fill("");
   // Reihenfolge nach Datum (0.4.18): der Pfeil neben „Sortieren“ dreht Jahre, Monate und die Liste um, die Unterordner bleiben
   { await page.locator("[data-sicht]").selectOption("datum");
+    // erst wenn nach dem Leeren der Suche wieder die ganze Liste dasteht (in der CI langsamer als hier – dort las die Probe noch die Treffer)
+    await page.waitForFunction(() => !document.querySelector("[data-suche]").value && document.querySelectorAll("[data-liste] [data-datei]").length > 20);
     const jahre = async () => (await page.locator("[data-ordnerbaum] > li > ul > li > .ast").allInnerTexts()).map((t) => t.split("\n")[0].trim()).filter((t) => /^\d{4}$/.test(t));
     const tage = async () => (await page.locator("[data-liste] [data-datei] small").allInnerTexts()).map((t) => (t.match(/(\d\d)\.(\d\d)\.(\d{4})/) || []).slice(1).reverse().join("-")).filter(Boolean);
     const vorher = await jahre(), tv = await tage(), richtung0 = await page.locator("[data-sicht-richtung]").getAttribute("data-sicht-richtung");
