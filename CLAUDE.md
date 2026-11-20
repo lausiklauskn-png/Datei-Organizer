@@ -9,6 +9,14 @@ oder Altbestand kommen in **einen** Ordner; der Organizer sortiert sie Klick fü
 Nummern → Absender → Inhalt) und zeigt sie als Baum nach vielen Gesichtspunkten. Zuerst für die Familienakte gemacht: der Ordner
 wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). Plan und alle Entscheidungen: `docs/PLAN.md`.
 
+## Stand (20.11.2026): 0.4.23 – Rückmeldung beim Ändern eines anderen Felds
+
+- **Klaus 20.11. (Bilder vom Tablet: „sieht aus, als wenn er Forschung nicht übernimmt“):** in der Prüfliste hatte er „Betrifft“ gewählt und
+  „Forschung“ übernommen – gespeichert war es, die Zeile blieb aber stehen, weil der **Absender** offen war. Jetzt meldet die App nach dem
+  Übernehmen eines anderen Felds: „<Datei>: Betrifft „Forschung“ übernommen. Noch offen: Absender – „Stimmt“ oder Stift.“ (`PruefZeile`,
+  `src/seiten.tsx`). Kern unverändert. Fassung 0.4.23 (Code 63, Vorrat v44). UI-Probe 224 grün (1 neu). Nur Basic (Pages); APK/Windows ab
+  Montag gleich mit 0.4.23 statt 0.4.22.
+
 ## Stand (20.11.2026): 0.4.22 – Papierkorb an jeder Zeile von „Bitte prüfen“
 
 - **Klaus 20.11. (Bild vom Tablet, Organizer im Rahmen der Privaten Akte): „Da sollte noch eine Löschfunktion einzelner Dateien möglich sein.
