@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 // Playwright liegt global (Behälter) oder als Entwicklungs-Abhängigkeit (CI).
 /* Was der Kern gelernt hat, steht nicht mehr auf der Seite (0.4.17) – die Probe liest es aus dem gemerkten Zustand. */
-const regelnText = async (pg) => { await pg.waitForTimeout(250); return pg.evaluate(() => new Promise((ok) => { const r = indexedDB.open("DateiOrganizer1", 1); r.onsuccess = () => { const t = r.result.transaction("kv", "readonly").objectStore("kv").get("zustand"); t.onsuccess = () => { r.result.close(); ok(JSON.stringify((t.result && t.result.regeln) || [])); }; }; r.onerror = () => ok("?"); })); };
+const regelnText = async (pg) => { await pg.waitForTimeout(700); /* die App speichert 400 ms nach der letzten Änderung (src/app.tsx) – vorher gelesen = alter Stand, Ursache der seltenen roten Probe „aus den geänderten Bereichen ist gelernt“ */ return pg.evaluate(() => new Promise((ok) => { const r = indexedDB.open("DateiOrganizer1", 1); r.onsuccess = () => { const t = r.result.transaction("kv", "readonly").objectStore("kv").get("zustand"); t.onsuccess = () => { r.result.close(); ok(JSON.stringify((t.result && t.result.regeln) || [])); }; }; r.onerror = () => ok("?"); })); };
 const regelnAnzahl = async (pg) => JSON.parse(await regelnText(pg)).length;
 const { chromium } = createRequire(import.meta.url)("playwright");
 import { indexLesen } from "../lib/index-format.ts";
