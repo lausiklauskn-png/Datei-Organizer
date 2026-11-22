@@ -15,7 +15,7 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   nachziehen“):** im Organizer war der Fehler der Akte (leerer Pfeil mit 22 px Innenabstand) nicht da, die Äste waren aber 40 px hoch mit 3 px
   dazwischen. Jetzt `.ast` 4 px statt 7 px oben/unten, `li` 1 px statt 3 px Abstand, Querstrich auf die neue Mitte (`src/styles.css`) – rund
   34 px je Zeile. UI-Probe 225 (1 neu: „Baum dicht“, höchstens 36 px, Lücke höchstens 4 px). Fassung 0.4.25 (Code 65, Vorrat v46).
-  Nicht als App ausgegeben (Basic über Pages mit dem Zusammenführen).
+  **Veröffentlicht 22.11.2026 (Klaus' Wort) als Android, Windows und Basic**, Nachweis `docs/VEROEFFENTLICHUNG-0.4.25.json` – nicht erneut ausgeben; nächste Ausgabe 0.4.26 (Code 66).
 
 ## Stand (21.11.2026): 0.4.24 – HTML-Dateien als lesbarer Text
 
