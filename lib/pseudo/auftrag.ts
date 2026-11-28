@@ -30,7 +30,13 @@ export type Stueck = {
   hinweis?: string;         // z. B. „Texterkennung: nur die ersten 20 Seiten“
   bild?: { breite: number; hoehe: number; flaechen: Flaeche[]; seite?: number };
   weglassen?: boolean;      // nicht an die KI (vom Nutzer abgewählt)
+  warnung?: string[];       // Prüfkern: versteckte KI-Anweisung, unsichtbarer Text, Makro … (bleibt auf dem Gerät)
 };
+
+/** Unsichtbare Zeichen (Nullbreite, Richtungswechsel, weiches Trennzeichen, Unicode-Tags): können versteckte Kennungen oder
+ *  Anweisungen tragen und gehen nie mit hinaus. Normale Leer- und Zeilenumbrüche bleiben. */
+export const UNSICHTBAR = /[\u00AD\u180E\u200B-\u200F\u202A-\u202E\u2060-\u2064\u2066-\u206F\uFEFF]|[\u{E0000}-\u{E007F}]/gu;
+export const sauber = (t: string) => t.replace(UNSICHTBAR, "").normalize("NFC");
 
 export const kennung = (i: number) => `D${String(i + 1).padStart(2, "0")}`;
 
@@ -43,6 +49,7 @@ export const korrekturAusText = (verdecken: string, bleibt: string): Korrektur =
  *  zweiten wird jede Datei mit der vollen Zuordnung neu gefasst – ein Name, der erst in Datei 5 erkannt wird, ist dann auch in
  *  Datei 1 verdeckt, mit demselben Platzhalter. */
 export function auftragMaskieren(p: Pseudonymisierer, stuecke: Stueck[], korr: Korrektur, vorher: Record<string, string> = {}): { stuecke: Stueck[]; map: Record<string, string> } {
+  stuecke = stuecke.map((s) => ({ ...s, text: sauber(s.text) }));
   const zusatz = [...new Set(stuecke.flatMap((s) => zusatzFunde(s.text)))];
   const profil: MaskeProfil = { personen: [...korr.verdecken, ...zusatz], stellen: [], nieVerdecken: korr.bleibt };
   let map: Record<string, string> = { ...vorher };
