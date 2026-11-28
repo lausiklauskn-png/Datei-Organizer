@@ -7,7 +7,7 @@
 export type LehrfallKurz = { bestaetigt: string; merkmale: string[] };
 export type LehrModell = { faelle: number; faecher: Record<string, number>; woerter: Record<string, Record<string, number>> };
 
-const UNSICHTBAR = /[​-‏‪-‮⁠-⁤﻿­]/g;
+const UNSICHTBAR = /[\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u00AD]/g;
 /** Dieselben Stichwörter wie im Lehrfall: Wörter ab 5 Buchstaben, ohne Platzhalter, die ersten `max` verschiedenen. */
 export function merkmaleAus(text: string, max = 24): string[] {
   const t = text.replace(UNSICHTBAR, "").normalize("NFC").toLowerCase().replace(/⟦[^⟧]*⟧/g, " ");
