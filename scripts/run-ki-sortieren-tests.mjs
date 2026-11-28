@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { sortierAuftrag, planPruefen, lehrfall, vergleich, firmenBleiben, firmenSchuetzen, FACHREGEL } from "../lib/ki-sortieren.ts";
 import { KATEGORIEN } from "../lib/kategorien.ts";
+import { lehrModell, lehrAnwenden, merkmaleAus } from "../lib/lehrmodell.ts";
 import { auftragMaskieren, kennung } from "../lib/pseudo/auftrag.ts";
 
 let n = 0;
@@ -60,4 +61,15 @@ ok("Firmen bleiben, Personen nicht", JSON.stringify(firmenBleiben(["Stadtwerke B
   ok("Firma dreimal im Text: Maske läuft trotzdem, Person weg, Firma bleibt", !aus.includes("Mara") && !aus.includes("Lindenweg") && aus.includes("Stadtwerke Beispielstadt GmbH"), aus); }
 const q = readFileSync("lib/ki-sortieren.ts", "utf8").replace(/\/\/.*$/gm, "");
 ok("Kein Netzaufruf und keine Oberfläche im Kern", !/\bfetch\s*\(|XMLHttpRequest|WebSocket|document\.|window\./.test(q));
+// Lernen aus Lehrfällen (lib/lehrmodell.ts): 30 erfundene Fälle, Arztwörter → Gesundheit, Stromwörter → Haus & Wohnung.
+{ const arzt = ["praxis", "behandlung", "diagnose", "patient", "rezept"], strom = ["abschlag", "zaehlerstand", "verbrauch", "stromtarif", "netzbetreiber"];
+  const faelle = Array.from({ length: 30 }, (_, i) => i % 2 ? { bestaetigt: "Gesundheit", merkmale: arzt } : { bestaetigt: "Haus & Wohnung", merkmale: strom });
+  const m = lehrModell(faelle), d = (k) => ({ volltext: "Ihre Behandlung in der Praxis, Diagnose und Rezept für den Patient", felder: { kategorie: k } });
+  const unsicher = lehrAnwenden(d({ wert: "Finanzen", sicher: false, grund: "", quelle: "regel" }), m);
+  ok("Lehrfälle: unsicherer Bereich wird zum gelernten Vorschlag, bleibt zu prüfen", unsicher.felder.kategorie.wert === "Gesundheit" && unsicher.felder.kategorie.sicher === false && unsicher.felder.kategorie.vorher === "Finanzen");
+  ok("Lehrfälle: sichere Erkennung und eigene Wahl bleiben", lehrAnwenden(d({ wert: "Finanzen", sicher: true, grund: "", quelle: "regel" }), m).felder.kategorie.wert === "Finanzen" && lehrAnwenden(d({ wert: "Finanzen", sicher: false, grund: "", quelle: "du" }), m).felder.kategorie.wert === "Finanzen");
+  ok("Lehrfälle: unter 20 Fällen wirkt nichts", lehrAnwenden(d({ wert: "Finanzen", sicher: false, grund: "", quelle: "regel" }), lehrModell(faelle.slice(0, 10))).felder.kategorie.wert === "Finanzen");
+  ok("Lehrfälle: Stichwörter wie im Lehrfall, ohne Platzhalter", JSON.stringify(merkmaleAus("Rechnung an ⟦NAME-1⟧ Zahnarztpraxis Rechnung")) === JSON.stringify(["rechnung", "zahnarztpraxis"])); }
+const ql = readFileSync("lib/lehrmodell.ts", "utf8").replace(/\/\/.*$/gm, "");
+ok("Kein Netzaufruf und keine Oberfläche im Lehrmodell", !/\bfetch\s*\(|XMLHttpRequest|WebSocket|document\.|window\.|localStorage/.test(ql));
 console.log(`KI-Sortieren: ${n} grün`);

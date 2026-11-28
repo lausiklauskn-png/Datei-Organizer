@@ -11,6 +11,7 @@ const FACHREGEL = [
   { fall: "Inkasso, letzte Mahnung eines fremden B\xFCros; die erste Mahnung des H\xE4ndlers bleibt bei dessen Rechnung", fach: "Finanzen & Konten", zweitfach: "Fach der urspr\xFCnglichen Rechnung" }
 ];
 const FACHREGEL_RESTE = "\u201EVersicherungen\u201C = Haftpflicht, Hausrat, Leben, Rechtsschutz und alles ohne eigenes Sachfach; \u201ESteuern & Beh\xF6rden\u201C = Einkommensteuer, Steuerbescheide, Ausweise, Meldeamt; \u201EEink\xE4ufe, Rechnungen & Garantien\u201C = Kassenbons, Bestellungen, R\xFCcksendungen ohne Ger\xE4t.";
+import { merkmaleAus } from "./lehrmodell.js";
 const UNSICHTBAR = /[\u00AD\u180E\u200B-\u200F\u202A-\u202E\u2060-\u2064\u2066-\u206F\uFEFF]|[\u{E0000}-\u{E007F}]/gu;
 const STEUER = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
 const rein = (t) => t.replace(UNSICHTBAR, "").replace(STEUER, "").normalize("NFC");
@@ -161,7 +162,7 @@ function planPruefen(antwort, kennungen, faecher = KATEGORIEN) {
   return { eintraege, meldungen, fehlen: [...offen] };
 }
 function lehrfall(e, bestaetigt, text, kernVorschlag, zeit = (/* @__PURE__ */ new Date()).toISOString()) {
-  const merkmale = [...new Set(rein(text).toLowerCase().replace(/⟦[^⟧]*⟧/g, " ").match(/\p{L}{5,}/gu) || [])].slice(0, 24);
+  const merkmale = merkmaleAus(rein(text));
   return { fassung: 1, zeit, lehrer: "grosse-ki", vorschlag: e.fach, ...e.zweitfach ? { vorschlagZweit: e.zweitfach } : {}, bestaetigt, geaendert: bestaetigt !== e.fach, sicher: e.sicher, ...kernVorschlag ? { kern: kernVorschlag } : {}, merkmale };
 }
 function vergleich(plan, kernFach) {

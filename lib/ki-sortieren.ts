@@ -24,6 +24,8 @@ export const FACHREGEL: ReadonlyArray<{ fall: string; fach: string; zweitfach: s
 ];
 export const FACHREGEL_RESTE = "„Versicherungen“ = Haftpflicht, Hausrat, Leben, Rechtsschutz und alles ohne eigenes Sachfach; „Steuern & Behörden“ = Einkommensteuer, Steuerbescheide, Ausweise, Meldeamt; „Einkäufe, Rechnungen & Garantien“ = Kassenbons, Bestellungen, Rücksendungen ohne Gerät.";
 
+import { merkmaleAus } from "./lehrmodell.ts";
+
 export type Sicher = "hoch" | "mittel" | "niedrig";
 export type PlanFrist = { datum: string; was: string };
 export type PlanEintrag = { kennung: string; fach: string; zweitfach?: string; fristen: PlanFrist[]; begruendung: string; sicher: Sicher };
@@ -148,7 +150,7 @@ export type Lehrfall = { fassung: 1; zeit: string; lehrer: "grosse-ki"; vorschla
 
 /** `merkmale` = wenige Stichwörter aus dem (schon pseudonymisierten) Text, damit der Kern ohne Volltext lernen kann. */
 export function lehrfall(e: PlanEintrag, bestaetigt: string, text: string, kernVorschlag?: string, zeit = new Date().toISOString()): Lehrfall {
-  const merkmale = [...new Set(rein(text).toLowerCase().replace(/⟦[^⟧]*⟧/g, " ").match(/\p{L}{5,}/gu) || [])].slice(0, 24);
+  const merkmale = merkmaleAus(rein(text));
   return { fassung: 1, zeit, lehrer: "grosse-ki", vorschlag: e.fach, ...(e.zweitfach ? { vorschlagZweit: e.zweitfach } : {}), bestaetigt, geaendert: bestaetigt !== e.fach, sicher: e.sicher, ...(kernVorschlag ? { kern: kernVorschlag } : {}), merkmale };
 }
 
