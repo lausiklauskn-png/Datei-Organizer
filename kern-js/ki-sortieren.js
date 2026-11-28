@@ -193,8 +193,8 @@ function firmenSchuetzen(firmen) {
   const re = liste.length ? new RegExp(liste.map(esc).join("|"), "gi") : null;
   const nr = new Map(liste.map((f, i) => [f.toLowerCase(), i + 1]));
   return {
-    schuetzen: (t) => re ? t.replace(re, (m) => `\u27E6FIRMA-${nr.get(m.toLowerCase())}\u27E7`) : t,
-    zurueck: (t) => t.replace(/⟦FIRMA-(\d+)⟧/g, (m, n) => liste[+n - 1] ?? m)
+    schuetzen: (t) => re ? t.replace(re, (m) => `\u27E6F${nr.get(m.toLowerCase())}\u27E7`) : t,
+    zurueck: (t) => t.replace(/⟦F(\d+)⟧/g, (m, n) => liste[+n - 1] ?? m)
   };
 }
 export {

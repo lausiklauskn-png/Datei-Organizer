@@ -176,14 +176,15 @@ export function firmenBleiben(absender: ReadonlyArray<string | undefined | null>
 }
 
 /** Firmennamen vor der Maske schützen: die Maske ersetzt sonst gelernte Namen auch mitten im Wort („Stadtwerke ⟦NAME-2⟧stadt“).
- *  Vorher werden die Firmen zu ⟦FIRMA-n⟧, danach (`zurueck`) wieder zum Namen. Gilt für alle Texte eines Auftrags gleich. */
+ *  Vorher werden die Firmen zu ⟦Fn⟧ (ohne Bindestrich: die Maske hält Text mit drei Platzhaltern „⟦X-n⟧“ sonst für schon
+ *  pseudonymisiert und ließe ihn ganz stehen), danach (`zurueck`) wieder zum Namen. Gilt für alle Texte eines Auftrags gleich. */
 export function firmenSchuetzen(firmen: readonly string[]): { schuetzen: (t: string) => string; zurueck: (t: string) => string } {
   const liste = [...new Set(firmen.filter((f) => f.length >= 3))].sort((a, b) => b.length - a.length);
   const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const re = liste.length ? new RegExp(liste.map(esc).join("|"), "gi") : null;
   const nr = new Map(liste.map((f, i) => [f.toLowerCase(), i + 1]));
   return {
-    schuetzen: (t) => (re ? t.replace(re, (m) => `⟦FIRMA-${nr.get(m.toLowerCase())}⟧`) : t),
-    zurueck: (t) => t.replace(/⟦FIRMA-(\d+)⟧/g, (m, n) => liste[+n - 1] ?? m),
+    schuetzen: (t) => (re ? t.replace(re, (m) => `⟦F${nr.get(m.toLowerCase())}⟧`) : t),
+    zurueck: (t) => t.replace(/⟦F(\d+)⟧/g, (m, n) => liste[+n - 1] ?? m),
   };
 }

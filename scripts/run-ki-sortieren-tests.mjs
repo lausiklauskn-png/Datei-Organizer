@@ -54,6 +54,10 @@ const lf = lehrfall(r.eintraege[0], "Archiv", "Rechnung ⟦NAME-1⟧ Stadtwerke 
 ok("Lehrfall: Korrektur erkannt, keine Platzhalter in Merkmalen", lf.geaendert && lf.bestaetigt === "Archiv" && !lf.merkmale.some((w) => /name/.test(w)));
 ok("Vergleich mit dem Kern", JSON.stringify(vergleich(r.eintraege.slice(0, 2), { [r.eintraege[0].kennung]: r.eintraege[0].fach, [r.eintraege[1].kennung]: "Archiv" })) === '{"gleich":1,"anders":1}');
 ok("Firmen bleiben, Personen nicht", JSON.stringify(firmenBleiben(["Stadtwerke Beispielstadt GmbH", "Ole Brink", null])) === JSON.stringify(["Stadtwerke Beispielstadt GmbH", "Stadtwerke Beispielstadt"]));
+{ const t = fs.schuetzen("Stadtwerke Beispielstadt GmbH an Mara Testfeld. Stadtwerke Beispielstadt GmbH, Stadtwerke Beispielstadt GmbH, Lindenweg 12, 12345 Musterstadt");
+  const mm = auftragMaskieren(p, [{ ...roh[0], text: t }], { verdecken: [], bleibt: firmen }).stuecke[0];
+  const aus = fs.zurueck(mm.fassung);
+  ok("Firma dreimal im Text: Maske läuft trotzdem, Person weg, Firma bleibt", !aus.includes("Mara") && !aus.includes("Lindenweg") && aus.includes("Stadtwerke Beispielstadt GmbH"), aus); }
 const q = readFileSync("lib/ki-sortieren.ts", "utf8").replace(/\/\/.*$/gm, "");
 ok("Kein Netzaufruf und keine Oberfläche im Kern", !/\bfetch\s*\(|XMLHttpRequest|WebSocket|document\.|window\./.test(q));
 console.log(`KI-Sortieren: ${n} grün`);
