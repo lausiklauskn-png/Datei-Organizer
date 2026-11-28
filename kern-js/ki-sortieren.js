@@ -187,11 +187,22 @@ function firmenBleiben(absender) {
   }
   return [...aus];
 }
+function firmenSchuetzen(firmen) {
+  const liste = [...new Set(firmen.filter((f) => f.length >= 3))].sort((a, b) => b.length - a.length);
+  const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const re = liste.length ? new RegExp(liste.map(esc).join("|"), "gi") : null;
+  const nr = new Map(liste.map((f, i) => [f.toLowerCase(), i + 1]));
+  return {
+    schuetzen: (t) => re ? t.replace(re, (m) => `\u27E6FIRMA-${nr.get(m.toLowerCase())}\u27E7`) : t,
+    zurueck: (t) => t.replace(/⟦FIRMA-(\d+)⟧/g, (m, n) => liste[+n - 1] ?? m)
+  };
+}
 export {
   FACHREGEL,
   FACHREGEL_RESTE,
   KI_SORTIEREN_FASSUNG,
   firmenBleiben,
+  firmenSchuetzen,
   lehrfall,
   planPruefen,
   sortierAuftrag,
