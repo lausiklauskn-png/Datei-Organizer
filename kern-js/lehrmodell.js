@@ -44,10 +44,30 @@ function lehrAnwenden(d, m, abstand = LEHR_ABSTAND) {
   if (!v || v.abstand < abstand || v.fach === k.wert) return d;
   return { ...d, felder: { ...d.felder, kategorie: { wert: v.fach, sicher: false, grund: `aus deinen Best\xE4tigungen gelernt (vorher \u201E${k.wert}\u201C)`, quelle: "gelernt", vorher: k.wert } } };
 }
+function fehlermuster(faelle, min = 1) {
+  const z = /* @__PURE__ */ new Map();
+  const zaehle = (wer, v, b) => {
+    if (!v || !b || v === b) return;
+    const k = `${wer}\0${v}\0${b}`;
+    const m = z.get(k) || { wer, vorschlag: v, bestaetigt: b, n: 0 };
+    m.n++;
+    z.set(k, m);
+  };
+  for (const f of faelle) {
+    zaehle("kern", f.kern, f.bestaetigt);
+    zaehle("ki", f.vorschlag, f.bestaetigt);
+  }
+  return [...z.values()].filter((m) => m.n >= min).sort((a, b) => b.n - a.n || a.vorschlag.localeCompare(b.vorschlag, "de"));
+}
+const NACHLERNEN_AB = 10;
+const nachlernenLohnt = (m) => m.filter((x) => x.wer === "kern" && x.n >= NACHLERNEN_AB);
 export {
   LEHR_ABSTAND,
+  NACHLERNEN_AB,
+  fehlermuster,
   lehrAnwenden,
   lehrModell,
   lehrVorschlag,
-  merkmaleAus
+  merkmaleAus,
+  nachlernenLohnt
 };

@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { KI_ARTEN, sortierAuftrag, planPruefen, lehrfall, vergleich, firmenBleiben, firmenSchuetzen, FACHREGEL } from "../lib/ki-sortieren.ts";
 import { KATEGORIEN } from "../lib/kategorien.ts";
-import { lehrModell, lehrAnwenden, merkmaleAus } from "../lib/lehrmodell.ts";
+import { lehrModell, lehrAnwenden, merkmaleAus, fehlermuster, nachlernenLohnt } from "../lib/lehrmodell.ts";
 import { auftragMaskieren, kennung } from "../lib/pseudo/auftrag.ts";
 
 let n = 0;
@@ -80,6 +80,12 @@ ok("Kein Netzaufruf und keine Oberfläche im Kern", !/\bfetch\s*\(|XMLHttpReques
   ok("Lehrfälle: sichere Erkennung und eigene Wahl bleiben", lehrAnwenden(d({ wert: "Finanzen", sicher: true, grund: "", quelle: "regel" }), m).felder.kategorie.wert === "Finanzen" && lehrAnwenden(d({ wert: "Finanzen", sicher: false, grund: "", quelle: "du" }), m).felder.kategorie.wert === "Finanzen");
   ok("Lehrfälle: unter 20 Fällen wirkt nichts", lehrAnwenden(d({ wert: "Finanzen", sicher: false, grund: "", quelle: "regel" }), lehrModell(faelle.slice(0, 10))).felder.kategorie.wert === "Finanzen");
   ok("Lehrfälle: Stichwörter wie im Lehrfall, ohne Platzhalter", JSON.stringify(merkmaleAus("Rechnung an ⟦NAME-1⟧ Zahnarztpraxis Rechnung")) === JSON.stringify(["rechnung", "zahnarztpraxis"])); }
+{ // Fehlermuster (Punkt 3): nur Fächer und Zahlen
+  const f = [...Array(11)].map(() => ({ bestaetigt: "Versicherungen", kern: "Gesundheit & Pflege", vorschlag: "Versicherungen", merkmale: ["beitrag"] })).concat([{ bestaetigt: "Archiv", kern: "Archiv", vorschlag: "Korrespondenz", merkmale: [] }]);
+  const m = fehlermuster(f);
+  if (!(m.length === 2 && m[0].wer === "kern" && m[0].n === 11 && m[1].wer === "ki" && nachlernenLohnt(m).length === 1 && !JSON.stringify(m).includes("beitrag"))) throw new Error("Fehlermuster: " + JSON.stringify(m));
+  console.log("🟢 Fehlermuster: Kern 11×, KI 1×, ohne Wörter, Nachlernen ab 10");
+}
 const ql = readFileSync("lib/lehrmodell.ts", "utf8").replace(/\/\/.*$/gm, "");
 ok("Kein Netzaufruf und keine Oberfläche im Lehrmodell", !/\bfetch\s*\(|XMLHttpRequest|WebSocket|document\.|window\.|localStorage/.test(ql));
 console.log(`KI-Sortieren: ${n} grün`);
