@@ -9,6 +9,8 @@ oder Altbestand kommen in **einen** Ordner; der Organizer sortiert sie Klick fü
 Nummern → Absender → Inhalt) und zeigt sie als Baum nach vielen Gesichtspunkten. Zuerst für die Familienakte gemacht: der Ordner
 wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). Plan und alle Entscheidungen: `docs/PLAN.md`.
 
+**Nächste Sitzung (Klaus 28.11.2026): „Mit großer KI sortieren“, mit PseudoDoc verschmolzen.** Zuerst den Pseudo-Kern aus PseudoDoc byte-gleich mit Pin übernehmen (die Fassung hier ist älter), dann Ordner pseudonymisiert mit der Fachregel an eine große KI, Sortierplan zurück, bestätigen, lernen. Lehrfälle nur auf dem Gerät. [Bauplan S0a–S4](docs/BRIEF_SITZUNG_2026-11-29_SORTIEREN-MIT-GROSSER-KI.md).
+
 ## Stand (21.11.2026): 0.4.25 – Baum dichter
 
 - **Klaus 21.11. (Bild vom Tablet, Private Akte 0.9.7: „der Abstand zwischen Bescheinigung und Brief im Baum ist viel zu groß … in allen Apps
