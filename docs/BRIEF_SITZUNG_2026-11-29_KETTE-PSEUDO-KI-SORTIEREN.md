@@ -28,3 +28,4 @@ Familienakte `docs/BRIEF_SITZUNG_2026-11-29_KI-SORTIEREN-EINGANG.md` (F0–F4). 
 
 ## Stand
 
+- **Schritt 1 fertig (28.11.):** Pseudo-Kern aus PseudoDoc @ `b1a8af4` mit Pin (`lib/pseudo/HERKUNFT.json`), Rückweg-Prüfung im Pseudonymisierer. Datei-Organizer PR #85 auf main (`5bd0fe7`).
