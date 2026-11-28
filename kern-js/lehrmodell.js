@@ -1,5 +1,5 @@
 // Erzeugt aus Datei-Organizer lib/lehrmodell.ts (scripts/kern-js.mjs). Nicht von Hand ändern.
-const UNSICHTBAR = /[​-‏‪-‮⁠-⁤﻿­]/g;
+const UNSICHTBAR = /[\u200B-\u200F\u202A-\u202E\u2060-\u2064\uFEFF\u00AD]/g;
 function merkmaleAus(text, max = 24) {
   const t = text.replace(UNSICHTBAR, "").normalize("NFC").toLowerCase().replace(/⟦[^⟧]*⟧/g, " ");
   return [...new Set(t.match(/\p{L}{5,}/gu) || [])].slice(0, max);
