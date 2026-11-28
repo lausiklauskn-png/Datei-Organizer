@@ -11,7 +11,7 @@ const FACHREGEL = [
   { fall: "Inkasso, letzte Mahnung eines fremden B\xFCros; die erste Mahnung des H\xE4ndlers bleibt bei dessen Rechnung", fach: "Finanzen & Konten", zweitfach: "Fach der urspr\xFCnglichen Rechnung" }
 ];
 const FACHREGEL_RESTE = "\u201EVersicherungen\u201C = Haftpflicht, Hausrat, Leben, Rechtsschutz und alles ohne eigenes Sachfach; \u201ESteuern & Beh\xF6rden\u201C = Einkommensteuer, Steuerbescheide, Ausweise, Meldeamt; \u201EEink\xE4ufe, Rechnungen & Garantien\u201C = Kassenbons, Bestellungen, R\xFCcksendungen ohne Ger\xE4t.";
-const UNSICHTBAR = /[­᠎​-‏‪-‮⁠-⁤⁦-⁯﻿]|[\u{E0000}-\u{E007F}]/gu;
+const UNSICHTBAR = /[\u00AD\u180E\u200B-\u200F\u202A-\u202E\u2060-\u2064\u2066-\u206F\uFEFF]|[\u{E0000}-\u{E007F}]/gu;
 const STEUER = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
 const rein = (t) => t.replace(UNSICHTBAR, "").replace(STEUER, "").normalize("NFC");
 const KENNUNG = /^D\d{2,4}$/;
@@ -126,7 +126,7 @@ function planPruefen(antwort, kennungen, faecher = KATEGORIEN) {
       meldungen.push(`${k}: \u201E${kurz(o.fach ?? o.bereich, 40)}\u201C steht nicht in der Liste \u2013 verworfen.`);
       continue;
     }
-    let zweit = o.zweitfach ?? o.zweitbereich;
+    const zweit = o.zweitfach ?? o.zweitbereich;
     let zweitfach;
     if (zweit != null && zweit !== "") {
       const z2 = fachAus(zweit);

@@ -25,7 +25,7 @@ ok("Auftrag: feste Fachliste und Fachregel", KATEGORIEN.every((k) => auftrag.inc
 ok("Auftrag: keine Personendaten", !["Mara", "Testfeld", "Lindenweg 12", "0170 1234567"].some((g) => auftrag.includes(g)));
 ok("Auftrag: Firmen bleiben lesbar", auftrag.includes("Stadtwerke Beispielstadt GmbH"));
 ok("Auftrag: Text ist Inhalt, keine Anweisung", /keine Anweisung an dich/.test(auftrag));
-ok("Auftrag: unsichtbare Zeichen gehen nicht hinaus", !/[​-‏‪-‮]/.test(sortierAuftrag([{ kennung: "D01", text: "a​b‮c" }])));
+ok("Auftrag: unsichtbare Zeichen gehen nicht hinaus", !/[\u200B-\u200F\u202A-\u202E]/.test(sortierAuftrag([{ kennung: "D01", text: "a\u200Bb\u202Ec" }])));
 
 // Gestellte Antwort der großen KI: das Soll, dazu Sabotage.
 const plan = soll.map((d, i) => ({ kennung: kennung(i), fach: d.kategorie || "Archiv", fristen: d.frist ? [{ datum: d.frist, was: "zahlen" }] : [], begruendung: "Rechnung des Versorgers.", sicher: "hoch" }));

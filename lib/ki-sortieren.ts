@@ -32,7 +32,7 @@ export type PlanErgebnis = { eintraege: PlanEintrag[]; meldungen: string[]; fehl
 export type SortierStueck = { kennung: string; text: string };
 export type AuftragOptionen = { faecher?: readonly string[]; wort?: "Fach" | "Bereich"; heute?: string; auftragId?: string; maxZeichen?: number };
 
-const UNSICHTBAR = /[­᠎​-‏‪-‮⁠-⁤⁦-⁯﻿]|[\u{E0000}-\u{E007F}]/gu;
+const UNSICHTBAR = /[\u00AD\u180E\u200B-\u200F\u202A-\u202E\u2060-\u2064\u2066-\u206F\uFEFF]|[\u{E0000}-\u{E007F}]/gu;
 const STEUER = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
 const rein = (t: string) => t.replace(UNSICHTBAR, "").replace(STEUER, "").normalize("NFC");
 const KENNUNG = /^D\d{2,4}$/;
@@ -121,7 +121,7 @@ export function planPruefen(antwort: string, kennungen: readonly string[], faech
     if (fremd.length) meldungen.push(`${k}: fremde Felder verworfen (${fremd.slice(0, 5).join(", ")}).`);
     const fach = fachAus(o.fach ?? o.bereich);
     if (!fach) { meldungen.push(`${k}: „${kurz(o.fach ?? o.bereich, 40)}“ steht nicht in der Liste – verworfen.`); continue; }
-    let zweit = o.zweitfach ?? o.zweitbereich;
+    const zweit = o.zweitfach ?? o.zweitbereich;
     let zweitfach: string | undefined;
     if (zweit != null && zweit !== "") { const z2 = fachAus(zweit); if (z2 && z2 !== fach) zweitfach = z2; else if (!z2) meldungen.push(`${k}: zweites „${kurz(zweit, 40)}“ nicht in der Liste – weggelassen.`); }
     const fristen: PlanFrist[] = [];
