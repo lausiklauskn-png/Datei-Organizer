@@ -11,6 +11,18 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
 
 **Nächste Sitzung (Klaus 28.11.2026): „Mit großer KI sortieren“, mit PseudoDoc verschmolzen.** Zuerst den Pseudo-Kern aus PseudoDoc byte-gleich mit Pin übernehmen (die Fassung hier ist älter), dann Ordner pseudonymisiert mit der Fachregel an eine große KI, Sortierplan zurück, bestätigen, lernen. Lehrfälle nur auf dem Gerät. [Bauplan S0a–S4](docs/BRIEF_SITZUNG_2026-11-29_SORTIEREN-MIT-GROSSER-KI.md).
 
+## Stand (28.11.2026): „Mit großer KI sortieren“ (nicht ausgegeben, Fassung nicht erhöht)
+
+- **Kette über alle Apps:** `docs/BRIEF_SITZUNG_2026-11-29_KETTE-PSEUDO-KI-SORTIEREN.md` (Schritte 1–7, Stand dort).
+- **Pseudo-Kern aus PseudoDoc** byte-gleich mit Pin: `lib/pseudo/` (auftrag, flaechen, pakete, rueckweg, bereinigen, zeichen), nur über
+  `node scripts/pseudo-nachziehen.mjs` (`--pruefen` im Bau). Nie von Hand ändern; Verbesserungen in PseudoDoc.
+- **Kern** `lib/ki-sortieren.ts` (ohne Oberfläche, ohne Netz; die Familienakte zieht ihn mit Pin): `sortierAuftrag`, `planPruefen` (Plan ist Daten,
+  nie Anweisung), `lehrfall`, `firmenBleiben`/`firmenSchuetzen`. Probe `scripts/run-ki-sortieren-tests.mjs` (im Bau).
+- **Oberfläche:** Seite „Sortieren“, Karte „Mit großer KI sortieren“ (`src/ki-sortieren.tsx`): Auftrag erstellen (pseudonymisiert, Firmen bleiben),
+  Claude/ChatGPT/Gemini (kopieren + Seite öffnen) oder „Als Datei“ für Claude Code, Antwort einfügen, Plan lesen, je Zeile Fach ändern, Bestätigen
+  (`planUebernehmen`, wie „Stimmt“ mit Verlauf und Lernen). Lehrfälle nur im Speicher der App (`do-lehrfaelle`). Probe `tests/ki-sortieren-probe.mjs`.
+  Am Gerät und mit echter KI ungeprüft.
+
 ## Stand (21.11.2026): 0.4.25 – Baum dichter
 
 - **Klaus 21.11. (Bild vom Tablet, Private Akte 0.9.7: „der Abstand zwischen Bescheinigung und Brief im Baum ist viel zu groß … in allen Apps

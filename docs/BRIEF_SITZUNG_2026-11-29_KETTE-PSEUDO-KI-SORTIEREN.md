@@ -29,3 +29,5 @@ Familienakte `docs/BRIEF_SITZUNG_2026-11-29_KI-SORTIEREN-EINGANG.md` (F0–F4). 
 ## Stand
 
 - **Schritt 1 fertig (28.11.):** Pseudo-Kern aus PseudoDoc @ `b1a8af4` mit Pin (`lib/pseudo/HERKUNFT.json`), Rückweg-Prüfung im Pseudonymisierer. Datei-Organizer PR #85 auf main (`5bd0fe7`).
+- **Schritt 2 fertig (28.11.):** `lib/ki-sortieren.ts` (Auftrag, Fachregel als Daten, Plan-Prüfung, Lehrfall) und `kern-js/ki-sortieren.js`, Probe 22 grün. PR #86 auf main (`58845e5`).
+- **Schritt 3 fertig (28.11.):** Seite „Sortieren“ › Karte „Mit großer KI sortieren“ (`src/ki-sortieren.tsx`, `planUebernehmen` in `src/app.tsx`), Firmen vor der Maske geschützt (`firmenSchuetzen`), Lehrfälle im App-Speicher (`do-lehrfaelle`, höchstens 2000). Pseudo-Kern mit `zeichen.ts` (PseudoDoc #14). Probe `tests/ki-sortieren-probe.mjs` 13 grün. Fund: die Maske ersetzt gelernte Namen auch mitten im Wort („Stadtwerke ⟦NAME-2⟧stadt“) – hier umgangen, in der Maske (Familienakte) offen.

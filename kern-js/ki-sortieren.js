@@ -11,7 +11,7 @@ const FACHREGEL = [
   { fall: "Inkasso, letzte Mahnung eines fremden B\xFCros; die erste Mahnung des H\xE4ndlers bleibt bei dessen Rechnung", fach: "Finanzen & Konten", zweitfach: "Fach der urspr\xFCnglichen Rechnung" }
 ];
 const FACHREGEL_RESTE = "\u201EVersicherungen\u201C = Haftpflicht, Hausrat, Leben, Rechtsschutz und alles ohne eigenes Sachfach; \u201ESteuern & Beh\xF6rden\u201C = Einkommensteuer, Steuerbescheide, Ausweise, Meldeamt; \u201EEink\xE4ufe, Rechnungen & Garantien\u201C = Kassenbons, Bestellungen, R\xFCcksendungen ohne Ger\xE4t.";
-const UNSICHTBAR = /[­᠎​-‏‪-‮⁠-⁤⁦-⁯﻿]|[\u{E0000}-\u{E007F}]/gu;
+const UNSICHTBAR = /[\u00AD\u180E\u200B-\u200F\u202A-\u202E\u2060-\u2064\u2066-\u206F\uFEFF]|[\u{E0000}-\u{E007F}]/gu;
 const STEUER = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
 const rein = (t) => t.replace(UNSICHTBAR, "").replace(STEUER, "").normalize("NFC");
 const KENNUNG = /^D\d{2,4}$/;
@@ -126,7 +126,7 @@ function planPruefen(antwort, kennungen, faecher = KATEGORIEN) {
       meldungen.push(`${k}: \u201E${kurz(o.fach ?? o.bereich, 40)}\u201C steht nicht in der Liste \u2013 verworfen.`);
       continue;
     }
-    let zweit = o.zweitfach ?? o.zweitbereich;
+    const zweit = o.zweitfach ?? o.zweitbereich;
     let zweitfach;
     if (zweit != null && zweit !== "") {
       const z2 = fachAus(zweit);
@@ -187,11 +187,22 @@ function firmenBleiben(absender) {
   }
   return [...aus];
 }
+function firmenSchuetzen(firmen) {
+  const liste = [...new Set(firmen.filter((f) => f.length >= 3))].sort((a, b) => b.length - a.length);
+  const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const re = liste.length ? new RegExp(liste.map(esc).join("|"), "gi") : null;
+  const nr = new Map(liste.map((f, i) => [f.toLowerCase(), i + 1]));
+  return {
+    schuetzen: (t) => re ? t.replace(re, (m) => `\u27E6F${nr.get(m.toLowerCase())}\u27E7`) : t,
+    zurueck: (t) => t.replace(/⟦F(\d+)⟧/g, (m, n) => liste[+n - 1] ?? m)
+  };
+}
 export {
   FACHREGEL,
   FACHREGEL_RESTE,
   KI_SORTIEREN_FASSUNG,
   firmenBleiben,
+  firmenSchuetzen,
   lehrfall,
   planPruefen,
   sortierAuftrag,

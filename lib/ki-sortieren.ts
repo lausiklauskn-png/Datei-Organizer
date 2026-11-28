@@ -32,7 +32,7 @@ export type PlanErgebnis = { eintraege: PlanEintrag[]; meldungen: string[]; fehl
 export type SortierStueck = { kennung: string; text: string };
 export type AuftragOptionen = { faecher?: readonly string[]; wort?: "Fach" | "Bereich"; heute?: string; auftragId?: string; maxZeichen?: number };
 
-const UNSICHTBAR = /[­᠎​-‏‪-‮⁠-⁤⁦-⁯﻿]|[\u{E0000}-\u{E007F}]/gu;
+const UNSICHTBAR = /[\u00AD\u180E\u200B-\u200F\u202A-\u202E\u2060-\u2064\u2066-\u206F\uFEFF]|[\u{E0000}-\u{E007F}]/gu;
 const STEUER = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g;
 const rein = (t: string) => t.replace(UNSICHTBAR, "").replace(STEUER, "").normalize("NFC");
 const KENNUNG = /^D\d{2,4}$/;
@@ -121,7 +121,7 @@ export function planPruefen(antwort: string, kennungen: readonly string[], faech
     if (fremd.length) meldungen.push(`${k}: fremde Felder verworfen (${fremd.slice(0, 5).join(", ")}).`);
     const fach = fachAus(o.fach ?? o.bereich);
     if (!fach) { meldungen.push(`${k}: „${kurz(o.fach ?? o.bereich, 40)}“ steht nicht in der Liste – verworfen.`); continue; }
-    let zweit = o.zweitfach ?? o.zweitbereich;
+    const zweit = o.zweitfach ?? o.zweitbereich;
     let zweitfach: string | undefined;
     if (zweit != null && zweit !== "") { const z2 = fachAus(zweit); if (z2 && z2 !== fach) zweitfach = z2; else if (!z2) meldungen.push(`${k}: zweites „${kurz(zweit, 40)}“ nicht in der Liste – weggelassen.`); }
     const fristen: PlanFrist[] = [];
@@ -173,4 +173,18 @@ export function firmenBleiben(absender: ReadonlyArray<string | undefined | null>
     if (ohne && ohne !== t) aus.add(ohne);
   }
   return [...aus];
+}
+
+/** Firmennamen vor der Maske schützen: die Maske ersetzt sonst gelernte Namen auch mitten im Wort („Stadtwerke ⟦NAME-2⟧stadt“).
+ *  Vorher werden die Firmen zu ⟦Fn⟧ (ohne Bindestrich: die Maske hält Text mit drei Platzhaltern „⟦X-n⟧“ sonst für schon
+ *  pseudonymisiert und ließe ihn ganz stehen), danach (`zurueck`) wieder zum Namen. Gilt für alle Texte eines Auftrags gleich. */
+export function firmenSchuetzen(firmen: readonly string[]): { schuetzen: (t: string) => string; zurueck: (t: string) => string } {
+  const liste = [...new Set(firmen.filter((f) => f.length >= 3))].sort((a, b) => b.length - a.length);
+  const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const re = liste.length ? new RegExp(liste.map(esc).join("|"), "gi") : null;
+  const nr = new Map(liste.map((f, i) => [f.toLowerCase(), i + 1]));
+  return {
+    schuetzen: (t) => (re ? t.replace(re, (m) => `⟦F${nr.get(m.toLowerCase())}⟧`) : t),
+    zurueck: (t) => t.replace(/⟦F(\d+)⟧/g, (m, n) => liste[+n - 1] ?? m),
+  };
 }

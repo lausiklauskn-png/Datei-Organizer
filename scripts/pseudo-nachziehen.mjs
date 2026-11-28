@@ -1,7 +1,7 @@
 // Pseudo-Kern byte-gleich aus PseudoDoc übernehmen und mit Pin festhalten. Nie von Hand ändern (Klaus 28.11.2026: PseudoDoc ist die Quelle).
 //   node scripts/pseudo-nachziehen.mjs            → kopiert lib/pseudo/*.ts und schreibt lib/pseudo/HERKUNFT.json
 //   node scripts/pseudo-nachziehen.mjs --pruefen  → prüft nur, dass jede Datei ihrem Pin entspricht (läuft im Bau)
-// Quelle: PSEUDODOC (Vorgabe ../PseudoDoc): lib/pseudo/{auftrag,flaechen,pakete,rueckweg,bereinigen}.ts
+// Quelle: PSEUDODOC (Vorgabe ../PseudoDoc): lib/pseudo/{auftrag,flaechen,pakete,rueckweg,bereinigen,zeichen}.ts
 import { readFileSync, writeFileSync, mkdirSync, copyFileSync, existsSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
@@ -10,7 +10,7 @@ import { fileURLToPath } from "node:url";
 
 const WURZEL = join(dirname(fileURLToPath(import.meta.url)), "..");
 const PIN = join(WURZEL, "lib/pseudo/HERKUNFT.json");
-const DATEIEN = ["auftrag", "flaechen", "pakete", "rueckweg", "bereinigen"].map((n) => `lib/pseudo/${n}.ts`);
+const DATEIEN = ["auftrag", "flaechen", "pakete", "rueckweg", "bereinigen", "zeichen"].map((n) => `lib/pseudo/${n}.ts`);
 const sha = (p) => createHash("sha256").update(readFileSync(p)).digest("hex");
 
 if (process.argv.includes("--pruefen")) {

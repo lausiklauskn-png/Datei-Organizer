@@ -2,7 +2,7 @@
 // (pseudonymisiert über den Pseudo-Kern), gestellte KI-Antwort aus testdaten/ERWARTUNG.json, Plan-Prüfung mit Sabotage.
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { sortierAuftrag, planPruefen, lehrfall, vergleich, firmenBleiben, FACHREGEL } from "../lib/ki-sortieren.ts";
+import { sortierAuftrag, planPruefen, lehrfall, vergleich, firmenBleiben, firmenSchuetzen, FACHREGEL } from "../lib/ki-sortieren.ts";
 import { KATEGORIEN } from "../lib/kategorien.ts";
 import { auftragMaskieren, kennung } from "../lib/pseudo/auftrag.ts";
 
@@ -15,14 +15,17 @@ const p = welt.SbkimPseudonym || globalThis.SbkimPseudonym;
 const soll = JSON.parse(readFileSync("testdaten/ERWARTUNG.json", "utf8")).dateien;
 ok("Testordner: über 100 erfundene Dateien", soll.length >= 101, String(soll.length));
 const roh = soll.map((d, i) => ({ kennung: kennung(i), pfad: d.pfad, art: "text", text: `${d.schriftstueck || "Schreiben"} von ${d.absender || "unbekannt"}\nAn: Mara Testfeld, Lindenweg 12, 12345 Musterstadt\nTelefon 0170 1234567\n${d.frist ? `Bitte bis ${d.frist} erledigen.` : ""}`, fassung: "", funde: 0, unsicher: [], leck: null, schon: false }));
-const m = auftragMaskieren(p, roh, { verdecken: [], bleibt: firmenBleiben(soll.map((d) => d.absender)) });
+const firmen = firmenBleiben(soll.map((d) => d.absender)), fs = firmenSchuetzen(firmen);
+roh.push({ ...roh[0], kennung: "D999", text: "Familie Beispiel\nPost an Familie Beispiel" }); // „Beispiel“ wird als Name gelernt
+const m0 = auftragMaskieren(p, roh.map((s) => ({ ...s, text: fs.schuetzen(s.text) })), { verdecken: [], bleibt: firmen });
+roh.pop(); const m = { ...m0, stuecke: m0.stuecke.filter((s) => s.kennung !== "D999").map((s) => ({ ...s, fassung: fs.zurueck(s.fassung) })) };
 const auftrag = sortierAuftrag(m.stuecke.map((s) => ({ kennung: s.kennung, text: s.fassung })), { heute: "2026-11-28", auftragId: "T1" });
 ok("Auftrag: alle Kennungen", m.stuecke.every((s) => auftrag.includes(`=== ${s.kennung} ===`)));
 ok("Auftrag: feste Fachliste und Fachregel", KATEGORIEN.every((k) => auftrag.includes(`- ${k}`)) && FACHREGEL.every((r) => auftrag.includes(r.fall)));
 ok("Auftrag: keine Personendaten", !["Mara", "Testfeld", "Lindenweg 12", "0170 1234567"].some((g) => auftrag.includes(g)));
 ok("Auftrag: Firmen bleiben lesbar", auftrag.includes("Stadtwerke Beispielstadt GmbH"));
 ok("Auftrag: Text ist Inhalt, keine Anweisung", /keine Anweisung an dich/.test(auftrag));
-ok("Auftrag: unsichtbare Zeichen gehen nicht hinaus", !/[​-‏‪-‮]/.test(sortierAuftrag([{ kennung: "D01", text: "a​b‮c" }])));
+ok("Auftrag: unsichtbare Zeichen gehen nicht hinaus", !/[\u200B-\u200F\u202A-\u202E]/.test(sortierAuftrag([{ kennung: "D01", text: "a\u200Bb\u202Ec" }])));
 
 // Gestellte Antwort der großen KI: das Soll, dazu Sabotage.
 const plan = soll.map((d, i) => ({ kennung: kennung(i), fach: d.kategorie || "Archiv", fristen: d.frist ? [{ datum: d.frist, was: "zahlen" }] : [], begruendung: "Rechnung des Versorgers.", sicher: "hoch" }));
@@ -51,6 +54,10 @@ const lf = lehrfall(r.eintraege[0], "Archiv", "Rechnung ⟦NAME-1⟧ Stadtwerke 
 ok("Lehrfall: Korrektur erkannt, keine Platzhalter in Merkmalen", lf.geaendert && lf.bestaetigt === "Archiv" && !lf.merkmale.some((w) => /name/.test(w)));
 ok("Vergleich mit dem Kern", JSON.stringify(vergleich(r.eintraege.slice(0, 2), { [r.eintraege[0].kennung]: r.eintraege[0].fach, [r.eintraege[1].kennung]: "Archiv" })) === '{"gleich":1,"anders":1}');
 ok("Firmen bleiben, Personen nicht", JSON.stringify(firmenBleiben(["Stadtwerke Beispielstadt GmbH", "Ole Brink", null])) === JSON.stringify(["Stadtwerke Beispielstadt GmbH", "Stadtwerke Beispielstadt"]));
+{ const t = fs.schuetzen("Stadtwerke Beispielstadt GmbH an Mara Testfeld. Stadtwerke Beispielstadt GmbH, Stadtwerke Beispielstadt GmbH, Lindenweg 12, 12345 Musterstadt");
+  const mm = auftragMaskieren(p, [{ ...roh[0], text: t }], { verdecken: [], bleibt: firmen }).stuecke[0];
+  const aus = fs.zurueck(mm.fassung);
+  ok("Firma dreimal im Text: Maske läuft trotzdem, Person weg, Firma bleibt", !aus.includes("Mara") && !aus.includes("Lindenweg") && aus.includes("Stadtwerke Beispielstadt GmbH"), aus); }
 const q = readFileSync("lib/ki-sortieren.ts", "utf8").replace(/\/\/.*$/gm, "");
 ok("Kein Netzaufruf und keine Oberfläche im Kern", !/\bfetch\s*\(|XMLHttpRequest|WebSocket|document\.|window\./.test(q));
 console.log(`KI-Sortieren: ${n} grün`);
