@@ -25,6 +25,10 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
   Claude/ChatGPT/Gemini (kopieren + Seite öffnen) oder „Als Datei“ für Claude Code, Antwort einfügen, Plan lesen, je Zeile Fach ändern, Bestätigen
   (`planUebernehmen`, wie „Stimmt“ mit Verlauf und Lernen). Lehrfälle nur im Speicher der App (`do-lehrfaelle`). Probe `tests/ki-sortieren-probe.mjs`.
   Am Gerät und mit echter KI ungeprüft.
+- **28.11. abends (Klaus' Freibrief: „die KI übernimmt das Sortieren“):** Lernen aus Lehrfällen (`lib/lehrmodell.ts`), KI-Sortieren Fassung 2
+  (Art, Absender, Vorgang, betrifft, Betrag, Richtung). Oberfläche: Hauptknopf „Alles übernehmen“ setzt Bereich, Art, Absender, betrifft, Frist
+  (selbst Bestätigtes bleibt); was die KI „niedrig“ nennt, steht ohne Haken; Plan nach Vorgang gruppiert. Test mit einer frischen KI an 40 Stücken
+  der Prüfstadt: Bereich KI 37/40, Kern 33/40 (kein Nachweis, zu wenige Stücke).
 
 ## Stand (21.11.2026): 0.4.25 – Baum dichter
 
