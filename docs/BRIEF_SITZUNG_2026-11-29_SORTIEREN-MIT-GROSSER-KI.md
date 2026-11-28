@@ -13,8 +13,14 @@ ein Mensch, weil manchmal Fristen wegfallen … und so an echten Daten trainiere
 *„Könnte man Datei-Organizer und PseudoDoc verbinden in der Familienakte, sodass der Datei-Organizer den PseudoDoc-Bauplan
 integriert oder mit ihm verschmilzt … halt nur diesen Hin- und Rückweg.“* (Klaus, 28.11.)
 
-**Entscheidung daraus: gebaut wird hier im Datei-Organizer. PseudoDoc liefert nur den Pseudo-Kern als Baustein.** So kommt der
-Weg über den Klon des Organizers von selbst in Familienakte und Private Akte.
+**Entscheidung daraus: gebaut wird hier im Datei-Organizer. PseudoDoc liefert nur den Pseudo-Kern als Baustein.**
+
+⚠ **Richtiggestellt am selben Tag:** In der Familienakte steckt **nicht** die Organizer-App, sondern nur der Sortier-Kern
+(`lib/sortierkern/`, 16 Dateien, Pin auf `7c69419`), die Übernahme der `organizer-index.json` und die Discovery-Seite. Der Weg
+kommt dort also nicht über einen Klon an. Deshalb gehören **Plan-Format und Plan-Prüfung in `lib/` ohne Oberfläche**, damit die
+Familienakte sie mit `tools/sortierkern-nachziehen.mjs` übernimmt und ihre eigene Oberfläche im Eingang baut. Bauplan dort:
+Familienakte `docs/BRIEF_SITZUNG_2026-11-29_KI-SORTIEREN-EINGANG.md`. Die Private Akte trägt die Organizer-App als Klon und
+bekommt den Weg mit dem Klon.
 
 ## Drei Fassungen desselben Kerns (gemessen 28.11.2026) — zuerst zusammenführen
 
@@ -68,7 +74,8 @@ Sortierplan zurück, Bestätigen) und das Lernen aus Klaus' Korrekturen.
 - **Lehrfälle nur auf dem Gerät**, im Tresor bzw. verschlüsselt im Arbeitsordner. **Nie in ein Repo** — Datei-Organizer und
   PseudoDoc sind öffentlich; auch pseudonymisierte echte Fälle gehören nicht hinein.
 - Der Plan wird im **Organizer** angewendet; die Fachliste ist hier zu Hause (`docs/FACHREGEL.md`), keine zweite Fassung anderswo.
-- Familienakte und Private Akte bekommen den Weg über den Klon des Organizers bzw. das Kern-Nachziehen; Klone dort unverändert.
+- **Plan-Format, Plan-Prüfung und Lehrfall-Form liegen in `lib/` ohne Oberfläche und ohne Netz**, wie der Sortier-Kern. Die
+  Familienakte zieht sie mit Pin nach; die Private Akte bekommt den Weg über ihren Klon. Klone dort unverändert.
 
 ## Reihenfolge (Schätzung, keine Messung)
 
@@ -78,7 +85,7 @@ Sortierplan zurück, Bestätigen) und das Lernen aus Klaus' Korrekturen.
 | S0 | Vorschau: Knopf „Mit großer KI sortieren“, Planliste mit Ändern/Bestätigen; **Klaus' Ja** | Ja | 3–5 |
 | S1 | Auftragstyp + Fachregel + Antwortformat + Prüfung des Plans | ein Testordner (die 101 erfundenen Dateien des Datei-Organizers) kommt sortiert zurück | 15–25 |
 | S2 | Zurückführen, Planliste, Bestätigen, Kopie in Zielfächer | Plan eines Testordners in Fächer übernommen, Originale unberührt | 15–25 |
-| S3 | In Familienakte und Private Akte nachziehen (Klon/Kern) | Knopf dort, gleicher Ablauf | 10–20 |
+| S3 | Private Akte über den Klon; Familienakte zieht den Kern nach und baut F0–F4 (eigener Brief dort) | Knopf in beiden, gleicher Plan | 10–20 |
 | S4 | Lehrfälle aus Bestätigungen und Korrekturen, Kern lernt (lokal) | nach 50 Korrekturen sortiert der Kern einen zweiten Ordner besser, gemessen | 20–40 |
 | | **zusammen** | | **70–125 h** |
 
