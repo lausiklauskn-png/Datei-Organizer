@@ -56,7 +56,7 @@ export function lehrModellGeraet(): LehrModell | null {
 export function lehrfaelleZahl(): number { try { return (JSON.parse(localStorage.getItem(LEHR) || "[]") as unknown[]).length; } catch { return 0; } }
 
 type Auftrag = { id: string; text: string; map: Record<string, string>; pfad: Record<string, string>; fassung: Record<string, string>; p: Pseudonymisierer };
-type Zeile = PlanEintrag & { pfad: string; name: string; kern?: string; begruendungEcht: string; wahl: string; an: boolean };
+type Zeile = PlanEintrag & { pfad: string; name: string; kern?: string; begruendungEcht: string; absenderEcht?: string; betrifftEcht?: string; vorgangEcht?: string; wahl: string; an: boolean };
 
 const textVon = (d: Datei) => d.volltext || d.kopfText || "";
 
@@ -111,18 +111,21 @@ export function KiSortierenKarte({ z }: { z: AppZustand }) {
     const nachPfad = new Map(z.dateien.map((d) => [d.pfad, d]));
     const neu: Zeile[] = r.eintraege.flatMap((e) => {
       const d = nachPfad.get(auftrag.pfad[e.kennung]); if (!d) return [];
-      const echt = e.begruendung ? antwortenZurueck(auftrag.p, [{ name: "b", text: e.begruendung }], auftrag.map)[0].text.replace(/^⟦PSEUDONYMISIERT v1⟧\s*/, "").trim() : "";
-      return [{ ...e, pfad: d.pfad, name: d.name, kern: d.felder.kategorie?.wert, begruendungEcht: echt, wahl: e.fach, an: true }];
+      const zur = (t?: string) => (t ? antwortenZurueck(auftrag.p, [{ name: "b", text: t }], auftrag.map)[0].text.replace(/^⟦PSEUDONYMISIERT v1⟧\s*/, "").trim() : "");
+      // Klaus 28.11.: die große KI übernimmt das Sortieren; nur was sie selbst „niedrig“ nennt, bleibt ab Werk zur Prüfung.
+      return [{ ...e, pfad: d.pfad, name: d.name, kern: d.felder.kategorie?.wert, begruendungEcht: zur(e.begruendung), absenderEcht: zur(e.absender) || undefined,
+        betrifftEcht: e.betrifft?.length ? zur(e.betrifft.join(", ")) : undefined, vorgangEcht: zur(e.vorgang) || undefined, wahl: e.fach, an: e.sicher !== "niedrig" }];
     });
+    neu.sort((a, b) => (a.vorgangEcht || "\uffff").localeCompare(b.vorgangEcht || "\uffff") || a.kennung.localeCompare(b.kennung));
     setZeilen(neu);
     setMeldungen([...r.meldungen, ...rw.map((x) => x.satz), ...(r.fehlen.length ? [`Ohne Plan: ${r.fehlen.length} ${r.fehlen.length === 1 ? "Datei" : "Dateien"} (bleiben, wie sie sind).`] : [])]);
-    setInfo(neu.length ? { text: `${neu.length} Vorschläge gelesen. Prüfen, ändern, dann bestätigen.` } : { text: "Kein brauchbarer Sortierplan in der Antwort.", halt: true });
+    setInfo(neu.length ? { text: `${neu.length} Vorschläge gelesen${neu.some((x) => !x.an) ? `, ${neu.filter((x) => !x.an).length} davon unsicher (ohne Haken)` : ""}.` } : { text: "Kein brauchbarer Sortierplan in der Antwort.", halt: true });
   }
 
   function bestaetigen() {
     const gewaehlt = zeilen.filter((x) => x.an);
     if (!gewaehlt.length) return;
-    const n = z.planUebernehmen(gewaehlt.map((x) => ({ pfad: x.pfad, kategorie: x.wahl, frist: x.fristen[0]?.datum })));
+    const n = z.planUebernehmen(gewaehlt.map((x) => ({ pfad: x.pfad, kategorie: x.wahl, frist: x.fristen[0]?.datum, schriftstueck: x.artKern, absender: x.absenderEcht, betrifft: x.betrifftEcht })));
     if (n && auftrag) lehrfaelleMerken(gewaehlt.map((x) => lehrfall(x, x.wahl, auftrag.fassung[x.kennung] || "", x.kern)));
     setZeilen(zeilen.filter((x) => !x.an));
   }
@@ -157,18 +160,20 @@ export function KiSortierenKarte({ z }: { z: AppZustand }) {
     {zeilen.length > 0 && <div data-ki-plan>
       <div className="listen-leiste">
         <label className="alle-wahl"><input type="checkbox" checked={an === zeilen.length} onChange={(e) => setZeilen(zeilen.map((x) => ({ ...x, an: e.target.checked })))} data-ki-alle/>Alle</label>
-        <button type="button" className="button klein primary" disabled={!an} onClick={bestaetigen} data-ki-bestaetigen><Check size={15}/>Bestätigen ({an})</button>
+        <button type="button" className="button klein primary" disabled={!an} onClick={bestaetigen} data-ki-bestaetigen><Check size={15}/>Alles übernehmen ({an})</button>
       </div>
-      {zeilen.map((x) => <div key={x.kennung} className="datei-zeile" data-ki-zeile={x.kennung}>
+      {zeilen.map((x, i) => <div key={x.kennung}>
+        {x.vorgangEcht && x.vorgangEcht !== zeilen[i - 1]?.vorgangEcht && <p className="leise" style={{ margin: "8px 0 2px", fontWeight: 600 }} data-ki-vorgang>{x.vorgangEcht}</p>}
+        <div className="datei-zeile" data-ki-zeile={x.kennung}>
         <input type="checkbox" checked={x.an} onChange={(e) => setze(x.kennung, { an: e.target.checked })} aria-label={`${x.name} übernehmen`}/>
         <div className="datei-haupt" style={{ minWidth: 0, flex: 1 }}>
           <strong className="datei-name" title={x.pfad}>{x.name}</strong>
           <span className="leise" style={{ display: "block", fontSize: 12 }}>
-            {x.kern && x.kern !== x.wahl ? `Kern: ${x.kern} · ` : ""}{x.fristen[0] ? `Frist ${x.fristen[0].datum.split("-").reverse().join(".")}${x.fristen[0].was ? ` (${x.fristen[0].was})` : ""} · ` : ""}{x.sicher}{x.begruendungEcht ? ` · ${x.begruendungEcht}` : ""}
+            {[x.art, x.absenderEcht, x.betrifftEcht ? `für ${x.betrifftEcht}` : "", x.betrag ? `${x.betrag} € ${x.richtung === "rein" ? "rein" : x.richtung === "raus" ? "raus" : ""}`.trim() : ""].filter(Boolean).map((t) => `${t} · `).join("")}{x.kern && x.kern !== x.wahl ? `Kern: ${x.kern} · ` : ""}{x.fristen[0] ? `Frist ${x.fristen[0].datum.split("-").reverse().join(".")}${x.fristen[0].was ? ` (${x.fristen[0].was})` : ""} · ` : ""}{x.sicher}{x.begruendungEcht ? ` · ${x.begruendungEcht}` : ""}
           </span>
         </div>
         <select value={x.wahl} onChange={(e) => setze(x.kennung, { wahl: e.target.value })} aria-label="Fach" data-ki-fach>{KATEGORIEN.map((k) => <option key={k} value={k}>{k}</option>)}</select>
-      </div>)}
+      </div></div>)}
     </div>}
   </section>;
 }

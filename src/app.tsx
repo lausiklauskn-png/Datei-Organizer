@@ -395,7 +395,7 @@ function useOrganizer() {
 
   // Sortierplan einer großen KI übernehmen (Klaus 28.11.2026): erst nach Bestätigung, je Datei wie „Stimmt“ bzw. Stift – mit Verlauf und
   // Lernen. Bereich immer, Frist nur, wenn die Datei noch keine bestätigte hat. Originale bleiben unberührt.
-  const planUebernehmen = useCallback((liste: Array<{ pfad: string; kategorie: string; frist?: string }>) => {
+  const planUebernehmen = useCallback((liste: Array<{ pfad: string; kategorie: string; frist?: string; schriftstueck?: string; absender?: string; betrifft?: string }>) => {
     const nach = new Map(liste.map((x) => [x.pfad, x])), zeit = new Date().toISOString();
     const neuV: Korrektur[] = [];
     let r = regeln, stueck = 0;
@@ -403,7 +403,9 @@ function useOrganizer() {
       const x = nach.get(d.pfad);
       if (!x) return d;
       let n = d;
-      const felder: Array<[FeldName, string | undefined]> = [["kategorie", x.kategorie], ["frist", d.bestaetigt?.frist ? undefined : x.frist]];
+      // Was der Nutzer schon selbst bestätigt hat, bleibt; sonst gilt der Plan der großen KI.
+      const nur = (f: FeldName, w?: string) => (d.bestaetigt?.[f] ? undefined : w);
+      const felder: Array<[FeldName, string | undefined]> = [["kategorie", x.kategorie], ["frist", nur("frist", x.frist)], ["schriftstueck", nur("schriftstueck", x.schriftstueck)], ["absender", nur("absender", x.absender)], ["betrifft", nur("betrifft", x.betrifft)]];
       for (const [feld, wert] of felder) {
         if (!wert) continue;
         const von = n.felder[feld]?.wert ?? "";
