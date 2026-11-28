@@ -44,3 +44,9 @@ Je Schritt frisch von origin/main, Proben grün, selbst mergen, eine Zeile unter
 
 ## Stand
 
+
+- **28.11. Punkt 2/3 erledigt:** Maske ersetzt gelernte Werte nur noch als ganze Wörter (Familienakte #241, `bekannteEinsetzen`); nachgezogen in Datei-Organizer (#89) und PseudoDoc (#16).
+- **28.11. Punkt 4 erledigt (Klaus' Freibrief):** `lib/lehrmodell.ts` – Wortmodell aus den Lehrfällen, nur auf dem Gerät, wirkt nur bei unsicherem Bereich (Richtwert `scripts/lehrmodell-messen.mjs`: Lernstadt 79,4 → 81,3 %, Prüfstadt 89,9 → 89,6 %). In Familienakte (#242) und Private Akte (#107) nachgezogen. In den Kern im Repo kommen später nur Fehlermuster ohne Wörter, daraus erfundene Briefe.
+- **28.11. Punkt 5 entfällt (Klaus' Freibrief):** Lehrfälle bleiben im App-Speicher wie die übrigen Texte; sie verlassen das Gerät nie.
+- **28.11. KI-Sortieren Fassung 2 (#89):** Auftrag und Planprüfung kennen Art (inkl. AGB, Police, Gehaltsabrechnung, Steuerbescheid), Absender, Vorgang, betrifft (nur Platzhalter), Betrag, Richtung. Oberfläche noch nicht.
+- **Punkt 6/7 und Zusammenfassen:** Vorschau https://claude.ai/artifact/MddgDp1KRQfaais6Ao4cnv (Fragen 1–10), wartet auf Klaus.
