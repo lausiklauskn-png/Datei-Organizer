@@ -55,3 +55,20 @@ export function lehrAnwenden<T extends DateiTeil>(d: T, m: LehrModell | null, ab
   if (!v || v.abstand < abstand || v.fach === k.wert) return d;
   return { ...d, felder: { ...d.felder, kategorie: { wert: v.fach, sicher: false, grund: `aus deinen Bestätigungen gelernt (vorher „${k.wert}“)`, quelle: "gelernt", vorher: k.wert } } };
 }
+
+/** Fehlermuster aus Lehrfällen (Klaus 28.11.2026, Brief docs/BRIEF_SITZUNG_2026-11-30_ALLES-UEBERNEHMEN-FA-PA.md Punkt 3): nur
+ *  Fächer und Zahlen, keine Wörter – darf so ins Repo. „wer“ = wessen Vorschlag falsch war (Kern oder große KI). */
+export type FehlerMuster = { wer: "kern" | "ki"; vorschlag: string; bestaetigt: string; n: number };
+export type LehrfallMuster = { bestaetigt: string; vorschlag?: string; kern?: string };
+export function fehlermuster(faelle: readonly LehrfallMuster[], min = 1): FehlerMuster[] {
+  const z = new Map<string, FehlerMuster>();
+  const zaehle = (wer: FehlerMuster["wer"], v: string | undefined, b: string) => {
+    if (!v || !b || v === b) return;
+    const k = `${wer}\u0000${v}\u0000${b}`; const m = z.get(k) || { wer, vorschlag: v, bestaetigt: b, n: 0 }; m.n++; z.set(k, m);
+  };
+  for (const f of faelle) { zaehle("kern", f.kern, f.bestaetigt); zaehle("ki", f.vorschlag, f.bestaetigt); }
+  return [...z.values()].filter((m) => m.n >= min).sort((a, b) => b.n - a.n || a.vorschlag.localeCompare(b.vorschlag, "de"));
+}
+/** Nachlernen mit erfundenen Briefen lohnt erst ab so vielen gleichen Fehlern des Kerns (Schätzung, kein Messwert). */
+export const NACHLERNEN_AB = 10;
+export const nachlernenLohnt = (m: readonly FehlerMuster[]) => m.filter((x) => x.wer === "kern" && x.n >= NACHLERNEN_AB);

@@ -16,6 +16,7 @@ wird dort nur übernommen und automatisch zugeordnet (`organizer-index.json`). P
 
 ## Stand (28.11.2026): „Mit großer KI sortieren“ (nicht ausgegeben, Fassung nicht erhöht)
 
+- **Fehlermuster (Brief `docs/BRIEF_SITZUNG_2026-11-30_ALLES-UEBERNEHMEN-FA-PA.md` Punkt 3):** `fehlermuster` in `lib/lehrmodell.ts` zählt „Kern/KI X → bestätigt Y, n-mal“ (nur Fächer und Zahlen), `node scripts/fehlermuster.mjs <lehrfaelle.json>` für einen Export vom Gerät. Nachlernen mit erfundenen Briefen erst ab 10 gleichen Kern-Fehlern (`NACHLERNEN_AB`, geschätzt) – noch keine Lehrfälle vom Gerät da, darum nichts nachgelernt. Punkte 1 und 2: Familienakte #243, Private Akte #108.
 - **Kette über alle Apps:** `docs/BRIEF_SITZUNG_2026-11-29_KETTE-PSEUDO-KI-SORTIEREN.md` (Schritte 1–7, Stand dort).
 - **Pseudo-Kern aus PseudoDoc** byte-gleich mit Pin: `lib/pseudo/` (auftrag, flaechen, pakete, rueckweg, bereinigen, zeichen), nur über
   `node scripts/pseudo-nachziehen.mjs` (`--pruefen` im Bau). Nie von Hand ändern; Verbesserungen in PseudoDoc.
